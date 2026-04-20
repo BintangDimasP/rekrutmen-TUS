@@ -296,10 +296,7 @@
             </div>
             <div class="p-7">
                 <div class="grid grid-cols-2 gap-5">
-                    {{-- Info box step 3 - plain gray text --}}
-                    <p class="col-span-2 text-sm text-gray-400">
-                        Data akan tersimpan sesuai jenjang yang dipilih. Pilih <strong>S1</strong>, <strong>S2</strong>, atau <strong>S3</strong> untuk mengisi riwayat pendidikan pada masing-masing jenjang.
-                    </p>
+                    {{-- Info dipindah ke toast notification --}}
 
                     {{-- Jenjang & IPK --}}
                     <div class="flex flex-col gap-1.5">
@@ -407,10 +404,7 @@
             </div>
             <div class="p-7">
                 <div class="grid grid-cols-2 gap-5">
-                    {{-- Info step 4 - plain gray text --}}
-                    <p class="col-span-2 text-sm text-gray-400">
-                        Semua dokumen pada langkah ini opsional. Anda dapat melewatinya dan mengisi nanti dari profil Anda.
-                    </p>
+                    {{-- Info dipindah ke toast notification --}}
 
                     {{-- Section: Dokumen Dasar --}}
                     <div class="col-span-2">
@@ -726,11 +720,23 @@
     // ── Step Helpers ──────────────────────────────────────
     const TOTAL = 5;
 
+    let hasShownStep3Toast = false;
+    let hasShownStep4Toast = false;
     function showStep(n) {
         document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
         document.getElementById('step-' + n).classList.add('active');
         updateIndicator(n);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (n === 3 && !hasShownStep3Toast) {
+            showToast('Pemberitahuan', 'Data akan tersimpan sesuai jenjang yang dipilih. Pilih S1, S2, atau S3 untuk mengisi riwayat pendidikan pada masing-masing jenjang.', 'info', 8000);
+            hasShownStep3Toast = true;
+        }
+
+        if (n === 4 && !hasShownStep4Toast) {
+            showToast('Opsional', 'Semua dokumen pada langkah ini opsional. Anda dapat melewatinya dan mengisi nanti dari profil Anda.', 'info', 8000);
+            hasShownStep4Toast = true;
+        }
     }
 
     function updateIndicator(active) {

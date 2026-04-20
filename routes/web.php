@@ -41,12 +41,34 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'index'])->name('admin.penguji.index');
         Route::post('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'store'])->name('admin.penguji.store');
         Route::delete('admin/penguji/{penguji}', [\App\Http\Controllers\Admin\PengujiController::class, 'destroy'])->name('admin.penguji.destroy');
+
+        // Lowongan Management
+        Route::resource('admin/lowongan', \App\Http\Controllers\Admin\LowonganController::class)
+            ->names('admin.lowongan')
+            ->parameters(['lowongan' => 'lowongan']);
+
+        // Lamaran Management (View/Hapus)
+        Route::get('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'show'])->name('admin.lamaran.show');
+        Route::delete('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'destroy'])->name('admin.lamaran.destroy');
+
+        // Pelamar Management (Global)
+        Route::get('admin/pelamar', [\App\Http\Controllers\Admin\PelamarController::class, 'index'])->name('admin.pelamar.index');
     });
 
     // Pelamar
-    Route::middleware('role:pelamar')->get('/pelamar/dashboard', function () {
-        return view('pelamar.dashboard');
-    })->name('pelamar.dashboard');
+    Route::middleware('role:pelamar')->group(function () {
+        Route::get('/pelamar/dashboard', [\App\Http\Controllers\Pelamar\DashboardController::class, 'index'])->name('pelamar.dashboard');
+        
+        Route::get('/pelamar/profil', [\App\Http\Controllers\Pelamar\ProfilController::class, 'index'])->name('pelamar.profil.index');
+        Route::put('/pelamar/profil', [\App\Http\Controllers\Pelamar\ProfilController::class, 'update'])->name('pelamar.profil.update');
+        
+        Route::get('/pelamar/lowongan', [\App\Http\Controllers\Pelamar\LowonganController::class, 'index'])->name('pelamar.lowongan.index');
+        Route::get('/pelamar/lowongan/{lowongan}', [\App\Http\Controllers\Pelamar\LowonganController::class, 'show'])->name('pelamar.lowongan.show');
+        Route::get('/pelamar/lowongan/{lowongan}/apply', [\App\Http\Controllers\Pelamar\LowonganController::class, 'apply'])->name('pelamar.lowongan.apply');
+        Route::post('/pelamar/lowongan/{lowongan}/apply', [\App\Http\Controllers\Pelamar\LowonganController::class, 'storeApply'])->name('pelamar.lowongan.storeApply');
+        
+        Route::get('/pelamar/history', [\App\Http\Controllers\Pelamar\HistoryController::class, 'index'])->name('pelamar.history.index');
+    });
 
     // Penguji
     Route::middleware('role:penguji')->get('/penguji/dashboard', function () {

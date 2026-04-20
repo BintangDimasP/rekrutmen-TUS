@@ -21,13 +21,29 @@ class Pelamar extends Model
         'jenis_kelamin',
         'alamat',
 
-        // Riwayat Pendidikan
+        // Riwayat Pendidikan Level 1
         'jenjang',
         'institusi',
         'prodi_pendidikan',
         'ipk',
         'file_ijazah',
         'file_transkrip',
+
+        // Riwayat Pendidikan Level 2
+        'jenjang_2',
+        'institusi_2',
+        'prodi_pendidikan_2',
+        'ipk_2',
+        'file_ijazah_2',
+        'file_transkrip_2',
+
+        // Riwayat Pendidikan Level 3
+        'jenjang_3',
+        'institusi_3',
+        'prodi_pendidikan_3',
+        'ipk_3',
+        'file_ijazah_3',
+        'file_transkrip_3',
 
         // Dokumen Pendukung
         'file_cv',
@@ -47,6 +63,13 @@ class Pelamar extends Model
         'minat_riset',
         'h_index',
         'file_kartu_dosen',
+        'file_jad',
+        'file_pak',
+        'file_registrasi_dosen',
+        'file_inpassing',
+        'file_serdik',
+        'file_skpp_serdos',
+        'file_pernyataan_lolos_butuh',
     ];
 
     protected $casts = [
