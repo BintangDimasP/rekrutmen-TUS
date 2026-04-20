@@ -2,48 +2,63 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'role',
+        'prodi_id',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
+    }
+
+    // ── Role helpers ─────────────────────────────────────────────
+
+    public function isAdmin(): bool    { return $this->role === 'admin'; }
+    public function isPelamar(): bool  { return $this->role === 'pelamar'; }
+    public function isPenguji(): bool  { return $this->role === 'penguji'; }
+    public function isKaprodi(): bool  { return $this->role === 'kaprodi'; }
+
+    // ── Relasi ────────────────────────────────────────────────────
+
+    public function pelamar()
+    {
+        return $this->hasOne(Pelamar::class);
+    }
+
+    /**
+     * Prodi tempat user (dosen / penguji / kaprodi) mengajar.
+     */
+    public function prodi(): BelongsTo
+    {
+        return $this->belongsTo(Prodi::class);
+    }
+
+    /**
+     * Cek apakah user ini adalah kaprodi dari prodi tertentu.
+     */
+    public function isKaprodiOf(int $prodiId): bool
+    {
+        return $this->role === 'kaprodi' && $this->prodi_id === $prodiId;
     }
 }
