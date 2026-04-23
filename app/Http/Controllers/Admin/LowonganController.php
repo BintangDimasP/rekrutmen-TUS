@@ -85,7 +85,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     /** Detail lowongan (beserta daftar pelamar) */
     public function show(Lowongan $lowongan)
     {
-        $lowongan->load(['prodi', 'lamarans.pelamar']);
+        $lowongan->load(['prodi', 'lamarans.pelamar.user']);
         return view('admin.lowongan.show', compact('lowongan'));
     }
 

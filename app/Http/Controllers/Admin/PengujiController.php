@@ -26,6 +26,15 @@ class PengujiController extends Controller
     }
 
     /**
+     * Detail penguji.
+     */
+    public function show(Dosen $penguji)
+    {
+        $penguji->load('prodi');
+        return view('admin.penguji.show', compact('penguji'));
+    }
+
+    /**
      * Tunjuk dosen-dosen terpilih menjadi penguji.
      */
     public function store(Request $request)
@@ -85,6 +94,7 @@ class PengujiController extends Controller
             }
         });
 
-        return back()->with('success', 'Status penguji untuk ' . $penguji->nama . ' telah dicabut.');
+        return redirect()->route('admin.penguji.index')->with('success', 'Status penguji untuk ' . $penguji->nama . ' telah dicabut.');
     }
 }
+

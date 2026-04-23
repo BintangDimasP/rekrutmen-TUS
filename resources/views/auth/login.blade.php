@@ -34,9 +34,66 @@
         .text-red-700 { color: #b91c1c; }
         .focus\:border-red-700:focus { border-color: #b91c1c; }
         .focus\:ring-red-700:focus { --tw-ring-color: #b91c1c; }
+
+        /* Toast */
+        #toast-container {
+            position: fixed; top: 1.25rem; right: 1.25rem;
+            z-index: 9999; display: flex; flex-direction: column; gap: 0.625rem;
+            width: 360px; pointer-events: none;
+        }
+        .toast {
+            pointer-events: all;
+            display: flex; position: relative; overflow: hidden;
+            background: white; border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            animation: slideIn .3s ease forwards;
+            padding: 1.25rem 1rem 1.25rem 4rem;
+        }
+        .toast::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
+        }
+        .toast.removing { animation: slideOut .3s ease forwards; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(60px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to   { opacity: 0; transform: translateX(60px); }
+        }
+        
+        .toast-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; }
+        
+        .toast-success::before { background: #22c55e; }
+        .toast-success .toast-icon { background: #22c55e; }
+        
+        .toast-error::before { background: #ef4444; }
+        .toast-error .toast-icon { background: #ef4444; }
+        
+        .toast-warning::before { background: #facc15; }
+        .toast-warning .toast-icon { background: #facc15; }
+        
+        .toast-info::before { background: #3b82f6; }
+        .toast-info .toast-icon { background: #3b82f6; }
+
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 700; color: #111827; font-size: 0.95rem; margin-bottom: 0.2rem; line-height: 1.2; }
+        .toast-message { color: #6b7280; font-size: 0.8rem; line-height: 1.3; }
+        
+        .toast-close {
+            position: absolute; right: 0.75rem; top: 0.75rem;
+            cursor: pointer; opacity: 0.4;
+            background: none; border: none; font-size: 1.2rem;
+            line-height: 1; padding: 0; color: #1f2937; flex-shrink: 0;
+            transition: opacity 0.2s;
+        }
+        .toast-close:hover { opacity: 1; }
     </style>
 </head>
 <body class="bg-white flex min-h-screen text-gray-900">
+
+    {{-- ── Toast Container ── --}}
+    <div id="toast-container"></div>
 
     {{-- LEFT SECTION --}}
     <div class="relative hidden lg:flex flex-col w-[45%] bg-[#b91c1c] text-white overflow-hidden p-10 justify-center items-center">
@@ -120,9 +177,9 @@
                     <label for="password" class="block text-[11px] font-bold text-gray-600 tracking-wider uppercase mb-2">Kata Sandi</label>
                     <div class="relative">
                         <input id="password" type="password" name="password" placeholder="••••••••" class="w-full px-4 py-3.5 rounded-lg border border-gray-200 focus:border-[#b91c1c] focus:ring-1 focus:ring-[#b91c1c] outline-none transition-colors pr-12 text-sm placeholder-gray-400 bg-gray-50/50 focus:bg-white">
-                        <button type="button" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
+                        <button type="button" id="toggle-password" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
                             <!-- Eye icon -->
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                         </button>
                     </div>
                 </div>
@@ -173,5 +230,68 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ── Password Toggle ──────────────────────────────────
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const eyeIcon = document.getElementById('eye-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />`;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+            }
+        }
+
+        // ── Toast System ─────────────────────────────────────
+        function showToast(title, message, type = 'error', duration = 4000) {
+            const container = document.getElementById('toast-container');
+            const icons = {
+                success: `<svg class="w-4 h-4 stroke-[3px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`,
+                error:   `<svg class="w-4 h-4 stroke-[3px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>`,
+                info:    `<svg class="w-4 h-4 stroke-[3px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                warning: `<span class="font-bold text-sm">!</span>`
+            };
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type]}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button type="button" class="toast-close" onclick="removeToast(this.parentElement)">&#x2715;</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => removeToast(toast), duration);
+        }
+
+        function removeToast(toast) {
+            if (!toast || !toast.parentElement) return;
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 300);
+        }
+
+        // Show session and validation errors
+        document.addEventListener("DOMContentLoaded", () => {
+            @if (session('status'))
+                showToast('Berhasil', "{{ session('status') }}", 'success');
+            @endif
+
+            @if (session('error'))
+                showToast('Gagal Masuk', "{{ session('error') }}", 'error');
+            @endif
+
+            @if ($errors->any())
+                @foreach ($errors->all() as $error)
+                    // Escape single quotes for JS safety
+                    showToast('Gagal Masuk', '{{ addslashes($error) }}', 'error');
+                @endforeach
+            @endif
+        });
+    </script>
 </body>
 </html>

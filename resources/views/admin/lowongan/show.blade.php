@@ -85,9 +85,10 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[250px]">Nama Pelamar</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[220px]">Nama Pelamar</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Jenjang Pendidikan</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">No Handphone</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Email</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Status</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right">Aksi</th>
                     </tr>
@@ -105,6 +106,9 @@
                         </td>
                         <td class="py-3 px-5">
                             <span class="text-sm text-gray-600 font-mono">{{ $lamaran->pelamar->no_telepon ?? '-' }}</span>
+                        </td>
+                        <td class="py-3 px-5">
+                            <span class="text-sm text-gray-600">{{ $lamaran->pelamar->user?->email ?? '-' }}</span>
                         </td>
                         <td class="py-3 px-5">
                             @php
@@ -139,7 +143,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-16 text-center">
+                        <td colspan="6" class="py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

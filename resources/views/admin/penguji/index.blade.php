@@ -70,12 +70,16 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <button type="button" class="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
-                        Filter
-                    </button>
+                    <a href="{{ route('admin.jadwal.index') }}"
+                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Lihat Jadwal
+                    </a>
+                    <a href="{{ route('admin.jadwal.create') }}"
+                       class="px-4 py-2 bg-indigo-700 text-white hover:bg-indigo-800 text-sm font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        Jadwalkan Seleksi
+                    </a>
                     <button type="button" @click="openAddModal = true" class="px-4 py-2 bg-[#8b1515] text-white hover:bg-red-900 text-sm font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                         Tunjuk Penguji
@@ -116,6 +120,10 @@
                             </td>
                             <td class="py-3 px-5 text-sm">
                                 <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.penguji.show', $penguji) }}"
+                                       class="text-gray-400 hover:text-blue-600 transition-colors flex items-center justify-center p-1.5 rounded" title="Detail Penguji">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                    </a>
                                     <form method="POST" action="{{ route('admin.penguji.destroy', $penguji) }}" onsubmit="return confirm('Cabut status penguji dari dosen {{ addslashes($penguji->nama) }}? Akses loginnya akan dihapus.')" class="inline-block m-0">
                                         @csrf
                                         @method('DELETE')

@@ -18,6 +18,23 @@ class LamaranController extends Controller
     }
 
     /**
+     * Update status, jadwal wawancara, dan catatan lamaran.
+     */
+    public function update(Request $request, Lamaran $lamaran)
+    {
+        $validated = $request->validate([
+            'status'             => 'required|in:menunggu,seleksi_tahap1,seleksi_tahap2,diterima,ditolak',
+            'tanggal_wawancara'  => 'nullable|date',
+            'link_zoom'          => 'nullable|url|max:500',
+            'catatan_admin'      => 'nullable|string|max:1000',
+        ]);
+
+        $lamaran->update($validated);
+
+        return back()->with('success', 'Data lamaran berhasil diperbarui.');
+    }
+
+    /**
      * Hapus lamaran.
      */
     public function destroy(Lamaran $lamaran)
@@ -28,3 +45,4 @@ class LamaranController extends Controller
         return redirect()->route('admin.lowongan.show', $lowongan_id)->with('success', 'Data lamaran berhasil dihapus.');
     }
 }
+

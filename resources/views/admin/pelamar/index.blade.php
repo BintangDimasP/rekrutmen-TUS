@@ -61,74 +61,65 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[200px]">Nama Pelamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Lowongan Diajukan</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[220px]">Nama Pelamar</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Jenjang Pendidikan</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">No Handphone</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Lamaran Diajukan</th>
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($lamarans as $lamaran)
+                    @forelse($pelamars as $pelamar)
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="py-4 px-5">
-                            <div class="text-sm font-semibold text-gray-800">{{ $lamaran->pelamar->nama }}</div>
-                            <div class="text-xs text-gray-400 font-mono mt-0.5">{{ $lamaran->pelamar->user?->email }}</div>
+                            <div class="text-sm font-semibold text-gray-800">{{ $pelamar->nama }}</div>
+                            <div class="text-xs text-gray-400 font-mono mt-0.5">{{ $pelamar->user?->email }}</div>
                         </td>
                         <td class="py-3 px-5">
-                            <div class="text-sm text-[#8b1515] font-semibold">{{ $lamaran->lowongan->nama_posisi }}</div>
-                            <div class="text-xs text-gray-500 mt-0.5">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
+                            <div class="text-sm text-gray-700 font-medium">{{ $pelamar->jenjang ?? '-' }}</div>
+                            <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
                         </td>
                         <td class="py-3 px-5">
-                            <div class="text-sm text-gray-700 font-medium">{{ $lamaran->pelamar->jenjang }}</div>
-                            <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5">{{ $lamaran->pelamar->prodi_pendidikan }}</div>
+                            <span class="text-sm text-gray-600 font-mono">{{ $pelamar->no_telepon ?? '-' }}</span>
                         </td>
                         <td class="py-3 px-5">
-                            <span class="text-sm text-gray-600 font-mono">{{ $lamaran->pelamar->no_telepon ?? '-' }}</span>
-                        </td>
-                        <td class="py-3 px-5">
-                            @php
-                                $statusColors = [
-                                    'menunggu'       => 'bg-gray-100 text-gray-600 border-gray-200',
-                                    'seleksi_tahap1' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                    'seleksi_tahap2' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                                    'diterima'       => 'bg-green-50 text-green-700 border-green-200',
-                                    'ditolak'        => 'bg-red-50 text-red-700 border-red-200',
-                                ];
-                                $colorClass = $statusColors[$lamaran->status] ?? $statusColors['menunggu'];
-                            @endphp
-                            <span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border {{ $colorClass }}">
-                                {{ $lamaran->status_label }}
-                            </span>
+                            @if($pelamar->lamarans->count() > 0)
+                                <div class="flex flex-col gap-1">
+                                    @foreach($pelamar->lamarans->take(2) as $lamaran)
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold">
+                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            {{ $lamaran->lowongan->nama_posisi ?? '-' }}
+                                        </span>
+                                    @endforeach
+                                    @if($pelamar->lamarans->count() > 2)
+                                        <span class="text-xs text-gray-400">+{{ $pelamar->lamarans->count() - 2 }} lainnya</span>
+                                    @endif
+                                </div>
+                            @else
+                                <span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-gray-100 text-gray-500 border-gray-200">
+                                    Belum Melamar
+                                </span>
+                            @endif
                         </td>
                         <td class="py-3 px-5">
                             <div class="flex items-center justify-end gap-2">
-                                <a href="{{ route('admin.lamaran.show', $lamaran) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail Lamaran">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                <a href="{{ route('admin.pelamar.show', $pelamar) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Detail & Edit Pelamar">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                 </a>
-                                <form method="POST" action="{{ route('admin.lamaran.destroy', $lamaran) }}"
-                                      onsubmit="return confirm('Menghapus lamaran atas nama {{ addslashes($lamaran->pelamar->nama) }} pada posisi {{ addslashes($lamaran->lowongan->nama_posisi) }}? Data berkasnya tetap ada di akun pelamar.')" class="inline m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Hapus Lamaran">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </form>
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-16 text-center">
+                        <td colspan="5" class="py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-gray-700 font-semibold text-sm">Belum Ada Pelamar Sama Sekali</h3>
-                                <p class="text-gray-400 text-xs">Semua data lamaran dari berbagai lowongan akan muncul di sini.</p>
+                                <h3 class="text-gray-700 font-semibold text-sm">Belum Ada Pelamar Terdaftar</h3>
+                                <p class="text-gray-400 text-xs">Semua pelamar yang telah melakukan registrasi akan muncul di sini.</p>
                             </div>
                         </td>
                     </tr>
@@ -138,10 +129,11 @@
         </div>
         
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500">
-            <span>Total: <strong>{{ $lamarans->count() }}</strong> berkas lamaran</span>
+            <span>Total: <strong>{{ $pelamars->count() }}</strong> pelamar terdaftar</span>
         </div>
     </div>
 
 </div>
 
 @endsection
+

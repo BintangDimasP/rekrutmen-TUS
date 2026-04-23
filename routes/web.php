@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Penguji Management
         Route::get('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'index'])->name('admin.penguji.index');
+        Route::get('admin/penguji/{penguji}', [\App\Http\Controllers\Admin\PengujiController::class, 'show'])->name('admin.penguji.show');
         Route::post('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'store'])->name('admin.penguji.store');
         Route::delete('admin/penguji/{penguji}', [\App\Http\Controllers\Admin\PengujiController::class, 'destroy'])->name('admin.penguji.destroy');
 
@@ -47,12 +48,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->names('admin.lowongan')
             ->parameters(['lowongan' => 'lowongan']);
 
-        // Lamaran Management (View/Hapus)
+        // Lamaran Management (View/Update/Hapus)
         Route::get('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'show'])->name('admin.lamaran.show');
+        Route::put('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'update'])->name('admin.lamaran.update');
         Route::delete('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'destroy'])->name('admin.lamaran.destroy');
 
         // Pelamar Management (Global)
         Route::get('admin/pelamar', [\App\Http\Controllers\Admin\PelamarController::class, 'index'])->name('admin.pelamar.index');
+        Route::get('admin/pelamar/{pelamar}', [\App\Http\Controllers\Admin\PelamarController::class, 'show'])->name('admin.pelamar.show');
+
+        // Jadwal Seleksi Management
+        Route::get('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'index'])->name('admin.jadwal.index');
+        Route::get('admin/jadwal/create', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'create'])->name('admin.jadwal.create');
+        Route::post('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'store'])->name('admin.jadwal.store');
+        Route::delete('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroy'])->name('admin.jadwal.destroy');
+
+        // API Endpoints (JSON - untuk AJAX di form penjadwalan)
+        Route::get('admin/api/lowongan-by-prodi', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiLowongan'])->name('admin.api.lowongan');
+        Route::get('admin/api/penguji-by-prodi', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPenguji'])->name('admin.api.penguji');
+        Route::get('admin/api/pelamar-by-lowongan', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPelamar'])->name('admin.api.pelamar');
+        Route::get('admin/api/sesi-tersedia', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiAvailableSessions'])->name('admin.api.sesi');
     });
 
     // Pelamar

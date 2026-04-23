@@ -3,20 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Lamaran;
+use App\Models\Pelamar;
 use Illuminate\Http\Request;
 
 class PelamarController extends Controller
 {
     /**
-     * Tampilkan seluruh data pelamar beserta lamarannya di seluruh lowongan sistem.
+     * Tampilkan seluruh data pelamar yang sudah registrasi di sistem.
      */
     public function index()
     {
-        // Kita mengambil data dari entitas 'Lamaran' karena 1 pelamar bisa melamar ke banyak lowongan.
-        // Tiap baris data merepresentasikan "Satu Berkas Lamaran".
-        $lamarans = Lamaran::with(['pelamar.user', 'lowongan.prodi'])->latest()->get();
+        // Ambil semua pelamar yang sudah registrasi, beserta relasi user dan lamaran-lamarannya.
+        $pelamars = Pelamar::with(['user', 'lamarans.lowongan'])->latest()->get();
 
-        return view('admin.pelamar.index', compact('lamarans'));
+        return view('admin.pelamar.index', compact('pelamars'));
+    }
+
+    /**
+     * Halaman detail seorang pelamar beserta semua lamarannya.
+     */
+    public function show(Pelamar $pelamar)
+    {
+        $pelamar->load(['user', 'lamarans.lowongan.prodi']);
+        return view('admin.pelamar.show', compact('pelamar'));
     }
 }
+

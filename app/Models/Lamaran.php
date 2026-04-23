@@ -24,6 +24,13 @@ class Lamaran extends Model
         'file_berkas_pendukung',
         'status',
         'catatan',
+        'tanggal_wawancara',
+        'link_zoom',
+        'catatan_admin',
+    ];
+
+    protected $casts = [
+        'tanggal_wawancara' => 'date',
     ];
 
     public function pelamar()
