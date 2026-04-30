@@ -79,7 +79,7 @@
                             </span>
                         </td>
                         <td class="py-5 px-6 text-right">
-                            <button class="px-4 py-1.5 border border-gray-100 text-gray-400 font-bold text-[0.7rem] rounded-lg group-hover:border-[#8b1515] group-hover:text-[#8b1515] transition-all">Lihat Detail</button>
+                            <a href="{{ route('pelamar.history.show', $lamaran->id) }}" class="inline-flex items-center justify-center px-4 py-1.5 border border-gray-100 text-gray-400 font-bold text-[0.7rem] rounded-lg group-hover:border-[#8b1515] group-hover:text-[#8b1515] transition-all">Lihat Detail</a>
                         </td>
                     </tr>
                     @empty

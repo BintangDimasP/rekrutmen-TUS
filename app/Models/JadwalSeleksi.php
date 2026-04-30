@@ -38,7 +38,7 @@ class JadwalSeleksi extends Model
     ];
 
     protected $fillable = [
-        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi',
+        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi', 'link_meeting'
     ];
 
     protected $casts = [
@@ -55,6 +55,11 @@ class JadwalSeleksi extends Model
     public function penguji()
     {
         return $this->belongsTo(Dosen::class, 'penguji_id');
+    }
+
+    public function penilaian()
+    {
+        return $this->hasOne(Penilaian::class, 'jadwal_seleksi_id');
     }
 
     public function lowongan()

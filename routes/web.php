@@ -61,6 +61,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'index'])->name('admin.jadwal.index');
         Route::get('admin/jadwal/create', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'create'])->name('admin.jadwal.create');
         Route::post('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'store'])->name('admin.jadwal.store');
+        Route::put('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'update'])->name('admin.jadwal.update');
+        Route::put('admin/jadwal-group', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'updateGroup'])->name('admin.jadwal.updateGroup');
         Route::delete('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroy'])->name('admin.jadwal.destroy');
 
         // API Endpoints (JSON - untuk AJAX di form penjadwalan)
@@ -68,6 +70,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/api/penguji-by-prodi', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPenguji'])->name('admin.api.penguji');
         Route::get('admin/api/pelamar-by-lowongan', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPelamar'])->name('admin.api.pelamar');
         Route::get('admin/api/sesi-tersedia', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiAvailableSessions'])->name('admin.api.sesi');
+        Route::get('admin/api/sesi-taken-all', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiSesiTakenAll'])->name('admin.api.sesi.taken');
         Route::get('admin/api/sesi-pelamar', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiSesiPelamar'])->name('admin.api.sesi.pelamar');
     });
 
@@ -84,12 +87,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/pelamar/lowongan/{lowongan}/apply', [\App\Http\Controllers\Pelamar\LowonganController::class, 'storeApply'])->name('pelamar.lowongan.storeApply');
 
         Route::get('/pelamar/history', [\App\Http\Controllers\Pelamar\HistoryController::class, 'index'])->name('pelamar.history.index');
+        Route::get('/pelamar/history/{lamaran}', [\App\Http\Controllers\Pelamar\HistoryController::class, 'show'])->name('pelamar.history.show');
     });
 
     // Penguji
-    Route::middleware('role:penguji')->get('/penguji/dashboard', function () {
-        return view('penguji.dashboard');
-    })->name('penguji.dashboard');
+    Route::middleware('role:penguji')->group(function () {
+        Route::get('/penguji/dashboard', [\App\Http\Controllers\Penguji\PengujiController::class, 'dashboard'])->name('penguji.dashboard');
+        Route::get('/penguji/pengujian', [\App\Http\Controllers\Penguji\PengujiController::class, 'index'])->name('penguji.pengujian.index');
+        Route::get('/penguji/pengujian/{jadwal}', [\App\Http\Controllers\Penguji\PengujiController::class, 'show'])->name('penguji.pengujian.show');
+        Route::get('/penguji/pengujian/{jadwal}/uji', [\App\Http\Controllers\Penguji\PengujiController::class, 'uji'])->name('penguji.pengujian.uji');
+        Route::post('/penguji/pengujian/{jadwal}', [\App\Http\Controllers\Penguji\PengujiController::class, 'storeNilai'])->name('penguji.pengujian.storeNilai');
+    });
 
     // Kaprodi
     Route::middleware('role:kaprodi')->get('/kaprodi/dashboard', function () {

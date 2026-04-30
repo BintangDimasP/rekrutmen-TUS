@@ -70,16 +70,6 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('admin.jadwal.index') }}"
-                       class="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-medium rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Lihat Jadwal
-                    </a>
-                    <a href="{{ route('admin.jadwal.create') }}"
-                       class="px-4 py-2 bg-indigo-700 text-white hover:bg-indigo-800 text-sm font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                        Jadwalkan Seleksi
-                    </a>
                     <button type="button" @click="openAddModal = true" class="px-4 py-2 bg-[#8b1515] text-white hover:bg-red-900 text-sm font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2 cursor-pointer">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
                         Tunjuk Penguji

@@ -51,6 +51,14 @@
                 <p class="text-[0.65rem] font-semibold text-gray-400 uppercase tracking-widest mb-3">Informasi Dasar</p>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
+                    {{-- Tanggal --}}
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1.5">Tanggal Seleksi</label>
+                        <input type="date" name="tanggal" x-model="tanggal" @change="onTanggalChange()"
+                            min="{{ date('Y-m-d') }}"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition">
+                    </div>
+
                     {{-- Prodi --}}
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1.5">Program Studi</label>
@@ -82,14 +90,6 @@
                                 <option :value="l.id" x-text="l.nama_posisi"></option>
                             </template>
                         </select>
-                    </div>
-
-                    {{-- Tanggal --}}
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1.5">Tanggal Seleksi</label>
-                        <input type="date" name="tanggal" x-model="tanggal" @change="onTanggalChange()"
-                            min="{{ date('Y-m-d') }}"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition">
                     </div>
                 </div>
             </div>
@@ -155,7 +155,7 @@
                                 </th>
 
                                 {{-- Micro Teaching header --}}
-                                <th colspan="2"
+                                <th colspan="3"
                                     class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700">
                                     Micro Teaching
                                     <span class="font-normal text-red-300 ml-1">13.00–16.00</span>
@@ -181,6 +181,7 @@
                                     Penguji
                                 </th>
                                 <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-36">Sesi</th>
+                                <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-44">Link Meeting</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -328,7 +329,7 @@
                                         </template>
                                         <template x-if="assignments[p.id]?.micro?.pengujiIds?.length > 0">
                                             <select :name="`schedule[${p.id}][micro][sesi]`"
-                                                x-model="assignments[p.id].micro.sesi"
+                                                x-model="assignments[p.id].micro.sesi" @change="onSesiChangeM(p.id)"
                                                 class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white"
                                                 :class="{ 'border-red-400 bg-red-50': isSesiConflictM(p.id) }">
                                                 <option value="">— Pilih Sesi —</option>
@@ -339,6 +340,19 @@
                                                     </option>
                                                 </template>
                                             </select>
+                                        </template>
+                                    </td>
+
+                                    {{-- ═══ MICRO: Link Meeting ═══ --}}
+                                    <td class="py-3 px-3">
+                                        <template x-if="!assignments[p.id]?.micro?.sesi">
+                                            <span class="text-[0.65rem] text-gray-300 italic">Isi sesi dulu</span>
+                                        </template>
+                                        <template x-if="assignments[p.id]?.micro?.sesi">
+                                            <input type="url" :name="`schedule[${p.id}][micro][link]`"
+                                                x-model="assignments[p.id].micro.link"
+                                                placeholder="https://meet.google.com/..."
+                                                class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white placeholder-gray-300">
                                         </template>
                                     </td>
 
@@ -459,7 +473,7 @@
                     if (!this.assignments[pelamarId]) {
                         this.assignments[pelamarId] = {
                             wawancara: { pengujiIds: [], sesi: '', link: '' },
-                            micro: { pengujiIds: [], sesi: '' },
+                            micro: { pengujiIds: [], sesi: '', link: '' },
                         };
                     }
                 },
@@ -509,11 +523,16 @@
                 removePengujiM(pelamarId, pgId) {
                     const a = this.assignments[pelamarId].micro;
                     a.pengujiIds = a.pengujiIds.filter(id => Number(id) !== Number(pgId));
-                    if (!a.pengujiIds.length) a.sesi = '';
+                    if (!a.pengujiIds.length) { a.sesi = ''; a.link = ''; }
                 },
 
                 onSesiChangeW(pelamarId) {
                     const a = this.assignments[pelamarId]?.wawancara;
+                    if (a && !a.sesi) a.link = '';
+                },
+
+                onSesiChangeM(pelamarId) {
+                    const a = this.assignments[pelamarId]?.micro;
                     if (a && !a.sesi) a.link = '';
                 },
 
@@ -691,6 +710,7 @@
                         a.wawancara.sesi = '';
                         a.wawancara.link = '';
                         a.micro.sesi = '';
+                        a.micro.link = '';
                     });
                     this.takenMap = {};
                     if (this.tanggal) await this.loadTakenSessions();
