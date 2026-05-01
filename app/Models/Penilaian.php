@@ -11,8 +11,13 @@ class Penilaian extends Model
         'kategori_1',
         'kategori_2',
         'kategori_3',
+        'detail_nilai',
         'total_nilai',
         'catatan',
+    ];
+
+    protected $casts = [
+        'detail_nilai' => 'array',
     ];
 
     public function jadwal()

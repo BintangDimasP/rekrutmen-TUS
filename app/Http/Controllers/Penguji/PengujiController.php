@@ -79,26 +79,43 @@ class PengujiController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
-        $request->validate([
-            'kategori_1' => 'required|integer|min:0|max:100',
-            'kategori_2' => 'required|integer|min:0|max:100',
-            'kategori_3' => 'required|integer|min:0|max:100',
-            'catatan' => 'nullable|string'
-        ]);
+        // Validate individual item scores (1-5 scale)
+        $rules = ['catatan' => 'nullable|string'];
+        for ($k = 1; $k <= 3; $k++) {
+            for ($i = 1; $i <= 5; $i++) {
+                $rules["k{$k}_item_{$i}"] = 'required|integer|min:1|max:5';
+            }
+        }
+        $request->validate($rules);
 
-        $total = round(($request->kategori_1 + $request->kategori_2 + $request->kategori_3) / 3);
+        // Build detail scores array and compute category averages
+        $detail = [];
+        $categoryScores = [];
+        for ($k = 1; $k <= 3; $k++) {
+            $sum = 0;
+            for ($i = 1; $i <= 5; $i++) {
+                $val = (int) $request->input("k{$k}_item_{$i}");
+                $detail["k{$k}_item_{$i}"] = $val;
+                $sum += $val;
+            }
+            // Map 1-5 average to 0-100 scale: (avg/5)*100
+            $categoryScores[$k] = round(($sum / 5) * 20);
+        }
+
+        $total = round(($categoryScores[1] + $categoryScores[2] + $categoryScores[3]) / 3);
 
         Penilaian::updateOrCreate(
             ['jadwal_seleksi_id' => $jadwal->id],
             [
-                'kategori_1' => $request->kategori_1,
-                'kategori_2' => $request->kategori_2,
-                'kategori_3' => $request->kategori_3,
+                'kategori_1' => $categoryScores[1],
+                'kategori_2' => $categoryScores[2],
+                'kategori_3' => $categoryScores[3],
+                'detail_nilai' => $detail,
                 'total_nilai' => $total,
                 'catatan' => $request->catatan,
             ]
         );
 
-        return back()->with('success', 'Penilaian berhasil disimpan.');
+        return redirect()->route('penguji.pengujian.show', $jadwal->id)->with('success', 'Penilaian berhasil disimpan.');
     }
 }

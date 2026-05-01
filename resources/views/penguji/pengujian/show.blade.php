@@ -212,22 +212,47 @@
                 @endif
             </div>
 
-            {{-- Status Penilaian --}}
-            @if($penilaian)
-            <div class="bg-green-50 border border-green-200 rounded-xl p-5">
-                <div class="flex items-center gap-3">
-                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <div>
-                        <p class="text-sm font-bold text-green-800">Pelamar ini sudah dinilai. Total Nilai: <span class="text-lg">{{ $penilaian->total_nilai }}</span></p>
-                        @if($penilaian->catatan)
-                            <p class="text-xs text-green-700 mt-1">Catatan: {{ $penilaian->catatan }}</p>
-                        @endif
-                    </div>
+            {{-- 6. HASIL PENILAIAN SELEKSI --}}
+            <div>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
+                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Hasil Penilaian Seleksi
+                </h3>
+                @php
+                    $jadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with('penilaian')->get();
+                    $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
+                    $micro = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+                @endphp
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    @foreach([
+                        ['title' => 'Wawancara', 'jadwal' => $wawancara, 'k1' => 'Kepribadian & Integritas', 'k2' => 'Visi & Profesionalisme', 'k3' => 'Adaptasi & Kolaborasi'],
+                        ['title' => 'Micro Teaching', 'jadwal' => $micro, 'k1' => 'Penguasaan Materi', 'k2' => 'Keterampilan Pedagogik', 'k3' => 'Media Pembelajaran']
+                    ] as $test)
+                        <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
+                            <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                {{ $test['title'] }}
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center gap-4">
+                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k1'] }}</span>
+                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_1 ?? '-' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center gap-4">
+                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k2'] }}</span>
+                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_2 ?? '-' }}</span>
+                                </div>
+                                <div class="flex justify-between items-center gap-4">
+                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k3'] }}</span>
+                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_3 ?? '-' }}</span>
+                                </div>
+                                <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
+                                    <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
+                                    <span class="text-2xl font-black text-[#8b1515]">{{ $test['jadwal']?->penilaian?->total_nilai ?? '-' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            @endif
-
-        </div>
-    </div>
-</div>
 @endsection
