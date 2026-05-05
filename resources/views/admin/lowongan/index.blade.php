@@ -24,40 +24,27 @@
         </div>
     @endif
 
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-6xl mx-auto space-y-6">
 
-        {{-- Header --}}
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-800">Manajemen Lowongan</h1>
-                <p class="text-sm text-gray-500 mt-1">Kelola semua posisi lowongan dosen yang tersedia di sistem.</p>
-            </div>
-            <a href="{{ route('admin.lowongan.create') }}"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors self-start">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
-                Tambah Lowongan
-            </a>
-        </div>
-
-        {{-- Table Card --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-
-            {{-- Toolbar --}}
-            <div class="p-5 border-b border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {{-- Filter & Action --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
                 <div class="relative w-full sm:w-72">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
                     <input type="text" placeholder="Cari nama posisi..." class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm">
                 </div>
-                <div class="flex items-center gap-2 text-xs text-gray-500">
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-400 inline-block"></span>Aktif
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block ml-2"></span>Draft
-                    <span class="w-2.5 h-2.5 rounded-full bg-gray-400 inline-block ml-2"></span>Ditutup
-                </div>
             </div>
+            
+            <a href="{{ route('admin.lowongan.create') }}"
+               class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
+                + Tambah Lowongan
+            </a>
+        </div>
 
-            {{-- Table --}}
+        {{-- Table Card --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -68,7 +55,7 @@
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Pelamar</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Ditutup</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">

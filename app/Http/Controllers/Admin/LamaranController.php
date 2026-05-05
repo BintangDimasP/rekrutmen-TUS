@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lamaran;
+use App\Models\Notifikasi;
 use Illuminate\Http\Request;
 
 class LamaranController extends Controller
@@ -29,7 +30,34 @@ class LamaranController extends Controller
             'catatan_admin'      => 'nullable|string|max:1000',
         ]);
 
+        $statusLama = $lamaran->status;
         $lamaran->update($validated);
+
+        // Kirim notifikasi jika status berubah
+        if ($statusLama !== $validated['status']) {
+            $lamaran->load(['pelamar.user', 'lowongan']);
+            $userId    = $lamaran->pelamar?->user?->id;
+            $posisi    = $lamaran->lowongan?->nama_posisi ?? 'Lowongan';
+
+            $statusLabels = [
+                'menunggu'       => 'Menunggu',
+                'seleksi_tahap1' => 'Seleksi Tahap 1 (Wawancara)',
+                'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching)',
+                'diterima'       => 'Diterima',
+                'ditolak'        => 'Ditolak',
+            ];
+            $labelBaru = $statusLabels[$validated['status']] ?? $validated['status'];
+
+            if ($userId) {
+                Notifikasi::kirim(
+                    $userId,
+                    'Status Lamaran Diperbarui',
+                    "Status lamaran Anda untuk posisi \"{$posisi}\" telah diubah menjadi: {$labelBaru}." .
+                    ($lamaran->catatan_admin ? " Catatan: {$lamaran->catatan_admin}" : ''),
+                    'status'
+                );
+            }
+        }
 
         return back()->with('success', 'Data lamaran berhasil diperbarui.');
     }

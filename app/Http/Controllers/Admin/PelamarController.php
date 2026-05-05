@@ -11,12 +11,31 @@ class PelamarController extends Controller
     /**
      * Tampilkan seluruh data pelamar yang sudah registrasi di sistem.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua pelamar yang sudah registrasi, beserta relasi user dan lamaran-lamarannya.
-        $pelamars = Pelamar::with(['user', 'lamarans.lowongan'])->latest()->get();
+        $query = Pelamar::with(['user', 'lamarans.lowongan']);
 
-        return view('admin.pelamar.index', compact('pelamars'));
+        // Search Name/Phone
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('no_telepon', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter Lowongan
+        if ($request->filled('lowongan_id')) {
+            $lowonganId = $request->lowongan_id;
+            $query->whereHas('lamarans', function($q) use ($lowonganId) {
+                $q->where('lowongan_id', $lowonganId);
+            });
+        }
+
+        $pelamars = $query->latest()->get();
+        $lowongans = \App\Models\Lowongan::orderBy('nama_posisi')->get();
+
+        return view('admin.pelamar.index', compact('pelamars', 'lowongans'));
     }
 
     /**

@@ -3,7 +3,7 @@
 @section('content')
 
 @if(session('success'))
-<div x-data="{{ show: true }}" x-init="setTimeout(() => show = false, 4000)" x-show="show"
+<div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
      x-transition:enter-end="opacity-100 translate-x-0"
      class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 min-w-[320px]">

@@ -1,5 +1,5 @@
 @extends('layouts.admin')
-@section('title', 'Jadwal Wawancara & Micro Teaching')
+@section('title', 'Penjadwalan')
 @section('content')
 
 @if(session('success'))
@@ -41,65 +41,51 @@
 
 <div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()">
 
-    {{-- Header --}}
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">Jadwal Wawancara & Micro Teaching</h1>
-            <p class="text-sm text-gray-500 mt-1">Daftar semua jadwal seleksi yang telah dibuat.</p>
-        </div>
-        <a href="{{ route('admin.jadwal.create') }}"
-           class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors self-start">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-            Jadwalkan Seleksi
-        </a>
-    </div>
 
-    {{-- Filter --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-        <form method="GET" action="{{ route('admin.jadwal.index') }}" class="flex flex-col sm:flex-row gap-3">
+    {{-- Filter & Action --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <form method="GET" action="{{ route('admin.jadwal.index') }}" class="flex flex-col sm:flex-row gap-3 items-end w-full lg:w-auto">
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Filter Tanggal</label>
+                
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                       class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                       class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition w-full sm:w-auto">
             </div>
             <div>
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Filter Penguji</label>
-                <select name="penguji_id" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white min-w-[200px]">
+               
+                <select name="penguji_id" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white w-full sm:min-w-[200px]">
                     <option value="">Semua Penguji</option>
                     @foreach($pengujis as $p)
                         <option value="{{ $p->id }}" {{ request('penguji_id')==$p->id?'selected':'' }}>{{ $p->nama }}</option>
                     @endforeach
                 </select>
             </div>
-            <div class="flex items-end gap-2">
+            <div class="flex items-center gap-2 mt-2 sm:mt-0">
                 <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">Filter</button>
                 @if(request()->hasAny(['tanggal','penguji_id']))
                     <a href="{{ route('admin.jadwal.index') }}" class="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Reset</a>
                 @endif
             </div>
         </form>
+        
+        <a href="{{ route('admin.jadwal.create') }}"
+           class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
+            + Jadwalkan Seleksi
+        </a>
     </div>
 
     {{-- Table --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="p-5 border-b border-gray-100 bg-gray-50/50">
-            <h2 class="text-base font-bold text-gray-800">Daftar Jadwal</h2>
-            <p class="text-xs text-gray-500 mt-0.5">
-                <strong>{{ $rows->count() }}</strong> pelamar terjadwal
-                <span class="text-gray-300 mx-1">·</span>
-                <strong>{{ $jadwals->count() }}</strong> total sesi
-            </p>
-        </div>
-
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse" style="min-width:950px">
+            <table class="w-full text-left border-collapse" style="min-width:1150px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap">Lowongan</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap">Pelamar</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Tanggal</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Pelamar</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-56">Wawancara</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Status</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-56">Micro Teaching</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Status</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Aksi</th>
                     </tr>
                 </thead>
@@ -123,17 +109,16 @@
                         {{-- Tanggal --}}
                         <td class="py-4 px-4 align-top">
                             <div class="text-sm font-bold text-gray-800">{{ $row->tanggal->format('d M Y') }}</div>
-                            <div class="text-[0.7rem] font-medium text-gray-400 uppercase tracking-widest mt-1">{{ $row->tanggal->translatedFormat('l') }}</div>
                         </td>
 
                         {{-- Lowongan --}}
-                        <td class="py-4 px-4 align-top">
+                        <td class="py-4 px-4 border-l border-gray-100 align-top">
                             <div class="text-sm font-bold text-[#8b1515]">{{ $row->lowongan->nama_posisi }}</div>
                             <div class="text-[0.75rem] font-medium text-gray-500 mt-1">{{ $row->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
 
                         {{-- Pelamar --}}
-                        <td class="py-4 px-4 align-top">
+                        <td class="py-4 px-4 border-l border-gray-100 align-top">
                             <div class="text-sm font-bold text-gray-800">{{ $row->pelamar->nama }}</div>
                             <div class="text-[0.75rem] text-gray-500 font-mono mt-1">{{ $row->pelamar->user?->email ?? '-' }}</div>
                         </td>
@@ -141,74 +126,84 @@
                         {{-- Wawancara --}}
                         <td class="py-4 px-4 border-l border-gray-100 align-top">
                             @if($wFirst && $wInfo)
-                                <div class="flex flex-col gap-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="px-2 py-1 bg-blue-50 border border-blue-200 text-blue-700 text-[0.65rem] font-bold rounded-md">Sesi {{ $wFirst->sesi }}</span>
-                                        <span class="text-xs text-gray-500 font-medium">{{ $wInfo['start'] }} – {{ $wInfo['end'] }}</span>
-                                    </div>
-                                    
+                                <div class="text-xs text-gray-700 space-y-1">
+                                    <div><strong>Sesi {{ $wFirst->sesi }} :</strong>  ({{ $wInfo['start'] }} – {{ $wInfo['end'] }})</div>
                                     <div>
-                                        <p class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Penguji</p>
-                                        <ul class="text-xs text-gray-700 space-y-1">
+                                        <strong>Penguji:</strong>
+                                        
                                             @foreach($row->wawancara as $wj)
-                                                <li class="flex items-start gap-1.5">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-300 mt-1.5 flex-shrink-0"></span>
-                                                    <span class="font-medium">{{ $wj->penguji->nama }}</span>
-                                                </li>
+                                                {{ $wj->penguji->nama }}
                                             @endforeach
-                                        </ul>
+                                        
                                     </div>
-                                    
                                     @if($wFirst->link_meeting)
-                                        <div class="pt-2 border-t border-gray-100">
-                                            <a href="{{ $wFirst->link_meeting }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-[0.7rem] font-bold transition-all shadow-sm">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                                                Buka Zoom
-                                            </a>
+                                        <div class="mt-1">
+                                            <strong>Link:</strong> <a href="{{ $wFirst->link_meeting }}" target="_blank" class="text-blue-600 hover:underline break-all">{{ $wFirst->link_meeting }}</a>
                                         </div>
                                     @endif
                                 </div>
                             @else
-                                <div class="flex items-center gap-2 text-gray-300 text-xs italic">
-                                    <span class="w-4 h-[1px] bg-gray-300"></span> Belum ada
-                                </div>
+                                <div class="text-gray-400 text-xs italic">-</div>
+                            @endif
+                        </td>
+
+                        {{-- Status Wawancara --}}
+                        <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                            @if($row->wawancara->isNotEmpty())
+                                @php
+                                    $wTotal = $row->wawancara->count();
+                                    $wDone = $row->wawancara->whereNotNull('penilaian')->count();
+                                    $wStatus = ($wTotal > 0 && $wDone === $wTotal) ? 'Done' : 'Pending';
+                                @endphp
+                                @if($wStatus === 'Done')
+                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Done</span>
+                                @else
+                                    <span class="px-2.5 py-1 bg-orange-100 text-orange-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Pending</span>
+                                @endif
+                            @else
+                                <div class="text-gray-300 text-xs italic mt-1">-</div>
                             @endif
                         </td>
 
                         {{-- Micro Teaching --}}
                         <td class="py-4 px-4 border-l border-gray-100 align-top">
                             @if($mFirst && $mInfo)
-                                <div class="flex flex-col gap-3">
-                                    <div class="flex items-center gap-2">
-                                        <span class="px-2 py-1 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[0.65rem] font-bold rounded-md">Sesi {{ $mFirst->sesi }}</span>
-                                        <span class="text-xs text-gray-500 font-medium">{{ $mInfo['start'] }} – {{ $mInfo['end'] }}</span>
-                                    </div>
-                                    
+                                <div class="text-xs text-gray-700 space-y-1">
+                                    <div><strong>Sesi {{ $mFirst->sesi }} :</strong>  ({{ $mInfo['start'] }} – {{ $mInfo['end'] }})</div>
                                     <div>
-                                        <p class="text-[0.65rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Penguji</p>
-                                        <ul class="text-xs text-gray-700 space-y-1">
+                                        <strong>Penguji:</strong>
+                                        
                                             @foreach($row->micro as $mj)
-                                                <li class="flex items-start gap-1.5">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-300 mt-1.5 flex-shrink-0"></span>
-                                                    <span class="font-medium">{{ $mj->penguji->nama }}</span>
-                                                </li>
+                                                {{ $mj->penguji->nama }}
                                             @endforeach
-                                        </ul>
+                                        
                                     </div>
-                                    
                                     @if($mFirst->link_meeting)
-                                        <div class="pt-2 border-t border-gray-100">
-                                            <a href="{{ $mFirst->link_meeting }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[0.7rem] font-bold transition-all shadow-sm">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                                                Buka Zoom
-                                            </a>
+                                        <div class="mt-1">
+                                            <strong>Link:</strong> <a href="{{ $mFirst->link_meeting }}" target="_blank" class="text-blue-600 hover:underline break-all">{{ $mFirst->link_meeting }}</a>
                                         </div>
                                     @endif
                                 </div>
                             @else
-                                <div class="flex items-center gap-2 text-gray-300 text-xs italic">
-                                    <span class="w-4 h-[1px] bg-gray-300"></span> Belum ada
-                                </div>
+                                <div class="text-gray-400 text-xs italic">-</div>
+                            @endif
+                        </td>
+
+                        {{-- Status Micro --}}
+                        <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                            @if($row->micro->isNotEmpty())
+                                @php
+                                    $mTotal = $row->micro->count();
+                                    $mDone = $row->micro->whereNotNull('penilaian')->count();
+                                    $mStatus = ($mTotal > 0 && $mDone === $mTotal) ? 'Done' : 'Pending';
+                                @endphp
+                                @if($mStatus === 'Done')
+                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Done</span>
+                                @else
+                                    <span class="px-2.5 py-1 bg-orange-100 text-orange-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Pending</span>
+                                @endif
+                            @else
+                                <div class="text-gray-300 text-xs italic mt-1">-</div>
                             @endif
                         </td>
 
@@ -241,7 +236,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="py-16 text-center">
+                        <td colspan="8" class="py-16 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                     <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -261,14 +256,29 @@
     </div>
 
 {{-- ══ MODAL EDIT ══ --}}
-<div x-show="modal.open" x-transition.opacity
-     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-     @click.self="modal.open=false" style="display:none">
+<template x-teleport="body">
+<div x-show="modal.open" style="display:none" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    
+    {{-- Backdrop --}}
     <div x-show="modal.open"
-         x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-150" x-transition:leave-end="opacity-0 scale-95"
-         class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+         @click="modal.open=false"></div>
+
+    {{-- Modal Panel --}}
+    <div x-show="modal.open"
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+         x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-10">
 
         <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
             <div>
@@ -362,6 +372,7 @@
         </form>
     </div>
 </div>
+</template>
 </div>
 
 <script>

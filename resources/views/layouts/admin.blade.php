@@ -38,7 +38,43 @@
     </style>
 </head>
 
-<body class="bg-[#f4f6f9] text-gray-900 overflow-hidden" x-data="{ sidebarOpen: false, sidebarCollapsed: false }">
+<body class="bg-[#f4f6f9] text-gray-900 overflow-hidden"
+      x-data="{
+          sidebarOpen: false,
+          sidebarCollapsed: false,
+          showLogoutModal: false,
+          notifOpen: false,
+          notifList: [],
+          belumDibaca: 0,
+          notifLoading: false,
+          async fetchNotif() {
+              this.notifLoading = true;
+              try {
+                  const res = await fetch('{{ route('notifikasi.index') }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                  const data = await res.json();
+                  this.notifList = data.notifikasis;
+                  this.belumDibaca = data.belum_dibaca;
+              } catch(e) {}
+              this.notifLoading = false;
+          },
+          async toggleNotif() {
+              this.notifOpen = !this.notifOpen;
+              if (this.notifOpen) await this.fetchNotif();
+          },
+          async bacaSemua() {
+              await fetch('{{ route('notifikasi.baca.semua') }}', {
+                  method: 'POST',
+                  headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' }
+              });
+              this.notifList = this.notifList.map(n => ({ ...n, dibaca: true }));
+              this.belumDibaca = 0;
+          },
+          formatTgl(str) {
+              const d = new Date(str);
+              return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+          }
+      }"
+      x-init="fetchNotif()">
 <div class="flex h-screen overflow-hidden">
 
     {{-- ── BACKDROP (Mobile) ── --}}
@@ -165,14 +201,74 @@
                 </div>
             </div>
 
-            {{-- Top Right Area (Logout) --}}
-            <div class="flex items-center">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="bg-[#8b1515] hover:bg-red-800 text-white font-medium text-sm px-6 py-2 rounded-md transition shadow-sm">
-                        Log Out
+            {{-- Top Right Area --}}
+            <div class="flex items-center gap-3">
+
+                {{-- Bell Icon --}}
+                <div class="relative" @click.outside="notifOpen = false">
+                    <button @click="toggleNotif()" class="relative w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#8b1515] transition-colors focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        {{-- Badge --}}
+                        <span x-show="belumDibaca > 0" x-text="belumDibaca > 9 ? '9+' : belumDibaca"
+                              class="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 bg-[#8b1515] text-white text-[10px] font-bold rounded-full flex items-center justify-center px-0.5 leading-none"></span>
                     </button>
-                </form>
+
+                    {{-- Notification Dropdown --}}
+                    <div x-show="notifOpen"
+                         x-transition:enter="transition ease-out duration-150"
+                         x-transition:enter-start="opacity-0 scale-95 translate-y-1"
+                         x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                         x-transition:leave="transition ease-in duration-100"
+                         x-transition:leave-start="opacity-100 scale-100"
+                         x-transition:leave-end="opacity-0 scale-95"
+                         style="display:none;"
+                         class="absolute right-0 top-12 w-80 bg-white border border-gray-100 rounded-2xl shadow-2xl z-[80] overflow-hidden">
+
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <div>
+                                <p class="text-sm font-black text-gray-800 uppercase tracking-widest">Kotak Pesan</p>
+                                <p x-show="belumDibaca > 0" x-text="belumDibaca + ' pesan belum dibaca'" class="text-[0.65rem] font-semibold text-[#8b1515]"></p>
+                            </div>
+                            <button @click="bacaSemua()" x-show="belumDibaca > 0"
+                                    class="text-[0.65rem] font-bold text-gray-400 hover:text-[#8b1515] uppercase tracking-wider transition-colors">
+                                Tandai semua dibaca
+                            </button>
+                        </div>
+
+                        {{-- Body --}}
+                        <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                            <template x-if="notifLoading">
+                                <div class="px-4 py-6 text-center text-sm text-gray-400">Memuat pesan...</div>
+                            </template>
+                            <template x-if="!notifLoading && notifList.length === 0">
+                                <div class="px-4 py-8 text-center">
+                                    <p class="text-sm font-medium text-gray-500">Belum ada pesan masuk.</p>
+                                    <p class="text-xs text-gray-400 mt-1">Notifikasi akan muncul di sini.</p>
+                                </div>
+                            </template>
+                            <template x-for="notif in notifList" :key="notif.id">
+                                <div :class="notif.dibaca ? 'bg-white' : 'bg-red-50/40'" class="px-4 py-3 hover:bg-gray-50 transition-colors cursor-default">
+                                    <div class="flex items-start justify-between gap-2">
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-xs font-black text-gray-800 leading-tight" :class="!notif.dibaca ? 'text-[#8b1515]' : ''" x-text="notif.judul"></p>
+                                            <p class="text-xs text-gray-600 mt-0.5 leading-relaxed" x-text="notif.pesan"></p>
+                                            <p class="text-[0.6rem] text-gray-400 mt-1 font-medium" x-text="formatTgl(notif.created_at)"></p>
+                                        </div>
+                                        <span x-show="!notif.dibaca" class="w-2 h-2 bg-[#8b1515] rounded-full flex-shrink-0 mt-1"></span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Logout Button --}}
+                <button type="button" @click="showLogoutModal = true" class="bg-[#8b1515] hover:bg-red-800 text-white font-medium text-sm px-6 py-2 rounded-md transition shadow-sm">
+                    Log Out
+                </button>
             </div>
         </header>
 
@@ -183,5 +279,30 @@
     </div>
 
 </div>
+    {{-- Logout Modal --}}
+    <div x-show="showLogoutModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showLogoutModal = false">
+        <div x-show="showLogoutModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden text-center p-6">
+             
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-[#8b1515]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </div>
+            
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Konfirmasi</h2>
+            <p class="text-sm text-gray-500 mb-6">Yakin untuk keluar?</p>
+
+            <div class="flex justify-center gap-3">
+                <button type="button" @click="showLogoutModal = false" class="px-5 py-2.5 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors w-full">Batal</button>
+                <form method="POST" action="{{ route('logout') }}" class="w-full m-0">
+                    @csrf
+                    <button type="submit" class="w-full px-5 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-xl shadow-md transition-colors">Keluar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

@@ -58,50 +58,48 @@
 
             {{-- 1. DATA DIRI --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Data Diri
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Nama Lengkap</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->nama ?? '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIK (KTP)</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nik ?? '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Telepon / WA</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_telepon ?? '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Nama Lengkap</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->nama ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIK (KTP)</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nik ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Telepon / WA</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_telepon ?: '-' }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Kelamin</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jenis_kelamin == 'L' ? 'Laki-laki' : ($pelamar->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tempat Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tempat_lahir ?? '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tempat Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tempat_lahir ?: '-' }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_lahir ? $pelamar->tanggal_lahir->format('d M Y') : '-' }}</p></div>
-                    <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Lengkap</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat ?? '-' }}</p></div>
+                    <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Lengkap</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat ?: '-' }}</p></div>
                 </div>
             </div>
 
             {{-- 2. RIWAYAT PENDIDIKAN --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l-9-5 9-5 9 5-9 5-9 5 9 5z"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Riwayat Pendidikan
                 </h3>
                 <div class="space-y-4">
                     @if($pelamar->jenjang)
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang }}</p></div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?? '-' }}</p></div>
+                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p></div>
                     </div>
                     @endif
                     @if($pelamar->jenjang_2)
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 }}</p></div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_2 ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_2 ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?? '-' }}</p></div>
+                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_2 ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_2 ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?: '-' }}</p></div>
                     </div>
                     @endif
                     @if($pelamar->jenjang_3)
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 }}</p></div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_3 ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_3 ?? '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?? '-' }}</p></div>
+                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_3 ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_3 ?: '-' }}</p></div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?: '-' }}</p></div>
                     </div>
                     @endif
                     @if(!$pelamar->jenjang)
@@ -112,8 +110,7 @@
 
             {{-- 3. DOKUMEN & SERTIFIKAT --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Dokumen & Sertifikat
                 </h3>
                 @php
@@ -133,48 +130,44 @@
                     $hasDocs = collect($docs)->contains(fn($d) => $d['file']);
                 @endphp
                 @if($hasDocs)
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                     @foreach($docs as $doc)
                         @if($doc['file'])
                         <a href="{{ asset('storage/' . $doc['file']) }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 rounded-lg transition-colors group">
-                            <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                             <span class="text-xs font-bold text-gray-600 group-hover:text-blue-700 truncate">{{ $doc['label'] }}</span>
                         </a>
                         @endif
                     @endforeach
                 </div>
                 @else
-                    <p class="text-sm text-gray-400 italic">-</p>
+                    <p class="text-sm text-gray-400 italic mb-4">-</p>
                 @endif
-
-                @if($pelamar->jenis_tes_bahasa)
-                <div class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 bg-gray-50 rounded-lg p-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->jenis_tes_bahasa }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa }}</p></div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kategori Sertifikat</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->kategori_sertifikat ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->jenis_tes_bahasa ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Skor Bahasa</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa ?: '-' }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_tes_bahasa ? $pelamar->tanggal_tes_bahasa->format('d M Y') : '-' }}</p></div>
                 </div>
-                @endif
             </div>
 
             {{-- 4. DATA AKADEMIK (DOSEN) --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5S19.832 5.477 21 6.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Data Akademik (Dosen)
                 </h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nidn ?? '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->homebase ?? '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nidn ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->homebase ?: '-' }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jabatan_akademik ? ucwords(str_replace('_', ' ', $pelamar->jabatan_akademik)) : '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->h_index ?? '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->h_index ?: '-' }}</p></div>
                 </div>
-                <div class="mt-3"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Minat Riset & Keahlian</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->minat_riset ?? '-' }}</p></div>
+                <div class="mt-3"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Minat Riset & Keahlian</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->minat_riset ?: '-' }}</p></div>
             </div>
 
             {{-- 5. DOKUMEN PELAMAR BER-HOMEBASE --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Dokumen Pelamar Ber-Homebase
                 </h3>
                 @php
@@ -195,7 +188,6 @@
                     @foreach($homebaseDocs as $doc)
                         @if($doc['file'])
                         <a href="{{ asset('storage/' . $doc['file']) }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 rounded-lg transition-colors group">
-                            <svg class="w-4 h-4 text-gray-400 group-hover:text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                             <span class="text-xs font-bold text-gray-600 group-hover:text-blue-700 truncate">{{ $doc['label'] }}</span>
                         </a>
                         @endif
@@ -208,52 +200,96 @@
 
             {{-- 6. HASIL PENILAIAN SELEKSI --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Hasil Penilaian Seleksi
                 </h3>
                 @php
-                    $jadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with('penilaian')->get();
-                    $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
-                    $micro = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+                    $allJadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with(['penilaian', 'lowongan'])->get();
+                    $hasAnyPenilaian = false;
                 @endphp
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @foreach([
-                        ['title' => 'Wawancara', 'jadwal' => $wawancara, 'k1' => 'Kepribadian & Integritas', 'k2' => 'Visi & Profesionalisme', 'k3' => 'Adaptasi & Kolaborasi'],
-                        ['title' => 'Micro Teaching', 'jadwal' => $micro, 'k1' => 'Penguasaan Materi', 'k2' => 'Keterampilan Pedagogik', 'k3' => 'Media Pembelajaran']
-                    ] as $test)
-                        <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
-                            <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2 flex items-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                {{ $test['title'] }}
-                            </h3>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center gap-4">
-                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k1'] }}</span>
-                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_1 ?? '-' }}</span>
-                                </div>
-                                <div class="flex justify-between items-center gap-4">
-                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k2'] }}</span>
-                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_2 ?? '-' }}</span>
-                                </div>
-                                <div class="flex justify-between items-center gap-4">
-                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k3'] }}</span>
-                                    <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']?->penilaian?->kategori_3 ?? '-' }}</span>
-                                </div>
-                                <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
-                                    <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
-                                    <span class="text-2xl font-black text-[#8b1515]">{{ $test['jadwal']?->penilaian?->total_nilai ?? '-' }}</span>
+
+                <div class="space-y-6">
+                    @foreach($pelamar->lamarans as $lamaran)
+                        @php
+                            $wawancara = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap1')->first();
+                            $micro = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap2')->first();
+                            
+                            $hasWawancaraScore = $wawancara && $wawancara->penilaian;
+                            $hasMicroScore = $micro && $micro->penilaian;
+                        @endphp
+
+                        @if($hasWawancaraScore || $hasMicroScore)
+                            @php $hasAnyPenilaian = true; @endphp
+                            <div>
+                                <h4 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">
+                                    Lamaran: <span class="text-[#8b1515]">{{ $lamaran->lowongan?->nama_posisi ?? '—' }}</span>
+                                </h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    @if($hasWawancaraScore)
+                                        <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
+                                            <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
+                                                Wawancara
+                                            </h3>
+                                            <div class="space-y-3">
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Kepribadian & Integritas</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_1 }}</span>
+                                                </div>
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Visi & Profesionalisme</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_2 }}</span>
+                                                </div>
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Adaptasi & Kolaborasi</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_3 }}</span>
+                                                </div>
+                                                <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
+                                                    <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
+                                                    <span class="text-2xl font-black text-[#8b1515]">{{ $wawancara->penilaian->total_nilai }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
+
+                                    @if($hasMicroScore)
+                                        <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
+                                            <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
+                                                Micro Teaching
+                                            </h3>
+                                            <div class="space-y-3">
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Penguasaan Materi</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_1 }}</span>
+                                                </div>
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Keterampilan Pedagogik</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_2 }}</span>
+                                                </div>
+                                                <div class="flex justify-between items-center gap-4">
+                                                    <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Media Pembelajaran</span>
+                                                    <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_3 }}</span>
+                                                </div>
+                                                <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
+                                                    <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
+                                                    <span class="text-2xl font-black text-[#8b1515]">{{ $micro->penilaian->total_nilai }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                        </div>
+                        @endif
                     @endforeach
+
+                    @if(!$hasAnyPenilaian)
+                        <p class="text-sm text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-gray-100">Belum ada hasil penilaian seleksi yang masuk untuk pelamar ini.</p>
+                    @endif
                 </div>
             </div>
 
             {{-- 7. UBAH STATUS LAMARAN --}}
             <div>
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest flex items-center gap-2 mb-4 pb-2 border-b border-gray-100">
-                    <svg class="w-4 h-4 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Ubah Status Lamaran
                 </h3>
                 
@@ -282,22 +318,6 @@
                         @csrf
                         @method('PUT')
 
-                        {{-- Jadwal Wawancara --}}
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <div>
-                                <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Wawancara</label>
-                                <input type="date" name="tanggal_wawancara"
-                                       value="{{ $lamaran->tanggal_wawancara?->format('Y-m-d') }}"
-                                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                            </div>
-                            <div>
-                                <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Link Zoom / Meeting</label>
-                                <input type="url" name="link_zoom" placeholder="https://zoom.us/j/..."
-                                       value="{{ $lamaran->link_zoom }}"
-                                       class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                            </div>
-                        </div>
-
                         {{-- Status Lamaran --}}
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Ubah Status</label>
@@ -325,7 +345,6 @@
 
                         <div class="flex justify-end pt-2">
                             <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#8b1515] hover:bg-red-900 text-white text-sm font-bold rounded-lg shadow-md shadow-red-900/20 transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 Simpan Perubahan
                             </button>
                         </div>

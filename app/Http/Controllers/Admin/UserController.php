@@ -16,10 +16,25 @@ class UserController extends Controller
     /**
      * Tampilkan daftar user.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::whereIn('role', ['admin', 'pelamar', 'penguji', 'kaprodi'])
-            ->orderBy('role')
+        $query = User::whereIn('role', ['admin', 'pelamar', 'penguji', 'kaprodi']);
+
+        // Filter Role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // Search Name/Email
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->orderBy('role')
             ->orderBy('name')
             ->get();
 

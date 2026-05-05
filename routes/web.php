@@ -19,9 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Admin
     Route::middleware('role:admin')->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
 
         // Prodi Management
         Route::resource('admin/prodi', \App\Http\Controllers\Admin\ProdiController::class)
@@ -103,6 +101,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:kaprodi')->get('/kaprodi/dashboard', function () {
         return view('kaprodi.dashboard');
     })->name('kaprodi.dashboard');
+
+    // Notifikasi (semua role)
+    Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
+    Route::post('/notifikasi/{notifikasi}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
+    Route::post('/notifikasi/baca-semua', [\App\Http\Controllers\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca.semua');
 });
 
 // Profile Management (Breeze default)
