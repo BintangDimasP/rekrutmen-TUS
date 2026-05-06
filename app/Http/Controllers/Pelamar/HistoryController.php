@@ -49,7 +49,7 @@ class HistoryController extends Controller
 
         $lamaran->load(['lowongan.prodi']);
 
-        $jadwals = JadwalSeleksi::with('penguji')
+        $jadwals = JadwalSeleksi::with(['penguji', 'penilaian'])
             ->where('pelamar_id', $pelamar->id)
             ->where('lowongan_id', $lamaran->lowongan_id)
             ->get();

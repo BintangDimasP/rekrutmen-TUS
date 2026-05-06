@@ -29,7 +29,14 @@ class PengujiController extends Controller
         $totalDinilai = $jadwals->whereNotNull('penilaian')->count();
         $totalBelumDinilai = $totalDiuji - $totalDinilai;
 
-        return view('penguji.dashboard', compact('totalDiuji', 'totalDinilai', 'totalBelumDinilai'));
+        $upcomingJadwals = JadwalSeleksi::where('penguji_id', $dosen->id)
+            ->whereBetween('tanggal', [now()->startOfDay(), now()->addDays(7)->endOfDay()])
+            ->with(['pelamar', 'lowongan.prodi', 'penilaian'])
+            ->orderBy('tanggal', 'asc')
+            ->orderBy('sesi', 'asc')
+            ->get();
+
+        return view('penguji.dashboard', compact('totalDiuji', 'totalDinilai', 'totalBelumDinilai', 'upcomingJadwals'));
     }
 
     public function index()

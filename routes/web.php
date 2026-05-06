@@ -99,9 +99,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Kaprodi
-    Route::middleware('role:kaprodi')->get('/kaprodi/dashboard', function () {
-        return view('kaprodi.dashboard');
-    })->name('kaprodi.dashboard');
+    Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'dashboard'])->name('dashboard');
+        Route::get('/pelamar', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'pelamar'])->name('pelamar.index');
+    });
 
     // Notifikasi (semua role)
     Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');

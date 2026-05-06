@@ -27,6 +27,9 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        
+        // Set flag agar popup profil muncul sekali setelah login
+        $request->session()->put('show_profile_reminder', true);
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
