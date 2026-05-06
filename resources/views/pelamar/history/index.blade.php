@@ -22,15 +22,46 @@
         </div>
     @endif
 
-    {{-- Header --}}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">Histori Lamaran</h1>
-            <p class="text-sm text-gray-500 mt-1">Pantau perkembangan status pendaftaran Anda di berbagai posisi secara berkala.</p>
-        </div>
-        <div class="flex items-center gap-2">
-            <span class="inline-flex px-3 py-1 rounded-full bg-gray-100 text-gray-500 text-xs font-bold uppercase tracking-widest">{{ $lamarans->count() }} Lamaran</span>
-        </div>
+    {{-- Filter Card --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <form method="GET" action="{{ route('pelamar.history.index') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+                {{-- Filter Prodi --}}
+                <div class="relative w-full sm:w-64">
+                                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                    </div>
+                    <select name="prodi_id" onchange="this.form.submit()" 
+                            class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
+                        <option value="">Filter</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi->id }}" {{ request('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Filter Status --}}
+                <div class="relative w-full sm:w-48">
+                    <select name="status" onchange="this.form.submit()" 
+                            class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
+                        <option value="">Status</option>
+                        <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
+                        <option value="seleksi_tahap1" {{ request('status') == 'seleksi_tahap1' ? 'selected' : '' }}>Seleksi Tahap 1</option>
+                        <option value="seleksi_tahap2" {{ request('status') == 'seleksi_tahap2' ? 'selected' : '' }}>Seleksi Tahap 2</option>
+                        <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
+                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </div>
+            </div>
+
+            @if(request()->filled('prodi_id') || request()->filled('status'))
+                <div>
+                    <a href="{{ route('pelamar.history.index') }}" class="text-xs text-red-600 hover:underline">Reset Filter</a>
+                </div>
+            @endif
+        </form>
     </div>
 
     {{-- Table History --}}
@@ -38,32 +69,28 @@
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-gray-50/50 border-b border-gray-100">
-                        <th class="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-widest">Posisi & Prodi</th>
-                        <th class="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-widest">Tanggal Melamar</th>
-                        <th class="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-widest text-center">Status</th>
-                        <th class="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-widest text-right">Aksi</th>
+                    <tr class="bg-[#8b1515] text-white">
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Posisi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Prodi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Tanggal Melamar</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($lamarans as $lamaran)
-                    <tr class="hover:bg-gray-50/30 transition-colors group">
-                        <td class="py-5 px-6">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#8b1515]/5 group-hover:text-[#8b1515] flex items-center justify-center transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</h4>
-                                    <p class="text-xs text-gray-400">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</p>
-                                </div>
-                            </div>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3 px-5">
+                            <div class="text-sm font-semibold text-gray-600 text-center">{{ $lamaran->lowongan->nama_posisi }}</div>
                         </td>
-                        <td class="py-5 px-6">
-                            <span class="text-[0.8rem] text-gray-600 font-medium">{{ $lamaran->created_at->format('d M Y') }}</span>
-                            <div class="text-[0.65rem] text-gray-400">{{ $lamaran->created_at->diffForHumans() }}</div>
+                        <td class="py-3 px-5">
+                            <div class="text-sm text-gray-600 text-center">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
-                        <td class="py-5 px-6 text-center">
+                        <td class="py-3 px-5">
+                            <div class="text-sm text-gray-600 text-center">{{ $lamaran->created_at->format('d M Y') }}</div>
+                            
+                        </td>
+                        <td class="py-3 px-5 text-center">
                             @php
                                 $statusColors = [
                                     'menunggu'       => 'bg-gray-100 text-gray-500 border-gray-200',
@@ -78,13 +105,17 @@
                                 {{ $lamaran->status_label }}
                             </span>
                         </td>
-                        <td class="py-5 px-6 text-right">
-                            <a href="{{ route('pelamar.history.show', $lamaran->id) }}" class="inline-flex items-center justify-center px-4 py-1.5 border border-gray-100 text-gray-400 font-bold text-[0.7rem] rounded-lg group-hover:border-[#8b1515] group-hover:text-[#8b1515] transition-all">Lihat Detail</a>
+                        <td class="py-3 px-5">
+                            <div class="flex items-center justify-center gap-2">
+                                <a href="{{ route('pelamar.history.show', $lamaran->id) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail Lamaran">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="py-20 text-center space-y-4">
+                        <td colspan="5" class="py-20 text-center space-y-4">
                             <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto text-gray-200">
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             </div>

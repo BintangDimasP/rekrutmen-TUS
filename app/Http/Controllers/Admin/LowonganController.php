@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Lowongan;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LowonganController extends Controller
 {
@@ -141,5 +142,45 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
 
         return redirect()->route('admin.lowongan.index')
                          ->with('success', 'Lowongan "' . $nama . '" berhasil dihapus.');
+    }
+
+    /** Cetak Berita Acara Hasil Seleksi sebagai PDF */
+    public function beritaAcara(Lowongan $lowongan)
+    {
+        $lowongan->load(['prodi', 'lamarans.pelamar']);
+
+        // Ambil hanya pelamar yang diterima atau ditolak
+        $kandidats = $lowongan->lamarans
+            ->whereIn('status', ['diterima', 'ditolak'])
+            ->values();
+
+        $now = now();
+
+        // Format tanggal dalam Bahasa Indonesia
+        $hariList = [
+            'Sunday'    => 'Minggu',
+            'Monday'    => 'Senin',
+            'Tuesday'   => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday'  => 'Kamis',
+            'Friday'    => 'Jumat',
+            'Saturday'  => 'Sabtu',
+        ];
+        $bulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+
+        $hari           = $hariList[$now->format('l')];
+        $tanggalFormatted = $now->day . ' ' . $bulanList[(int)$now->format('n')] . ' ' . $now->year;
+
+        $pdf = Pdf::loadView('admin.lowongan.berita_acara', compact(
+            'lowongan', 'kandidats', 'hari', 'tanggalFormatted'
+        ))->setPaper('A4', 'portrait');
+
+        $filename = 'Berita-Acara-' . str()->slug($lowongan->nama_posisi) . '-' . $now->format('Ymd') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

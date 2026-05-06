@@ -44,7 +44,7 @@
             </div>
         </div>
         
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
             @if($lowongan->status === 'aktif')
                 <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-green-50 text-green-700 border border-green-200">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>AKTIF
@@ -58,6 +58,12 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>DITUTUP
                 </span>
             @endif
+
+            <a href="{{ route('admin.lowongan.beritaAcara', $lowongan) }}" target="_blank"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-[#8b1515] hover:bg-red-900 text-white shadow-sm shadow-red-900/20 transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                Cetak Berita Acara
+            </a>
         </div>
     </div>
 

@@ -33,29 +33,29 @@ class ProfilController extends Controller
             'institusi'         => 'nullable|string|max:255',
             'prodi_pendidikan'  => 'nullable|string|max:255',
             'ipk'               => 'nullable|numeric|min:0|max:4',
-            'file_ijazah'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'file_transkrip'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file_ijazah'       => 'nullable|file|mimes:pdf|max:5120',
+            'file_transkrip'    => 'nullable|file|mimes:pdf|max:5120',
 
             // Pendidikan Level 2
             'jenjang_2'           => 'nullable|in:S1,S2,S3',
             'institusi_2'         => 'nullable|string|max:255',
             'prodi_pendidikan_2'  => 'nullable|string|max:255',
             'ipk_2'               => 'nullable|numeric|min:0|max:4',
-            'file_ijazah_2'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'file_transkrip_2'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file_ijazah_2'       => 'nullable|file|mimes:pdf|max:5120',
+            'file_transkrip_2'    => 'nullable|file|mimes:pdf|max:5120',
 
             // Pendidikan Level 3
             'jenjang_3'           => 'nullable|in:S1,S2,S3',
             'institusi_3'         => 'nullable|string|max:255',
             'prodi_pendidikan_3'  => 'nullable|string|max:255',
             'ipk_3'               => 'nullable|numeric|min:0|max:4',
-            'file_ijazah_3'       => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'file_transkrip_3'    => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file_ijazah_3'       => 'nullable|file|mimes:pdf|max:5120',
+            'file_transkrip_3'    => 'nullable|file|mimes:pdf|max:5120',
 
             // Dokumen Pendukung
             'file_cv'                => 'nullable|file|mimes:pdf|max:5120',
-            'file_pas_foto'          => 'nullable|file|mimes:jpg,jpeg,png|max:2048',
-            'file_ktp'               => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'file_pas_foto'          => 'nullable|file|mimes:jpg,jpeg|max:2048',
+            'file_ktp'               => 'nullable|file|mimes:jpg,jpeg|max:2048',
             'kategori_sertifikat'    => 'nullable|in:kompetensi,keahlian_khusus',
             'file_sertifikat'        => 'nullable|file|mimes:pdf|max:5120',
             'jenis_tes_bahasa'       => 'nullable|in:PBT,TOEFL_ITP,EPrT,CBT,IBT,IELTS,AcEPT',
@@ -69,12 +69,12 @@ class ProfilController extends Controller
             'jabatan_akademik'  => 'nullable|in:asisten_ahli,lektor,lektor_kepala,profesor',
             'minat_riset'       => 'nullable|string',
             'h_index'           => 'nullable|integer|min:0',
-            'file_kartu_dosen'  => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'file_kartu_dosen'  => 'nullable|file|mimes:pdf|max:5120',
 
             // Dokumen Homebase Tambahan
             'file_jad'                      => 'nullable|file|mimes:pdf|max:5120',
             'file_pak'                      => 'nullable|file|mimes:pdf|max:5120',
-            'file_registrasi_dosen'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'file_registrasi_dosen'         => 'nullable|file|mimes:pdf|max:2048',
             'file_inpassing'                => 'nullable|file|mimes:pdf|max:5120',
             'file_serdik'                   => 'nullable|file|mimes:pdf|max:5120',
             'file_skpp_serdos'              => 'nullable|file|mimes:pdf|max:5120',

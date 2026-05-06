@@ -12,16 +12,28 @@ class HistoryController extends Controller
     /**
      * Menampilkan riwayat pendaftaran pelamar.
      */
-    public function index()
+    public function index(Request $request)
     {
         $pelamar = auth()->user()->pelamar;
         
-        $lamarans = Lamaran::with(['lowongan.prodi'])
+        $query = Lamaran::with(['lowongan.prodi'])
             ->where('pelamar_id', $pelamar->id)
-            ->latest()
-            ->get();
+            ->latest();
 
-        return view('pelamar.history.index', compact('lamarans'));
+        if ($request->filled('prodi_id')) {
+            $query->whereHas('lowongan', function($q) use ($request) {
+                $q->where('prodi_id', $request->prodi_id);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $lamarans = $query->get();
+        $prodis = \App\Models\Prodi::orderBy('nama')->get();
+
+        return view('pelamar.history.index', compact('lamarans', 'prodis'));
     }
 
     /**

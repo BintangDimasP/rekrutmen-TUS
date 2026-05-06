@@ -41,10 +41,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'store'])->name('admin.penguji.store');
         Route::delete('admin/penguji/{penguji}', [\App\Http\Controllers\Admin\PengujiController::class, 'destroy'])->name('admin.penguji.destroy');
 
-        // Lowongan Management
         Route::resource('admin/lowongan', \App\Http\Controllers\Admin\LowonganController::class)
             ->names('admin.lowongan')
             ->parameters(['lowongan' => 'lowongan']);
+        Route::get('admin/lowongan/{lowongan}/berita-acara', [\App\Http\Controllers\Admin\LowonganController::class, 'beritaAcara'])->name('admin.lowongan.beritaAcara');
 
         // Lamaran Management (View/Update/Hapus)
         Route::get('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'show'])->name('admin.lamaran.show');
@@ -83,6 +83,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pelamar/lowongan/{lowongan}', [\App\Http\Controllers\Pelamar\LowonganController::class, 'show'])->name('pelamar.lowongan.show');
         Route::get('/pelamar/lowongan/{lowongan}/apply', [\App\Http\Controllers\Pelamar\LowonganController::class, 'apply'])->name('pelamar.lowongan.apply');
         Route::post('/pelamar/lowongan/{lowongan}/apply', [\App\Http\Controllers\Pelamar\LowonganController::class, 'storeApply'])->name('pelamar.lowongan.storeApply');
+        Route::post('/pelamar/lowongan/{lowongan}/save', [\App\Http\Controllers\Pelamar\LowonganController::class, 'toggleSave'])->name('pelamar.lowongan.save');
 
         Route::get('/pelamar/history', [\App\Http\Controllers\Pelamar\HistoryController::class, 'index'])->name('pelamar.history.index');
         Route::get('/pelamar/history/{lamaran}', [\App\Http\Controllers\Pelamar\HistoryController::class, 'show'])->name('pelamar.history.show');

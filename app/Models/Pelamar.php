@@ -100,4 +100,13 @@ class Pelamar extends Model
     {
         return $this->hasMany(Lamaran::class);
     }
+
+    /**
+     * Lowongan yang disimpan/di-bookmark oleh pelamar.
+     */
+    public function savedLowongans()
+    {
+        return $this->belongsToMany(Lowongan::class, 'saved_lowongans')
+                    ->withTimestamps();
+    }
 }

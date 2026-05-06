@@ -294,6 +294,18 @@
                 </h3>
                 
                 @forelse($pelamar->lamarans as $lamaran)
+                @php
+                    $isFinished = in_array($lamaran->status, ['diterima', 'ditolak']);
+                    $wawancara = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap1')->first();
+                    $micro = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap2')->first();
+                    
+                    $hasJadwal = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->isNotEmpty();
+                    $hasBothScores = ($wawancara && $wawancara->penilaian) && ($micro && $micro->penilaian);
+                    
+                    $statusOrder = ['menunggu' => 1, 'seleksi_tahap1' => 2, 'seleksi_tahap2' => 3, 'diterima' => 4, 'ditolak' => 4];
+                    $currentOrder = $statusOrder[$lamaran->status] ?? 1;
+                @endphp
+                
                 <div class="bg-gray-50 rounded-xl p-5 mb-4 border border-gray-100">
                     <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gray-200 pb-3">
                         <div>
@@ -314,6 +326,17 @@
                         </span>
                     </div>
 
+                    @if($isFinished)
+                        <div class="flex items-center gap-4 p-4 bg-green-50/50 border border-green-100 rounded-xl">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <h5 class="text-sm font-bold text-green-800">Alur Seleksi Selesai</h5>
+                                <p class="text-xs text-green-600/80 mt-0.5">Status akhir pelamar ini telah ditetapkan ({{ $lamaran->status_label }}). Form ubah status telah dinonaktifkan.</p>
+                            </div>
+                        </div>
+                    @else
                     <form method="POST" action="{{ route('admin.lamaran.update', $lamaran) }}" class="space-y-5">
                         @csrf
                         @method('PUT')
@@ -323,17 +346,49 @@
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Ubah Status</label>
                             <div class="flex flex-wrap gap-2">
                                 @foreach(['menunggu' => 'Menunggu', 'seleksi_tahap1' => 'Seleksi Tahap 1', 'seleksi_tahap2' => 'Seleksi Tahap 2', 'diterima' => 'Diterima', 'ditolak' => 'Ditolak'] as $val => $label)
-                                <label class="relative">
+                                @php
+                                    $isDisabled = false;
+                                    $targetOrder = $statusOrder[$val];
+                                    
+                                    // Tidak bisa kembali ke status sebelumnya
+                                    if ($targetOrder < $currentOrder) {
+                                        $isDisabled = true;
+                                    }
+                                    
+                                    // Seleksi Tahap 2 butuh jadwal minimal 1
+                                    if ($val === 'seleksi_tahap2' && !$hasJadwal && $currentOrder < 3) {
+                                        $isDisabled = true;
+                                    }
+                                    
+                                    // Diterima/Ditolak butuh kedua nilai
+                                    if (($val === 'diterima' || $val === 'ditolak') && !$hasBothScores) {
+                                        $isDisabled = true;
+                                    }
+                                @endphp
+                                <label class="relative {{ $isDisabled ? 'opacity-50 cursor-not-allowed' : '' }}" {{ $isDisabled ? 'title="Syarat belum terpenuhi atau tidak bisa kembali ke status sebelumnya"' : '' }}>
                                     <input type="radio" name="status" value="{{ $val }}" class="sr-only peer"
-                                           {{ $lamaran->status === $val ? 'checked' : '' }}>
+                                           {{ $lamaran->status === $val ? 'checked' : '' }} {{ $isDisabled ? 'disabled' : '' }}>
                                     <span class="cursor-pointer inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold border-2 transition-all
                                         peer-checked:border-[#8b1515] peer-checked:bg-[#8b1515] peer-checked:text-white
-                                        border-gray-200 text-gray-600 hover:border-gray-300 bg-white select-none shadow-sm">
+                                        border-gray-200 text-gray-600 peer-not-disabled:hover:border-gray-300 bg-white select-none shadow-sm">
                                         {{ $label }}
                                     </span>
                                 </label>
                                 @endforeach
                             </div>
+                            
+                            @if(!$hasJadwal && $currentOrder < 3)
+                                <p class="text-[0.65rem] font-bold text-amber-600 mt-2 flex items-center gap-1.5 uppercase tracking-wide">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    Tahap 2 butuh penjadwalan
+                                </p>
+                            @endif
+                            @if(!$hasBothScores && $currentOrder < 4)
+                                <p class="text-[0.65rem] font-bold text-amber-600 mt-1 flex items-center gap-1.5 uppercase tracking-wide">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                    Keputusan akhir butuh ke-2 nilai seleksi
+                                </p>
+                            @endif
                         </div>
 
                         {{-- Catatan Admin --}}
@@ -349,6 +404,7 @@
                             </button>
                         </div>
                     </form>
+                    @endif
                 </div>
                 @empty
                     <p class="text-sm text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-gray-100">Pelamar ini belum mengajukan lamaran ke lowongan manapun.</p>
