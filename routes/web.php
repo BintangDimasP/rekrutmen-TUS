@@ -28,6 +28,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Dosen Management
         Route::post('admin/prodi/{prodi}/dosen', [\App\Http\Controllers\Admin\DosenController::class, 'store'])->name('admin.dosen.store');
+        Route::post('admin/prodi/{prodi}/dosen/import', [\App\Http\Controllers\Admin\DosenController::class, 'import'])->name('admin.dosen.import');
         Route::put('admin/dosen/{dosen}', [\App\Http\Controllers\Admin\DosenController::class, 'update'])->name('admin.dosen.update');
         Route::delete('admin/dosen/{dosen}', [\App\Http\Controllers\Admin\DosenController::class, 'destroy'])->name('admin.dosen.destroy');
 

@@ -27,9 +27,9 @@
 <div class="space-y-6">
     <!-- Breadcrumb -->
     <div class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="{{ route('admin.pelamar.index') }}" class="hover:text-[#8b1515] transition-colors">Pelamar</a>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="font-medium text-gray-800">Detail Pelamar</span>
+        <a href="{{ route('admin.pelamar.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Pelamar</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">{{ $pelamar->nama }}</span>
     </div>
 
     <!-- Single Card -->

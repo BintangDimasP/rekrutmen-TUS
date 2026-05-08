@@ -6,6 +6,13 @@
 
 <div class="max-w-5xl mx-auto space-y-6">
 
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="{{ route('admin.lowongan.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Lowongan</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">Tambah Lowongan Baru</span>
+    </div>
+
     <!-- Single Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         
@@ -13,13 +20,8 @@
         <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="flex items-center gap-4">
-                        <a href="{{ route('admin.lowongan.index') }}" class="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-colors text-white ring-2 ring-white/30">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                        </a>
-                        <h1 class="text-xl font-bold text-white">Tambah Lowongan Baru</h1>
-                    </div>
-                    <p class="text-red-200 text-sm mt-1.5 ml-14">Isi seluruh informasi posisi yang akan dibuka untuk pelamar.</p>
+                    <h1 class="text-xl font-bold text-white">Tambah Lowongan Baru</h1>
+                    <p class="text-red-200 text-sm mt-1.5">Isi seluruh informasi posisi yang akan dibuka untuk pelamar.</p>
                 </div>
             </div>
         </div>

@@ -60,7 +60,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($lowongans as $lowongan)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr x-data="{ showDeleteModal: false }" class="hover:bg-gray-50 transition-colors">
                             <td class="py-3 px-5">
                                 <div class="text-sm font-semibold text-gray-800">{{ $lowongan->nama_posisi }}</div>
                                 <div class="text-xs text-gray-400 mt-0.5">{{ $lowongan->prodi->nama ?? '-' }}</div>
@@ -114,14 +114,49 @@
                                     <a href="{{ route('admin.lowongan.edit', $lowongan) }}" class="text-gray-400 hover:text-amber-600 transition-colors p-1.5 rounded" title="Edit Lowongan">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
-                                    <form method="POST" action="{{ route('admin.lowongan.destroy', $lowongan) }}"
-                                          onsubmit="return confirm('Hapus lowongan {{ addslashes($lowongan->nama_posisi) }}?')" class="inline m-0">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded" title="Hapus">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                        </button>
-                                    </form>
+                                    <button type="button" @click="showDeleteModal = true" class="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded" title="Hapus">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+
+                                    {{-- ── Delete Modal ── --}}
+                                    <div x-show="showDeleteModal" x-transition.opacity
+                                         class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                                         @click.self="showDeleteModal = false" style="display: none;">
+                                        <div x-show="showDeleteModal"
+                                             x-transition:enter="transition ease-out duration-200"
+                                             x-transition:enter-start="opacity-0 scale-95"
+                                             x-transition:enter-end="opacity-100 scale-100"
+                                             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative whitespace-normal">
+                                            
+                                            {{-- Close Button --}}
+                                            <button type="button" @click="showDeleteModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                                </svg>
+                                            </button>
+
+                                            {{-- Warning Icon --}}
+                                            <div class="mx-auto mb-5 flex justify-center">
+                                                <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                                                    <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                                                    <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                                                    <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                                                </svg>
+                                            </div>
+                                            
+                                            <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus lowongan?</h2>
+                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Data yang dihapus tidak dapat dikembalikan!</p>
+
+                                            <div class="flex justify-center gap-3">
+                                                <form method="POST" action="{{ route('admin.lowongan.destroy', $lowongan) }}" class="flex-1 m-0">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                                                </form>
+                                                <button type="button" @click="showDeleteModal = false" class="flex-1 w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>

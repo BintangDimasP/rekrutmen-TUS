@@ -26,16 +26,11 @@
 
 <div class="max-w-3xl mx-auto space-y-6">
 
-    {{-- Header --}}
-    <div class="flex items-center gap-4">
-        <a href="{{ route('admin.penguji.index') }}"
-           class="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-gray-200 text-gray-500 hover:text-[#8b1515] hover:border-[#8b1515] transition-all shadow-sm flex-shrink-0">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-        </a>
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">Detail Penguji</h1>
-            <p class="text-sm text-gray-500 mt-0.5">Informasi lengkap dosen yang ditugaskan sebagai penguji.</p>
-        </div>
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="{{ route('admin.penguji.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Penguji</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">{{ $penguji->nama }}</span>
     </div>
 
     {{-- Card Profil Penguji --}}

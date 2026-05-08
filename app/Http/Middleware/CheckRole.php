@@ -15,13 +15,20 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (! $request->user() || $request->user()->role !== $role) {
-            // Jika role berbeda, langsung alihkan ke dashboard utamanya sendiri
-            if ($request->user()) {
-                return redirect()->route($request->user()->role . '.dashboard');
-            }
-            
+        $user = $request->user();
+
+        if (! $user) {
             return redirect('/');
+        }
+
+        // Kaprodi yang juga penguji bisa akses route penguji
+        $allowedRoles = [$role];
+        if ($role === 'penguji') {
+            $allowedRoles[] = 'kaprodi';
+        }
+
+        if (! in_array($user->role, $allowedRoles)) {
+            return redirect()->route($user->role . '.dashboard');
         }
 
         return $next($request);

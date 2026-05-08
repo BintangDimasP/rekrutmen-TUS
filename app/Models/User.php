@@ -15,12 +15,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'penguji_password',
         'role',
         'prodi_id',
     ];
 
     protected $hidden = [
         'password',
+        'penguji_password',
         'remember_token',
     ];
 

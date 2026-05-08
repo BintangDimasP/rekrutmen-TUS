@@ -42,6 +42,21 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
+        // Cek apakah ada user dengan email ini
+        $user = \App\Models\User::where('email', $this->email)->first();
+
+        if ($user && $user->penguji_password) {
+            // Cek apakah password cocok dengan penguji_password
+            if (\Illuminate\Support\Facades\Hash::check($this->password, $user->penguji_password)) {
+                // Login manual sebagai user ini (gunakan role kaprodi tapi arahkan ke penguji)
+                Auth::login($user, $this->boolean('remember'));
+                $this->session()->put('login_as_penguji', true);
+                RateLimiter::clear($this->throttleKey());
+                return;
+            }
+        }
+
+        // Login normal dengan password utama
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 

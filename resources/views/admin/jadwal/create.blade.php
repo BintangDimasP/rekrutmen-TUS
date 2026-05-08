@@ -5,19 +5,11 @@
 @section('content')
     <div class="max-w-7xl mx-auto" x-data="jadwalForm">
 
-        {{-- Header --}}
-        <div class="flex items-center gap-4 mb-6">
-            <a href="{{ route('admin.jadwal.index') }}"
-                class="w-9 h-9 flex items-center justify-center rounded-lg bg-white border border-gray-200 text-gray-500 hover:text-red-800 hover:border-red-800 transition-all flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-xl font-semibold text-gray-800">Penjadwalan Seleksi</h1>
-                <p class="text-xs text-gray-500 mt-0.5">Jadwalkan wawancara & micro teaching — sistem mendeteksi bentrok
-                    otomatis.</p>
-            </div>
+        {{-- Breadcrumb --}}
+        <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+            <a href="{{ route('admin.jadwal.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Jadwal Seleksi</a>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="font-semibold text-gray-800">Penjadwalan Baru</span>
         </div>
 
         {{-- Error Laravel --}}

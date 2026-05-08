@@ -32,7 +32,7 @@
 
         {{-- Existing Prodi Cards --}}
         @foreach($prodis as $prodi)
-            <div x-data="{ openEditModal: false }" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-200 overflow-hidden relative">
+            <div x-data="{ openEditModal: false, showDeleteModal: false }" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-200 overflow-hidden relative">
                 
                 {{-- Card Body --}}
                 <div class="p-6 flex flex-col items-center flex-1">
@@ -74,18 +74,12 @@
                     </button>
 
                     {{-- Hapus --}}
-                    <form method="POST" action="{{ route('admin.prodi.destroy', $prodi) }}"
-                          onsubmit="return confirm('Yakin ingin menghapus prodi {{ addslashes($prodi->nama) }}?')"
-                          class="block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" title="Hapus Prodi" 
-                                class="w-10 h-10 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm border border-red-100 hover:shadow-md hover:shadow-red-600/20">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
-                            </svg>
-                        </button>
-                    </form>
+                    <button type="button" @click="showDeleteModal = true" title="Hapus Prodi" 
+                            class="w-10 h-10 rounded-full bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all duration-200 shadow-sm border border-red-100 hover:shadow-md hover:shadow-red-600/20">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                        </svg>
+                    </button>
                 </div>
 
                 {{-- ── Edit Modal ── --}}
@@ -173,6 +167,46 @@
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+
+                {{-- ── Delete Modal ── --}}
+                <div x-show="showDeleteModal" x-transition.opacity
+                     class="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                     @click.self="showDeleteModal = false" style="display: none;">
+                    <div x-show="showDeleteModal"
+                         x-transition:enter="transition ease-out duration-200"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                        
+                        {{-- Close Button --}}
+                        <button type="button" @click="showDeleteModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+
+                        {{-- Warning Icon --}}
+                        <div class="mx-auto mb-5 flex justify-center">
+                            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                                <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                                <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                            </svg>
+                        </div>
+                        
+                        <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus prodi ini?</h2>
+                        <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Data yang dihapus tidak dapat<br>dikembalikan!</p>
+
+                        <div class="flex justify-center gap-3">
+                            <form method="POST" action="{{ route('admin.prodi.destroy', $prodi) }}" class="flex-1 m-0">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                            </form>
+                            <button type="button" @click="showDeleteModal = false" class="flex-1 w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                        </div>
                     </div>
                 </div>
 

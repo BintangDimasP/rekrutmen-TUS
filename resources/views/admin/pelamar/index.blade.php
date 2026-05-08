@@ -86,7 +86,7 @@
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="py-4 px-5">
                             <div class="text-sm font-semibold text-gray-800">{{ $pelamar->nama }}</div>
-                            <div class="text-xs text-gray-400 font-mono mt-0.5">{{ $pelamar->user?->email }}</div>
+                            
                         </td>
                         <td class="py-3 px-5">
                             <div class="text-sm text-gray-700 font-medium">{{ $pelamar->jenjang ?? '-' }}</div>

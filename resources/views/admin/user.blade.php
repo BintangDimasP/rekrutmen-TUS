@@ -86,7 +86,7 @@
                         @forelse($users as $user)
                         <tr x-data="{ openEditModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" class="hover:bg-gray-50 transition-colors">
                             <td class="py-3 px-5 text-sm text-gray-800 font-medium">{{ $user->name }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-mono">{{ $user->email }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium">{{ $user->email }}</td>
                             <td class="py-3 px-5 text-sm">
                                 @if($user->role === 'admin')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>

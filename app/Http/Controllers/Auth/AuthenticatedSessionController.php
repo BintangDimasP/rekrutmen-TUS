@@ -31,6 +31,11 @@ class AuthenticatedSessionController extends Controller
         // Set flag agar popup profil muncul sekali setelah login
         $request->session()->put('show_profile_reminder', true);
 
+        // Jika login menggunakan penguji_password (kaprodi yang juga penguji)
+        if ($request->session()->pull('login_as_penguji', false)) {
+            return redirect()->route('penguji.dashboard');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

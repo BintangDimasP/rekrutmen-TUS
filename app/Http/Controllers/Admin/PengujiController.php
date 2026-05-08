@@ -22,7 +22,10 @@ class PengujiController extends Controller
         // Calon penguji adalah dosen yang belum menjadi penguji (untuk form Tunjuk)
         $calonPengujis = Dosen::with('prodi')->where('is_penguji', false)->get();
 
-        return view('admin.penguji.index', compact('pengujis', 'calonPengujis'));
+        // Daftar prodi unik dari calon penguji untuk filter dropdown
+        $prodis = $calonPengujis->pluck('prodi')->filter()->unique('id')->sortBy('nama')->values();
+
+        return view('admin.penguji.index', compact('pengujis', 'calonPengujis', 'prodis'));
     }
 
     /**
@@ -51,27 +54,27 @@ class PengujiController extends Controller
                 // Update status dosen
                 $dosen->update(['is_penguji' => true]);
 
-                // Auto-provisioning User Account untuk Login Penguji
-                // Cek apakah sudah punya akun (mungkin dari status Kaprodi atau lainnya)
+                // Cek apakah sudah punya akun
                 $user = User::where('email', $dosen->email)->first();
 
                 if (!$user) {
+                    // Belum punya akun: buat akun penguji baru
                     User::create([
-                        'name' => $dosen->nama,
-                        'email' => $dosen->email,
+                        'name'     => $dosen->nama,
+                        'email'    => $dosen->email,
                         'password' => Hash::make('penguji123'),
-                        'role' => 'penguji',
+                        'role'     => 'penguji',
                         'prodi_id' => $dosen->prodi_id
                     ]);
-                } else {
-                    // Jika user sudah ada (misal dia kaprodi), maka ia tetap memakai akun lamanya.
-                    // Namun kita tetap harus pastikan bahwa role utamanya setidaknya bisa login.
-                    // Karena enum role ('admin', 'pelamar', 'penguji', 'kaprodi'), jika dia kaprodi, 
-                    // role tetap kaprodi, tapi dia bisa diakses karena logic kaprodi mencakup penguji nantinya
-                    // atau ubah role menjadi penguji jika dia sebelumnya bukan apa-apa (misal akun mati)
-                    if (!in_array($user->role, ['admin', 'kaprodi', 'penguji'])) {
-                        $user->update(['role' => 'penguji']);
-                    }
+                } elseif ($user->role === 'kaprodi') {
+                    // Kaprodi yang ditunjuk penguji: simpan penguji_password terpisah
+                    // Role TIDAK diubah agar tetap bisa akses kaprodi dashboard
+                    $user->update([
+                        'penguji_password' => Hash::make('penguji123'),
+                    ]);
+                } elseif (!in_array($user->role, ['admin', 'penguji'])) {
+                    // Role lain (pelamar, dll): upgrade ke penguji
+                    $user->update(['role' => 'penguji']);
                 }
             }
         });
@@ -87,10 +90,15 @@ class PengujiController extends Controller
         DB::transaction(function () use ($penguji) {
             $penguji->update(['is_penguji' => false]);
 
-            // Jika dosen ini bukan kaprodi, maka "disable" akun pengujinya dengan menghapus akunnya atau mengubah rolenya
-            // Di sistem ini kita hapus saja akun usernya untuk keamanan, kecuali dia kaprodi
-            if (!$penguji->is_kaprodi) {
-                User::where('email', $penguji->email)->where('role', 'penguji')->delete();
+            $user = User::where('email', $penguji->email)->first();
+            if ($user) {
+                if ($user->role === 'kaprodi') {
+                    // Kaprodi: hapus saja penguji_password-nya
+                    $user->update(['penguji_password' => null]);
+                } elseif ($user->role === 'penguji') {
+                    // Penguji murni: hapus akun loginnya
+                    $user->delete();
+                }
             }
         });
 
