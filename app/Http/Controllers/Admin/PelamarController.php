@@ -24,18 +24,18 @@ class PelamarController extends Controller
             });
         }
 
-        // Filter Lowongan
-        if ($request->filled('lowongan_id')) {
-            $lowonganId = $request->lowongan_id;
-            $query->whereHas('lamarans', function($q) use ($lowonganId) {
-                $q->where('lowongan_id', $lowonganId);
+        // Filter Prodi (Berdasarkan prodi dari lowongan yang dilamar)
+        if ($request->filled('prodi_id')) {
+            $prodiId = $request->prodi_id;
+            $query->whereHas('lamarans.lowongan', function($q) use ($prodiId) {
+                $q->where('prodi_id', $prodiId);
             });
         }
 
         $pelamars = $query->latest()->get();
-        $lowongans = \App\Models\Lowongan::orderBy('nama_posisi')->get();
+        $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
-        return view('admin.pelamar.index', compact('pelamars', 'lowongans'));
+        return view('admin.pelamar.index', compact('pelamars', 'prodis'));
     }
 
     /**

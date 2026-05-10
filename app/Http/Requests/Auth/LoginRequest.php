@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Auth\Events\Lockout;
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,7 +22,7 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
     public function rules(): array
     {
@@ -36,27 +35,12 @@ class LoginRequest extends FormRequest
     /**
      * Attempt to authenticate the request's credentials.
      *
-     * @throws ValidationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function authenticate(): void
     {
         $this->ensureIsNotRateLimited();
 
-        // Cek apakah ada user dengan email ini
-        $user = \App\Models\User::where('email', $this->email)->first();
-
-        if ($user && $user->penguji_password) {
-            // Cek apakah password cocok dengan penguji_password
-            if (\Illuminate\Support\Facades\Hash::check($this->password, $user->penguji_password)) {
-                // Login manual sebagai user ini (gunakan role kaprodi tapi arahkan ke penguji)
-                Auth::login($user, $this->boolean('remember'));
-                $this->session()->put('login_as_penguji', true);
-                RateLimiter::clear($this->throttleKey());
-                return;
-            }
-        }
-
-        // Login normal dengan password utama
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
@@ -71,7 +55,7 @@ class LoginRequest extends FormRequest
     /**
      * Ensure the login request is not rate limited.
      *
-     * @throws ValidationException
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
@@ -96,6 +80,6 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
     }
 }

@@ -71,7 +71,7 @@
             {{-- Email --}}
             <div class="sm:col-span-2">
                 <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                <p class="text-sm font-semibold text-gray-800">{{ $penguji->email }}</p>
+                <p class="text-sm font-semibold text-gray-800 font-mono">{{ $pengujiEmail ?? '—' }}</p>
             </div>
 
             {{-- Prodi --}}

@@ -18,29 +18,14 @@ class DosenImport implements ToModel, WithHeadingRow, WithValidation
 
     public function model(array $row)
     {
-        $nama = $row['nama'];
-        $kode = strtoupper($row['kode']);
-
-        // Generate email: ambil 2 kata pertama, gabungkan, tambah @telu.ac.id
-        $parts = preg_split('/\s+/', trim($nama));
-        $emailPrefix = strtolower(implode('', array_slice($parts, 0, 2)));
-        $email = $emailPrefix . '@telu.ac.id';
-
-        // Handle unique email jika sudah ada di tabel dosens
-        $counter = 1;
-        while (Dosen::where('email', $email)->exists()) {
-            $email = $emailPrefix . $counter . '@telu.ac.id';
-            $counter++;
-        }
-
-        // Hanya simpan ke tabel dosens.
-        // Akun login (User) akan dibuat otomatis nanti saat dosen ditunjuk sebagai Kaprodi atau Penguji.
+        // Email dosen biasa selalu '-' (tidak punya akses login)
+        // Email akan di-generate otomatis saat ditunjuk sebagai penguji/kaprodi
         return new Dosen([
-            'nama'       => $nama,
-            'kode'       => $kode,
+            'nama'       => $row['nama'],
+            'kode'       => strtoupper($row['kode']),
             'nip'        => $row['nip'] ?? null,
             'nidn'       => $row['nidn'] ?? null,
-            'email'      => $email,
+            'email'      => '-',
             'prodi_id'   => $this->prodi_id,
             'is_kaprodi' => false,
             'is_penguji' => false,

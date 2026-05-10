@@ -73,12 +73,11 @@
 
 <div class="max-w-3xl mx-auto pb-16">
 
-    {{-- Back --}}
-    <div class="mb-5">
-        <a href="{{ route('pelamar.lowongan.index') }}"
-           class="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-400 hover:text-[#8b1515] transition-colors">
-            &larr; Kembali ke Daftar Lowongan
-        </a>
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-5">
+        <a href="{{ route('pelamar.lowongan.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Lowongan</a>
+        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800 truncate">{{ $lowongan->nama_posisi }}</span>
     </div>
 
     {{-- Main Card --}}
@@ -141,38 +140,63 @@
 
             <hr class="border-gray-100">
 
-            {{-- DOKUMEN UTAMA --}}
-            <div>
-                <div class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider pb-2.5 border-b border-gray-100 mb-3">
-                    Dokumen yang perlu disiapkan:
-                </div>
-                <div class="flex flex-col gap-2">
-                    <div class="desc-item"><div class="desc-dot"></div><span>Pas Photo Formal Berwarna Berlatar Abu-Abu;</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Scan KTP;</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Surat Lamaran dan Curiculum Vitae/Resume/Riwayat Hidup;</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Sertifikat Kemampuan Bahasa Inggris (PBT/TOEFL/EPrT/CBT/IBT/IELST/AcEPT);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Scan Ijazah dan Transkrip lengkap, dan SK Penyetaraan bagi lulusan Luar Negeri (dapat mendafarkan melalui link: piln.kemdikbud.go.id);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Sertifikat Kompetensi/Keahlian Khusus;</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Contoh karya ilmiah yang relevan dan telah dipublikasikan.</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Surat Pernyataan bersedia untuk mengurus Surat Pemberhentian (Format pada link: tel-u.ac.id/suratpernyataanpemberhentian)(apabila bekerja di Instansi Lain)</span></div>
-                </div>
-            </div>
+            {{-- DESKRIPSI DARI DATABASE --}}
+            @if($lowongan->deskripsi)
+            @php
+                $lines = explode("\n", $lowongan->deskripsi);
+                $sections = [];
+                $currentSection = ['title' => null, 'items' => []];
 
-            {{-- DOKUMEN HOMEBASE --}}
-            <div>
-                <div class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider pb-2.5 border-b border-gray-100 mb-3">
-                    Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
+                foreach ($lines as $line) {
+                    $trimmed = trim($line);
+                    if ($trimmed === '') continue;
+
+                    if (str_starts_with($trimmed, '-')) {
+                        // Ini adalah item list
+                        $currentSection['items'][] = ltrim($trimmed, '- ');
+                    } elseif (str_ends_with($trimmed, ':')) {
+                        // Ini adalah judul section baru (berakhir dengan titik dua)
+                        if ($currentSection['title'] !== null || !empty($currentSection['items'])) {
+                            $sections[] = $currentSection;
+                        }
+                        $currentSection = ['title' => $trimmed, 'items' => []];
+                    } elseif (!empty($currentSection['items'])) {
+                        // Baris lanjutan (misal dalam kurung) → gabung ke item sebelumnya
+                        $lastIdx = count($currentSection['items']) - 1;
+                        $currentSection['items'][$lastIdx] .= ' ' . $trimmed;
+                    } else {
+                        // Fallback: judul section baru
+                        if ($currentSection['title'] !== null || !empty($currentSection['items'])) {
+                            $sections[] = $currentSection;
+                        }
+                        $currentSection = ['title' => $trimmed, 'items' => []];
+                    }
+                }
+                if (!empty($currentSection['items'])) {
+                    $sections[] = $currentSection;
+                }
+            @endphp
+
+            <div class="space-y-6">
+            @foreach($sections as $i => $section)
+            <div class="{{ $i > 0 ? 'pt-4 border-t border-gray-100' : '' }}">
+                @if($section['title'])
+                <div class="flex items-center gap-2 mb-3">
+                    <div class="w-1 h-4 rounded-full bg-[#8b1515] flex-shrink-0"></div>
+                    <span class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider">{{ $section['title'] }}</span>
                 </div>
+                @endif
+                @if(!empty($section['items']))
                 <div class="flex flex-col gap-2">
-                    <div class="desc-item"><div class="desc-dot"></div><span>SK Jabatan Akademik Dosen (JAD) (apabila ada);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>SK Penetapan Angka Kredit (PAK) (apabila ada);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Bukti Registrasi Dosen;</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>SK Penyetaraan Pangkat/Inpassing (apabila ada);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Sertifikat Pendidik (apabila ada);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Surat Keterangan Pemberhentian Pembayaran / SKPP Serdos (saat pemberkasan);</span></div>
-                    <div class="desc-item"><div class="desc-dot"></div><span>Surat Pernyataan bersedia untuk mengurus Surat Lolos Butuh (Format pada link: bit.ly/Surat-Pernyataan-Lolos-Butuh)</span></div>
+                    @foreach($section['items'] as $item)
+                    <div class="desc-item"><div class="desc-dot"></div><span>{{ $item }}</span></div>
+                    @endforeach
                 </div>
+                @endif
             </div>
+            @endforeach
+            </div>
+            @endif
 
             <hr class="border-gray-100">
 
@@ -212,14 +236,16 @@
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                             Surat Lamaran <span class="text-[#8b1515]">*</span>
                         </label>
-                        <label class="file-upload-area" for="file_surat_lamaran">
+                        <div class="file-upload-area" onclick="document.getElementById('file_surat_lamaran').click()" style="cursor:pointer;">
                             <div class="file-icon-box">📄</div>
                             <div>
-                                <div class="text-[13px] font-medium text-gray-500">Pilih file atau drag & drop</div>
+                                <div class="text-[13px] font-medium text-gray-500" id="label_surat_lamaran">Pilih file atau klik di sini</div>
                                 <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
                             </div>
-                            <input id="file_surat_lamaran" type="file" name="file_surat_lamaran" accept=".pdf" required class="sr-only">
-                        </label>
+                        </div>
+                        <input id="file_surat_lamaran" type="file" name="file_surat_lamaran" accept=".pdf"
+                               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
+                               onchange="document.getElementById('label_surat_lamaran').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
                         @error('file_surat_lamaran')
                             <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
                         @enderror
@@ -231,14 +257,19 @@
                             Berkas Pendukung
                             <span class="text-gray-300 font-normal normal-case text-[11px] tracking-normal">(opsional)</span>
                         </label>
-                        <label class="file-upload-area" for="file_berkas_pendukung">
+                        <div class="file-upload-area" onclick="document.getElementById('file_berkas_pendukung').click()" style="cursor:pointer;">
                             <div class="file-icon-box">📎</div>
                             <div>
-                                <div class="text-[13px] font-medium text-gray-500">Pilih file atau drag & drop</div>
-                                <div class="text-[11px] text-gray-400 mt-0.5">Sertifikat, portofolio, dll.</div>
+                                <div class="text-[13px] font-medium text-gray-500" id="label_berkas_pendukung">Pilih file atau klik di sini</div>
+                                <div class="text-[11px] text-gray-400 mt-0.5">Sertifikat, portofolio, dll. (PDF)</div>
                             </div>
-                            <input id="file_berkas_pendukung" type="file" name="file_berkas_pendukung" class="sr-only">
-                        </label>
+                        </div>
+                        <input id="file_berkas_pendukung" type="file" name="file_berkas_pendukung" accept=".pdf"
+                               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
+                               onchange="document.getElementById('label_berkas_pendukung').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                        @error('file_berkas_pendukung')
+                            <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     {{-- Catatan --}}
@@ -255,13 +286,27 @@
                         <p class="text-[11.5px] text-gray-400 leading-relaxed sm:max-w-md">
                             Dengan mengirim lamaran, Anda menyetujui bahwa data profil Anda akan digunakan dalam proses seleksi.
                         </p>
-                        <button type="submit"
+                        <button type="submit" id="btn-kirim-lamaran"
+                                onclick="return validateLamaranForm()"
                                 class="btn-kirim w-full sm:w-auto flex-shrink-0 px-8 py-3 bg-[#8b1515] text-white text-[13.5px] font-bold rounded-xl shadow-sm">
                             Kirim Lamaran Sekarang
                         </button>
                     </div>
 
                 </form>
+
+                @push('scripts')
+                <script>
+                    function validateLamaranForm() {
+                        var suratInput = document.getElementById('file_surat_lamaran');
+                        if (!suratInput.files || suratInput.files.length === 0) {
+                            alert('Surat Lamaran wajib diunggah (format PDF).');
+                            return false;
+                        }
+                        return true;
+                    }
+                </script>
+                @endpush
             </div>
             @endif
 

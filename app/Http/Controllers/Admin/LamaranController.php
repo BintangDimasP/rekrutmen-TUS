@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\JadwalSeleksi;
 use App\Models\Lamaran;
 use App\Models\Notifikasi;
 use Illuminate\Http\Request;
@@ -15,7 +16,16 @@ class LamaranController extends Controller
     public function show(Lamaran $lamaran)
     {
         $lamaran->load(['pelamar.user', 'lowongan.prodi']);
-        return view('admin.lamaran.show', compact('lamaran'));
+
+        $jadwals = JadwalSeleksi::with(['penguji', 'penilaian'])
+            ->where('pelamar_id', $lamaran->pelamar_id)
+            ->where('lowongan_id', $lamaran->lowongan_id)
+            ->get();
+
+        $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
+        $micro     = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+
+        return view('admin.lamaran.show', compact('lamaran', 'wawancara', 'micro'));
     }
 
     /**

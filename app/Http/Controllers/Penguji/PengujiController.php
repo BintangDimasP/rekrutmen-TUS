@@ -13,7 +13,11 @@ class PengujiController extends Controller
 {
     private function getDosen()
     {
-        return Dosen::where('email', Auth::user()->email)->first();
+        $user = Auth::user();
+        if ($user->dosen_id) {
+            return Dosen::find($user->dosen_id);
+        }
+        return null;
     }
 
     public function dashboard()
@@ -72,6 +76,17 @@ class PengujiController extends Controller
         $dosen = $this->getDosen();
         if ($jadwal->penguji_id !== $dosen?->id) {
             abort(403, 'Akses ditolak.');
+        }
+
+        if ($jadwal->tipe_seleksi === 'tahap2') {
+            $wawancara = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
+                ->where('tipe_seleksi', 'tahap1')
+                ->whereHas('penilaian')
+                ->first();
+
+            if (!$wawancara) {
+                abort(403, 'Penilaian Wawancara harus diselesaikan terlebih dahulu sebelum melakukan penilaian Micro Teaching.');
+            }
         }
 
         $jadwal->load(['pelamar.user', 'lowongan.prodi', 'penilaian']);

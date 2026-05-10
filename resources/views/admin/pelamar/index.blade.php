@@ -32,7 +32,7 @@
     {{-- Filter Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
         <form method="GET" action="{{ route('admin.pelamar.index') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            {{-- Left: Filter Lowongan --}}
+            {{-- Left: Filter Prodi --}}
             <div class="flex items-center gap-3 w-full sm:w-auto">
                 <div class="relative w-full sm:w-64">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -40,15 +40,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                         </svg>
                     </div>
-                    <select name="lowongan_id" onchange="this.form.submit()" 
+                    <select name="prodi_id" onchange="this.form.submit()" 
                             class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
-                        <option value="">Semua Lowongan</option>
-                        @foreach($lowongans as $low)
-                            <option value="{{ $low->id }}" {{ request('lowongan_id') == $low->id ? 'selected' : '' }}>{{ $low->nama_posisi }}</option>
+                        <option value="">Semua Prodi</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi->id }}" {{ request('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama }}</option>
                         @endforeach
                     </select>
                 </div>
-                @if(request()->filled('lowongan_id') || request()->filled('search'))
+                @if(request()->filled('prodi_id') || request()->filled('search'))
                     <a href="{{ route('admin.pelamar.index') }}" class="text-xs text-red-600 hover:underline">Reset</a>
                 @endif
             </div>

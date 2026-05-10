@@ -139,7 +139,7 @@
                 Belum punya akun? Daftarkan diri Anda dan mulai proses lamaran sekarang.
             </p>
 
-            <a href="#" class="border border-white hover:bg-white hover:text-[#b91c1c] text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 w-full sm:w-auto shadow-sm">
+            <a href="{{ route('register') }}" class="border border-white hover:bg-white hover:text-[#b91c1c] text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 w-full sm:w-auto shadow-sm">
                 Daftar Sekarang
             </a>
         </div>
@@ -159,7 +159,7 @@
                 <p class="text-gray-500 text-[15px]">Masuk ke akun pelamar Anda</p>
             </div>
 
-            <form action="#" method="POST" class="space-y-5">
+            <form action="{{ route('login') }}" method="POST" class="space-y-5">
                 @csrf
                 
                 <div>
@@ -189,7 +189,7 @@
                         <input type="checkbox" name="remember" class="w-4 h-4 rounded border-gray-300 text-[#b91c1c] focus:ring-[#b91c1c]">
                         <span class="group-hover:text-gray-800 transition-colors text-[14px]">Ingat saya</span>
                     </label>
-                    <a href="#" class="text-[#b91c1c] hover:underline font-medium text-[14px]">Lupa kata sandi?</a>
+                    <a href="{{ route('password.request') }}" class="text-[#b91c1c] hover:underline font-medium text-[14px]">Lupa kata sandi?</a>
                 </div>
 
                 <button type="submit" class="w-full bg-[#b91c1c] hover:bg-[#991b1b] text-white font-bold py-3.5 px-4 rounded-lg transition-colors shadow-lg shadow-red-700/20 mt-2">

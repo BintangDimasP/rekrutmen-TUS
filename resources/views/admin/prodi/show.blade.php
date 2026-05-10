@@ -66,6 +66,7 @@
                             d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
                     Filter
+                </button>
                 <button type="button" @click="openImportModal = true"
                     class="flex-1 lg:flex-none px-4 py-2.5 bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 text-sm font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -107,7 +108,18 @@
                                 <td class="py-3 px-5 text-sm text-gray-600">{{ $dosen->kode }}</td>
                                 <td class="py-3 px-5 text-sm text-gray-600">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}
                                 </td>
-                                <td class="py-3 px-5 text-sm text-gray-600">{{ $dosen->email }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600">
+                                    @php
+                                        $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
+                                    @endphp
+                                    @if($userEmails->isNotEmpty())
+                                        @foreach($userEmails as $role => $email)
+                                            <div class="text-xs">{{ $email }}</div>
+                                        @endforeach
+                                    @else
+                                        <span class="text-gray-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="py-3 px-5 text-sm">
                                     <div class="flex flex-wrap gap-1.5">
                                         @if($dosen->is_kaprodi)
@@ -250,14 +262,18 @@
                                                             </p> @endif
                                                         </div>
                                                     </div>
-                                                    <div>
-                                                        <label
-                                                            class="block text-sm font-medium text-gray-800 mb-1.5">Email</label>
-                                                        <input type="email" name="email"
-                                                            value="{{ old('email', $dosen->email) }}" required
-                                                            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
-                                                        @if($errors->has('email') && old('edit_dosen_id') == $dosen->id)
-                                                            <p class="text-xs text-red-500 mt-1">{{ $errors->first('email') }}</p>
+                                                    {{-- Info: email dikelola otomatis --}}
+                                                    <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                                                        <p class="text-xs text-blue-600 font-medium">Email dikelola otomatis berdasarkan peran (Penguji / Kaprodi).</p>
+                                                        @php
+                                                            $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
+                                                        @endphp
+                                                        @if($userEmails->isNotEmpty())
+                                                            <div class="mt-2 space-y-1">
+                                                                @foreach($userEmails as $role => $email)
+                                                                    <p class="text-xs text-blue-800 font-mono">{{ ucfirst($role) }}: {{ $email }}</p>
+                                                                @endforeach
+                                                            </div>
                                                         @endif
                                                     </div>
 
@@ -338,12 +354,12 @@
                     </button>
                 </div>
 
-                <form method="POST" action="{{ route('admin.dosen.store', $prodi) }}" x-data="{ nama: '{{ !old('edit_dosen_id') ? old('nama') : '' }}', email: '{{ !old('edit_dosen_id') ? old('email') : '' }}' }">
+                <form method="POST" action="{{ route('admin.dosen.store', $prodi) }}">
                     @csrf
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="nama" x-model="nama" @input="let parts = nama.trim().split(/\s+/); email = parts.length > 0 ? parts.slice(0, 2).join('').toLowerCase() + '@telu.ac.id' : ''" required
+                            <input type="text" name="nama" value="{{ !old('edit_dosen_id') ? old('nama') : '' }}" required
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('nama') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('nama') }}</p> @endif
@@ -367,13 +383,10 @@
                                     class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-800 mb-1.5">Email</label>
-                            <input type="email" name="email" x-model="email"
-                                required
-                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
-                            @if($errors->has('email') && !old('edit_dosen_id'))
-                            <p class="text-xs text-red-500 mt-1">{{ $errors->first('email') }}</p> @endif
+
+                        {{-- Info: email otomatis --}}
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+                            <p class="text-xs text-blue-600 font-medium">Email akan otomatis dibuat saat dosen ditunjuk sebagai Penguji atau Kaprodi.</p>
                         </div>
 
                         {{-- Roles --}}
@@ -401,62 +414,85 @@
         </div>
 
         {{-- ── Import Modal ── --}}
-        <div x-show="openImportModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-            @click.self="openImportModal = false" style="display: none;">
-            <div 
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95" 
-                x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 scale-100"
-                x-transition:leave-end="opacity-0 scale-95"
-                class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left">
+        <div x-show="openImportModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-sm"
+            @click="openImportModal = false"
+            style="display: none;">
+        </div>
 
-                <div class="bg-green-600 px-6 py-4 flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-white tracking-tight">Import Data Dosen</h2>
+        <div x-show="openImportModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none"
+            style="display: none;">
+
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden pointer-events-auto">
+
+                {{-- Header --}}
+                <div class="flex items-center justify-between px-6 py-4" style="background: #8b1515;">
+                    <div>
+                        <h2 class="text-base font-semibold text-white">Import Dosen</h2>
+                        <p class="text-xs text-white/60 mt-0.5">Upload file Excel ke program studi ini</p>
+                    </div>
                     <button type="button" @click="openImportModal = false"
-                        class="w-7 h-7 flex items-center justify-center rounded-lg border-2 border-white/60 text-white hover:bg-white/15 hover:border-white transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        class="w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
+                        style="border: 1.5px solid rgba(255,255,255,0.3);">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
+                {{-- Body --}}
                 <form method="POST" action="{{ route('admin.dosen.import', $prodi) }}" enctype="multipart/form-data">
                     @csrf
-                    <div class="p-6 space-y-4">
-                        <div class="bg-blue-50 text-blue-800 text-xs px-3 py-3 rounded-lg leading-relaxed border border-blue-100">
-                            <strong>Format Excel yang diizinkan (.xlsx, .csv)</strong><br>
-                            Pastikan baris pertama (header) berisi: <br>
-                            <code class="bg-white px-1 py-0.5 rounded text-blue-600">nama</code>, 
-                            <code class="bg-white px-1 py-0.5 rounded text-blue-600">kode</code>, 
-                            <code class="bg-white px-1 py-0.5 rounded text-blue-600">nip</code>, 
-                            <code class="bg-white px-1 py-0.5 rounded text-blue-600">nidn</code>.
-                            <br><br>
-                            <em>Email akan di-generate otomatis oleh sistem dari 2 kata pertama nama dosen.</em>
-                        </div>
+                    <div class="p-5">
+                        <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                            Upload file <span class="font-medium text-gray-700">.xlsx</span> atau
+                            <span class="font-medium text-gray-700">.csv</span> — header baris pertama:
+                            <code class="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
+                        </p>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-800 mb-1.5">Pilih File Excel</label>
-                            <input type="file" name="file" accept=".xlsx,.xls,.csv" required
-                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-green-500 focus:ring-2 focus:ring-green-500/15 transition-all file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
-                            @if($errors->has('file'))
-                                <p class="text-xs text-red-500 mt-2">{!! $errors->first('file') !!}</p> 
-                            @endif
-                        </div>
+                        <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-4 py-7 cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-[#8b1515]/30 transition-colors">
+                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                            </svg>
+                            <span class="text-sm font-medium text-gray-500">Klik untuk pilih file</span>
+                            <span class="text-xs text-gray-400">.xlsx &nbsp;/&nbsp; .xls &nbsp;/&nbsp; .csv</span>
+                            <input type="file" name="file" accept=".xlsx,.xls,.csv" required class="hidden" />
+                        </label>
+                        @if($errors->has('file'))
+                            <p class="text-xs text-red-500 mt-2">{!! $errors->first('file') !!}</p>
+                        @endif
                     </div>
 
-                    <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+                    {{-- Footer --}}
+                    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-center gap-3">
                         <button type="button" @click="openImportModal = false"
-                            class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 rounded-xl transition-colors">Batal</button>
+                            class="px-6 py-2.5 text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-colors">
+                            Batal
+                        </button>
                         <button type="submit"
-                            class="px-5 py-2.5 text-sm font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow-md transition-colors">Import Data</button>
+                            class="px-10 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-md"
+                            style="background: #8b1515;">
+                            Import Data
+                        </button>
                     </div>
                 </form>
+
             </div>
         </div>
 
-    </div>
+    </div>{{-- /x-data --}}
 
 @endsection

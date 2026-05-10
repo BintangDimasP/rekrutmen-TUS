@@ -11,6 +11,14 @@
     $sesiInfo = \App\Models\JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$jadwal->sesi] ?? null;
     $today = \Carbon\Carbon::today();
     $canTest = $today->greaterThanOrEqualTo(\Carbon\Carbon::parse($jadwal->tanggal));
+
+    // Get all schedules for this pelamar to check Wawancara evaluation status
+    $jadwals_all = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with('penilaian')->get();
+    $wawancara = $jadwals_all->where('tipe_seleksi', 'tahap1')->first();
+    $wawancaraSudahDinilai = $wawancara && $wawancara->penilaian;
+    
+    // Can evaluate if it's Wawancara OR (it's Micro and Wawancara is already evaluated)
+    $canEvaluate = $isWawancara || $wawancaraSudahDinilai;
 @endphp
 
 <div class="space-y-6">
@@ -51,10 +59,20 @@
                             Buka Zoom
                         </a>
                     @endif
-                    <a href="{{ route('penguji.pengujian.uji', $jadwal->id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-100 rounded-xl text-sm font-bold text-[#8b1515] transition-colors whitespace-nowrap shadow-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                        Mulai Uji
-                    </a>
+                    @if($canEvaluate)
+                        <a href="{{ route('penguji.pengujian.uji', $jadwal->id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-100 rounded-xl text-sm font-bold text-[#8b1515] transition-colors whitespace-nowrap shadow-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                            Mulai Uji
+                        </a>
+                    @else
+                        <div class="flex flex-col items-end">
+                            <button disabled class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/50 cursor-not-allowed rounded-xl text-sm font-bold text-[#8b1515]/50 whitespace-nowrap shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Mulai Uji
+                            </button>
+                            <span class="text-[0.65rem] text-red-200 mt-1.5 font-medium">Selesaikan Wawancara dahulu</span>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -210,9 +228,7 @@
                     Hasil Penilaian Seleksi
                 </h3>
                 @php
-                    $jadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with('penilaian')->get();
-                    $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
-                    $micro = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+                    $micro = $jadwals_all->where('tipe_seleksi', 'tahap2')->first();
                 @endphp
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     @foreach([

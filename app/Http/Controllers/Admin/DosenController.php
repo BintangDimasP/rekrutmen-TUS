@@ -9,12 +9,14 @@ use App\Models\User;
 use App\Imports\DosenImport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DosenController extends Controller
 {
     /**
      * Simpan data dosen baru.
+     * Email otomatis diset ke '-' (dosen biasa tidak punya akses login).
      */
     public function store(Request $request, Prodi $prodi)
     {
@@ -23,20 +25,19 @@ class DosenController extends Controller
             'kode'  => ['required', 'string', 'max:50', 'unique:dosens,kode'],
             'nip'   => ['nullable', 'string', 'max:50'],
             'nidn'  => ['nullable', 'string', 'max:50'],
-            'email' => ['required', 'email', 'max:255', 'unique:dosens,email'],
         ]);
 
         $isKaprodi = $request->boolean('is_kaprodi');
-        $isPenguji = $request->boolean('is_penguji');
 
-        DB::transaction(function () use ($request, $prodi, $isKaprodi, $isPenguji) {
+        DB::transaction(function () use ($request, $prodi, $isKaprodi) {
             if ($isKaprodi) {
                 // Reset kaprodi lain di prodi ini
                 Dosen::where('prodi_id', $prodi->id)
                     ->where('is_kaprodi', true)
                     ->each(function ($d) {
                         $d->update(['is_kaprodi' => false]);
-                        $this->syncUserRole($d->email, false, $d->is_penguji);
+                        // Hapus akun kaprodi dari user lama
+                        User::where('dosen_id', $d->id)->where('role', 'kaprodi')->delete();
                     });
             }
 
@@ -45,13 +46,16 @@ class DosenController extends Controller
                 'kode'       => strtoupper($request->kode),
                 'nip'        => $request->nip,
                 'nidn'       => $request->nidn,
-                'email'      => strtolower($request->email),
+                'email'      => '-',
                 'prodi_id'   => $prodi->id,
                 'is_kaprodi' => $isKaprodi,
-                'is_penguji' => $isPenguji,
+                'is_penguji' => false,
             ]);
 
-            $this->syncUserRole($dosen->email, $isKaprodi, $isPenguji, $dosen->nama, $prodi->id);
+            // Jika ditandai kaprodi, buat akun user otomatis
+            if ($isKaprodi) {
+                $this->createRoleAccount($dosen, 'kaprodi', $prodi->id);
+            }
         });
 
         return back()->with('success', 'Data dosen berhasil ditambahkan.');
@@ -67,43 +71,50 @@ class DosenController extends Controller
             'kode'  => ['required', 'string', 'max:50', 'unique:dosens,kode,' . $dosen->id],
             'nip'   => ['nullable', 'string', 'max:50'],
             'nidn'  => ['nullable', 'string', 'max:50'],
-            'email' => ['required', 'email', 'max:255', 'unique:dosens,email,' . $dosen->id],
         ]);
 
         $isKaprodi = $request->boolean('is_kaprodi');
-        $isPenguji = $request->boolean('is_penguji');
+        $wasKaprodi = $dosen->is_kaprodi;
 
-        DB::transaction(function () use ($request, $dosen, $isKaprodi, $isPenguji) {
-            if ($isKaprodi) {
-                // Reset kaprodi lain di prodi ini (kecuali dosen yang sedang diedit)
+        DB::transaction(function () use ($request, $dosen, $isKaprodi, $wasKaprodi) {
+            if ($isKaprodi && !$wasKaprodi) {
+                // Baru ditunjuk kaprodi: reset kaprodi lain di prodi ini
                 Dosen::where('prodi_id', $dosen->prodi_id)
                     ->where('id', '!=', $dosen->id)
                     ->where('is_kaprodi', true)
                     ->each(function ($d) {
                         $d->update(['is_kaprodi' => false]);
-                        $this->syncUserRole($d->email, false, $d->is_penguji);
+                        User::where('dosen_id', $d->id)->where('role', 'kaprodi')->delete();
                     });
             }
 
-            $oldEmail = $dosen->email;
-            $newEmail = strtolower($request->email);
+            $oldNama = $dosen->nama;
 
             $dosen->update([
                 'nama'       => $request->nama,
                 'kode'       => strtoupper($request->kode),
                 'nip'        => $request->nip,
                 'nidn'       => $request->nidn,
-                'email'      => $newEmail,
                 'is_kaprodi' => $isKaprodi,
-                'is_penguji' => $isPenguji,
+                // is_penguji tidak diubah di sini — dikelola via PengujiController
             ]);
 
-            // Sinkronisasi email di tabel users jika berubah
-            if ($oldEmail !== $newEmail) {
-                User::where('email', $oldEmail)->update(['email' => $newEmail]);
+            // Handle perubahan status kaprodi
+            if ($isKaprodi && !$wasKaprodi) {
+                // Baru ditunjuk: buat akun kaprodi
+                $this->createRoleAccount($dosen, 'kaprodi', $dosen->prodi_id);
+            } elseif (!$isKaprodi && $wasKaprodi) {
+                // Dicabut: hapus akun kaprodi
+                User::where('dosen_id', $dosen->id)->where('role', 'kaprodi')->delete();
             }
 
-            $this->syncUserRole($newEmail, $isKaprodi, $isPenguji, $dosen->nama, $dosen->prodi_id);
+            // Jika nama berubah, update email akun-akun yang ada
+            if ($oldNama !== $request->nama) {
+                $this->regenerateUserEmails($dosen);
+            }
+
+            // Update nama di semua akun user terkait
+            User::where('dosen_id', $dosen->id)->update(['name' => $dosen->nama]);
         });
 
         return back()->with('success', 'Data dosen berhasil diperbarui.');
@@ -114,43 +125,51 @@ class DosenController extends Controller
      */
     public function destroy(Dosen $dosen)
     {
-        $dosen->delete();
+        DB::transaction(function () use ($dosen) {
+            // Hapus semua akun user terkait
+            User::where('dosen_id', $dosen->id)->delete();
+            $dosen->delete();
+        });
 
         return back()->with('success', 'Data dosen berhasil dihapus.');
     }
 
     /**
-     * Sinkronisasi role user berdasarkan flag dosen.
-     * Jika belum punya akun dan diset sebagai kaprodi, akun login otomatis dibuat.
-     * Prioritas: kaprodi > penguji > (tidak diubah jika keduanya false)
+     * Buat akun user untuk dosen dengan role tertentu.
      */
-    private function syncUserRole(string $email, bool $isKaprodi, bool $isPenguji, string $nama = '', ?int $prodiId = null): void
+    private function createRoleAccount(Dosen $dosen, string $role, ?int $prodiId = null): User
     {
-        $user = User::where('email', $email)->first();
+        $domain = $role === 'kaprodi'
+            ? 'kaprodi.telkomuniversity.ac.id'
+            : 'penguji.telkomuniversity.ac.id';
 
-        if ($isKaprodi) {
-            if ($user) {
-                // Update role dan pastikan prodi_id tersinkronisasi
-                $user->update([
-                    'role'     => 'kaprodi',
-                    'prodi_id' => $prodiId ?? $user->prodi_id,
-                ]);
-            } else {
-                // Buat akun baru otomatis jika belum ada
-                User::create([
-                    'name'     => $nama,
-                    'email'    => $email,
-                    'password' => \Illuminate\Support\Facades\Hash::make('kaprodi123'),
-                    'role'     => 'kaprodi',
-                    'prodi_id' => $prodiId,
-                ]);
-            }
-        } elseif ($isPenguji) {
-            if ($user && !in_array($user->role, ['admin', 'kaprodi', 'penguji'])) {
-                $user->update(['role' => 'penguji']);
-            }
+        $email = $dosen->generateUniqueEmail($domain);
+        $defaultPassword = $role === 'kaprodi' ? 'kaprodi123' : 'penguji123';
+
+        return User::create([
+            'name'     => $dosen->nama,
+            'email'    => $email,
+            'password' => Hash::make($defaultPassword),
+            'password_plain' => $defaultPassword,
+            'role'     => $role,
+            'prodi_id' => $prodiId ?? $dosen->prodi_id,
+            'dosen_id' => $dosen->id,
+        ]);
+    }
+
+    /**
+     * Regenerate email akun-akun user dosen (misal saat nama berubah).
+     */
+    private function regenerateUserEmails(Dosen $dosen): void
+    {
+        $users = User::where('dosen_id', $dosen->id)->get();
+        foreach ($users as $user) {
+            $domain = $user->role === 'kaprodi'
+                ? 'kaprodi.telkomuniversity.ac.id'
+                : 'penguji.telkomuniversity.ac.id';
+            $newEmail = $dosen->generateUniqueEmail($domain);
+            $user->update(['email' => $newEmail]);
         }
-        // Jika keduanya false, role tidak diubah (biarkan admin atur manual)
     }
 
     /**

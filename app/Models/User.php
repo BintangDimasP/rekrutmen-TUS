@@ -15,14 +15,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'penguji_password',
         'role',
         'prodi_id',
+        'dosen_id',
+        'password_plain',
     ];
 
     protected $hidden = [
         'password',
-        'penguji_password',
         'remember_token',
     ];
 
@@ -54,6 +54,14 @@ class User extends Authenticatable
     public function prodi(): BelongsTo
     {
         return $this->belongsTo(Prodi::class);
+    }
+
+    /**
+     * Dosen yang terhubung dengan akun ini.
+     */
+    public function dosen(): BelongsTo
+    {
+        return $this->belongsTo(Dosen::class);
     }
 
     /**

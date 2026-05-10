@@ -11,6 +11,9 @@ class CheckRole
     /**
      * Handle an incoming request.
      *
+     * Setiap role memiliki akun user terpisah, jadi tidak perlu exception khusus.
+     * Penguji login dengan email @penguji, kaprodi login dengan email @kaprodi.
+     *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, string $role): Response
@@ -21,13 +24,7 @@ class CheckRole
             return redirect('/');
         }
 
-        // Kaprodi yang juga penguji bisa akses route penguji
-        $allowedRoles = [$role];
-        if ($role === 'penguji') {
-            $allowedRoles[] = 'kaprodi';
-        }
-
-        if (! in_array($user->role, $allowedRoles)) {
+        if ($user->role !== $role) {
             return redirect()->route($user->role . '.dashboard');
         }
 

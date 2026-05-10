@@ -230,17 +230,15 @@ class JadwalSeleksiController extends Controller
             ->pluck('penguji_id')
             ->unique();
         foreach ($pengujiIds as $pengujiId) {
-            $dosen = Dosen::find($pengujiId);
-            if ($dosen && $dosen->email) {
-                $userPenguji = User::where('email', $dosen->email)->first();
-                if ($userPenguji) {
-                    Notifikasi::kirim(
-                        $userPenguji->id,
-                        'Jadwal Pengujian Ditetapkan',
-                        "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}. Silakan cek jadwal di portal.",
-                        'jadwal'
-                    );
-                }
+            // Kirim notifikasi ke semua akun user penguji (via dosen_id)
+            $userPengujis = User::where('dosen_id', $pengujiId)->get();
+            foreach ($userPengujis as $userPenguji) {
+                Notifikasi::kirim(
+                    $userPenguji->id,
+                    'Jadwal Pengujian Ditetapkan',
+                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}. Silakan cek jadwal di portal.",
+                    'jadwal'
+                );
             }
         }
 
@@ -336,9 +334,9 @@ class JadwalSeleksiController extends Controller
                 'jadwal'
             );
         }
-        if ($jadwal->penguji && $jadwal->penguji->email) {
-            $userPenguji = User::where('email', $jadwal->penguji->email)->first();
-            if ($userPenguji) {
+        if ($jadwal->penguji) {
+            $userPengujis = User::where('dosen_id', $jadwal->penguji->id)->get();
+            foreach ($userPengujis as $userPenguji) {
                 Notifikasi::kirim(
                     $userPenguji->id,
                     'Jadwal Pengujian Diubah',
@@ -460,17 +458,14 @@ class JadwalSeleksiController extends Controller
 
         $pengujiIds = $group->pluck('penguji_id')->unique();
         foreach ($pengujiIds as $pengujiId) {
-            $dosen = Dosen::find($pengujiId);
-            if ($dosen && $dosen->email) {
-                $userPenguji = User::where('email', $dosen->email)->first();
-                if ($userPenguji) {
-                    Notifikasi::kirim(
-                        $userPenguji->id,
-                        'Jadwal Pengujian Diperbarui',
-                        "Jadwal pengujian untuk posisi \"{$posisi}\" telah diperbarui menjadi tanggal {$tanggal}.",
-                        'jadwal'
-                    );
-                }
+            $userPengujis = User::where('dosen_id', $pengujiId)->get();
+            foreach ($userPengujis as $userPenguji) {
+                Notifikasi::kirim(
+                    $userPenguji->id,
+                    'Jadwal Pengujian Diperbarui',
+                    "Jadwal pengujian untuk posisi \"{$posisi}\" telah diperbarui menjadi tanggal {$tanggal}.",
+                    'jadwal'
+                );
             }
         }
 

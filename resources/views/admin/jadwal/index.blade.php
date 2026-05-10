@@ -433,6 +433,8 @@ function jadwalIndex() {
 
         isBlockedW(sesiNum) {
             const orig = this.modal.origW;
+            if (sesiNum === 4 && parseInt(this.modal.mSesi) === 1) return true;
+
             for (const pgId of this.modal.pengujiW) {
                 const taken = this._takenFor(pgId, 'tahap1').filter(s => s !== orig);
                 if (taken.includes(sesiNum)) return true;
@@ -445,6 +447,8 @@ function jadwalIndex() {
 
         isBlockedM(sesiNum) {
             const orig = this.modal.origM;
+            if (sesiNum === 1 && parseInt(this.modal.wSesi) === 4) return true;
+
             for (const pgId of this.modal.pengujiM) {
                 const taken = this._takenFor(pgId, 'tahap2').filter(s => s !== orig);
                 if (taken.includes(sesiNum)) return true;
@@ -455,9 +459,21 @@ function jadwalIndex() {
             return false;
         },
 
+        isValidUrl(url) {
+            if (!url) return false;
+            const pattern = /^(http|https):\/\/[^ "]+$/;
+            return pattern.test(url);
+        },
+
         hasConflict() {
+            if (parseInt(this.modal.wSesi) === 4 && parseInt(this.modal.mSesi) === 1) return true;
             if (this.modal.hasW && this.modal.wSesi && this.isBlockedW(parseInt(this.modal.wSesi))) return true;
             if (this.modal.hasM && this.modal.mSesi && this.isBlockedM(parseInt(this.modal.mSesi))) return true;
+            
+            // Link validation
+            if (this.modal.hasW && this.modal.wSesi && !this.isValidUrl(this.modal.wLink)) return true;
+            if (this.modal.hasM && this.modal.mSesi && !this.isValidUrl(this.modal.mLink)) return true;
+
             return false;
         },
 

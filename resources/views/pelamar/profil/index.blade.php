@@ -52,6 +52,7 @@
     jenjang2: '{{ old('jenjang_2', $pelamar->jenjang_2) }}',
     jenjang3: '{{ old('jenjang_3', $pelamar->jenjang_3) }}'
 }">
+
     <!-- Single Card -->
     <form id="mainProfilForm" action="{{ route('pelamar.profil.update') }}" method="POST" enctype="multipart/form-data">
     @csrf
@@ -59,8 +60,9 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         <!-- RED HEADER -->
-        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5">
+        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
                 <div class="flex items-center gap-5">
                     <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm ring-2 ring-white/30">
                         <span class="text-2xl font-bold text-white">{{ strtoupper(substr($pelamar->nama ?? 'P', 0, 1)) }}</span>
@@ -68,7 +70,9 @@
                     <div>
                         <h1 class="text-xl font-bold text-white">{{ $pelamar->nama ?? '-' }}</h1>
                         <p class="text-red-200 text-sm mt-0.5">{{ $pelamar->user?->email }}</p>
-                        
+                        <div class="flex items-center gap-3 mt-2 flex-wrap">
+                            <span class="text-red-200 text-xs">Terdaftar: {{ $pelamar->created_at->format('d M Y') }}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -146,7 +150,7 @@
                 
                 <div class="space-y-4">
                     {{-- Jenjang 1 --}}
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
+                    <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang ?: '-' }}</p>
                             <select x-show="isEditing" x-cloak name="jenjang" x-model="jenjang1" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
@@ -157,7 +161,7 @@
                             </select>
                             @error('jenjang')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
                             <p x-show="!isEditing" class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="institusi" value="{{ old('institusi',$pelamar->institusi) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                             @error('institusi')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
@@ -171,19 +175,19 @@
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk" value="{{ old('ipk',$pelamar->ipk) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                             @error('file_ijazah')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                             @error('file_transkrip')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
                     </div>
 
                     {{-- Jenjang 2 --}}
-                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu2=false; jenjang2=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 ?: '-' }}</p>
@@ -194,7 +198,7 @@
                                 <option value="S3" :hidden="jenjang1 === 'S3' || jenjang3 === 'S3'" :disabled="jenjang1 === 'S3' || jenjang3 === 'S3'">S3</option>
                             </select>
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
                             <p x-show="!isEditing" class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_2 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="institusi_2" value="{{ old('institusi_2',$pelamar->institusi_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
@@ -207,17 +211,17 @@
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk_2" value="{{ old('ipk_2',$pelamar->ipk_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_2" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_2" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                         </div>
                     </div>
 
                     {{-- Jenjang 3 --}}
-                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-5 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu3=false; jenjang3=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 ?: '-' }}</p>
@@ -228,7 +232,7 @@
                                 <option value="S3" :hidden="jenjang1 === 'S3' || jenjang2 === 'S3'" :disabled="jenjang1 === 'S3' || jenjang2 === 'S3'">S3</option>
                             </select>
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p>
                             <p x-show="!isEditing" class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_3 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="institusi_3" value="{{ old('institusi_3',$pelamar->institusi_3) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
@@ -241,11 +245,11 @@
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk_3" value="{{ old('ipk_3',$pelamar->ipk_3) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_3" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                         </div>
-                        <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Lihat</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-[#8b1515] hover:text-red-900 underline text-xs font-bold">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_3" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-[#8b1515] underline text-xs">Preview</a>@endif</div>
                         </div>
                     </div>
@@ -254,37 +258,104 @@
                 </div>
             </div>
 
-            {{-- 3. DOKUMEN & SERTIFIKAT --}}
+            {{-- 3. DOKUMEN PENDUKUNG --}}
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
-                    Dokumen & Sertifikat
+                    Dokumen Pendukung
                 </h3>
                 
-                {{-- View Mode Docs --}}
+                {{-- View Mode --}}
                 <div x-show="!isEditing" class="space-y-6">
-                    @php
-                        $mainDocs = [
-                            ['label' => 'CV (Resume)', 'file' => $pelamar->file_cv],
-                            ['label' => 'Pas Foto Formal', 'file' => $pelamar->file_pas_foto],
-                            ['label' => 'Scan KTP', 'file' => $pelamar->file_ktp],
-                        ];
-                    @endphp
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                        @foreach($mainDocs as $doc)
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
-                            @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                        <div>
+                            <p class="text-[0.6rem] font-black text-gray-400 uppercase">CV (Resume)</p>
+                            @if($pelamar->file_cv)
+                                <a href="{{ asset('storage/' . $pelamar->file_cv) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                            @else
+                                <p class="text-sm text-gray-700 mt-0.5">-</p>
+                            @endif
                         </div>
-                        @endforeach
+                        <div>
+                            <p class="text-[0.6rem] font-black text-gray-400 uppercase">Pas Foto Formal</p>
+                            @if($pelamar->file_pas_foto)
+                                <a href="{{ asset('storage/' . $pelamar->file_pas_foto) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                            @else
+                                <p class="text-sm text-gray-700 mt-0.5">-</p>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-[0.6rem] font-black text-gray-400 uppercase">Scan KTP</p>
+                            @if($pelamar->file_ktp)
+                                <a href="{{ asset('storage/' . $pelamar->file_ktp) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                            @else
+                                <p class="text-sm text-gray-700 mt-0.5">-</p>
+                            @endif
+                        </div>
+                        <div>
+                            <p class="text-[0.6rem] font-black text-gray-400 uppercase">{{ $pelamar->kategori_sertifikat ?: 'Sertifikat' }}</p>
+                            @if($pelamar->file_sertifikat)
+                                <a href="{{ asset('storage/' . $pelamar->file_sertifikat) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                            @else
+                                <p class="text-sm text-gray-700 mt-0.5">-</p>
+                            @endif
+                        </div>
                     </div>
-                    
+                </div>
+
+                {{-- Edit Mode --}}
+                <div x-show="isEditing" x-cloak class="space-y-6">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+                        <div>
+                            <label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">CV (Resume)</label>
+                            <div class="mt-1">
+                                <input type="file" name="file_cv" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">
+                                @if($pelamar->file_cv)<a href="{{ asset('storage/'.$pelamar->file_cv) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Pas Foto Formal</label>
+                            <div class="mt-1">
+                                <input type="file" name="file_pas_foto" accept=".jpg,.jpeg" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">
+                                @if($pelamar->file_pas_foto)<a href="{{ asset('storage/'.$pelamar->file_pas_foto) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Scan KTP</label>
+                            <div class="mt-1">
+                                <input type="file" name="file_ktp" accept=".jpg,.jpeg" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">
+                                @if($pelamar->file_ktp)<a href="{{ asset('storage/'.$pelamar->file_ktp) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif
+                            </div>
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 gap-x-6 gap-y-4 pt-4 border-t border-gray-50">
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kategori Sertifikat</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->kategori_sertifikat ?: '-' }}</p></div>
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Sertifikat Profesi</p>
-                            @if($pelamar->file_sertifikat)<a href="{{ asset('storage/'.$pelamar->file_sertifikat) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                        <div>
+                            <p class="text-[0.6rem] font-black text-gray-400 uppercase">Kategori Sertifikat</p>
+                            <select name="kategori_sertifikat" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                                <option value="">-</option>
+                                <option value="kompetensi" {{ old('kategori_sertifikat',$pelamar->kategori_sertifikat)=='kompetensi'?'selected':'' }}>Kompetensi</option>
+                                <option value="keahlian_khusus" {{ old('kategori_sertifikat',$pelamar->kategori_sertifikat)=='keahlian_khusus'?'selected':'' }}>Keahlian Khusus</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Profesi</label>
+                            <div class="mt-1">
+                                <input type="file" name="file_sertifikat" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">
+                                @if($pelamar->file_sertifikat)<a href="{{ asset('storage/'.$pelamar->file_sertifikat) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 border-t border-gray-50">
+                </div>
+            </div>
+
+            {{-- 4. SERTIFIKAT BAHASA INGGRIS --}}
+            <div>
+                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
+                    Sertifikat Bahasa Inggris
+                </h3>
+                
+                {{-- View Mode --}}
+                <div x-show="!isEditing">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->jenis_tes_bahasa ?: '-' }}</p></div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Skor Bahasa</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa ?: '-' }}</p></div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_tes_bahasa ? $pelamar->tanggal_tes_bahasa->format('d M Y') : '-' }}</p></div>
@@ -294,38 +365,9 @@
                     </div>
                 </div>
 
-                {{-- Edit Mode Docs --}}
-                <div x-show="isEditing" x-cloak class="space-y-6">
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
-                        <div><label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">CV (Resume)</label>
-                            <div class="mt-1"><input type="file" name="file_cv" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_cv)<a href="{{ asset('storage/'.$pelamar->file_cv) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif</div>
-                            @error('file_cv')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
-                        </div>
-                        <div><label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Pas Foto Formal</label>
-                            <div class="mt-1"><input type="file" name="file_pas_foto" accept=".jpg,.jpeg" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_pas_foto)<a href="{{ asset('storage/'.$pelamar->file_pas_foto) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif</div>
-                            @error('file_pas_foto')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
-                        </div>
-                        <div><label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Scan KTP</label>
-                            <div class="mt-1"><input type="file" name="file_ktp" accept=".jpg,.jpeg" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_ktp)<a href="{{ asset('storage/'.$pelamar->file_ktp) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif</div>
-                            @error('file_ktp')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-x-6 gap-y-4 pt-4 border-t border-gray-50">
-                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kategori Sertifikat</p>
-                            <select name="kategori_sertifikat" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
-                                <option value="">-</option>
-                                <option value="kompetensi" {{ old('kategori_sertifikat',$pelamar->kategori_sertifikat)=='kompetensi'?'selected':'' }}>Kompetensi</option>
-                                <option value="keahlian_khusus" {{ old('kategori_sertifikat',$pelamar->kategori_sertifikat)=='keahlian_khusus'?'selected':'' }}>Keahlian Khusus</option>
-                            </select>
-                        </div>
-                        <div><label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Profesi</label>
-                            <div class="mt-1"><input type="file" name="file_sertifikat" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_sertifikat)<a href="{{ asset('storage/'.$pelamar->file_sertifikat) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif</div>
-                            @error('file_sertifikat')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4 pt-4 border-t border-gray-50">
+                {{-- Edit Mode --}}
+                <div x-show="isEditing" x-cloak>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p>
                             <select name="jenis_tes_bahasa" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                                 <option value="">-</option>
@@ -342,13 +384,12 @@
                         </div>
                         <div><label class="text-[0.6rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Bahasa</label>
                             <div class="mt-1"><input type="file" name="file_sertifikat_bahasa" accept=".pdf" class="text-xs file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-[0.6rem] file:font-black file:bg-[#8b1515]/10 file:text-[#8b1515] file:cursor-pointer cursor-pointer">@if($pelamar->file_sertifikat_bahasa)<a href="{{ asset('storage/'.$pelamar->file_sertifikat_bahasa) }}" target="_blank" class="text-[#8b1515] underline text-xs ml-1">Preview</a>@endif</div>
-                            @error('file_sertifikat_bahasa')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- 4. DATA AKADEMIK (DOSEN) --}}
+            {{-- 5. DATA AKADEMIK (DOSEN) --}}
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Data Akademik (Dosen)
@@ -383,7 +424,7 @@
                 </div>
             </div>
 
-            {{-- 5. DOKUMEN PELAMAR BER-HOMEBASE --}}
+            {{-- 6. DOKUMEN PELAMAR BER-HOMEBASE --}}
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Dokumen Pelamar Ber-Homebase
@@ -447,10 +488,98 @@
                     Simpan Perubahan
                 </button>
             </div>
-
         </div>
     </div>
     </form>
+
+    {{-- 7. HASIL PENILAIAN SELEKSI (READ ONLY) --}}
+    <div x-show="!isEditing" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6 p-6 md:p-8">
+        <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
+            Hasil Penilaian Seleksi
+        </h3>
+        @php
+            $allJadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with(['penilaian', 'lowongan'])->get();
+            $hasAnyPenilaian = false;
+        @endphp
+
+        <div class="space-y-6">
+            @foreach($pelamar->lamarans as $lamaran)
+                @php
+                    $wawancara = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap1')->first();
+                    $micro = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap2')->first();
+                    
+                    $hasWawancaraScore = $wawancara && $wawancara->penilaian;
+                    $hasMicroScore = $micro && $micro->penilaian;
+                @endphp
+
+                @if($hasWawancaraScore || $hasMicroScore)
+                    @php $hasAnyPenilaian = true; @endphp
+                    <div>
+                        <h4 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">
+                            Lamaran: <span class="text-[#8b1515]">{{ $lamaran->lowongan?->nama_posisi ?? '—' }}</span>
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            @if($hasWawancaraScore)
+                                <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
+                                    <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
+                                        Wawancara
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Kepribadian & Integritas</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_1 }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Visi & Profesionalisme</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_2 }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Adaptasi & Kolaborasi</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_3 }}</span>
+                                        </div>
+                                        <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
+                                            <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
+                                            <span class="text-2xl font-black text-[#8b1515]">{{ $wawancara->penilaian->total_nilai }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if($hasMicroScore)
+                                <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
+                                    <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
+                                        Micro Teaching
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Penguasaan Materi</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_1 }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Keterampilan Pedagogik</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_2 }}</span>
+                                        </div>
+                                        <div class="flex justify-between items-center gap-4">
+                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Media Pembelajaran</span>
+                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_3 }}</span>
+                                        </div>
+                                        <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
+                                            <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
+                                            <span class="text-2xl font-black text-[#8b1515]">{{ $micro->penilaian->total_nilai }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+
+            @if(!$hasAnyPenilaian)
+                <p class="text-sm text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-gray-100">Belum ada hasil penilaian seleksi yang masuk untuk lamaran Anda.</p>
+            @endif
+        </div>
+    </div>
 </div>
 
 @endsection

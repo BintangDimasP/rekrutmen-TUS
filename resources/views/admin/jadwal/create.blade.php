@@ -24,14 +24,20 @@
             </div>
         @endif
 
-        {{-- Error Flash Alpine --}}
-        <div x-show="error" x-transition x-cloak
-            class="mb-4 bg-amber-50 border border-amber-200 rounded-xl p-3 flex items-center gap-3">
-            <p class="text-xs text-amber-800" x-text="error"></p>
-            <button @click="error = ''" class="ml-auto text-amber-400 hover:text-amber-600 flex-shrink-0">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+        {{-- Toast Notification --}}
+        <div x-show="error" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
+            x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-end="opacity-0 translate-x-12" x-cloak
+            class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 min-w-[320px] max-w-sm">
+            <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0 text-white">
+                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+            </div>
+            <div class="flex-1">
+                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Perhatian</h4>
+                <p class="text-[0.8rem] text-gray-500 leading-snug" x-text="error"></p>
+            </div>
+            <button @click="error = ''" class="text-gray-400 hover:text-gray-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
 
@@ -40,8 +46,8 @@
 
             {{-- ══ INFORMASI DASAR ══ --}}
             <div class="bg-white rounded-xl border border-gray-200 p-5 mb-5">
-                <p class="text-[0.65rem] font-semibold text-gray-400 uppercase tracking-widest mb-3">Informasi Dasar</p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
                     {{-- Tanggal --}}
                     <div>
@@ -83,6 +89,14 @@
                             </template>
                         </select>
                     </div>
+
+                    {{-- Search Pelamar --}}
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1.5">Cari Pelamar</label>
+                        <input type="text" x-model="search" placeholder="Cari nama atau email..."
+                            :disabled="!lowonganId || loadingPelamar || pelamars.length === 0"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white disabled:opacity-50 disabled:cursor-not-allowed">
+                    </div>
                 </div>
             </div>
 
@@ -92,17 +106,12 @@
             <div class="flex items-center justify-between gap-3 mb-3"
                 x-show="lowonganId && !loadingPelamar && pelamars.length > 0">
                 <div class="flex items-center gap-3">
-                    <p class="text-sm font-semibold text-gray-700">Jadwal Per Pelamar</p>
-                    <span x-show="readyCount > 0"
-                        class="px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700"
-                        x-text="`${readyCount} siap`"></span>
+                    
                     <span x-show="!tanggal"
                         class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-2.5 py-1">
                         Pilih tanggal agar cek bentrok aktif.
                     </span>
                 </div>
-                <input type="text" x-model="search" placeholder="Cari pelamar..."
-                    class="px-3 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white w-48">
             </div>
 
             {{-- State: belum pilih lowongan --}}
@@ -119,11 +128,7 @@
                 </svg>
             </div>
 
-            {{-- State: kosong --}}
-            <div x-show="!loadingPelamar && lowonganId && pelamars.length === 0"
-                class="flex items-center justify-center h-36 rounded-xl border border-dashed border-gray-200 bg-gray-50 mb-5">
-                <p class="text-xs text-gray-400">Tidak ada pelamar siap dijadwalkan di lowongan ini.</p>
-            </div>
+
 
             {{-- TABEL UTAMA --}}
             <div x-show="!loadingPelamar && pelamars.length > 0"
@@ -133,7 +138,7 @@
                         <thead>
                             <tr>
                                 <th rowspan="2"
-                                    class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-8 align-middle">#
+                                    class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-8 align-middle">No.
                                 </th>
                                 <th rowspan="2"
                                     class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-44 align-middle">
@@ -179,9 +184,8 @@
                         <tbody>
                             <template x-for="(p, idx) in filteredPelamars" :key="p.id">
                                 <tr class="border-t border-gray-100 align-top transition-colors" :class="{
-                                        'bg-green-50': isRowComplete(p.id) && !getConflictWarning(p.id),
                                         'bg-red-50':   getConflictWarning(p.id),
-                                        'hover:bg-gray-50': !isRowComplete(p.id) && !getConflictWarning(p.id)
+                                        'hover:bg-gray-50': !getConflictWarning(p.id)
                                     }">
 
                                     {{-- No --}}
@@ -372,33 +376,55 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
+
+                    <div class="px-5 py-4 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-4">
+                        <button type="button" @click="showConfirmModal = true" :disabled="!canSubmit()" :class="canSubmit()
+                                    ? 'bg-red-800 hover:bg-red-900 text-white cursor-pointer'
+                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'"
+                            class="flex-shrink-0 px-6 py-2 text-xs font-semibold rounded-lg transition-colors">
+                            Simpan Jadwal
+                        </button>
+                    </div>
                 </div>
 
-                {{-- Ringkasan bawah tabel --}}
-                <div x-show="readyCount > 0"
-                    class="px-4 py-2.5 border-t border-gray-100 bg-green-50 text-xs text-green-800">
-                    <span class="font-semibold" x-text="readyCount"></span> pelamar siap (wawancara + micro) —
-                    <span x-text="formatDate(tanggal)"></span>
-                </div>
-            </div>
+            </form>
 
-            {{-- ══ FOOTER SUBMIT ══ --}}
-            <div class="bg-white rounded-xl border border-gray-200 px-5 py-4 flex items-center justify-between gap-4">
-                <p x-show="!canSubmit()" class="text-xs text-gray-400">
-                    Lengkapi informasi dasar dan jadwal minimal 1 pelamar.
-                </p>
-                <p x-show="canSubmit()" class="text-xs text-green-700 font-medium">
-                    Siap disimpan — <span x-text="readyCount + ' pelamar'"></span>
-                </p>
-                <button type="submit" :disabled="!canSubmit()" :class="canSubmit()
-                            ? 'bg-red-800 hover:bg-red-900 text-white cursor-pointer'
-                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'"
-                    class="flex-shrink-0 px-6 py-2 text-xs font-semibold rounded-lg transition-colors">
-                    Simpan Jadwal
+            {{-- Confirmation Modal --}}
+        <div x-show="showConfirmModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showConfirmModal = false">
+            <div x-show="showConfirmModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+
+                {{-- Close Button --}}
+                <button type="button" @click="showConfirmModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
-            </div>
 
-        </form>
+                {{-- Warning Icon --}}
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Simpan Jadwal?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">
+                    Simpan jadwal untuk <span class="font-bold text-gray-700" x-text="readyCount"></span> pelamar pada <span class="font-bold text-gray-700" x-text="formatDate(tanggal)"></span>?
+                </p>
+
+                <div class="flex justify-center gap-3">
+                    <button type="button" @click="doSubmit()" class="flex-1 w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Ya, Simpan</button>
+                    <button type="button" @click="showConfirmModal = false" class="flex-1 w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">Batal</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -441,6 +467,7 @@
                 sessions: _jadwalSessions,
                 takenMap: {},
                 assignments: {},
+                showConfirmModal: false,
 
                 // ─── COMPUTED ──────────────────────────────────────
 
@@ -472,6 +499,10 @@
 
                 // ─── HELPERS ───────────────────────────────────────
 
+                showToast(msg) {
+                    this.error = msg;
+                    setTimeout(() => this.error = '', 5000);
+                },
                 getPengujiNama(pgId) {
                     const pg = this.pengujis.find(x => Number(x.id) === Number(pgId));
                     return pg ? `${pg.nama} (${pg.kode})` : `#${pgId}`;
@@ -533,7 +564,10 @@
                  * Cek semua penguji yang dipilih — jika salah satu bentrok, sesi disabled.
                  */
                 isSesiDisabledW(pelamarId, sesiNum) {
-                    const ids = this.assignments[pelamarId]?.wawancara?.pengujiIds ?? [];
+                    const a = this.assignments[pelamarId];
+                    if (sesiNum === 4 && parseInt(a?.micro?.sesi) === 1) return true;
+
+                    const ids = a?.wawancara?.pengujiIds ?? [];
                     for (const pgId of ids) {
                         if (this._isTakenFor(pgId, 'tahap1', sesiNum)) return true;
                         // cross-conflict: tahap1 S4 ↔ tahap2 S1 (jam 13.00)
@@ -553,7 +587,10 @@
                 },
 
                 isSesiDisabledM(pelamarId, sesiNum) {
-                    const ids = this.assignments[pelamarId]?.micro?.pengujiIds ?? [];
+                    const a = this.assignments[pelamarId];
+                    if (sesiNum === 1 && parseInt(a?.wawancara?.sesi) === 4) return true;
+
+                    const ids = a?.micro?.pengujiIds ?? [];
                     for (const pgId of ids) {
                         if (this._isTakenFor(pgId, 'tahap2', sesiNum)) return true;
                         if (sesiNum === 1 && this._isTakenFor(pgId, 'tahap1', 4)) return true;
@@ -597,25 +634,37 @@
                     if (!a) return '';
                     const wSesi = parseInt(a.wawancara.sesi ?? '0');
                     const mSesi = parseInt(a.micro.sesi ?? '0');
-                    if (wSesi !== 4 || mSesi !== 1) return '';
-                    const overlap = a.wawancara.pengujiIds.filter(id =>
-                        a.micro.pengujiIds.map(Number).includes(Number(id))
-                    );
-                    if (!overlap.length) return '';
-                    const names = overlap.map(id => {
-                        const pg = this.pengujis.find(x => Number(x.id) === Number(id));
-                        return pg ? pg.nama : `#${id}`;
-                    }).join(', ');
-                    return `Bentrok 13.00 — ${names} di Wawancara S4 & Micro S1.`;
+                    
+                    if (wSesi === 4 && mSesi === 1) {
+                        return 'Bentrok 13.00 — Wawancara S4 & Micro S1 bersamaan.';
+                    }
+                    return '';
+                },
+
+                isValidUrl(url) {
+                    if (!url) return false;
+                    const pattern = /^(http|https):\/\/[^ "]+$/;
+                    return pattern.test(url);
                 },
 
                 isRowComplete(pelamarId) {
                     const a = this.assignments[pelamarId];
                     if (!a) return false;
                     return (
-                        a.wawancara.pengujiIds.length > 0 && a.wawancara.sesi !== '' &&
-                        a.micro.pengujiIds.length > 0 && a.micro.sesi !== ''
+                        a.wawancara.pengujiIds.length > 0 && a.wawancara.sesi !== '' && this.isValidUrl(a.wawancara.link) &&
+                        a.micro.pengujiIds.length > 0 && a.micro.sesi !== '' && this.isValidUrl(a.micro.link)
                     );
+                },
+
+                hasPartialRow() {
+                    return this.pelamars.some(p => {
+                        const a = this.assignments[p.id];
+                        if (!a) return false;
+                        const hasAnyInput = 
+                            a.wawancara.pengujiIds.length > 0 || a.wawancara.sesi !== '' || a.wawancara.link.trim() !== '' ||
+                            a.micro.pengujiIds.length > 0 || a.micro.sesi !== '' || a.micro.link.trim() !== '';
+                        return hasAnyInput && !this.isRowComplete(p.id);
+                    });
                 },
 
                 canSubmit() {
@@ -623,6 +672,7 @@
                         this.tanggal &&
                         this.lowonganId &&
                         this.readyCount > 0 &&
+                        !this.hasPartialRow() &&
                         this.pelamars.every(p => !this.getConflictWarning(p.id))
                     );
                 },
@@ -667,10 +717,10 @@
                         if (!resL.ok || !resP.ok) throw new Error();
                         this.lowongans = await resL.json();
                         this.pengujis = await resP.json();
-                        if (!this.lowongans.length) this.error = 'Tidak ada lowongan aktif untuk prodi ini.';
-                        if (!this.pengujis.length) this.error = (this.error ? this.error + ' & ' : '') + 'Tidak ada penguji untuk prodi ini.';
+                        if (!this.lowongans.length) this.showToast('Tidak ada lowongan aktif untuk prodi ini.');
+                        if (!this.pengujis.length) this.showToast('Tidak ada penguji untuk prodi ini.');
                     } catch {
-                        this.error = 'Terjadi kesalahan saat memuat data.';
+                        this.showToast('Terjadi kesalahan saat memuat data.');
                     } finally {
                         this.loadingLowongan = this.loadingPenguji = false;
                     }
@@ -688,9 +738,9 @@
                         if (!res.ok) throw new Error();
                         this.pelamars = await res.json();
                         this.pelamars.forEach(p => this.initAssignment(p.id));
-                        if (!this.pelamars.length) this.error = 'Tidak ada pelamar siap dijadwalkan di lowongan ini.';
+                        if (!this.pelamars.length) this.showToast('Tidak ada pelamar siap dijadwalkan di lowongan ini.');
                     } catch {
-                        this.error = 'Gagal memuat daftar pelamar.';
+                        this.showToast('Gagal memuat daftar pelamar.');
                     } finally {
                         this.loadingPelamar = false;
                     }
@@ -724,11 +774,17 @@
 
                 submitForm(e) {
                     if (!this.canSubmit()) {
-                        alert('Harap lengkapi jadwal minimal 1 pelamar (wawancara + micro) dan pastikan tidak ada bentrok waktu.');
+                        this.showToast('Harap lengkapi jadwal minimal 1 pelamar dan pastikan tidak ada bentrok waktu.');
                         return;
                     }
-                    if (!confirm(`Simpan jadwal untuk ${this.readyCount} pelamar pada ${this.formatDate(this.tanggal)}?`)) return;
-                    e.target.submit();
+                    this.showConfirmModal = true;
+                },
+
+                doSubmit() {
+                    this.showConfirmModal = false;
+                    this.$nextTick(() => {
+                        this.$root.querySelector('form').submit();
+                    });
                 },
             }));
         });

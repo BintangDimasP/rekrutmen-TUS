@@ -14,18 +14,38 @@ class PengujiController extends Controller
     /**
      * Tampilkan tabel dosen yang merupakan penguji.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Penguji adalah dosen yang is_penguji = true
-        $pengujis = Dosen::with('prodi')->where('is_penguji', true)->get();
-        
+        $query = Dosen::with('prodi')->where('is_penguji', true);
+
+        // Filter Prodi
+        if ($request->filled('prodi_id')) {
+            $query->where('prodi_id', $request->prodi_id);
+        }
+
+        // Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('kode', 'like', "%{$search}%");
+            });
+        }
+
+        $pengujis = $query->get();
+
+        // Ambil email penguji dari tabel users untuk setiap penguji
+        $pengujiEmails = User::whereIn('dosen_id', $pengujis->pluck('id'))
+            ->where('role', 'penguji')
+            ->pluck('email', 'dosen_id');
+
         // Calon penguji adalah dosen yang belum menjadi penguji (untuk form Tunjuk)
         $calonPengujis = Dosen::with('prodi')->where('is_penguji', false)->get();
 
-        // Daftar prodi unik dari calon penguji untuk filter dropdown
-        $prodis = $calonPengujis->pluck('prodi')->filter()->unique('id')->sortBy('nama')->values();
+        // Daftar semua prodi untuk filter
+        $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
-        return view('admin.penguji.index', compact('pengujis', 'calonPengujis', 'prodis'));
+        return view('admin.penguji.index', compact('pengujis', 'pengujiEmails', 'calonPengujis', 'prodis'));
     }
 
     /**
@@ -34,11 +54,18 @@ class PengujiController extends Controller
     public function show(Dosen $penguji)
     {
         $penguji->load('prodi');
-        return view('admin.penguji.show', compact('penguji'));
+
+        // Ambil email akun penguji
+        $pengujiEmail = User::where('dosen_id', $penguji->id)
+            ->where('role', 'penguji')
+            ->value('email');
+
+        return view('admin.penguji.show', compact('penguji', 'pengujiEmail'));
     }
 
     /**
      * Tunjuk dosen-dosen terpilih menjadi penguji.
+     * Buat akun user baru dengan email @penguji.telkomuniversity.ac.id
      */
     public function store(Request $request)
     {
@@ -54,27 +81,23 @@ class PengujiController extends Controller
                 // Update status dosen
                 $dosen->update(['is_penguji' => true]);
 
-                // Cek apakah sudah punya akun
-                $user = User::where('email', $dosen->email)->first();
+                // Cek apakah sudah punya akun penguji
+                $existingPenguji = User::where('dosen_id', $dosen->id)
+                    ->where('role', 'penguji')
+                    ->first();
 
-                if (!$user) {
-                    // Belum punya akun: buat akun penguji baru
+                if (!$existingPenguji) {
+                    // Generate email penguji dan buat akun baru
+                    $email = $dosen->generateUniqueEmail('penguji.telkomuniversity.ac.id');
+
                     User::create([
                         'name'     => $dosen->nama,
-                        'email'    => $dosen->email,
+                        'email'    => $email,
                         'password' => Hash::make('penguji123'),
                         'role'     => 'penguji',
-                        'prodi_id' => $dosen->prodi_id
+                        'prodi_id' => $dosen->prodi_id,
+                        'dosen_id' => $dosen->id,
                     ]);
-                } elseif ($user->role === 'kaprodi') {
-                    // Kaprodi yang ditunjuk penguji: simpan penguji_password terpisah
-                    // Role TIDAK diubah agar tetap bisa akses kaprodi dashboard
-                    $user->update([
-                        'penguji_password' => Hash::make('penguji123'),
-                    ]);
-                } elseif (!in_array($user->role, ['admin', 'penguji'])) {
-                    // Role lain (pelamar, dll): upgrade ke penguji
-                    $user->update(['role' => 'penguji']);
                 }
             }
         });
@@ -84,25 +107,19 @@ class PengujiController extends Controller
 
     /**
      * Cabut status penguji dari dosen.
+     * Hapus akun user penguji. Jika juga bukan kaprodi, email dosen kembali ke '-'.
      */
     public function destroy(Dosen $penguji)
     {
         DB::transaction(function () use ($penguji) {
             $penguji->update(['is_penguji' => false]);
 
-            $user = User::where('email', $penguji->email)->first();
-            if ($user) {
-                if ($user->role === 'kaprodi') {
-                    // Kaprodi: hapus saja penguji_password-nya
-                    $user->update(['penguji_password' => null]);
-                } elseif ($user->role === 'penguji') {
-                    // Penguji murni: hapus akun loginnya
-                    $user->delete();
-                }
-            }
+            // Hapus akun penguji (akun kaprodi tetap ada jika ada)
+            User::where('dosen_id', $penguji->id)
+                ->where('role', 'penguji')
+                ->delete();
         });
 
         return redirect()->route('admin.penguji.index')->with('success', 'Status penguji untuk ' . $penguji->nama . ' telah dicabut.');
     }
 }
-

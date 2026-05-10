@@ -11,23 +11,26 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class LowonganController extends Controller
 {
     private const DEFAULT_DESKRIPSI = "Dokumen yang perlu dipersiapkan :
-- Pas Photo Formal Berwarna Berlatar Abu-Abu;
-- Scan KTP;
-- Surat Lamaran dan Curiculum Vitae/Resume/Riwayat Hidup;
-- Sertifikat Kemampuan Bahasa Inggris (PBT/TOEFL/EPrT/CBT/IBT/IELST/AcEPT);
-- Scan Ijazah dan Transkrip lengkap, dan SK Penyetaraan bagi lulusan Luar Negeri (dapat mendafarkan melalui link: piln.kemdikbud.go.id);
-- Sertifikat Kompetensi/Keahlian Khusus;
-- Contoh karya ilmiah yang relevan dan telah dipublikasikan.
-- Surat Pernyataan bersedia untuk mengurus Surat Pemberhentian (Format pada link: tel-u.ac.id/suratpernyataanpemberhentian)(apabila bekerja di Instansi Lain)
+- Pas Photo Formal Berwarna Berlatar Abu-Abu
+- Scan KTP
+- Surat Lamaran dan Curiculum Vitae/Resume/Riwayat Hidup
+- Sertifikat Kemampuan Bahasa Inggris (PBT/TOEFL/EPrT/CBT/IBT/IELST/AcEPT)
+- Scan Ijazah dan Transkrip lengkap, dan SK Penyetaraan bagi lulusan Luar Negeri 
+(dapat mendafarkan melalui link: piln.kemdikbud.go.id)
+- Sertifikat Kompetensi/Keahlian Khusus
+- Contoh karya ilmiah yang relevan dan telah dipublikasikan
+- Surat Pernyataan bersedia untuk mengurus Surat Pemberhentian apabila bekerja di Instansi Lain
+(Format pada link: tel-u.ac.id/suratpernyataanpemberhentian)
 
 Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
-- SK Jabatan Akademik Dosen (JAD) (apabila ada);
-- SK Penetapan Angka Kredit (PAK) (apabila ada);
-- Bukti Registrasi Dosen;
-- SK Penyetaraan Pangkat/Inpassing (apabila ada);
-- Sertifikat Pendidik (apabila ada);
-- Surat Keterangan Pemberhentian Pembayaran / SKPP Serdos (saat pemberkasan);
-- Surat Pernyataan bersedia untuk mengurus Surat Lolos Butuh (Format pada link: bit.ly/Surat-Pernyataan-Lolos-Butuh)";
+- SK Jabatan Akademik Dosen (JAD) (apabila ada)
+- SK Penetapan Angka Kredit (PAK) (apabila ada)
+- Bukti Registrasi Dosen
+- SK Penyetaraan Pangkat/Inpassing (apabila ada)
+- Sertifikat Pendidik (apabila ada)
+- Surat Keterangan Pemberhentian Pembayaran / SKPP Serdos (saat pemberkasan)
+- Surat Pernyataan bersedia untuk mengurus Surat Lolos Butuh
+(Format pada link: bit.ly/Surat-Pernyataan-Lolos-Butuh)";
 
     /** Daftar lowongan */
     public function index()

@@ -86,9 +86,16 @@
                         @forelse($users as $user)
                         <tr x-data="{ openEditModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" class="hover:bg-gray-50 transition-colors">
                             <td class="py-3 px-5 text-sm text-gray-800 font-medium">{{ $user->name }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium">{{ $user->email }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium">
+                                <div class="font-mono text-[0.8rem]">{{ $user->email }}</div>
+                                @if(isset($user->penguji_user))
+                                    <div class="font-mono text-[0.8rem] text-blue-600 mt-1">{{ $user->penguji_user->email }}</div>
+                                @endif
+                            </td>
                             <td class="py-3 px-5 text-sm">
-                                @if($user->role === 'admin')
+                                @if(isset($user->penguji_user))
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-bold bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
+                                @elseif($user->role === 'admin')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>
                                 @elseif($user->role === 'pelamar')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-green-100 text-green-800 uppercase">Pelamar</span>
@@ -130,32 +137,42 @@
                                             <input type="hidden" name="edit_user_id" value="{{ $user->id }}">
                                             
                                             <div class="p-6 space-y-4 text-left">
-
-                                                <div class="bg-blue-50 text-blue-800 text-xs px-3 py-2 rounded-lg leading-relaxed">
-                                                    Memperbarui akun pelamar atau penguji di sini <strong>otomatis tersinkronisasi</strong> dengan master data di tabel pelamar dan dosen.
-                                                </div>
-
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Akun</label>
                                                     <input type="text" value="{{ $user->name }}" disabled class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-gray-200 text-sm text-gray-500 cursor-not-allowed">
                                                 </div>
 
+                                                @if($user->role === 'pelamar')
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-800 mb-1.5">Email Akses (Login)</label>
                                                     <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                     @if($errors->has('email') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('email') }}</p> @endif
                                                 </div>
-                                                
+                                                @endif
+
+                                                @if(isset($user->penguji_user))
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi</label>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Kata Sandi (Kaprodi) - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
                                                     <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
                                                     @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
                                                 </div>
+
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Kata Sandi (Penguji) - <span class="text-blue-600">Lama: {{ $user->penguji_user->password_plain ?? '-' }}</span></label>
+                                                    <input type="password" name="penguji_password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
+                                                    @if($errors->has('penguji_password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('penguji_password') }}</p> @endif
+                                                </div>
+                                                @else
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
+                                                    <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
+                                                    @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
+                                                </div>
+                                                @endif
                                             </div>
 
-                                            <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
-                                                <button type="button" @click="openEditModal = false" class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-200 rounded-xl transition-colors">Batal</button>
-                                                <button type="submit" class="px-5 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-xl shadow-md transition-colors">Simpan Perubahan</button>
+                                            <div class="px-6 py-4 bg-gray-50 flex justify-center border-t border-gray-100">
+                                                <button type="submit" class="px-5 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-xl shadow-md transition-colors">Simpan</button>
                                             </div>
                                         </form>
                                     </div>
