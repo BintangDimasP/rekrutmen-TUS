@@ -5,12 +5,6 @@
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
 
-    {{-- Breadcrumb --}}
-    <div class="flex items-center gap-2 text-sm text-gray-500">
-        <a href="{{ route('pelamar.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="font-semibold text-gray-800">Histori Lamaran</span>
-    </div>
 
     {{-- Filter Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">

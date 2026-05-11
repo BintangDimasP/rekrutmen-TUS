@@ -112,16 +112,8 @@
         <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
             <!-- Logo area -->
             <div class="mb-14 flex items-center justify-center gap-2.5">
-                <!-- White custom icon as logo -->
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" rx="6" fill="white"/>
-                    <path d="M12 4L4 8L12 12L20 8L12 4Z" fill="#b91c1c"/>
-                    <path d="M4 11V16L12 20L20 16V11L12 15L4 11Z" fill="#b91c1c"/>
-                </svg>
-                <div class="text-left leading-tight">
-                    <div class="font-bold text-[1.4rem]">Telkom</div>
-                    <div class="text-[0.7rem] tracking-widest font-medium uppercase mt-0.5">University</div>
-                </div>
+                <!-- Logo image -->
+                <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
             </div>
 
             <!-- Focus Icon Circle -->

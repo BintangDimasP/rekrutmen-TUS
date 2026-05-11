@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+<!-- @extends('layouts.admin')
 
 @section('title', 'Lamar Posisi — ' . $lowongan->nama_posisi)
 
@@ -169,4 +169,4 @@ function showApplyToast(title, message, type) {
     setTimeout(function() { if (toast.parentElement) toast.remove(); }, 5000);
 }
 </script>
-@endsection
+@endsection -->

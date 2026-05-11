@@ -4,13 +4,6 @@
 
 @section('content')
 
-    {{-- Breadcrumb --}}
-    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <a href="{{ route('pelamar.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="font-semibold text-gray-800">Profil</span>
-    </div>
-
 <div class="space-y-6" x-data="{
     isEditing: {{ ($errors->any() || empty($pelamar->nik)) ? 'true' : 'false' }},
     showEdu2: {{ old('jenjang_2', $pelamar->jenjang_2) ? 'true' : 'false' }},
@@ -459,94 +452,7 @@
     </div>
     </form>
 
-    {{-- 7. HASIL PENILAIAN SELEKSI (READ ONLY) --}}
-    <div x-show="!isEditing" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mt-6 p-6 md:p-8">
-        <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
-            Hasil Penilaian Seleksi
-        </h3>
-        @php
-            $allJadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with(['penilaian', 'lowongan'])->get();
-            $hasAnyPenilaian = false;
-        @endphp
-
-        <div class="space-y-6">
-            @foreach($pelamar->lamarans as $lamaran)
-                @php
-                    $wawancara = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap1')->first();
-                    $micro = $allJadwals->where('lowongan_id', $lamaran->lowongan_id)->where('tipe_seleksi', 'tahap2')->first();
-                    
-                    $hasWawancaraScore = $wawancara && $wawancara->penilaian;
-                    $hasMicroScore = $micro && $micro->penilaian;
-                @endphp
-
-                @if($hasWawancaraScore || $hasMicroScore)
-                    @php $hasAnyPenilaian = true; @endphp
-                    <div>
-                        <h4 class="text-xs font-bold text-gray-600 uppercase tracking-wider mb-3">
-                            Lamaran: <span class="text-[#8b1515]">{{ $lamaran->lowongan?->nama_posisi ?? '—' }}</span>
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            @if($hasWawancaraScore)
-                                <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
-                                    <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
-                                        Wawancara
-                                    </h3>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Kepribadian & Integritas</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_1 }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Visi & Profesionalisme</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_2 }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Adaptasi & Kolaborasi</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $wawancara->penilaian->kategori_3 }}</span>
-                                        </div>
-                                        <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
-                                            <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
-                                            <span class="text-2xl font-black text-[#8b1515]">{{ $wawancara->penilaian->total_nilai }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-
-                            @if($hasMicroScore)
-                                <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
-                                    <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
-                                        Micro Teaching
-                                    </h3>
-                                    <div class="space-y-3">
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Penguasaan Materi</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_1 }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Keterampilan Pedagogik</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_2 }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center gap-4">
-                                            <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">Media Pembelajaran</span>
-                                            <span class="text-sm font-bold text-gray-800">{{ $micro->penilaian->kategori_3 }}</span>
-                                        </div>
-                                        <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
-                                            <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
-                                            <span class="text-2xl font-black text-[#8b1515]">{{ $micro->penilaian->total_nilai }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endif
-            @endforeach
-
-            @if(!$hasAnyPenilaian)
-                <p class="text-sm text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-gray-100">Belum ada hasil penilaian seleksi yang masuk untuk lamaran Anda.</p>
-            @endif
-        </div>
-    </div>
+   
 </div>
 
 @endsection

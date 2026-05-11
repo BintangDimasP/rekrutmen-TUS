@@ -11,16 +11,27 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* File upload custom style (hard to replicate purely with Tailwind) */
+        /* File upload custom style */
         .file-upload-area {
             display: flex; align-items: center; gap: 0.75rem;
             border: 1.5px dashed #d1d5db; border-radius: 0.5rem;
             padding: 0.75rem 1rem; cursor: pointer;
-            background: #fafafa; transition: border-color .2s, background .2s;
+            background: #fafafa; transition: all .2s;
         }
-        .file-upload-area:hover { border-color: #b91c1c; background: #fff5f5; }
-        .file-upload-area:hover .upload-icon { color: #b91c1c; }
+        .file-upload-area:hover { border-color: #8b1515; background: #fff5f5; }
+        .file-upload-area:hover .upload-icon { color: #8b1515; }
         .upload-icon { color: #9ca3af; flex-shrink: 0; transition: color .2s; }
+
+        /* File selected state */
+        .file-upload-area.has-file {
+            border-style: solid;
+            border-color: #8b1515;
+            background: #fef2f2;
+        }
+        .file-upload-area.has-file .upload-icon { color: #8b1515; }
+        .file-upload-area.has-file .file-label { display: none; }
+        .file-upload-area .file-selected { display: none; }
+        .file-upload-area.has-file .file-selected { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; }
 
         /* Step bubble */
         .step-bubble { transition: background .3s, transform .3s, box-shadow .3s; }
@@ -30,7 +41,17 @@
 
         /* Step content */
         .step-content { display: none; }
-        .step-content.active { display: block; }
+        .step-content.active { display: block; animation: fadeInUp 0.4s ease forwards; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card wrapper transition */
+        #cardWrapper {
+            transition: max-width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
         /* Toast */
         #toast-container {
@@ -89,8 +110,8 @@
         /* Form input focus */
         .form-input:focus {
             outline: none;
-            border-color: #b91c1c !important;
-            box-shadow: 0 0 0 3px rgba(185,28,28,.1) !important;
+            border-color: #8b1515 !important;
+            box-shadow: 0 0 0 3px rgba(139,21,21,.1) !important;
         }
         .form-input.error {
             border-color: #ef4444 !important;
@@ -104,24 +125,21 @@
 <div id="toast-container"></div>
 
 {{-- ── Navbar ── --}}
-<nav class="sticky top-0 z-50 flex items-center justify-between px-8 h-[60px] shadow-md" style="background:#9b1c1c;">
+<nav class="sticky top-0 z-50 flex items-center justify-between px-8 h-[60px] shadow-md bg-[#8b1515]">
     <div class="flex items-center gap-2.5">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
-            <rect width="36" height="36" rx="7" fill="white"/>
-            <path d="M18 6L8 11L18 16L28 11L18 6Z" fill="#b91c1c"/>
-            <path d="M8 14V20L18 25L28 20V14L18 19L8 14Z" fill="#b91c1c"/>
-        </svg>
-        <div class="text-white font-bold text-base leading-tight">
-            Telkom <span class="block text-[0.62rem] font-normal tracking-widest uppercase">University</span>
-        </div>
+        <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
+                <div class="relative w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">
+                    <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-8 object-contain">
+                </div>
+            </a>
     </div>
     @if(Route::has('login'))
-        <a href="{{ route('login') }}" class="text-white text-sm font-semibold px-5 py-2 rounded-lg border border-white/25 hover:bg-[#7f1d1d] transition" style="background:#7f1d1d;">Masuk</a>
+        <a href="{{ route('login') }}" class="text-white text-sm font-semibold px-5 py-2 rounded-lg border border-white/25 bg-[#6b1111] hover:bg-[#7f1d1d] transition">Masuk</a>
     @endif
 </nav>
 
 {{-- ── Main Wrapper ── --}}
-<div class="max-w-3xl mx-auto px-4 py-10">
+<div id="cardWrapper" class="max-w-md mx-auto px-4 py-10">
 
     {{-- Step Indicator --}}
     <div class="flex items-center justify-center mb-12" id="stepIndicator">
@@ -131,7 +149,7 @@
                 <div
                     id="bubble-{{ $n }}"
                     class="step-bubble w-11 h-11 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-default select-none
-                    {{ $n === 1 ? 'active bg-red-700 shadow-lg shadow-red-700/30' : 'bg-gray-300' }}"
+                    {{ $n === 1 ? 'active bg-[#8b1515] shadow-lg shadow-[#8b1515]/30' : 'bg-gray-300' }}"
                 >
                     <span class="num-label">{{ $n }}</span>
                     {{-- Checkmark --}}
@@ -139,7 +157,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
                     </svg>
                 </div>
-                <span id="label-{{ $n }}" class="absolute top-12 text-[0.65rem] font-semibold whitespace-nowrap {{ $n===1 ? 'text-red-700' : 'text-gray-400' }}">
+                <span id="label-{{ $n }}" class="absolute top-12 text-[0.65rem] font-semibold whitespace-nowrap {{ $n===1 ? 'text-[#8b1515]' : 'text-gray-400' }}">
                     {{ $label }}
                 </span>
             </div>
@@ -157,7 +175,7 @@
         {{-- STEP 1 — BUAT AKUN                      --}}
         {{-- ═══════════════════════════════════════ --}}
         <div class="step-content active bg-white rounded-xl shadow-md overflow-hidden" id="step-1">
-            <div class="bg-red-700 px-7 py-5">
+            <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Buat Akun</h2>
             </div>
             <div class="p-7">
@@ -192,7 +210,7 @@
                 </div>
             </div>
             <div class="px-7 py-4 border-t border-gray-100 flex justify-end">
-                <button type="button" onclick="nextStep(1)" class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-red-700/25 transition">
+                <button type="button" onclick="nextStep(1)" class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
                     Lanjut
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -203,7 +221,7 @@
         {{-- STEP 2 — DATA DIRI                      --}}
         {{-- ═══════════════════════════════════════ --}}
         <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-2">
-            <div class="bg-red-700 px-7 py-5">
+            <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Data Diri</h2>
             </div>
             <div class="p-7">
@@ -275,12 +293,12 @@
             </div>
             <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
                 <button type="button" onclick="prevStep(2)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-red-600 hover:text-red-700 text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
+                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Kembali
                 </button>
                 <button type="button" onclick="nextStep(2)"
-                    class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-red-700/25 transition">
+                    class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
                     Lanjut
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -291,7 +309,7 @@
         {{-- STEP 3 — RIWAYAT PENDIDIKAN             --}}
         {{-- ═══════════════════════════════════════ --}}
         <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-3">
-            <div class="bg-red-700 px-7 py-5">
+            <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Riwayat Pendidikan</h2>
             </div>
             <div class="p-7">
@@ -354,7 +372,7 @@
                         </label>
                         <label for="ijazah" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Pilih file PDF / JPG</p>
                                 <p class="text-xs text-gray-400">Maks. 5MB</p>
                             </div>
@@ -371,7 +389,7 @@
                         </label>
                         <label for="transkrip" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Pilih file PDF / JPG</p>
                                 <p class="text-xs text-gray-400">Maks. 5MB</p>
                             </div>
@@ -383,12 +401,12 @@
             </div>
             <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
                 <button type="button" onclick="prevStep(3)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-red-600 hover:text-red-700 text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
+                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Kembali
                 </button>
                 <button type="button" onclick="nextStep(3)"
-                    class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-red-700/25 transition">
+                    class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
                     Lanjut
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -399,7 +417,7 @@
         {{-- STEP 4 — DOKUMEN PENDUKUNG (semua opsional) --}}
         {{-- ═══════════════════════════════════════ --}}
         <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-4">
-            <div class="bg-red-700 px-7 py-5">
+            <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Dokumen Pendukung</h2>
             </div>
             <div class="p-7">
@@ -421,7 +439,7 @@
                         </label>
                         <label for="cv" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload CV (PDF)</p>
                                 <p class="text-xs text-gray-400">Maks. 5MB</p>
                             </div>
@@ -437,7 +455,7 @@
                         </label>
                         <label for="pas_foto" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload Foto (JPG/PNG)</p>
                                 <p class="text-xs text-gray-400">Latar putih, maks. 2MB</p>
                             </div>
@@ -453,7 +471,7 @@
                         </label>
                         <label for="ktp" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload Scan KTP (PDF / JPG)</p>
                                 <p class="text-xs text-gray-400">Maks. 2MB</p>
                             </div>
@@ -489,7 +507,7 @@
                         </label>
                         <label for="sertifikat_kompetensi" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload PDF</p>
                                 <p class="text-xs text-gray-400">Maks. 5MB</p>
                             </div>
@@ -549,7 +567,7 @@
                         </label>
                         <label for="sertifikat_bahasa" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload PDF</p>
                                 <p class="text-xs text-gray-400">Maks. 5MB</p>
                             </div>
@@ -561,12 +579,12 @@
             </div>
             <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
                 <button type="button" onclick="prevStep(4)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-red-600 hover:text-red-700 text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
+                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Kembali
                 </button>
                 <button type="button" onclick="nextStep(4)"
-                    class="inline-flex items-center gap-2 bg-red-700 hover:bg-red-800 text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-red-700/25 transition">
+                    class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
                     Lanjut
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
@@ -577,7 +595,7 @@
         {{-- STEP 5 — RIWAYAT AKADEMIK               --}}
         {{-- ═══════════════════════════════════════ --}}
         <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-5">
-            <div class="bg-red-700 px-7 py-5">
+            <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Riwayat Akademik</h2>
             </div>
             <div class="p-7">
@@ -661,7 +679,7 @@
                         </label>
                         <label for="kartu_dosen" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <div>
+                            <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload Foto (JPG / PNG)</p>
                                 <p class="text-xs text-gray-400">Maks. 2MB</p>
                             </div>
@@ -673,7 +691,7 @@
             </div>
             <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
                 <button type="button" onclick="prevStep(5)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-red-600 hover:text-red-700 text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
+                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Kembali
                 </button>
@@ -722,9 +740,18 @@
 
     let hasShownStep3Toast = false;
     let hasShownStep4Toast = false;
+
+    // Card width per step
+    const stepWidths = { 1: '28rem', 2: '48rem', 3: '48rem', 4: '48rem', 5: '48rem' };
+
     function showStep(n) {
         document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
         document.getElementById('step-' + n).classList.add('active');
+
+        // Animate card wrapper width
+        const wrapper = document.getElementById('cardWrapper');
+        wrapper.style.maxWidth = stepWidths[n] || '48rem';
+
         updateIndicator(n);
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -743,23 +770,27 @@
         for (let i = 1; i <= TOTAL; i++) {
             const b = document.getElementById('bubble-' + i);
             const l = document.getElementById('label-' + i);
-            b.classList.remove('active', 'completed', 'bg-red-700', 'bg-gray-300', 'shadow-lg', 'shadow-red-700/30');
+            b.classList.remove('active', 'completed', 'bg-[#8b1515]', 'bg-gray-300', 'shadow-lg', 'shadow-[#8b1515]/30');
+            b.style.backgroundColor = '';
 
             if (i < active) {
-                b.classList.add('completed', 'bg-red-700');
-                if (l) { l.classList.remove('text-gray-400'); l.classList.add('text-red-700'); }
+                b.classList.add('completed');
+                b.style.backgroundColor = '#8b1515';
+                if (l) { l.classList.remove('text-gray-400'); l.style.color = '#8b1515'; }
             } else if (i === active) {
-                b.classList.add('active', 'bg-red-700', 'shadow-lg', 'shadow-red-700/30');
-                if (l) { l.classList.remove('text-gray-400'); l.classList.add('text-red-700'); }
+                b.classList.add('active');
+                b.style.backgroundColor = '#8b1515';
+                b.classList.add('shadow-lg');
+                if (l) { l.classList.remove('text-gray-400'); l.style.color = '#8b1515'; }
             } else {
                 b.classList.add('bg-gray-300');
-                if (l) { l.classList.remove('text-red-700'); l.classList.add('text-gray-400'); }
+                if (l) { l.style.color = ''; l.classList.add('text-gray-400'); }
             }
 
             const line = document.getElementById('line-' + i);
             if (line) {
-                if (i < active) { line.classList.add('bg-red-700'); line.classList.remove('bg-gray-300'); }
-                else { line.classList.remove('bg-red-700'); line.classList.add('bg-gray-300'); }
+                if (i < active) { line.style.backgroundColor = '#8b1515'; line.classList.remove('bg-gray-300'); }
+                else { line.style.backgroundColor = ''; line.classList.add('bg-gray-300'); }
             }
         }
     }
@@ -876,12 +907,36 @@
 
     // ── File Name Display ─────────────────────────────────
     function showFileName(input, displayId) {
-        const el = document.getElementById(displayId);
-        if (el && input.files && input.files[0]) {
-            el.textContent = '✓ ' + input.files[0].name;
-        } else if (el) {
-            el.textContent = '';
+        // Find the label element for this input
+        const label = document.querySelector('label[for="' + input.id + '"].file-upload-area');
+        if (!label) return;
+
+        if (input.files && input.files[0]) {
+            const fileName = input.files[0].name;
+            const shortName = fileName.length > 28 ? fileName.substring(0, 25) + '...' : fileName;
+            label.classList.add('has-file');
+
+            // Create or update file-selected element
+            let selectedEl = label.querySelector('.file-selected');
+            if (!selectedEl) {
+                selectedEl = document.createElement('div');
+                selectedEl.className = 'file-selected';
+                label.appendChild(selectedEl);
+            }
+            selectedEl.innerHTML = `
+                <svg class="w-4 h-4 shrink-0 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span class="text-sm font-medium text-[#8b1515] truncate">${shortName}</span>
+                <span class="text-[0.65rem] text-gray-400 shrink-0 ml-auto">Ganti</span>
+            `;
+        } else {
+            label.classList.remove('has-file');
+            const selectedEl = label.querySelector('.file-selected');
+            if (selectedEl) selectedEl.remove();
         }
+
+        // Clear old display element
+        const el = document.getElementById(displayId);
+        if (el) el.textContent = '';
     }
 
     // Init
