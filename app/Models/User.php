@@ -65,6 +65,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Akun penguji yang terhubung dengan kaprodi ini.
+     */
+    public function penguji_user()
+    {
+        return $this->hasOne(User::class, 'dosen_id', 'dosen_id')
+                    ->whereNotNull('users.dosen_id')
+                    ->where('role', 'penguji')
+                    ->where('id', '!=', $this->id);
+    }
+
+    /**
      * Cek apakah user ini adalah kaprodi dari prodi tertentu.
      */
     public function isKaprodiOf(int $prodiId): bool

@@ -35,7 +35,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     /** Daftar lowongan */
     public function index()
     {
-        $lowongans = Lowongan::with('prodi')->latest()->get();
+        $lowongans = Lowongan::with('prodi')->latest()->paginate(10);
         return view('admin.lowongan.index', compact('lowongans'));
     }
 

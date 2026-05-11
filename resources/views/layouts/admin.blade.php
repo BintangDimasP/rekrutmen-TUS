@@ -206,6 +206,7 @@
             <div class="flex items-center gap-3">
 
                 {{-- Bell Icon --}}
+                @if(auth()->user()->role !== 'kaprodi')
                 <div class="relative" @click.outside="notifOpen = false">
                     <button @click="toggleNotif()" class="relative w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-[#8b1515] transition-colors focus:outline-none">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -265,6 +266,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 {{-- Logout Button --}}
                 <button type="button" @click="showLogoutModal = true" class="bg-[#8b1515] hover:bg-red-800 text-white font-medium text-sm px-6 py-2 rounded-md transition shadow-sm">
@@ -275,6 +277,7 @@
 
         {{-- PAGE CONTENT --}}
         <main class="flex-1 overflow-x-hidden overflow-y-auto px-7 py-7">
+            @include('components.toast')
             @yield('content')
         </main>
     </div>

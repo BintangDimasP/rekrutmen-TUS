@@ -4,29 +4,6 @@
 
 @section('content')
 
-    {{-- Toast Notification --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0"
-             x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 translate-x-0"
-             x-transition:leave-end="opacity-0 translate-x-12"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl shadow-black/5 border border-gray-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white shadow-inner">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">{{ session('success') }}</p>
-            </div>
-            <button type="button" @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    @endif
-
     {{-- Prodi Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 
@@ -152,7 +129,7 @@
                                     <div>
                                         <label class="block text-base font-medium text-gray-800 mb-2">Kode</label>
                                         <input type="text" name="kode" value="{{ old('kode', $prodi->kode) }}" required maxlength="20"
-                                               class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-transparent text-sm font-mono uppercase text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                                               class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-transparent text-sm font-medium uppercase text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                     </div>
                                 </div>
                             </div>
@@ -295,7 +272,7 @@
                                 <div>
                                     <label class="block text-base font-medium text-gray-800 mb-2">Kode</label>
                                     <input type="text" name="kode" value="{{ old('kode') }}" required maxlength="20"
-                                           class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-transparent text-sm font-mono uppercase text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all"
+                                           class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-transparent text-sm font-medium uppercase text-gray-800 placeholder-gray-400 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all"
                                            placeholder="TI">
                                     @error('kode') <p class="text-xs text-red-500 mt-1">{{ $message }}</p> @enderror
                                 </div>

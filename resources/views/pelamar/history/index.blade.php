@@ -5,22 +5,12 @@
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
 
-    {{-- Notification --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white">
-                <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800">Berhasil</h4>
-                <p class="text-[0.75rem] text-gray-500">{{ session('success') }}</p>
-            </div>
-        </div>
-    @endif
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="{{ route('pelamar.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">Histori Lamaran</span>
+    </div>
 
     {{-- Filter Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -67,14 +57,14 @@
     {{-- Table History --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse table-fixed">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Posisi</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Prodi</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Tanggal Melamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Status</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[25%]">Posisi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Prodi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Tanggal Melamar</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
@@ -127,6 +117,7 @@
                 </tbody>
             </table>
         </div>
+        @include('components.pagination', ['paginator' => $lamarans])
     </div>
 </div>
 @endsection

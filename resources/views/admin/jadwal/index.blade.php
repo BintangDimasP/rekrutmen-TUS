@@ -2,44 +2,7 @@
 @section('title', 'Penjadwalan')
 @section('content')
 
-@if(session('success'))
-<div x-data="{show:true}" x-init="setTimeout(()=>show=false,5000)" x-show="show"
-     x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
-     x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-end="opacity-0 translate-x-12"
-     class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 min-w-[320px] max-w-sm">
-    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white">
-        <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-    </div>
-    <div class="flex-1">
-        <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-        <p class="text-[0.8rem] text-gray-500 leading-snug">{{ session('success') }}</p>
-    </div>
-    <button @click="show=false" class="text-gray-400 hover:text-gray-600 p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-</div>
-@endif
-
-@if($errors->has('edit'))
-<div x-data="{show:true}" x-init="setTimeout(()=>show=false,7000)" x-show="show"
-     x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
-     x-transition:enter-end="opacity-100 translate-x-0"
-     class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-red-100 min-w-[320px] max-w-sm">
-    <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 text-white">
-        <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-    </div>
-    <div class="flex-1">
-        <h4 class="text-sm font-bold text-gray-800 mb-0.5">Gagal menyimpan</h4>
-        <p class="text-[0.8rem] text-gray-500 leading-snug">{{ $errors->first('edit') }}</p>
-    </div>
-    <button @click="show=false" class="text-gray-400 hover:text-gray-600 p-1">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-    </button>
-</div>
-@endif
-
-<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()">
+<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="initPagination()">
 
 
     {{-- Filter & Action --}}
@@ -74,22 +37,22 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" x-data="jadwalTable()">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse" style="min-width:1150px">
+            <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px; width:100%">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Lowongan</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700">Pelamar</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-56">Wawancara</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-56">Micro Teaching</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-24">Aksi</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[12%]">Tanggal</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[14%]">Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[14%]">Pelamar</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[16%]">Wawancara</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[8%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[16%]">Micro Teaching</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[8%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[12%]">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                     @forelse($rows as $row)
                     @php
                         $wFirst  = $row->wawancara->first();
@@ -98,13 +61,19 @@
                         $mInfo   = $mFirst ? (\App\Models\JadwalSeleksi::SESSIONS['tahap2'][$mFirst->sesi] ?? null) : null;
 
                         // Data untuk modal (JSON-safe)
-                        $pengujiW = $row->wawancara->pluck('penguji_id')->unique()->values()->toJson();
-                        $pengujiM = $row->micro->pluck('penguji_id')->unique()->values()->toJson();
-                        $allPgIds = $row->wawancara->pluck('penguji_id')
-                            ->merge($row->micro->pluck('penguji_id'))
-                            ->unique()->values()->toJson();
+                        $pengujiWIds = $row->wawancara->pluck('penguji_id')->unique()->values()->toArray();
+                        $pengujiMIds = $row->micro->pluck('penguji_id')->unique()->values()->toArray();
+                        $allPgIds = array_unique(array_merge($pengujiWIds, $pengujiMIds));
+                        
+                        // Ambil data penguji lengkap
+                        $pengujiData = \App\Models\Dosen::whereIn('id', $allPgIds)->get(['id', 'nama', 'kode'])->toArray();
+                        
+                        $pengujiW = json_encode($pengujiWIds);
+                        $pengujiM = json_encode($pengujiMIds);
+                        $pengujiDataJson = json_encode($pengujiData);
+                        $allPgIds = json_encode($allPgIds);
                     @endphp
-                    <tr class="hover:bg-gray-50/60 transition-colors align-middle">
+                    <tr class="hover:bg-gray-50/60 transition-colors align-middle" data-row>
 
                         {{-- Tanggal --}}
                         <td class="py-4 px-4 align-top">
@@ -120,7 +89,7 @@
                         {{-- Pelamar --}}
                         <td class="py-4 px-4 border-l border-gray-100 align-top">
                             <div class="text-sm font-bold text-gray-800">{{ $row->pelamar->nama }}</div>
-                            <div class="text-[0.75rem] text-gray-500 font-mono mt-1">{{ $row->pelamar->user?->email ?? '-' }}</div>
+                            <div class="text-[0.75rem] text-gray-500 font-medium mt-1">{{ $row->pelamar->user?->email ?? '-' }}</div>
                         </td>
 
                         {{-- Wawancara --}}
@@ -213,6 +182,7 @@
                                 @click="openEdit({
                                     pelamarId:  {{ $row->pelamar->id }},
                                     lowonganId: {{ $row->lowongan->id }},
+                                    prodiId:    {{ $row->lowongan->prodi_id ?? 'null' }},
                                     tanggal:    '{{ $row->tanggal->format('Y-m-d') }}',
                                     pelamarNama:'{{ addslashes($row->pelamar->nama) }}',
                                     wSesi:   {{ $wFirst ? $wFirst->sesi : 'null' }},
@@ -224,6 +194,7 @@
                                     pengujiW: {{ $pengujiW }},
                                     pengujiM: {{ $pengujiM }},
                                     allPgIds: {{ $allPgIds }},
+                                    pengujiData: {{ $pengujiDataJson }},
                                 })"
                                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
                                 title="Edit jadwal">
@@ -253,6 +224,30 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Pagination --}}
+        <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+            <span>Menampilkan <strong x-text="paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
+            <div class="flex items-center gap-1">
+                {{-- Previous --}}
+                <button type="button" @click="prevPage()" :disabled="currentPage === 1"
+                        :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                        class="px-3 py-1.5 rounded-lg font-medium transition">Prev</button>
+
+                {{-- Page Numbers --}}
+                <template x-for="page in pageNumbers" :key="page">
+                    <button type="button" @click="goToPage(page)"
+                            :class="page === currentPage ? 'bg-[#8b1515] text-white font-bold' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                            class="px-3 py-1.5 rounded-lg font-medium transition"
+                            x-text="page"></button>
+                </template>
+
+                {{-- Next --}}
+                <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages"
+                        :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                        class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
+            </div>
+        </div>
     </div>
 
 {{-- ══ MODAL EDIT ══ --}}
@@ -278,9 +273,9 @@
          x-transition:leave="transition ease-in duration-200" 
          x-transition:leave-start="opacity-100 scale-100 translate-y-0"
          x-transition:leave-end="opacity-0 scale-95 translate-y-4"
-         class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-10">
+         class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden relative z-10 max-h-[90vh] flex flex-col">
 
-        <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
+        <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between flex-shrink-0">
             <div>
                 <h2 class="text-base font-bold text-white">Edit Jadwal Seleksi</h2>
                 <p class="text-xs text-red-200 mt-0.5" x-text="modal.pelamarNama"></p>
@@ -291,7 +286,7 @@
             </button>
         </div>
 
-        <form action="{{ route('admin.jadwal.updateGroup') }}" method="POST" class="p-6 space-y-4">
+        <form action="{{ route('admin.jadwal.updateGroup') }}" method="POST" class="p-6 space-y-4 overflow-y-auto flex-1">
             @csrf
             @method('PUT')
             <input type="hidden" name="pelamar_id"  :value="modal.pelamarId">
@@ -305,54 +300,136 @@
                 <p x-show="modal.loadingTaken" class="text-[0.65rem] text-gray-400 mt-1 italic">Memuat ketersediaan sesi...</p>
             </div>
 
-            {{-- Wawancara sesi --}}
-            <div x-show="modal.hasW">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                    <span class="inline-flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
-                        Sesi Wawancara
-                    </span>
-                </label>
-                <select name="wawancara_sesi" x-model="modal.wSesi"
-                        class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                    <option value="">— Pilih Sesi —</option>
-                    <template x-for="(info, key) in wSessions" :key="key">
-                        <option :value="key"
-                                :disabled="isBlockedW(parseInt(key))"
-                                x-text="sesiLabel(key, info, isBlockedW(parseInt(key)))">
-                        </option>
+            {{-- ── Wawancara Section ── --}}
+            <div x-show="modal.hasW" class="border border-gray-100 rounded-xl p-4 space-y-3 bg-gray-50/50">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                    Wawancara
+                </h3>
+
+                {{-- Penguji Wawancara (Multi-Select Dropdown) --}}
+                <div>
+                    <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Penguji Wawancara</label>
+                    <div x-show="modal.loadingPengujis" class="text-[0.65rem] text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">
+                        Memuat daftar penguji...
+                    </div>
+                    <template x-if="!modal.loadingPengujis">
+                        <div>
+                            {{-- Tags penguji terpilih --}}
+                            <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedWPenguji.length > 0">
+                                <template x-for="pgId in modal.selectedWPenguji" :key="pgId">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[0.62rem] text-blue-800">
+                                        <span x-text="getPengujiNama(pgId)"></span>
+                                        <button type="button" @click="toggleWPenguji(pgId)"
+                                            class="text-blue-300 hover:text-blue-600 transition-colors ml-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                        <input type="hidden" name="wawancara_penguji_ids[]" :value="pgId">
+                                    </span>
+                                </template>
+                            </div>
+                            {{-- Dropdown untuk tambah penguji --}}
+                            <select @change="toggleWPenguji($event.target.value); $event.target.value = ''"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                                <option value="">+ Tambah penguji</option>
+                                <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                    <option :value="pg.id" :disabled="modal.selectedWPenguji.includes(parseInt(pg.id))"
+                                        x-text="`${pg.nama} (${pg.kode})`"></option>
+                                </template>
+                            </select>
+                        </div>
                     </template>
-                </select>
-                <p x-show="modal.wSesi && isBlockedW(parseInt(modal.wSesi))"
-                   class="text-[0.65rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
-                <div class="mt-2">
+                </div>
+
+                {{-- Sesi Wawancara --}}
+                <div>
+                    <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Sesi Wawancara</label>
+                    <select name="wawancara_sesi" x-model="modal.wSesi"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                        <option value="">— Pilih Sesi —</option>
+                        <template x-for="(info, key) in wSessions" :key="key">
+                            <option :value="key"
+                                    :disabled="isBlockedW(parseInt(key))"
+                                    x-text="sesiLabel(key, info, isBlockedW(parseInt(key)))">
+                            </option>
+                        </template>
+                    </select>
+                    <p x-show="modal.wSesi && isBlockedW(parseInt(modal.wSesi))"
+                       class="text-[0.65rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
+                </div>
+
+                {{-- Link Wawancara --}}
+                <div>
                     <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Link Zoom Wawancara</label>
                     <input type="url" name="wawancara_link" x-model="modal.wLink" placeholder="https://..."
                            class="w-full px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                 </div>
             </div>
 
-            {{-- Micro sesi --}}
-            <div x-show="modal.hasM">
-                <label class="block text-xs font-semibold text-gray-600 mb-1.5">
-                    <span class="inline-flex items-center gap-1">
-                        <span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>
-                        Sesi Micro Teaching
-                    </span>
-                </label>
-                <select name="micro_sesi" x-model="modal.mSesi"
-                        class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                    <option value="">— Pilih Sesi —</option>
-                    <template x-for="(info, key) in mSessions" :key="key">
-                        <option :value="key"
-                                :disabled="isBlockedM(parseInt(key))"
-                                x-text="sesiLabel(key, info, isBlockedM(parseInt(key)))">
-                        </option>
+            {{-- ── Micro Teaching Section ── --}}
+            <div x-show="modal.hasM" class="border border-gray-100 rounded-xl p-4 space-y-3 bg-gray-50/50">
+                <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span>
+                    Micro Teaching
+                </h3>
+
+                {{-- Penguji Micro (Multi-Select Dropdown) --}}
+                <div>
+                    <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Penguji Micro Teaching</label>
+                    <div x-show="modal.loadingPengujis" class="text-[0.65rem] text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">
+                        Memuat daftar penguji...
+                    </div>
+                    <template x-if="!modal.loadingPengujis">
+                        <div>
+                            {{-- Tags penguji terpilih --}}
+                            <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedMPenguji.length > 0">
+                                <template x-for="pgId in modal.selectedMPenguji" :key="pgId">
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-50 border border-purple-100 text-[0.62rem] text-purple-800">
+                                        <span x-text="getPengujiNama(pgId)"></span>
+                                        <button type="button" @click="toggleMPenguji(pgId)"
+                                            class="text-purple-300 hover:text-purple-600 transition-colors ml-0.5">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                        <input type="hidden" name="micro_penguji_ids[]" :value="pgId">
+                                    </span>
+                                </template>
+                            </div>
+                            {{-- Dropdown untuk tambah penguji --}}
+                            <select @change="toggleMPenguji($event.target.value); $event.target.value = ''"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                                <option value="">+ Tambah penguji</option>
+                                <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                    <option :value="pg.id" :disabled="modal.selectedMPenguji.includes(parseInt(pg.id))"
+                                        x-text="`${pg.nama} (${pg.kode})`"></option>
+                                </template>
+                            </select>
+                        </div>
                     </template>
-                </select>
-                <p x-show="modal.mSesi && isBlockedM(parseInt(modal.mSesi))"
-                   class="text-[0.65rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
-                <div class="mt-2">
+                </div>
+
+                {{-- Sesi Micro --}}
+                <div>
+                    <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Sesi Micro Teaching</label>
+                    <select name="micro_sesi" x-model="modal.mSesi"
+                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                        <option value="">— Pilih Sesi —</option>
+                        <template x-for="(info, key) in mSessions" :key="key">
+                            <option :value="key"
+                                    :disabled="isBlockedM(parseInt(key))"
+                                    x-text="sesiLabel(key, info, isBlockedM(parseInt(key)))">
+                            </option>
+                        </template>
+                    </select>
+                    <p x-show="modal.mSesi && isBlockedM(parseInt(modal.mSesi))"
+                       class="text-[0.65rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
+                </div>
+
+                {{-- Link Micro --}}
+                <div>
                     <label class="block text-[0.65rem] font-semibold text-gray-500 mb-1 uppercase tracking-wider">Link Zoom Micro Teaching</label>
                     <input type="url" name="micro_link" x-model="modal.mLink" placeholder="https://..."
                            class="w-full px-3 py-1.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
@@ -383,13 +460,16 @@ function jadwalIndex() {
     return {
         modal: {
             open: false,
-            pelamarId: null, lowonganId: null, pelamarNama: '',
+            pelamarId: null, lowonganId: null, prodiId: null, pelamarNama: '',
             tanggal: '', wSesi: '', mSesi: '',
             wLink: '', mLink: '',
             origW: null, origM: null,
             hasW: false, hasM: false,
             pengujiW: [], pengujiM: [], allPgIds: [],
             takenMap: {}, loadingTaken: false,
+            availablePengujis: [], loadingPengujis: false,
+            selectedWPenguji: [], selectedMPenguji: [],
+            pengujiDataMap: {}, // Menyimpan data penguji dengan key ID
         },
 
         get wSessions() { return _sess['tahap1'] ?? {}; },
@@ -398,6 +478,7 @@ function jadwalIndex() {
         openEdit(d) {
             this.modal.pelamarId   = d.pelamarId;
             this.modal.lowonganId  = d.lowonganId;
+            this.modal.prodiId     = d.prodiId;
             this.modal.pelamarNama = d.pelamarNama;
             this.modal.tanggal     = d.tanggal;
             this.modal.wSesi       = d.wSesi !== null ? String(d.wSesi) : '';
@@ -412,8 +493,73 @@ function jadwalIndex() {
             this.modal.pengujiM    = d.pengujiM;
             this.modal.allPgIds    = d.allPgIds;
             this.modal.takenMap    = {};
+            this.modal.selectedWPenguji = [...d.pengujiW];
+            this.modal.selectedMPenguji = [...d.pengujiM];
+            
+            // Simpan data penguji dalam map untuk lookup cepat
+            this.modal.pengujiDataMap = {};
+            if (d.pengujiData && Array.isArray(d.pengujiData)) {
+                d.pengujiData.forEach(pg => {
+                    this.modal.pengujiDataMap[pg.id] = pg;
+                });
+            }
+            
             this.modal.open        = true;
             this.loadTaken();
+            this.loadPengujis();
+        },
+
+        toggleWPenguji(id) {
+            id = parseInt(id);
+            const idx = this.modal.selectedWPenguji.indexOf(id);
+            if (idx === -1) {
+                this.modal.selectedWPenguji.push(id);
+            } else {
+                this.modal.selectedWPenguji.splice(idx, 1);
+            }
+            // Update allPgIds for taken calculation
+            this.modal.allPgIds = [...new Set([...this.modal.selectedWPenguji, ...this.modal.selectedMPenguji])];
+            this.loadTaken();
+        },
+
+        toggleMPenguji(id) {
+            id = parseInt(id);
+            const idx = this.modal.selectedMPenguji.indexOf(id);
+            if (idx === -1) {
+                this.modal.selectedMPenguji.push(id);
+            } else {
+                this.modal.selectedMPenguji.splice(idx, 1);
+            }
+            // Update allPgIds for taken calculation
+            this.modal.allPgIds = [...new Set([...this.modal.selectedWPenguji, ...this.modal.selectedMPenguji])];
+            this.loadTaken();
+        },
+
+        async loadPengujis() {
+            if (!this.modal.prodiId) return;
+            this.modal.loadingPengujis = true;
+            try {
+                const res = await fetch(`${_base}/admin/api/penguji-by-prodi?prodi_id=${this.modal.prodiId}`);
+                const apiPengujis = res.ok ? await res.json() : [];
+                
+                // Merge dengan data yang sudah ada di pengujiDataMap
+                const merged = {};
+                
+                // Tambah dari pengujiDataMap
+                Object.values(this.modal.pengujiDataMap).forEach(pg => {
+                    merged[pg.id] = pg;
+                });
+                
+                // Tambah dari API (overwrite jika sudah ada)
+                apiPengujis.forEach(pg => {
+                    merged[pg.id] = pg;
+                });
+                
+                this.modal.availablePengujis = Object.values(merged);
+            } catch { 
+                this.modal.availablePengujis = Object.values(this.modal.pengujiDataMap);
+            }
+            this.modal.loadingPengujis = false;
         },
 
         async loadTaken() {
@@ -435,7 +581,7 @@ function jadwalIndex() {
             const orig = this.modal.origW;
             if (sesiNum === 4 && parseInt(this.modal.mSesi) === 1) return true;
 
-            for (const pgId of this.modal.pengujiW) {
+            for (const pgId of this.modal.selectedWPenguji) {
                 const taken = this._takenFor(pgId, 'tahap1').filter(s => s !== orig);
                 if (taken.includes(sesiNum)) return true;
                 if (sesiNum === 4 && orig !== 4) {
@@ -449,7 +595,7 @@ function jadwalIndex() {
             const orig = this.modal.origM;
             if (sesiNum === 1 && parseInt(this.modal.wSesi) === 4) return true;
 
-            for (const pgId of this.modal.pengujiM) {
+            for (const pgId of this.modal.selectedMPenguji) {
                 const taken = this._takenFor(pgId, 'tahap2').filter(s => s !== orig);
                 if (taken.includes(sesiNum)) return true;
                 if (sesiNum === 1 && orig !== 1) {
@@ -474,6 +620,10 @@ function jadwalIndex() {
             if (this.modal.hasW && this.modal.wSesi && !this.isValidUrl(this.modal.wLink)) return true;
             if (this.modal.hasM && this.modal.mSesi && !this.isValidUrl(this.modal.mLink)) return true;
 
+            // Penguji harus dipilih minimal 1
+            if (this.modal.hasW && this.modal.selectedWPenguji.length === 0) return true;
+            if (this.modal.hasM && this.modal.selectedMPenguji.length === 0) return true;
+
             return false;
         },
 
@@ -481,6 +631,18 @@ function jadwalIndex() {
             const time = (info.start && info.end) ? `${info.start}–${info.end}` : '';
             const base = time ? `Sesi ${key} (${time})` : `Sesi ${key}`;
             return isBlocked ? base + ' ✗' : base;
+        },
+
+        getPengujiNama(pgId) {
+            pgId = parseInt(pgId);
+            // Cek di pengujiDataMap dulu (data dari jadwal yang sudah ada)
+            if (this.modal.pengujiDataMap[pgId]) {
+                const pg = this.modal.pengujiDataMap[pgId];
+                return `${pg.nama} (${pg.kode})`;
+            }
+            // Fallback ke availablePengujis (data dari API)
+            const penguji = this.modal.availablePengujis.find(p => p.id === pgId);
+            return penguji ? `${penguji.nama} (${penguji.kode})` : `Penguji #${pgId}`;
         },
     };
 }

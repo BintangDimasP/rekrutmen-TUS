@@ -16,23 +16,7 @@ class PengujiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Dosen::with('prodi')->where('is_penguji', true);
-
-        // Filter Prodi
-        if ($request->filled('prodi_id')) {
-            $query->where('prodi_id', $request->prodi_id);
-        }
-
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('kode', 'like', "%{$search}%");
-            });
-        }
-
-        $pengujis = $query->get();
+        $pengujis = Dosen::with('prodi')->where('is_penguji', true)->get();
 
         // Ambil email penguji dari tabel users untuk setiap penguji
         $pengujiEmails = User::whereIn('dosen_id', $pengujis->pluck('id'))

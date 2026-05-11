@@ -4,45 +4,12 @@
 
 @section('content')
 
-    {{-- Toast Berhasil --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-12"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-gray-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">{{ session('success') }}</p>
-            </div>
-            <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    @endif
-
-    {{-- Toast Error (Validasi Gagal) --}}
-    @if($errors->any())
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 6000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-12"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl border border-red-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 text-white">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Gagal Menyimpan</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">Mohon periksa kembali form isian Anda. Pastikan semua field wajib (seperti NIK, Nama, Tanggal Lahir) sudah terisi.</p>
-            </div>
-            <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    @endif
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{{ route('pelamar.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">Profil</span>
+    </div>
 
 <div class="space-y-6" x-data="{
     isEditing: {{ ($errors->any() || empty($pelamar->nik)) ? 'true' : 'false' }},

@@ -5,29 +5,41 @@
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6">
 
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0"
-             x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 translate-x-0"
-             x-transition:leave-end="opacity-0 translate-x-12"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl shadow-black/5 border border-gray-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white shadow-inner">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">{{ session('success') }}</p>
-            </div>
-            <button type="button" @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    @endif
+    {{-- Breadcrumb --}}
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="{{ route('penguji.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">Daftar Pengujian</span>
+    </div>
 
-    <div x-data="{ tab: 'all' }">
+    <div x-data="{
+            tab: 'all',
+            currentPage: 1,
+            perPage: 10,
+            get filteredRows() {
+                return Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]')).filter(row => {
+                    return this.tab === 'all' || row.dataset.tipe === this.tab;
+                });
+            },
+            get totalFiltered() { return this.filteredRows.length; },
+            get totalPages() { return Math.max(1, Math.ceil(this.totalFiltered / this.perPage)); },
+            get paginatedStart() { return (this.currentPage - 1) * this.perPage; },
+            get paginatedEnd() { return this.currentPage * this.perPage; },
+            updateVisibility() {
+                const rows = Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]'));
+                const filtered = this.filteredRows;
+                rows.forEach(row => {
+                    const idx = filtered.indexOf(row);
+                    row.style.display = (idx === -1 || idx < this.paginatedStart || idx >= this.paginatedEnd) ? 'none' : '';
+                });
+            },
+            resetPage() { this.currentPage = 1; this.updateVisibility(); },
+            prevPage() { if (this.currentPage > 1) { this.currentPage--; this.updateVisibility(); } },
+            nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.updateVisibility(); } },
+            goToPage(p) { this.currentPage = p; this.updateVisibility(); }
+         }"
+         x-init="$nextTick(() => updateVisibility())"
+         x-effect="tab; resetPage()">
         <!-- Filter Dropdown -->
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -48,26 +60,26 @@
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead class="bg-[#8b1515] text-white">
                         <tr>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Tanggal</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Waktu</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Seleksi</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Tanggal</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Waktu</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Seleksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Pelamar</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[12%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                         @forelse($jadwals as $jadwal)
                             @php
                                 $sesiInfo = \App\Models\JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$jadwal->sesi] ?? null;
                                 $sudahDinilai = $jadwal->penilaian !== null;
                             @endphp
-                            <tr x-show="tab === 'all' || tab === '{{ $jadwal->tipe_seleksi == 'tahap1' ? 'wawancara' : 'micro' }}'" 
-                                class="hover:bg-gray-50/50 transition-colors">
+                            <tr data-row data-tipe="{{ $jadwal->tipe_seleksi == 'tahap1' ? 'wawancara' : 'micro' }}"
+                                class="hover:bg-gray-50/50 transition-colors h-[52px]">
                                 
                                 {{-- Tanggal --}}
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-800">{{ $jadwal->tanggal->format('d/m/Y') }}</td>
@@ -121,8 +133,25 @@
                 </table>
             </div>
             
-            <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500">
-                <span>Total: <strong>{{ $jadwals->count() }}</strong> jadwal pengujian</span>
+            <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+                <span>
+                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
+                </span>
+                <div class="flex items-center gap-1">
+                    <button type="button" @click="prevPage()" :disabled="currentPage === 1"
+                            :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                            class="px-3 py-1.5 rounded-lg font-medium transition">Prev</button>
+                    <template x-for="page in totalPages" :key="page">
+                        <button type="button" @click="goToPage(page)"
+                                x-show="page >= currentPage - 2 && page <= currentPage + 2"
+                                :class="page === currentPage ? 'bg-[#8b1515] text-white font-bold' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                                class="px-3 py-1.5 rounded-lg font-medium transition"
+                                x-text="page"></button>
+                    </template>
+                    <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages"
+                            :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                            class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
+                </div>
             </div>
         </div>
     </div>

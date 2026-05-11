@@ -189,7 +189,7 @@
                                     }">
 
                                     {{-- No --}}
-                                    <td class="py-3 px-3 text-xs text-gray-400 font-mono" x-text="idx + 1"></td>
+                                    <td class="py-3 px-3 text-xs text-gray-400 font-medium" x-text="idx + 1"></td>
 
                                     {{-- Pelamar --}}
                                     <td class="py-3 px-3">
@@ -198,7 +198,7 @@
                                                 :class="getConflictWarning(p.id) ? 'bg-red-500' : isRowComplete(p.id) ? 'bg-green-500' : 'bg-gray-300'"></span>
                                             <div>
                                                 <p class="text-xs font-semibold text-gray-800" x-text="p.nama"></p>
-                                                <p class="text-[0.65rem] text-gray-400 font-mono" x-text="p.email"></p>
+                                                <p class="text-[0.65rem] text-gray-400 font-medium" x-text="p.email"></p>
                                                 <p x-show="getConflictWarning(p.id)" x-text="getConflictWarning(p.id)"
                                                     class="text-[0.62rem] text-red-600 mt-1 leading-snug"></p>
                                             </div>

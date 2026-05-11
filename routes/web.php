@@ -4,9 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Default landing page
-Route::get('/', function () {
-    return view('landing');
-});
+Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 
 // Autentikasi group
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -103,6 +101,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'dashboard'])->name('dashboard');
         Route::get('/pelamar', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'pelamar'])->name('pelamar.index');
+        Route::get('/pelamar/{pelamar}', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'showPelamar'])->name('pelamar.show');
     });
 
     // Notifikasi (semua role)

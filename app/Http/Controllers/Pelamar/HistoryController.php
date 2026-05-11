@@ -30,7 +30,7 @@ class HistoryController extends Controller
             $query->where('status', $request->status);
         }
 
-        $lamarans = $query->get();
+        $lamarans = $query->paginate(10)->appends($request->query());
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
         return view('pelamar.history.index', compact('lamarans', 'prodis'));

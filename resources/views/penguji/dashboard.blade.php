@@ -30,16 +30,16 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead class="bg-[#8b1515] text-white">
                         <tr>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Tanggal</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Waktu</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Seleksi</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Tanggal</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Waktu</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Seleksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Pelamar</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[12%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">

@@ -78,6 +78,13 @@ class PengujiController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
+        // Cek apakah sudah dinilai, jika sudah maka tidak bisa mulai uji lagi
+        $jadwal->load(['pelamar.user', 'lowongan.prodi', 'penilaian']);
+        if ($jadwal->penilaian) {
+            return redirect()->route('penguji.pengujian.show', $jadwal->id)
+                ->with('success', 'Penilaian sudah dilakukan. Anda tidak dapat mengubah nilai yang sudah disubmit.');
+        }
+
         if ($jadwal->tipe_seleksi === 'tahap2') {
             $wawancara = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
                 ->where('tipe_seleksi', 'tahap1')
@@ -88,8 +95,6 @@ class PengujiController extends Controller
                 abort(403, 'Penilaian Wawancara harus diselesaikan terlebih dahulu sebelum melakukan penilaian Micro Teaching.');
             }
         }
-
-        $jadwal->load(['pelamar.user', 'lowongan.prodi', 'penilaian']);
         
         return view('penguji.pengujian.uji', compact('jadwal'));
     }
@@ -99,6 +104,12 @@ class PengujiController extends Controller
         $dosen = $this->getDosen();
         if ($jadwal->penguji_id !== $dosen?->id) {
             abort(403, 'Akses ditolak.');
+        }
+
+        // Cek apakah sudah dinilai, jika sudah maka tidak bisa submit lagi
+        if ($jadwal->penilaian) {
+            return redirect()->route('penguji.pengujian.show', $jadwal->id)
+                ->with('success', 'Penilaian sudah dilakukan sebelumnya. Tidak dapat mengubah nilai.');
         }
 
         // Validate individual item scores (1-5 scale)
@@ -126,17 +137,15 @@ class PengujiController extends Controller
 
         $total = round(($categoryScores[1] + $categoryScores[2] + $categoryScores[3]) / 3);
 
-        Penilaian::updateOrCreate(
-            ['jadwal_seleksi_id' => $jadwal->id],
-            [
-                'kategori_1' => $categoryScores[1],
-                'kategori_2' => $categoryScores[2],
-                'kategori_3' => $categoryScores[3],
-                'detail_nilai' => $detail,
-                'total_nilai' => $total,
-                'catatan' => $request->catatan,
-            ]
-        );
+        Penilaian::create([
+            'jadwal_seleksi_id' => $jadwal->id,
+            'kategori_1' => $categoryScores[1],
+            'kategori_2' => $categoryScores[2],
+            'kategori_3' => $categoryScores[3],
+            'detail_nilai' => $detail,
+            'total_nilai' => $total,
+            'catatan' => $request->catatan,
+        ]);
 
         return redirect()->route('penguji.pengujian.show', $jadwal->id)->with('success', 'Penilaian berhasil disimpan.');
     }

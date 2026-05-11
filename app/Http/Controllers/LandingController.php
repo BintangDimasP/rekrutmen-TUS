@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Lowongan;
+use App\Models\Pelamar;
+use Illuminate\Http\Request;
+
+class LandingController extends Controller
+{
+    public function index()
+    {
+        // Ambil 6 lowongan terbaru yang masih aktif
+        $lowongans = Lowongan::where('status', 'aktif')
+            ->where('tanggal_tutup', '>=', now())
+            ->with('prodi')
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        // Hitung total pendaftar
+        $totalPendaftar = Pelamar::count();
+
+        return view('landing', compact('lowongans', 'totalPendaftar'));
+    }
+}

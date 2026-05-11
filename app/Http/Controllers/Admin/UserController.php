@@ -18,58 +18,22 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::whereIn('role', ['admin', 'pelamar', 'penguji', 'kaprodi']);
-
-        // Filter Role
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
-
-        // Search Name/Email
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            });
-        }
-
-        $users = $query->orderBy('role')
+        $users = User::with('penguji_user')
+            ->whereIn('role', ['admin', 'pelamar', 'penguji', 'kaprodi'])
+            ->where(function ($q) {
+                // Exclude penguji rows that have a kaprodi counterpart to avoid duplicate display
+                $q->where('role', '!=', 'penguji')
+                  ->orWhereNull('dosen_id')
+                  ->orWhereNotExists(function ($sub) {
+                      $sub->select(DB::raw(1))
+                          ->from('users as u2')
+                          ->whereColumn('u2.dosen_id', 'users.dosen_id')
+                          ->where('u2.role', 'kaprodi');
+                  });
+            })
+            ->orderBy('role')
             ->orderBy('name')
             ->get();
-
-        // Visual Grouping for Dual Role Dosens (Kaprodi & Penguji)
-        if (!$request->filled('role')) {
-            $finalUsers = collect();
-            $pengujiMap = [];
-
-            // First pass: identify pure penguji who might be paired
-            foreach ($users as $user) {
-                if ($user->role === 'penguji' && $user->dosen_id) {
-                    $pengujiMap[$user->dosen_id] = $user;
-                }
-            }
-
-            foreach ($users as $user) {
-                if ($user->role === 'penguji' && $user->dosen_id) {
-                    $hasKaprodi = $users->contains(function ($u) use ($user) {
-                        return $u->role === 'kaprodi' && $u->dosen_id === $user->dosen_id;
-                    });
-                    if ($hasKaprodi) {
-                        continue; // Skip standalone penguji if kaprodi exists, it will be attached
-                    }
-                }
-
-                if ($user->role === 'kaprodi' && $user->dosen_id) {
-                    if (isset($pengujiMap[$user->dosen_id])) {
-                        $user->penguji_user = $pengujiMap[$user->dosen_id];
-                    }
-                }
-
-                $finalUsers->push($user);
-            }
-            $users = $finalUsers;
-        }
 
         return view('admin.user', compact('users'));
     }
@@ -91,7 +55,7 @@ class UserController extends Controller
         }
 
         $pengujiUser = null;
-        if ($request->has('penguji_email') && $user->dosen_id && $user->role === 'kaprodi') {
+        if ($user->dosen_id && $user->role === 'kaprodi') {
             $pengujiUser = User::where('dosen_id', $user->dosen_id)->where('role', 'penguji')->first();
             if ($pengujiUser) {
                 // Email penguji tidak bisa diubah (karena role bukan pelamar), tapi tetap divalidasi jika dikirim

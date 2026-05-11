@@ -5,6 +5,12 @@
 @section('content')
     <div class="max-w-5xl mx-auto space-y-8" x-data="lowonganApp()">
 
+        {{-- Breadcrumb --}}
+        <div class="flex items-center gap-2 text-sm text-gray-500">
+            <a href="{{ route('pelamar.dashboard') }}" class="hover:text-[#8b1515] transition-colors font-medium">Dashboard</a>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <span class="font-semibold text-gray-800">Cari Lowongan</span>
+        </div>
 
         {{-- Filter Panel --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -20,7 +26,7 @@
                     </div>
                         <select name="prodi_id" onchange="document.getElementById('filterForm').submit()"
                             class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
-                            <option value="">Filter</option>
+                            <option value="">Semua Prodi</option>
                             @foreach($prodis as $prodi)
                                 <option value="{{ $prodi->id }}" {{ request('prodi_id') == $prodi->id ? 'selected' : '' }}>
                                     {{ $prodi->nama }}</option>
@@ -28,21 +34,11 @@
                         </select>
                     </div>
 
-                    {{-- Filter Saved --}}
-                    <div class="relative w-full sm:w-48">
-                        <select name="filter" onchange="document.getElementById('filterForm').submit()"
-                            class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
-                            <option value="">Semua Lowongan</option>
-                            <option value="saved" {{ request('filter') == 'saved' ? 'selected' : '' }}>Lowongan Tersimpan
-                            </option>
-                        </select>
-                    </div>
+                    @if(request()->filled('prodi_id'))
+                        <a href="{{ route('pelamar.lowongan.index') }}" class="text-xs text-red-600 hover:underline font-medium">Reset</a>
+                    @endif
                 </div>
 
-                @if(request()->filled('prodi_id') || request()->filled('filter'))
-                    <a href="{{ route('pelamar.lowongan.index') }}"
-                        class="text-xs font-semibold text-red-600 hover:underline">Reset Filter</a>
-                @endif
             </form>
         </div>
 

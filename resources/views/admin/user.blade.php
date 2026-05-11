@@ -4,35 +4,54 @@
 
 @section('content')
 
-    {{-- Toast Notification --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0"
-             x-transition:leave="transition ease-in duration-300"
-             x-transition:leave-start="opacity-100 translate-x-0"
-             x-transition:leave-end="opacity-0 translate-x-12"
-             class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl shadow-black/5 border border-gray-100 min-w-[320px]">
-            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white shadow-inner">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">{{ session('success') }}</p>
-            </div>
-            <button type="button" @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-        </div>
-    @endif
-
     {{-- Main Container --}}
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6" 
+         x-data="{
+            search: '{{ request('search') }}',
+            roleFilter: '{{ request('role') }}',
+            currentPage: 1,
+            perPage: 10,
+            get filteredRows() {
+                return Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]')).filter(row => {
+                    const name = row.dataset.name || '';
+                    const email = row.dataset.email || '';
+                    const role = row.dataset.role || '';
+                    const matchSearch = this.search === '' || 
+                        name.includes(this.search.toLowerCase()) || 
+                        email.includes(this.search.toLowerCase());
+                    const matchRole = this.roleFilter === '' || 
+                        role === this.roleFilter ||
+                        (this.roleFilter === 'penguji' && row.dataset.isPenguji === '1');
+                    return matchSearch && matchRole;
+                });
+            },
+            get totalFiltered() { return this.filteredRows.length; },
+            get totalPages() { return Math.max(1, Math.ceil(this.totalFiltered / this.perPage)); },
+            get paginatedStart() { return (this.currentPage - 1) * this.perPage; },
+            get paginatedEnd() { return this.currentPage * this.perPage; },
+            updateVisibility() {
+                const rows = Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]'));
+                const filtered = this.filteredRows;
+                rows.forEach(row => {
+                    const idx = filtered.indexOf(row);
+                    if (idx === -1 || idx < this.paginatedStart || idx >= this.paginatedEnd) {
+                        row.style.display = 'none';
+                    } else {
+                        row.style.display = '';
+                    }
+                });
+            },
+            resetPage() { this.currentPage = 1; this.updateVisibility(); },
+            prevPage() { if (this.currentPage > 1) { this.currentPage--; this.updateVisibility(); } },
+            nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.updateVisibility(); } },
+            goToPage(p) { this.currentPage = p; this.updateVisibility(); }
+         }"
+         x-init="$nextTick(() => updateVisibility())"
+         x-effect="search; roleFilter; resetPage()">
 
         {{-- Filter Card --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <form method="GET" action="{{ route('admin.user.index') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 {{-- Left: Filter Role --}}
                 <div class="flex items-center gap-3 w-full sm:w-auto">
                     <div class="relative w-full sm:w-48">
@@ -41,18 +60,15 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
                             </svg>
                         </div>
-                        <select name="role" onchange="this.form.submit()" 
+                        <select x-model="roleFilter" 
                                 class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
                             <option value="">Semua Role</option>
-                            <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                            <option value="pelamar" {{ request('role') == 'pelamar' ? 'selected' : '' }}>Pelamar</option>
-                            <option value="penguji" {{ request('role') == 'penguji' ? 'selected' : '' }}>Penguji</option>
-                            <option value="kaprodi" {{ request('role') == 'kaprodi' ? 'selected' : '' }}>Kaprodi</option>
+                            <option value="admin">Admin</option>
+                            <option value="pelamar">Pelamar</option>
+                            <option value="penguji">Penguji</option>
+                            <option value="kaprodi">Kaprodi</option>
                         </select>
                     </div>
-                    @if(request()->filled('role') || request()->filled('search'))
-                        <a href="{{ route('admin.user.index') }}" class="text-xs text-red-600 hover:underline">Reset</a>
-                    @endif
                 </div>
 
                 {{-- Right: Search --}}
@@ -62,38 +78,43 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama atau email..." 
+                    <input type="text" x-model="search" placeholder="Cari nama atau email..." 
                            class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm">
-                    <button type="submit" class="hidden"></button>
                 </div>
-            </form>
+            </div>
         </div>
 
         {{-- Table Container --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {{-- Table --}}
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Role</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[35%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Role</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                         @forelse($users as $user)
-                        <tr x-data="{ openEditModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-5 text-sm text-gray-800 font-medium">{{ $user->name }}</td>
+                        <tr x-data="{ openEditModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" 
+                            class="hover:bg-gray-50 transition-colors h-[52px]"
+                            data-row
+                            data-name="{{ strtolower(addslashes($user->name)) }}"
+                            data-email="{{ strtolower(addslashes($user->email)) }}{{ $user->penguji_user ? ' ' . strtolower(addslashes($user->penguji_user->email)) : '' }}"
+                            data-role="{{ $user->role }}"
+                            data-is-penguji="{{ $user->role === 'kaprodi' && $user->penguji_user ? '1' : '0' }}">
+                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate">{{ $user->name }}</td>
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium">
-                                <div class="font-mono text-[0.8rem]">{{ $user->email }}</div>
-                                @if(isset($user->penguji_user))
-                                    <div class="font-mono text-[0.8rem] text-blue-600 mt-1">{{ $user->penguji_user->email }}</div>
+                                <div class="font-medium text-[0.8rem] truncate">{{ $user->email }}</div>
+                                @if($user->role === 'kaprodi' && $user->penguji_user)
+                                    <div class="font-medium text-[0.8rem] text-blue-600 mt-1 truncate">{{ $user->penguji_user->email }}</div>
                                 @endif
                             </td>
                             <td class="py-3 px-5 text-sm">
-                                @if(isset($user->penguji_user))
+                                @if($user->role === 'kaprodi' && $user->penguji_user)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-bold bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
                                 @elseif($user->role === 'admin')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>
@@ -150,7 +171,7 @@
                                                 </div>
                                                 @endif
 
-                                                @if(isset($user->penguji_user))
+                                                @if($user->role === 'kaprodi' && $user->penguji_user)
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-800 mb-1.5">Kata Sandi (Kaprodi) - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
                                                     <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
@@ -189,18 +210,33 @@
                     </tbody>
                 </table>
             </div>
-            
-            {{-- Footer Pagination / Tally --}}
-            <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col md:flex-row md:items-center justify-between text-xs text-gray-500 gap-3">
-                <span>Total: <strong>{{ $users->count() }}</strong> akun</span>
-                <div class="flex items-center gap-4">
-                    <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-purple-500"></div>Admin</span>
-                    <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-amber-500"></div>Kaprodi</span>
-                    <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-blue-500"></div>Penguji</span>
-                    <span class="flex items-center gap-1.5"><div class="w-2 h-2 rounded-full bg-green-500"></div>Pelamar</span>
+
+            {{-- Pagination --}}
+            <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+                <span>
+                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
+                </span>
+                <div class="flex items-center gap-1">
+                    {{-- Previous --}}
+                    <button type="button" @click="prevPage()" :disabled="currentPage === 1"
+                            :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                            class="px-3 py-1.5 rounded-lg font-medium transition">Prev</button>
+
+                    {{-- Page Numbers --}}
+                    <template x-for="page in totalPages" :key="page">
+                        <button type="button" @click="goToPage(page)"
+                                x-show="page >= currentPage - 2 && page <= currentPage + 2"
+                                :class="page === currentPage ? 'bg-[#8b1515] text-white font-bold' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                                class="px-3 py-1.5 rounded-lg font-medium transition"
+                                x-text="page"></button>
+                    </template>
+
+                    {{-- Next --}}
+                    <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages"
+                            :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                            class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
                 </div>
             </div>
-
         </div>
     </div>
 

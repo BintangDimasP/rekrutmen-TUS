@@ -17,6 +17,94 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; color: #1a1a1a; background: #fff; }
 
+        /* ─── SCROLL ANIMATIONS ─── */
+        @keyframes slideInFromLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(60px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .animate-on-scroll.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .animate-on-scroll.slide-left {
+            transform: translateX(-60px);
+        }
+
+        .animate-on-scroll.slide-left.in-view {
+            transform: translateX(0);
+        }
+
+        .animate-on-scroll.slide-right {
+            transform: translateX(60px);
+        }
+
+        .animate-on-scroll.slide-right.in-view {
+            transform: translateX(0);
+        }
+
+        .animate-on-scroll.slide-bottom {
+            transform: translateY(40px);
+        }
+
+        .animate-on-scroll.slide-bottom.in-view {
+            transform: translateY(0);
+        }
+
+        .animate-on-scroll.fade-scale {
+            transform: scale(0.92) translateY(20px);
+        }
+
+        .animate-on-scroll.fade-scale.in-view {
+            transform: scale(1) translateY(0);
+        }
+
         /* ─── NAVBAR ─── */
         #navbar {
             position: fixed;
@@ -26,7 +114,7 @@
             background: transparent;
         }
         #navbar.scrolled {
-            background: #b91c1c; /* red-700 */
+            background: #8b1515; /* red-700 */
             box-shadow: 0 2px 16px rgba(0,0,0,0.15);
         }
         .nav-inner {
@@ -47,7 +135,7 @@
         .nav-logo-icon {
             width: 36px;
             height: 36px;
-            background: #b91c1c;
+            background: #8b1515;
             border-radius: 6px;
             display: flex;
             align-items: center;
@@ -94,12 +182,12 @@
             font-size: 0.875rem;
             font-weight: 600;
             color: #fff;
-            background: #b91c1c;
+            background: #8b1515;
             padding: 0.5rem 1.3rem;
             border-radius: 6px;
             transition: background 0.3s, box-shadow 0.3s;
         }
-        #navbar.scrolled .btn-daftar { background: #fff; color: #b91c1c; }
+        #navbar.scrolled .btn-daftar { background: #fff; color: #8b1515; }
         .btn-daftar:hover { background: #991b1b; }
         #navbar.scrolled .btn-daftar:hover { background: #f3f4f6; }
 
@@ -124,6 +212,7 @@
             position: relative;
             z-index: 2; 
             max-width: 50%;
+            animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
         .hero-title {
             font-size: 2.6rem;
@@ -131,20 +220,31 @@
             line-height: 1.2;
             color: #111;
             margin-bottom: 0.4rem;
+            animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+            opacity: 0;
         }
-        .hero-title-red { color: #b91c1c; }
+        .hero-title-red { color: #8b1515; }
         .hero-desc {
             font-size: 0.95rem;
             color: #555;
             line-height: 1.7;
             margin-bottom: 1.8rem;
             max-width: 420px;
+            animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards;
+            opacity: 0;
         }
-        .hero-actions { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+        .hero-actions { 
+            display: flex; 
+            align-items: center; 
+            gap: 1.5rem; 
+            flex-wrap: wrap;
+            animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+            opacity: 0;
+        }
         .btn-hero-primary {
             display: inline-block;
             text-decoration: none;
-            background: #b91c1c;
+            background: #8b1515;
             color: #fff;
             font-weight: 600;
             font-size: 0.9rem;
@@ -174,7 +274,7 @@
             font-weight: 700;
             color: #111;
         }
-        .section-title-red { color: #b91c1c; }
+        .section-title-red { color: #8b1515; }
         .section-subtitle {
             font-size: 1rem;
             color: #555;
@@ -197,9 +297,9 @@
             transition: all 0.28s ease;
             position: relative;
         }
-        .panduan-card:hover, .panduan-card.active {
-            background: #b91c1c;
-            border-color: #b91c1c;
+        .panduan-card:hover {
+            background: #8b1515;
+            border-color: #8b1515;
             transform: translateY(-6px);
             box-shadow: 0 12px 32px rgba(185,28,28,0.25);
         }
@@ -217,8 +317,7 @@
             margin-bottom: 1rem;
             transition: background 0.28s, color 0.28s;
         }
-        .panduan-card:hover .panduan-num,
-        .panduan-card.active .panduan-num {
+        .panduan-card:hover .panduan-num {
             background: rgba(255,255,255,0.25);
             color: #fff;
         }
@@ -229,8 +328,7 @@
             margin-bottom: 0.5rem;
             transition: color 0.28s;
         }
-        .panduan-card:hover .panduan-card-title,
-        .panduan-card.active .panduan-card-title { color: #fff; }
+        .panduan-card:hover .panduan-card-title { color: #fff; }
 
         .panduan-divider {
             height: 2px;
@@ -240,8 +338,7 @@
             border-radius: 2px;
             transition: background 0.28s;
         }
-        .panduan-card:hover .panduan-divider,
-        .panduan-card.active .panduan-divider { background: rgba(255,255,255,0.5); }
+        .panduan-card:hover .panduan-divider { background: rgba(255,255,255,0.5); }
 
         .panduan-card-desc {
             font-size: 0.82rem;
@@ -249,8 +346,7 @@
             line-height: 1.6;
             transition: color 0.28s;
         }
-        .panduan-card:hover .panduan-card-desc,
-        .panduan-card.active .panduan-card-desc { color: rgba(255,255,255,0.85); }
+        .panduan-card:hover .panduan-card-desc { color: rgba(255,255,255,0.85); }
 
         /* ─── SECTION LOWONGAN ─── */
         #lowongan {
@@ -259,17 +355,19 @@
         }
         .lowongan-header {
             max-width: 1200px;
-            margin: 0 auto 2rem;
+            margin: 0 auto 2.5rem;
+            text-align: center;
         }
         .lowongan-title {
-            font-size: 1.5rem;
+            font-size: 1.7rem;
             font-weight: 700;
-            color: #b91c1c;
+            color: #111;
+            margin-bottom: 0.3rem;
         }
+        .lowongan-title-red { color: #8b1515; }
         .lowongan-subtitle {
-            font-size: 0.9rem;
-            color: #777;
-            margin-top: 0.2rem;
+            font-size: 1rem;
+            color: #555;
         }
 
         .lowongan-grid {
@@ -277,127 +375,186 @@
             margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
         .lowongan-card {
-            border: 1.5px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 1.3rem 1.3rem 1.1rem;
             background: #fff;
-            transition: box-shadow 0.25s, transform 0.2s;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .lowongan-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8b1515, #dc2626);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
         .lowongan-card:hover {
-            box-shadow: 0 8px 24px rgba(0,0,0,0.10);
-            transform: translateY(-3px);
+            border-color: #8b1515;
+            box-shadow: 0 12px 32px rgba(185,28,28,0.15);
+            transform: translateY(-4px);
+        }
+        .lowongan-card:hover::before {
+            transform: scaleX(1);
         }
         .lowongan-card-header {
             display: flex;
-            align-items: center;
-            gap: 0.9rem;
-            margin-bottom: 1rem;
+            align-items: start;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .lowongan-logo-wrap {
+            flex-shrink: 0;
         }
         .lowongan-logo {
-            width: 46px;
-            height: 46px;
-            border-radius: 50%;
-            background: #e5e7eb;
-            flex-shrink: 0;
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 1px solid #e5e7eb;
         }
-        .lowongan-logo img { width: 100%; height: 100%; object-fit: cover; }
+        .lowongan-logo img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+            padding: 4px;
+        }
         .lowongan-logo-placeholder {
-            width: 24px;
-            height: 24px;
-            background: #d1d5db;
-            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #9ca3af;
+        }
+        .lowongan-info-wrap {
+            flex: 1;
+            min-width: 0;
         }
         .lowongan-nama {
-            font-size: 0.92rem;
+            font-size: 1rem;
             font-weight: 700;
             color: #111;
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
         }
         .lowongan-prodi {
-            font-size: 0.78rem;
-            color: #888;
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 500;
         }
 
-        .lowongan-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+        .lowongan-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.2rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+        .lowongan-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+        }
+        .lowongan-meta-row svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            color: #6b7280;
+        }
+        .lowongan-meta-row span {
+            color: #374151;
+            font-weight: 500;
+        }
+
+        .lowongan-badges {
+            display: flex;
+            flex-wrap: wrap;
             gap: 0.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
-        .lowongan-info-item label {
-            display: block;
-            font-size: 0.7rem;
-            color: #aaa;
-            margin-bottom: 0.15rem;
-        }
-        .lowongan-info-item span {
-            font-size: 0.8rem;
+        .lowongan-badge {
+            padding: 0.4rem 0.8rem;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: #333;
+            color: #374151;
+            white-space: nowrap;
         }
 
         .lowongan-card-footer {
+            margin-top: auto;
+            padding-top: 1rem;
             border-top: 1px solid #f0f0f0;
-            padding-top: 0.9rem;
         }
         .btn-detail {
             display: block;
             text-decoration: none;
             text-align: center;
+            background: #fff;
             border: 1.5px solid #d1d5db;
-            border-radius: 6px;
-            padding: 0.45rem 1rem;
-            font-size: 0.82rem;
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            font-size: 0.85rem;
             font-weight: 600;
-            color: #333;
-            transition: border-color 0.2s, color 0.2s, background 0.2s;
+            color: #374151;
+            transition: all 0.25s ease;
             width: 100%;
         }
-        .btn-detail:hover { border-color: #b91c1c; color: #b91c1c; background: #fff5f5; }
+        .btn-detail:hover { 
+            border-color: #8b1515; 
+            color: #8b1515; 
+            background: #fef2f2;
+        }
 
-        .lowongan-pagination {
+        .lowongan-footer-actions {
             max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.75rem;
         }
-        .pag-btn {
-            width: 34px;
-            height: 34px;
-            border: 1.5px solid #d1d5db;
-            background: #fff;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: #555;
-            transition: border-color 0.2s, color 0.2s;
-        }
-        .pag-btn:hover { border-color: #b91c1c; color: #b91c1c; }
         .btn-selengkapnya {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             text-decoration: none;
-            border: 1.5px solid #d1d5db;
-            border-radius: 20px;
-            padding: 0.4rem 1.5rem;
-            font-size: 0.82rem;
+            border: 1.5px solid #8b1515;
+            border-radius: 8px;
+            padding: 0.7rem 2rem;
+            font-size: 0.9rem;
             font-weight: 600;
-            color: #333;
+            color: #8b1515;
             background: #fff;
-            transition: border-color 0.2s, color 0.2s;
+            transition: all 0.25s ease;
         }
-        .btn-selengkapnya:hover { border-color: #b91c1c; color: #b91c1c; }
+        .btn-selengkapnya:hover { 
+            background: #8b1515;
+            color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(185,28,28,0.25);
+        }
+        .btn-selengkapnya svg {
+            width: 18px;
+            height: 18px;
+        }
 
         /* ─── FOOTER ─── */
         #footer {
@@ -410,14 +567,15 @@
 
         /* ─── RESPONSIVE ─── */
         @media (max-width: 900px) {
-            .hero-inner { grid-template-columns: 1fr; padding-top: 120px; }
-            .hero-image-wrap { justify-content: center; }
+            .hero-content { max-width: 100%; }
+            .hero-title { font-size: 2.2rem; }
             .panduan-grid { grid-template-columns: repeat(2, 1fr); }
-            .lowongan-grid { grid-template-columns: 1fr; }
+            .lowongan-grid { grid-template-columns: repeat(2, 1fr); }
         }
         @media (max-width: 600px) {
             .panduan-grid { grid-template-columns: 1fr; }
-            .hero-title { font-size: 2rem; }
+            .lowongan-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 1.8rem; }
             .nav-links { display: none; }
         }
     </style>
@@ -479,7 +637,7 @@
                 <div class="hero-actions">
                     <a href="#lowongan" class="btn-hero-primary">Selengkapnya</a>
                     <span class="hero-stat">
-                        <strong>11+</strong> Total Pendaftar
+                        <strong>{{ $totalPendaftar }}+</strong> Total Pendaftar
                     </span>
                 </div>
             </div>
@@ -488,7 +646,7 @@
 
     {{-- ========================= PANDUAN ========================= --}}
     <section id="panduan">
-        <div class="section-header">
+        <div class="section-header animate-on-scroll slide-bottom">
             <h2 class="section-title">
                 <span class="section-title-red">4 Langkah Mudah</span>
             </h2>
@@ -497,15 +655,15 @@
 
         <div class="panduan-grid">
             {{-- Card 1 --}}
-            <div class="panduan-card" id="panduan-card-1">
+            <div class="panduan-card animate-on-scroll fade-scale" style="transition-delay: 0.1s">
                 <div class="panduan-num">1</div>
                 <div class="panduan-card-title">Buat Akun</div>
                 <div class="panduan-divider"></div>
                 <p class="panduan-card-desc">Daftarkan diri Anda dengan membuat akun baru menggunakan email aktif Anda.</p>
             </div>
 
-            {{-- Card 2 — ditampilkan dalam state hover/aktif --}}
-            <div class="panduan-card active" id="panduan-card-2">
+            {{-- Card 2 --}}
+            <div class="panduan-card animate-on-scroll fade-scale" style="transition-delay: 0.2s">
                 <div class="panduan-num">2</div>
                 <div class="panduan-card-title">Daftar & Isi Data Pribadi</div>
                 <div class="panduan-divider"></div>
@@ -513,7 +671,7 @@
             </div>
 
             {{-- Card 3 --}}
-            <div class="panduan-card" id="panduan-card-3">
+            <div class="panduan-card animate-on-scroll fade-scale" style="transition-delay: 0.3s">
                 <div class="panduan-num">3</div>
                 <div class="panduan-card-title">Pilih Posisi Lowongan</div>
                 <div class="panduan-divider"></div>
@@ -521,7 +679,7 @@
             </div>
 
             {{-- Card 4 --}}
-            <div class="panduan-card" id="panduan-card-4">
+            <div class="panduan-card animate-on-scroll fade-scale" style="transition-delay: 0.4s">
                 <div class="panduan-num">4</div>
                 <div class="panduan-card-title">Ajukan Lamaran</div>
                 <div class="panduan-divider"></div>
@@ -532,61 +690,105 @@
 
     {{-- ========================= LOWONGAN ========================= --}}
     <section id="lowongan">
-        <div class="lowongan-header">
-            <h2 class="lowongan-title">Posisi Lowongan Dosen</h2>
+        <div class="lowongan-header animate-on-scroll slide-bottom">
+            <h2 class="lowongan-title">
+                <span class="lowongan-title-red">Posisi Lowongan Dosen</span>
+            </h2>
             <p class="lowongan-subtitle">Temukan posisi yang sesuai dengan keahlian Anda</p>
         </div>
 
-        <div class="lowongan-grid" id="lowongan-grid">
-            @php
-                // Safe placeholder data — ganti dengan query database setelah model Lowongan dibuat
-                $lowongans = [
-                    ['judul' => 'Dosen Teknik Informatika', 'prodi' => 'Teknik Informatika', 'kuota' => 3, 'sisa_kuota' => 2, 'pendidikan_min' => 'S3'],
-                    ['judul' => 'Dosen Sistem Informasi', 'prodi' => 'Sistem Informasi', 'kuota' => 2, 'sisa_kuota' => 1, 'pendidikan_min' => 'S3'],
-                    ['judul' => 'Dosen Teknik Elektro', 'prodi' => 'Teknik Elektro', 'kuota' => 4, 'sisa_kuota' => 3, 'pendidikan_min' => 'S3'],
-                ];
-            @endphp
-
-            @foreach($lowongans as $lowongan)
-            <div class="lowongan-card">
+        <div class="lowongan-grid">
+            @forelse($lowongans as $index => $lowongan)
+            <div class="lowongan-card animate-on-scroll fade-scale" style="transition-delay: {{ ($index * 0.1) + 0.1 }}s">
                 <div class="lowongan-card-header">
-                    <div class="lowongan-logo">
-                        <div class="lowongan-logo-placeholder"></div>
+                    <div class="lowongan-logo-wrap">
+                        <div class="lowongan-logo">
+                            @if($lowongan->prodi && $lowongan->prodi->logo)
+                                <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}">
+                            @else
+                                <div class="lowongan-logo-placeholder">
+                                    {{ substr($lowongan->nama_posisi, 0, 1) }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
-                    <div>
-                        <div class="lowongan-nama">{{ $lowongan['judul'] }}</div>
-                        <div class="lowongan-prodi">{{ $lowongan['prodi'] }}</div>
+                    <div class="lowongan-info-wrap">
+                        <div class="lowongan-nama">{{ $lowongan->nama_posisi }}</div>
+                        <div class="lowongan-prodi">{{ $lowongan->prodi->nama ?? 'Semua Prodi' }}</div>
                     </div>
                 </div>
 
-                <div class="lowongan-info">
-                    <div class="lowongan-info-item">
-                        <label>Kuota</label>
-                        <span>{{ $lowongan['kuota'] }}</span>
+                <div class="lowongan-meta">
+                    <div class="lowongan-meta-row">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                        </svg>
+                        <span>Surabaya</span>
                     </div>
-                    <div class="lowongan-info-item">
-                        <label>Sisa Kuota</label>
-                        <span>{{ $lowongan['sisa_kuota'] }}</span>
+                    <div class="lowongan-meta-row">
+                        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{{ $lowongan->tanggal_tutup->format('j F Y') }}</span>
                     </div>
-                    <div class="lowongan-info-item">
-                        <label>Pendidikan Min.</label>
-                        <span>{{ $lowongan['pendidikan_min'] }}</span>
-                    </div>
+                </div>
+
+                <div class="lowongan-badges">
+                    <span class="lowongan-badge">{{ $lowongan->jenjang_minimal }}</span>
+                    <span class="lowongan-badge">IPK > {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                    <span class="lowongan-badge">{{ $lowongan->kuota }} Kuota</span>
+                    <span class="lowongan-badge">Full-Time</span>
                 </div>
 
                 <div class="lowongan-card-footer">
-                    <a href="#" class="btn-detail">Detail</a>
+                    @auth
+                        @if(auth()->user()->role === 'pelamar')
+                            <a href="{{ route('pelamar.lowongan.show', $lowongan) }}" class="btn-detail">Lihat Detail</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn-detail">Lihat Detail</a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="btn-detail">Lihat Detail</a>
+                    @endauth
                 </div>
             </div>
-            @endforeach
+            @empty
+            <div class="col-span-full" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                <p style="color: #9ca3af; font-size: 1rem;">Belum ada lowongan tersedia saat ini.</p>
+            </div>
+            @endforelse
         </div>
 
-        {{-- Pagination --}}
-        <div class="lowongan-pagination">
-            <button class="pag-btn" id="pag-prev" aria-label="Sebelumnya">&#8249;</button>
-            <a href="#" class="btn-selengkapnya">Selengkapnya</a>
-            <button class="pag-btn" id="pag-next" aria-label="Berikutnya">&#8250;</button>
+        {{-- Footer Actions --}}
+        @if($lowongans->count() > 0)
+        <div class="lowongan-footer-actions animate-on-scroll slide-bottom">
+            @auth
+                @if(auth()->user()->role === 'pelamar')
+                    <a href="{{ route('pelamar.lowongan.index') }}" class="btn-selengkapnya">
+                        Lihat Semua Lowongan
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="btn-selengkapnya">
+                        Lihat Semua Lowongan
+                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </a>
+                @endif
+            @else
+                <a href="{{ route('login') }}" class="btn-selengkapnya">
+                    Lihat Semua Lowongan
+                    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
+            @endauth
         </div>
+        @endif
     </section>
 
     {{-- ========================= FOOTER ========================= --}}
@@ -609,11 +811,26 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        // ─── Panduan cards: click to activate ───
-        document.querySelectorAll('.panduan-card').forEach(card => {
-            card.addEventListener('click', () => {
-                document.querySelectorAll('.panduan-card').forEach(c => c.classList.remove('active'));
-                card.classList.add('active');
+        // ─── Intersection Observer untuk animasi scroll ───
+        const observerOptions = {
+            threshold: 0.15,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('in-view');
+                } else {
+                    entry.target.classList.remove('in-view');
+                }
+            });
+        }, observerOptions);
+
+        // Observe semua elemen dengan class animate-on-scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
             });
         });
 

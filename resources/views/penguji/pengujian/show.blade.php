@@ -59,7 +59,16 @@
                             Buka Zoom
                         </a>
                     @endif
-                    @if($canEvaluate)
+                    @if($penilaian)
+                        {{-- Sudah dinilai: tombol disabled --}}
+                        <div class="flex flex-col items-end">
+                            <button disabled class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/50 cursor-not-allowed rounded-xl text-sm font-bold text-green-700/70 whitespace-nowrap shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Sudah Dinilai
+                            </button>
+                            
+                        </div>
+                    @elseif($canEvaluate)
                         <a href="{{ route('penguji.pengujian.uji', $jadwal->id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-100 rounded-xl text-sm font-bold text-[#8b1515] transition-colors whitespace-nowrap shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                             Mulai Uji

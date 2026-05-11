@@ -36,12 +36,12 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead>
                         <tr class="bg-[#8b1515]">
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap">Posisi & Prodi</th>
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap">Tanggal</th>
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap">Status</th>
+                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[40%]">Posisi & Prodi</th>
+                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[30%]">Tanggal</th>
+                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[30%]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">

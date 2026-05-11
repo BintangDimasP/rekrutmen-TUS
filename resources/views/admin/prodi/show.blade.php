@@ -4,30 +4,7 @@
 
 @section('content')
 
-    {{-- Toast Notification --}}
-    @if(session('success'))
-        <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 4000)" x-show="show"
-            x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
-            x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-300"
-            x-transition:leave-start="opacity-100 translate-x-0" x-transition:leave-end="opacity-0 translate-x-12"
-            class="fixed top-6 right-6 z-[100] flex items-center gap-4 bg-white p-4 rounded-xl shadow-xl shadow-black/5 border border-gray-100 min-w-[320px]">
-            <div
-                class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 text-white shadow-inner">
-                <svg class="w-5 h-5 stroke-[2.5px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <div class="flex-1">
-                <h4 class="text-sm font-bold text-gray-800 mb-0.5">Berhasil</h4>
-                <p class="text-[0.8rem] text-gray-500 font-medium leading-snug">{{ session('success') }}</p>
-            </div>
-            <button type="button" @click="show = false" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-    @endif
+
 
     {{-- Main Container --}}
     <div x-data="{ openAddModal: false {{ $errors->any() && !old('edit_dosen_id') && !$errors->has('file') ? ', openAddModal: true' : '' }}, openImportModal: false {{ $errors->has('file') ? ', openImportModal: true' : '' }} }"
@@ -89,26 +66,26 @@
 
             {{-- Table --}}
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Kode</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">NIP/NIDN</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[12%]">Kode</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">NIP/NIDN</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right w-[12%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
-                        @forelse($prodi->dosens as $dosen)
+                        @forelse($dosens as $dosen)
                             <tr x-data="{ showDeleteModal: false, openEditModal: false {{ $errors->any() && old('edit_dosen_id') == $dosen->id ? ', openEditModal: true' : '' }} }"
                                 class="hover:bg-gray-50 transition-colors">
-                                <td class="py-3 px-5 text-sm text-gray-800 font-medium">{{ $dosen->nama }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600">{{ $dosen->kode }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}
+                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">{{ $dosen->nama }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $dosen->kode }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}
                                 </td>
-                                <td class="py-3 px-5 text-sm text-gray-600">
+                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">
                                     @php
                                         $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
                                     @endphp
@@ -236,7 +213,7 @@
                                                             Dosen</label>
                                                         <input type="text" name="kode" value="{{ old('kode', $dosen->kode) }}"
                                                             required
-                                                            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-mono uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                                                            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('kode') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p>
                                                         @endif
@@ -262,20 +239,7 @@
                                                             </p> @endif
                                                         </div>
                                                     </div>
-                                                    {{-- Info: email dikelola otomatis --}}
-                                                    <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                                                        <p class="text-xs text-blue-600 font-medium">Email dikelola otomatis berdasarkan peran (Penguji / Kaprodi).</p>
-                                                        @php
-                                                            $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
-                                                        @endphp
-                                                        @if($userEmails->isNotEmpty())
-                                                            <div class="mt-2 space-y-1">
-                                                                @foreach($userEmails as $role => $email)
-                                                                    <p class="text-xs text-blue-800 font-mono">{{ ucfirst($role) }}: {{ $email }}</p>
-                                                                @endforeach
-                                                            </div>
-                                                        @endif
-                                                    </div>
+                                
 
                                                     {{-- Roles --}}
                                                     <div class="border border-gray-100 rounded-xl p-4 bg-gray-50 space-y-3">
@@ -324,9 +288,7 @@
             </div>
 
             {{-- Footer Pagination / Tally --}}
-            <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500">
-                <span>Total: <strong>{{ $prodi->dosens->count() }}</strong> dosen</span>
-            </div>
+            @include('components.pagination', ['paginator' => $dosens])
 
         </div>
         </div>
@@ -367,7 +329,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode Dosen</label>
                             <input type="text" name="kode" value="{{ !old('edit_dosen_id') ? old('kode') : '' }}" required
-                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-mono uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('kode') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p> @endif
                         </div>
@@ -460,7 +422,7 @@
                         <p class="text-sm text-gray-500 leading-relaxed mb-4">
                             Upload file <span class="font-medium text-gray-700">.xlsx</span> atau
                             <span class="font-medium text-gray-700">.csv</span> — header baris pertama:
-                            <code class="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
+                            <code class="font-medium text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
                         </p>
 
                         <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-xl px-4 py-7 cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-[#8b1515]/30 transition-colors">

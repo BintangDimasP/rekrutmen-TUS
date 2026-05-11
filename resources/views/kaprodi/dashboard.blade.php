@@ -34,13 +34,13 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse table-fixed">
                     <thead class="bg-[#8b1515] text-white">
                         <tr>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap">Tanggal Lamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Pelamar</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Tanggal Lamar</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[22%]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">

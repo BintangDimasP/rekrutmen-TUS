@@ -136,13 +136,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-        <div class="bg-green-50 text-green-700 p-4 rounded-xl border border-green-200 text-sm flex items-center gap-3 mb-6 shadow-sm">
-            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span class="font-medium">{{ session('success') }}</span>
-        </div>
-    @endif
-
     @if(!$canTest)
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center mt-8">
             <div class="w-20 h-20 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-5 border border-yellow-100">
@@ -150,6 +143,18 @@
             </div>
             <h3 class="text-xl font-bold text-gray-900">Penilaian Belum Dibuka</h3>
             <p class="text-gray-500 mt-2 max-w-md mx-auto">Jadwal seleksi dilaksanakan pada tanggal <span class="font-bold text-gray-700">{{ $jadwal->tanggal->format('d M Y') }}</span>. Form ini akan dapat diisi pada hari tersebut.</p>
+        </div>
+    @elseif($penilaian)
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center mt-8">
+            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-5 border border-green-100">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Penilaian Sudah Selesai</h3>
+            <p class="text-gray-500 mt-2 max-w-md mx-auto">Anda sudah melakukan penilaian untuk pelamar ini. Nilai tidak dapat diubah setelah disubmit.</p>
+            <a href="{{ route('penguji.pengujian.show', $jadwal->id) }}" class="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-[#8b1515] hover:bg-[#6e1010] text-white font-bold rounded-xl transition-colors shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Lihat Detail Penilaian
+            </a>
         </div>
     @else
         <form id="penilaianForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST">

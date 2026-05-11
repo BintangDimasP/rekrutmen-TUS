@@ -361,6 +361,10 @@ class JadwalSeleksiController extends Controller
             'micro_sesi'     => 'nullable|integer|min:1',
             'wawancara_link' => 'nullable|url',
             'micro_link'     => 'nullable|url',
+            'wawancara_penguji_ids'   => 'nullable|array',
+            'wawancara_penguji_ids.*' => 'integer|exists:dosens,id',
+            'micro_penguji_ids'       => 'nullable|array',
+            'micro_penguji_ids.*'     => 'integer|exists:dosens,id',
         ]);
 
         $pelamarId  = (int) $request->pelamar_id;
@@ -370,6 +374,8 @@ class JadwalSeleksiController extends Controller
         $mSesi      = $request->filled('micro_sesi')     ? (int) $request->micro_sesi     : null;
         $wLink      = $request->wawancara_link;
         $mLink      = $request->micro_link;
+        $newWPengujiIds = $request->input('wawancara_penguji_ids', []);
+        $newMPengujiIds = $request->input('micro_penguji_ids', []);
 
         // Ambil semua jadwal dalam group
         $group    = JadwalSeleksi::with('penguji')
@@ -378,9 +384,13 @@ class JadwalSeleksiController extends Controller
             ->get();
         $groupIds = $group->pluck('id')->toArray();
 
+        // Track penguji lama untuk notifikasi
+        $oldWPengujiIds = $group->where('tipe_seleksi', 'tahap1')->pluck('penguji_id')->unique()->toArray();
+        $oldMPengujiIds = $group->where('tipe_seleksi', 'tahap2')->pluck('penguji_id')->unique()->toArray();
+
         $errors = [];
 
-        DB::transaction(function () use ($group, $groupIds, $tanggal, $wSesi, $mSesi, $wLink, $mLink, &$errors) {
+        DB::transaction(function () use ($group, $groupIds, $tanggal, $wSesi, $mSesi, $wLink, $mLink, $newWPengujiIds, $newMPengujiIds, $pelamarId, $lowonganId, &$errors) {
             // ── Update wawancara (tahap1) ──────────────────────────────
             if ($wSesi !== null) {
                 $valid = array_keys(JadwalSeleksi::SESSIONS['tahap1'] ?? []);
@@ -388,22 +398,63 @@ class JadwalSeleksiController extends Controller
                     $errors[] = "Sesi wawancara {$wSesi} tidak valid.";
                 } else {
                     $wGroup = $group->where('tipe_seleksi', 'tahap1');
-                    foreach ($wGroup as $jadwal) {
-                        foreach (JadwalSeleksi::getConflictingSlots('tahap1', $wSesi) as $c) {
-                            if (JadwalSeleksi::where('tanggal', $tanggal)
-                                ->where('penguji_id', $jadwal->penguji_id)
-                                ->where('tipe_seleksi', $c['tipe'])
-                                ->where('sesi', $c['sesi'])
-                                ->whereNotIn('id', $groupIds)
-                                ->exists()) {
-                                $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
-                                $errors[] = "Penguji {$jadwal->penguji->nama} bentrok di {$label} (Wawancara).";
+
+                    // Jika penguji baru dikirim, rebuild jadwal wawancara
+                    if (!empty($newWPengujiIds)) {
+                        $newWPengujiIds = array_map('intval', $newWPengujiIds);
+
+                        // Validasi ketersediaan penguji baru
+                        foreach ($newWPengujiIds as $pgId) {
+                            foreach (JadwalSeleksi::getConflictingSlots('tahap1', $wSesi) as $c) {
+                                if (JadwalSeleksi::where('tanggal', $tanggal)
+                                    ->where('penguji_id', $pgId)
+                                    ->where('tipe_seleksi', $c['tipe'])
+                                    ->where('sesi', $c['sesi'])
+                                    ->whereNotIn('id', $groupIds)
+                                    ->exists()) {
+                                    $dosen = Dosen::find($pgId);
+                                    $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
+                                    $errors[] = "Penguji " . ($dosen->nama ?? $pgId) . " bentrok di {$label} (Wawancara).";
+                                }
                             }
                         }
-                    }
-                    if (empty($errors)) {
+
+                        if (empty($errors)) {
+                            // Hapus jadwal wawancara lama
+                            JadwalSeleksi::whereIn('id', $wGroup->pluck('id')->toArray())->delete();
+
+                            // Buat jadwal wawancara baru
+                            foreach ($newWPengujiIds as $pgId) {
+                                JadwalSeleksi::create([
+                                    'tanggal'       => $tanggal,
+                                    'lowongan_id'   => $lowonganId,
+                                    'pelamar_id'    => $pelamarId,
+                                    'penguji_id'    => $pgId,
+                                    'tipe_seleksi'  => 'tahap1',
+                                    'sesi'          => $wSesi,
+                                    'link_meeting'  => $wLink ?: null,
+                                ]);
+                            }
+                        }
+                    } else {
+                        // Tidak ada perubahan penguji, update sesi/tanggal/link saja
                         foreach ($wGroup as $jadwal) {
-                            $jadwal->update(['tanggal' => $tanggal, 'sesi' => $wSesi, 'link_meeting' => $wLink]);
+                            foreach (JadwalSeleksi::getConflictingSlots('tahap1', $wSesi) as $c) {
+                                if (JadwalSeleksi::where('tanggal', $tanggal)
+                                    ->where('penguji_id', $jadwal->penguji_id)
+                                    ->where('tipe_seleksi', $c['tipe'])
+                                    ->where('sesi', $c['sesi'])
+                                    ->whereNotIn('id', $groupIds)
+                                    ->exists()) {
+                                    $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
+                                    $errors[] = "Penguji {$jadwal->penguji->nama} bentrok di {$label} (Wawancara).";
+                                }
+                            }
+                        }
+                        if (empty($errors)) {
+                            foreach ($wGroup as $jadwal) {
+                                $jadwal->update(['tanggal' => $tanggal, 'sesi' => $wSesi, 'link_meeting' => $wLink]);
+                            }
                         }
                     }
                 }
@@ -416,22 +467,63 @@ class JadwalSeleksiController extends Controller
                     $errors[] = "Sesi micro teaching {$mSesi} tidak valid.";
                 } else {
                     $mGroup = $group->where('tipe_seleksi', 'tahap2');
-                    foreach ($mGroup as $jadwal) {
-                        foreach (JadwalSeleksi::getConflictingSlots('tahap2', $mSesi) as $c) {
-                            if (JadwalSeleksi::where('tanggal', $tanggal)
-                                ->where('penguji_id', $jadwal->penguji_id)
-                                ->where('tipe_seleksi', $c['tipe'])
-                                ->where('sesi', $c['sesi'])
-                                ->whereNotIn('id', $groupIds)
-                                ->exists()) {
-                                $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
-                                $errors[] = "Penguji {$jadwal->penguji->nama} bentrok di {$label} (Micro).";
+
+                    // Jika penguji baru dikirim, rebuild jadwal micro
+                    if (!empty($newMPengujiIds)) {
+                        $newMPengujiIds = array_map('intval', $newMPengujiIds);
+
+                        // Validasi ketersediaan penguji baru
+                        foreach ($newMPengujiIds as $pgId) {
+                            foreach (JadwalSeleksi::getConflictingSlots('tahap2', $mSesi) as $c) {
+                                if (JadwalSeleksi::where('tanggal', $tanggal)
+                                    ->where('penguji_id', $pgId)
+                                    ->where('tipe_seleksi', $c['tipe'])
+                                    ->where('sesi', $c['sesi'])
+                                    ->whereNotIn('id', $groupIds)
+                                    ->exists()) {
+                                    $dosen = Dosen::find($pgId);
+                                    $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
+                                    $errors[] = "Penguji " . ($dosen->nama ?? $pgId) . " bentrok di {$label} (Micro Teaching).";
+                                }
                             }
                         }
-                    }
-                    if (empty($errors)) {
+
+                        if (empty($errors)) {
+                            // Hapus jadwal micro lama
+                            JadwalSeleksi::whereIn('id', $mGroup->pluck('id')->toArray())->delete();
+
+                            // Buat jadwal micro baru
+                            foreach ($newMPengujiIds as $pgId) {
+                                JadwalSeleksi::create([
+                                    'tanggal'       => $tanggal,
+                                    'lowongan_id'   => $lowonganId,
+                                    'pelamar_id'    => $pelamarId,
+                                    'penguji_id'    => $pgId,
+                                    'tipe_seleksi'  => 'tahap2',
+                                    'sesi'          => $mSesi,
+                                    'link_meeting'  => $mLink ?: null,
+                                ]);
+                            }
+                        }
+                    } else {
+                        // Tidak ada perubahan penguji, update sesi/tanggal/link saja
                         foreach ($mGroup as $jadwal) {
-                            $jadwal->update(['tanggal' => $tanggal, 'sesi' => $mSesi, 'link_meeting' => $mLink]);
+                            foreach (JadwalSeleksi::getConflictingSlots('tahap2', $mSesi) as $c) {
+                                if (JadwalSeleksi::where('tanggal', $tanggal)
+                                    ->where('penguji_id', $jadwal->penguji_id)
+                                    ->where('tipe_seleksi', $c['tipe'])
+                                    ->where('sesi', $c['sesi'])
+                                    ->whereNotIn('id', $groupIds)
+                                    ->exists()) {
+                                    $label = JadwalSeleksi::SESSIONS[$c['tipe']][$c['sesi']]['label'] ?? "S{$c['sesi']}";
+                                    $errors[] = "Penguji {$jadwal->penguji->nama} bentrok di {$label} (Micro).";
+                                }
+                            }
+                        }
+                        if (empty($errors)) {
+                            foreach ($mGroup as $jadwal) {
+                                $jadwal->update(['tanggal' => $tanggal, 'sesi' => $mSesi, 'link_meeting' => $mLink]);
+                            }
                         }
                     }
                 }
@@ -442,11 +534,12 @@ class JadwalSeleksiController extends Controller
             return back()->withErrors(['edit' => implode('; ', $errors)])->withInput();
         }
 
-        // Kirim notifikasi perubahan group jadwal
+        // ── Kirim notifikasi ────────────────────────────────────────
         $pelamar  = Pelamar::with('user')->find($pelamarId);
         $lowongan = Lowongan::find($lowonganId);
         $posisi   = $lowongan?->nama_posisi ?? 'Lowongan';
 
+        // Notifikasi ke pelamar
         if ($pelamar?->user) {
             Notifikasi::kirim(
                 $pelamar->user->id,
@@ -456,8 +549,43 @@ class JadwalSeleksiController extends Controller
             );
         }
 
-        $pengujiIds = $group->pluck('penguji_id')->unique();
-        foreach ($pengujiIds as $pengujiId) {
+        // Tentukan penguji baru setelah update
+        $currentWPengujiIds = !empty($newWPengujiIds) ? array_map('intval', $newWPengujiIds) : $oldWPengujiIds;
+        $currentMPengujiIds = !empty($newMPengujiIds) ? array_map('intval', $newMPengujiIds) : $oldMPengujiIds;
+        $allCurrentPengujiIds = array_unique(array_merge($currentWPengujiIds, $currentMPengujiIds));
+        $allOldPengujiIds = array_unique(array_merge($oldWPengujiIds, $oldMPengujiIds));
+
+        // Penguji yang dihapus dari jadwal
+        $removedPengujiIds = array_diff($allOldPengujiIds, $allCurrentPengujiIds);
+        foreach ($removedPengujiIds as $pengujiId) {
+            $userPengujis = User::where('dosen_id', $pengujiId)->get();
+            foreach ($userPengujis as $userPenguji) {
+                Notifikasi::kirim(
+                    $userPenguji->id,
+                    'Jadwal Pengujian Dibatalkan',
+                    "Anda tidak lagi dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}.",
+                    'jadwal'
+                );
+            }
+        }
+
+        // Penguji baru yang ditambahkan
+        $addedPengujiIds = array_diff($allCurrentPengujiIds, $allOldPengujiIds);
+        foreach ($addedPengujiIds as $pengujiId) {
+            $userPengujis = User::where('dosen_id', $pengujiId)->get();
+            foreach ($userPengujis as $userPenguji) {
+                Notifikasi::kirim(
+                    $userPenguji->id,
+                    'Jadwal Pengujian Ditetapkan',
+                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}. Silakan cek jadwal di portal.",
+                    'jadwal'
+                );
+            }
+        }
+
+        // Penguji yang tetap (notif perubahan jadwal)
+        $keptPengujiIds = array_intersect($allOldPengujiIds, $allCurrentPengujiIds);
+        foreach ($keptPengujiIds as $pengujiId) {
             $userPengujis = User::where('dosen_id', $pengujiId)->get();
             foreach ($userPengujis as $userPenguji) {
                 Notifikasi::kirim(

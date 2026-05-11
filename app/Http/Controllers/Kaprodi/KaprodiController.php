@@ -104,9 +104,31 @@ class KaprodiController extends Controller
             });
         }
 
-        $pelamars  = $query->latest()->get();
+        $pelamars  = $query->latest()->paginate(10)->appends($request->query());
         $lowongans = Lowongan::where('prodi_id', $prodiId)->orderBy('nama_posisi')->get();
 
         return view('kaprodi.pelamar', compact('pelamars', 'lowongans'));
+    }
+
+    /**
+     * Detail Pelamar (view only, layout seperti admin/pelamar/show).
+     */
+    public function showPelamar(Pelamar $pelamar)
+    {
+        $prodiId = $this->getProdiId();
+        $lowonganIds = Lowongan::where('prodi_id', $prodiId)->pluck('id');
+
+        // Pastikan pelamar ini memang melamar ke prodi kaprodi
+        $hasLamaran = $pelamar->lamarans()->whereIn('lowongan_id', $lowonganIds)->exists();
+        if (!$hasLamaran) {
+            abort(403, 'Pelamar ini tidak melamar ke prodi Anda.');
+        }
+
+        // Load relasi yang diperlukan
+        $pelamar->load(['user', 'lamarans' => function($q) use ($lowonganIds) {
+            $q->whereIn('lowongan_id', $lowonganIds)->with('lowongan');
+        }]);
+
+        return view('kaprodi.pelamar-show', compact('pelamar'));
     }
 }

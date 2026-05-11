@@ -48,11 +48,12 @@ class ProdiController extends Controller
     /**
      * Tampilkan detail prodi beserta daftar anggotanya.
      */
-    public function show(Prodi $prodi)
+    public function show(Prodi $prodi, Request $request)
     {
-        $prodi->load(['kaprodi', 'dosens', 'pengujis']);
+        $prodi->load(['kaprodi', 'pengujis']);
+        $dosens = $prodi->dosens()->paginate(10)->appends($request->query());
 
-        return view('admin.prodi.show', compact('prodi'));
+        return view('admin.prodi.show', compact('prodi', 'dosens'));
     }
 
     /**
