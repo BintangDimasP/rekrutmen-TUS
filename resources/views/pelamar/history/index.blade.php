@@ -32,8 +32,8 @@
                             class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
                         <option value="">Status</option>
                         <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="seleksi_tahap1" {{ request('status') == 'seleksi_tahap1' ? 'selected' : '' }}>Seleksi Tahap 1</option>
-                        <option value="seleksi_tahap2" {{ request('status') == 'seleksi_tahap2' ? 'selected' : '' }}>Seleksi Tahap 2</option>
+                        <option value="seleksi_tahap1" {{ request('status') == 'seleksi_tahap1' ? 'selected' : '' }}>Seleksi Tahap 1 (Administrasi)</option>
+                        <option value="seleksi_tahap2" {{ request('status') == 'seleksi_tahap2' ? 'selected' : '' }}>Seleksi Tahap 2 (Micro Teaching & Wawancara)</option>
                         <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
                         <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                     </select>

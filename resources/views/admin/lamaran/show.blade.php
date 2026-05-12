@@ -25,7 +25,7 @@
         <!-- RED HEADER -->
         <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-20 -mt-20"></div>
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 relative z-10">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 relative">
                 <div class="flex items-center gap-5">
                     <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 backdrop-blur-sm ring-2 ring-white/30">
                         <span class="text-2xl font-bold text-white">{{ strtoupper(substr($pelamar->nama, 0, 1)) }}</span>
@@ -72,7 +72,10 @@
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Kelamin</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jenis_kelamin == 'L' ? 'Laki-laki' : ($pelamar->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tempat Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tempat_lahir ?: '-' }}</p></div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_lahir ? $pelamar->tanggal_lahir->format('d M Y') : '-' }}</p></div>
-                    <div class="col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Lengkap</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kewarganegaraan</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->kewarganegaraan ?: '-' }}</p></div>
+                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Status Pernikahan</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->status_pernikahan ?: '-' }}</p></div>
+                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Domisili</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat_domisili ?: '-' }}</p></div>
+                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Sesuai KTP</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat_ktp ?: '-' }}</p></div>
                 </div>
             </div>
 
@@ -92,79 +95,79 @@
                     </a>
                     @endif
 
-                    @if($lamaran->file_berkas_pendukung)
-                    <a href="{{ Storage::url($lamaran->file_berkas_pendukung) }}" target="_blank" class="flex items-center justify-between p-5 rounded-2xl border border-gray-100 hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all bg-gray-50/50 group">
-                        <div>
-                            <p class="text-sm font-bold text-gray-800 transition-colors">Berkas Pendukung</p>
-                            <p class="text-[0.7rem] text-gray-500 mt-1 font-medium">Dokumen Lampiran</p>
-                        </div>
-                        <span class="px-4 py-1.5 rounded-lg bg-white border border-gray-200 text-[0.7rem] font-bold text-gray-600 hover:bg-[#8b1515] hover:text-white hover:border-[#8b1515] transition-colors shadow-sm">Preview</span>
-                    </a>
-                    @endif
+
                 </div>
             </div>
 
             {{-- 3. JADWAL & HASIL PENILAIAN SELEKSI --}}
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
-                    {{ ($wawancara && $wawancara->penilaian) || ($micro && $micro->penilaian) ? 'Nilai Hasil Seleksi' : 'Jadwal Seleksi' }}
+                    {{ (($wawancara && $wawancara->count() > 0 && isset($wawancara[0]) && $wawancara[0]->penilaian) || ($micro && $micro->count() > 0 && isset($micro[0]) && $micro[0]->penilaian)) ? 'Nilai Hasil Seleksi' : 'Jadwal Seleksi' }}
                 </h3>
                 
-                @if($wawancara || $micro)
+                @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @if($wawancara)
+                        @if($micro && $micro->count() > 0)
                         <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
                             
-                            @if($wawancara->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Wawancara</h4>
+                            @if($micro[0]->penilaian)
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Micro Teaching</h4>
                             
                             <div class="space-y-2 mb-4">
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kompetensi Kepribadian</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara->penilaian->kategori_1 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Penguasaan Materi</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_1 }}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Visi Tri Dharma</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara->penilaian->kategori_2 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Keterampilan Pedagogik</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_2 }}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kemampuan Adaptasi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara->penilaian->kategori_3 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Pemanfaatan Media</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_3 }}</span>
                                 </div>
                             </div>
                             
                             <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
                                 <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $wawancara->penilaian->total_nilai }}</p>
+                                <p class="text-2xl font-black">{{ $micro[0]->penilaian->total_nilai }}</p>
                             </div>
                             
                             <div class="space-y-3">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <p class="text-sm font-bold text-gray-800">{{ $wawancara->penguji->nama ?? '-' }}</p>
+                                    <div class="space-y-2">
+                                        @foreach($micro as $microItem)
+                                        <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                             @else
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
                             
                             <div class="space-y-4 text-sm text-gray-700">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
-                                    <p class="font-bold text-gray-800">{{ $wawancara->tanggal->translatedFormat('d F Y') }}</p>
+                                    <p class="font-bold text-gray-800">{{ $micro[0]->tanggal->translatedFormat('d F Y') }}</p>
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Waktu</p>
-                                    <p class="font-bold text-gray-800">{{ $wawancara->session_label }}</p>
+                                    <p class="font-bold text-gray-800">{{ $micro[0]->session_label }}</p>
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <p class="font-bold text-gray-800">{{ $wawancara->penguji->nama ?? '-' }}</p>
+                                    <div class="space-y-2">
+                                        @foreach($micro as $microItem)
+                                        <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
+                                        @endforeach
+                                    </div>
                                 </div>
                                 
-                                @if($wawancara->link_meeting)
+                                @if($micro[0]->link_meeting)
                                 <div class="pt-3">
-                                    <a href="{{ $wawancara->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
+                                    <a href="{{ $micro[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
                                         Link Zoom
                                     </a>
                                 </div>
@@ -174,59 +177,67 @@
                         </div>
                         @endif
 
-                        @if($micro)
+                        @if($wawancara && $wawancara->count() > 0)
                         <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
                             
-                            @if($micro->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Micro Teaching</h4>
+                            @if($wawancara[0]->penilaian)
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Wawancara</h4>
                             
                             <div class="space-y-2 mb-4">
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Penguasaan Materi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro->penilaian->kategori_1 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Kompetensi Kepribadian</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_1 }}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Keterampilan Pedagogik</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro->penilaian->kategori_2 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Visi Tri Dharma</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_2 }}</span>
                                 </div>
                                 <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Pemanfaatan Media</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro->penilaian->kategori_3 }}</span>
+                                    <span class="text-xs font-semibold text-gray-700">Kemampuan Adaptasi</span>
+                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_3 }}</span>
                                 </div>
                             </div>
                             
                             <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
                                 <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $micro->penilaian->total_nilai }}</p>
+                                <p class="text-2xl font-black">{{ $wawancara[0]->penilaian->total_nilai }}</p>
                             </div>
                             
                             <div class="space-y-3">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <p class="text-sm font-bold text-gray-800">{{ $micro->penguji->nama ?? '-' }}</p>
+                                    <div class="space-y-2">
+                                        @foreach($wawancara as $wawancaraItem)
+                                        <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
                             @else
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
                             
                             <div class="space-y-4 text-sm text-gray-700">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
-                                    <p class="font-bold text-gray-800">{{ $micro->tanggal->translatedFormat('d F Y') }}</p>
+                                    <p class="font-bold text-gray-800">{{ $wawancara[0]->tanggal->translatedFormat('d F Y') }}</p>
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Waktu</p>
-                                    <p class="font-bold text-gray-800">{{ $micro->session_label }}</p>
+                                    <p class="font-bold text-gray-800">{{ $wawancara[0]->session_label }}</p>
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <p class="font-bold text-gray-800">{{ $micro->penguji->nama ?? '-' }}</p>
+                                    <div class="space-y-2">
+                                        @foreach($wawancara as $wawancaraItem)
+                                        <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
+                                        @endforeach
+                                    </div>
                                 </div>
                                 
-                                @if($micro->link_meeting)
+                                @if($wawancara[0]->link_meeting)
                                 <div class="pt-3">
-                                    <a href="{{ $micro->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
+                                    <a href="{{ $wawancara[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
                                         Link Zoom
                                     </a>
                                 </div>
@@ -247,8 +258,8 @@
             {{-- 4. UBAH STATUS LAMARAN --}}
             @php
                 $isFinished = in_array($lamaran->status, ['diterima', 'ditolak']);
-                $hasJadwal = collect([$wawancara, $micro])->filter()->isNotEmpty();
-                $hasBothScores = ($wawancara && $wawancara->penilaian) && ($micro && $micro->penilaian);
+                $hasJadwal = ($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0);
+                $hasBothScores = ($wawancara && $wawancara->count() > 0 && $wawancara[0]->penilaian) && ($micro && $micro->count() > 0 && $micro[0]->penilaian);
                 $statusOrder = ['menunggu' => 1, 'seleksi_tahap1' => 2, 'seleksi_tahap2' => 3, 'diterima' => 4, 'ditolak' => 4];
                 $currentOrder = $statusOrder[$lamaran->status] ?? 1;
                 
@@ -292,7 +303,7 @@
 
                         <div>
                             <div class="flex flex-wrap justify-center gap-2">
-                                @foreach(['menunggu' => 'Menunggu', 'seleksi_tahap1' => 'Seleksi Tahap 1', 'seleksi_tahap2' => 'Seleksi Tahap 2', 'diterima' => 'Diterima', 'ditolak' => 'Ditolak'] as $val => $label)
+                                @foreach(['menunggu' => 'Menunggu', 'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)', 'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)', 'diterima' => 'Diterima', 'ditolak' => 'Ditolak'] as $val => $label)
                                 @php
                                     $isDisabled = false;
                                     $targetOrder = $statusOrder[$val];
@@ -343,10 +354,12 @@
                         <div class="space-y-8">
                             @if($pelamar->jenjang)
                             <div class="pl-4 border-l-[3px] border-[#8b1515]/40 py-1">
-                                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang }}</p></div>
                                     <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p></div>
                                     
                                     <div>
@@ -371,10 +384,12 @@
 
                             @if($pelamar->jenjang_2)
                             <div class="pl-4 border-l-[3px] border-gray-200 py-1">
-                                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 }}</p></div>
                                     <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_2 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_2 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?: '-' }}</p></div>
                                     
                                     <div>
@@ -399,10 +414,12 @@
 
                             @if($pelamar->jenjang_3)
                             <div class="pl-4 border-l-[3px] border-gray-200 py-1">
-                                <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-4">
+                                <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 }}</p></div>
                                     <div class="col-span-2 md:col-span-1"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $pelamar->institusi_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_3 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_3 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?: '-' }}</p></div>
                                     
                                     <div>

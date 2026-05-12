@@ -72,11 +72,15 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #8b1515, #dc2626);
+            background: #8b1515;
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
-        .lowongan-card:hover { border-color: #8b1515; box-shadow: 0 12px 32px rgba(185,28,28,0.15); transform: translateY(-4px); }
+        .lowongan-card:hover { 
+           
+            transform: translateY(-10px); 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.04);
+        }
         .lowongan-card:hover::before { transform: scaleX(1); }
     </style>
 </head>
@@ -139,17 +143,19 @@
     </section>
 
     {{-- ========================= PANDUAN ========================= --}}
-    <section id="panduan" class="bg-gray-50 py-20 px-8">
-        <div class="text-center mb-10 animate-on-scroll slide-bottom">
-            <h2 class="text-2xl font-bold text-gray-900">
-                <span class="text-[#8b1515]">4 Langkah Mudah</span>
+    <section id="panduan" class="bg-gray-50 py-16 px-8">
+        <div class="max-w-[1200px] mx-auto text-center mb-16 animate-on-scroll slide-bottom">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+                4 Langkah Mudah Menjadi <span class="text-[#8b1515]">Bagian Dari Kami</span>
             </h2>
-            <p class="text-base text-gray-500 mt-1">Menjadi Bagian Dari Kami</p>
+            <p class="text-gray-500 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+                Kami merancang proses rekrutmen yang transparan dan memudahkan Anda untuk bergabung sebagai tenaga pendidik profesional.
+            </p>
         </div>
 
         <div class="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {{-- Card 1 --}}
-            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[260px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.1s">
+            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.1s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">1</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
                     <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">01</div>
@@ -159,7 +165,7 @@
             </div>
 
             {{-- Card 2 --}}
-            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[260px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.2s">
+            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.2s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">2</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
                     <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">02</div>
@@ -169,7 +175,7 @@
             </div>
 
             {{-- Card 3 --}}
-            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[260px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.3s">
+            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.3s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">3</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
                     <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">03</div>
@@ -179,7 +185,7 @@
             </div>
 
             {{-- Card 4 --}}
-            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[260px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.4s">
+            <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.4s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">4</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
                     <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">04</div>
@@ -191,12 +197,17 @@
     </section>
 
     {{-- ========================= LOWONGAN ========================= --}}
-    <section id="lowongan" class="py-20 px-8 bg-white">
-        <div class="max-w-[1200px] mx-auto text-center mb-10 animate-on-scroll slide-bottom">
-            <h2 class="text-2xl font-bold text-gray-900 mb-1">
-                <span class="text-[#8b1515]">Posisi Lowongan Dosen</span>
+    <section id="lowongan" class="py-16 px-8 bg-white">
+        <div class="max-w-[1200px] mx-auto text-center mb-16
+         animate-on-scroll slide-bottom">
+            
+            <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+                Posisi <span class="text-[#8b1515]">Lowongan Dosen</span> Terbaru
             </h2>
-            <p class="text-base text-gray-500">Temukan posisi yang sesuai dengan keahlian Anda</p>
+           
+            <p class="text-gray-500 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
+                Temukan peluang untuk berkontribusi dalam mencetak generasi unggul melalui berbagai program studi kami yang inovatif.
+            </p>
         </div>
 
         <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
@@ -244,12 +255,21 @@
                 <div class="mt-auto pt-4 border-t border-gray-100">
                     @auth
                         @if(auth()->user()->role === 'pelamar')
-                            <a href="{{ route('pelamar.lowongan.show', $lowongan) }}" class="block text-center no-underline bg-white border-[1.5px] border-gray-300 rounded-lg py-2.5 px-4 text-sm font-semibold text-gray-700 transition-all duration-200 hover:border-[#8b1515] hover:text-[#8b1515] hover:bg-red-50 w-full">Lihat Detail</a>
+                            <a href="{{ route('pelamar.lowongan.show', $lowongan) }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full group">
+                                 Detail
+                               
+                            </a>
                         @else
-                            <a href="{{ route('login') }}" class="block text-center no-underline bg-white border-[1.5px] border-gray-300 rounded-lg py-2.5 px-4 text-sm font-semibold text-gray-700 transition-all duration-200 hover:border-[#8b1515] hover:text-[#8b1515] hover:bg-red-50 w-full">Lihat Detail</a>
+                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
+                                 Detail
+                                
+                            </a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="block text-center no-underline bg-white border-[1.5px] border-gray-300 rounded-lg py-2.5 px-4 text-sm font-semibold text-gray-700 transition-all duration-200 hover:border-[#8b1515] hover:text-[#8b1515] hover:bg-red-50 w-full">Lihat Detail</a>
+                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
+                             Detail
+                            
+                        </a>
                     @endauth
                 </div>
             </div>
@@ -265,18 +285,18 @@
         <div class="max-w-[1200px] mx-auto flex items-center justify-center animate-on-scroll slide-bottom">
             @auth
                 @if(auth()->user()->role === 'pelamar')
-                    <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5 hover:shadow-lg">
+                    <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
                         Lihat Semua Lowongan
                         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                 @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5 hover:shadow-lg">
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
                         Lihat Semua Lowongan
                         <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                 @endif
             @else
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5 hover:shadow-lg">
+                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
                     Lihat Semua Lowongan
                     <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                 </a>

@@ -85,14 +85,14 @@ class PengujiController extends Controller
                 ->with('success', 'Penilaian sudah dilakukan. Anda tidak dapat mengubah nilai yang sudah disubmit.');
         }
 
-        if ($jadwal->tipe_seleksi === 'tahap2') {
-            $wawancara = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
-                ->where('tipe_seleksi', 'tahap1')
+        if ($jadwal->tipe_seleksi === 'wawancara') {
+            $micro = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
+                ->where('tipe_seleksi', 'micro_teaching')
                 ->whereHas('penilaian')
                 ->first();
 
-            if (!$wawancara) {
-                abort(403, 'Penilaian Wawancara harus diselesaikan terlebih dahulu sebelum melakukan penilaian Micro Teaching.');
+            if (!$micro) {
+                abort(403, 'Penilaian Micro Teaching harus diselesaikan terlebih dahulu sebelum melakukan penilaian Wawancara.');
             }
         }
         

@@ -38,8 +38,11 @@
             nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.updateVisibility(); } },
             goToPage(p) { this.currentPage = p; this.updateVisibility(); }
          }"
-         x-init="$nextTick(() => updateVisibility())"
-         x-effect="searchMain; filterProdiMain; resetPage()">
+         x-init="
+            $nextTick(() => updateVisibility());
+            $watch('searchMain', () => resetPage());
+            $watch('filterProdiMain', () => resetPage());
+         ">
 
         {{-- Inner layout container --}}
         <div class="max-w-6xl mx-auto space-y-6">

@@ -90,10 +90,35 @@
                         </div>
                         @error('jenis_kelamin')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                     </div>
-                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Lengkap</p>
-                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat ?: '-' }}</p>
-                        <textarea x-show="isEditing" x-cloak name="alamat" rows="2" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">{{ old('alamat',$pelamar->alamat) }}</textarea>
-                        @error('alamat')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
+                    <div class="col-span-2 md:col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kewarganegaraan</p>
+                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->kewarganegaraan ?: '-' }}</p>
+                        <select x-show="isEditing" x-cloak name="kewarganegaraan" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                            <option value="">-</option>
+                            <option value="WNI" {{ old('kewarganegaraan',$pelamar->kewarganegaraan)=='WNI'?'selected':'' }}>WNI</option>
+                            <option value="WNA" {{ old('kewarganegaraan',$pelamar->kewarganegaraan)=='WNA'?'selected':'' }}>WNA</option>
+                        </select>
+                        @error('kewarganegaraan')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="col-span-2 md:col-span-2"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Status Pernikahan</p>
+                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->status_pernikahan ?: '-' }}</p>
+                        <select x-show="isEditing" x-cloak name="status_pernikahan" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                            <option value="">-</option>
+                            <option value="Belum Kawin" {{ old('status_pernikahan',$pelamar->status_pernikahan)=='Belum Kawin'?'selected':'' }}>Belum Kawin</option>
+                            <option value="Kawin" {{ old('status_pernikahan',$pelamar->status_pernikahan)=='Kawin'?'selected':'' }}>Kawin</option>
+                            <option value="Cerai Hidup" {{ old('status_pernikahan',$pelamar->status_pernikahan)=='Cerai Hidup'?'selected':'' }}>Cerai Hidup</option>
+                            <option value="Cerai Mati" {{ old('status_pernikahan',$pelamar->status_pernikahan)=='Cerai Mati'?'selected':'' }}>Cerai Mati</option>
+                        </select>
+                        @error('status_pernikahan')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Domisili</p>
+                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat_domisili ?: '-' }}</p>
+                        <textarea x-show="isEditing" x-cloak name="alamat_domisili" rows="2" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">{{ old('alamat_domisili',$pelamar->alamat_domisili) }}</textarea>
+                        @error('alamat_domisili')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
+                    </div>
+                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Sesuai KTP</p>
+                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->alamat_ktp ?: '-' }}</p>
+                        <textarea x-show="isEditing" x-cloak name="alamat_ktp" rows="2" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">{{ old('alamat_ktp',$pelamar->alamat_ktp) }}</textarea>
+                        @error('alamat_ktp')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                     </div>
                 </div>
             </div>
@@ -110,7 +135,7 @@
                 
                 <div class="space-y-4">
                     {{-- Jenjang 1 --}}
-                    <div class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
+                    <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang ?: '-' }}</p>
                             <select x-show="isEditing" x-cloak name="jenjang" x-model="jenjang1" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
@@ -130,6 +155,19 @@
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="prodi_pendidikan" value="{{ old('prodi_pendidikan',$pelamar->prodi_pendidikan) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas ?: '-' }}</p>
+                            <select x-show="isEditing" x-cloak name="akreditas" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                                <option value="">-</option>
+                                @foreach(['A','B','C','Unggul','Baik Sekali','Baik','Tidak Terakreditasi'] as $akr)
+                                <option value="{{ $akr }}" {{ old('akreditas',$pelamar->akreditas)==$akr?'selected':'' }}>{{ $akr }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah ?: '-' }}</p>
+                            <input x-show="isEditing" x-cloak type="text" name="no_ijazah" value="{{ old('no_ijazah',$pelamar->no_ijazah) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                        </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk" value="{{ old('ipk',$pelamar->ipk) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
@@ -147,7 +185,7 @@
                     </div>
 
                     {{-- Jenjang 2 --}}
-                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu2=false; jenjang2=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 ?: '-' }}</p>
@@ -166,6 +204,19 @@
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_2 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="prodi_pendidikan_2" value="{{ old('prodi_pendidikan_2',$pelamar->prodi_pendidikan_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_2 ?: '-' }}</p>
+                            <select x-show="isEditing" x-cloak name="akreditas_2" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                                <option value="">-</option>
+                                @foreach(['A','B','C','Unggul','Baik Sekali','Baik','Tidak Terakreditasi'] as $akr)
+                                <option value="{{ $akr }}" {{ old('akreditas_2',$pelamar->akreditas_2)==$akr?'selected':'' }}>{{ $akr }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_2 ?: '-' }}</p>
+                            <input x-show="isEditing" x-cloak type="text" name="no_ijazah_2" value="{{ old('no_ijazah_2',$pelamar->no_ijazah_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                        </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk_2" value="{{ old('ipk_2',$pelamar->ipk_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
@@ -181,7 +232,7 @@
                     </div>
 
                     {{-- Jenjang 3 --}}
-                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-6 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu3=false; jenjang3=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 ?: '-' }}</p>
@@ -199,6 +250,19 @@
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_3 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="text" name="prodi_pendidikan_3" value="{{ old('prodi_pendidikan_3',$pelamar->prodi_pendidikan_3) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                        </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_3 ?: '-' }}</p>
+                            <select x-show="isEditing" x-cloak name="akreditas_3" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                                <option value="">-</option>
+                                @foreach(['A','B','C','Unggul','Baik Sekali','Baik','Tidak Terakreditasi'] as $akr)
+                                <option value="{{ $akr }}" {{ old('akreditas_3',$pelamar->akreditas_3)==$akr?'selected':'' }}>{{ $akr }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_3 ?: '-' }}</p>
+                            <input x-show="isEditing" x-cloak type="text" name="no_ijazah_3" value="{{ old('no_ijazah_3',$pelamar->no_ijazah_3) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
                         <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?: '-' }}</p>

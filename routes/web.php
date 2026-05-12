@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Pelamar Management (Global)
         Route::get('admin/pelamar', [\App\Http\Controllers\Admin\PelamarController::class, 'index'])->name('admin.pelamar.index');
+        Route::post('admin/pelamar/import', [\App\Http\Controllers\Admin\PelamarController::class, 'import'])->name('admin.pelamar.import');
         Route::get('admin/pelamar/{pelamar}', [\App\Http\Controllers\Admin\PelamarController::class, 'show'])->name('admin.pelamar.show');
 
         // Jadwal Seleksi Management

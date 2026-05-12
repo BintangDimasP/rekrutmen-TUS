@@ -252,41 +252,9 @@
                         @enderror
                     </div>
 
-                    {{-- Berkas Pendukung --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
-                            Berkas Pendukung
-                            <span class="text-gray-300 font-normal normal-case text-[11px] tracking-normal">(opsional)</span>
-                        </label>
-                        <div class="file-upload-area" onclick="document.getElementById('file_berkas_pendukung').click()" style="cursor:pointer;">
-                            <div class="file-icon-box">📎</div>
-                            <div>
-                                <div class="text-[13px] font-medium text-gray-500" id="label_berkas_pendukung">Pilih file atau klik di sini</div>
-                                <div class="text-[11px] text-gray-400 mt-0.5">Sertifikat, portofolio, dll. (PDF)</div>
-                            </div>
-                        </div>
-                        <input id="file_berkas_pendukung" type="file" name="file_berkas_pendukung" accept=".pdf"
-                               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
-                               onchange="document.getElementById('label_berkas_pendukung').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
-                        @error('file_berkas_pendukung')
-                            <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    {{-- Catatan --}}
-                    <div>
-                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Catatan Tambahan</label>
-                        <textarea name="catatan" rows="3"
-                                  placeholder="Tambahkan pesan singkat jika perlu..."
-                                  class="w-full px-4 py-3 text-[13px] text-gray-600 bg-gray-50 border border-gray-200 rounded-xl outline-none resize-none
-                                         focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/10 focus:bg-white transition-all font-[inherit]"></textarea>
-                    </div>
 
                     {{-- Form Footer --}}
-                    <div class="pt-2 flex sm:flex-row flex-col sm:items-center items-start justify-between gap-4">
-                        <p class="text-[11.5px] text-gray-400 leading-relaxed sm:max-w-md">
-                            Dengan mengirim lamaran, Anda menyetujui bahwa data profil Anda akan digunakan dalam proses seleksi.
-                        </p>
+                    <div class="pt-2 flex justify-center">
                         <button type="submit" id="btn-kirim-lamaran"
                                 onclick="return validateLamaranForm()"
                                 class="btn-kirim w-full sm:w-auto flex-shrink-0 px-8 py-3 bg-[#8b1515] text-white text-[13.5px] font-bold rounded-xl shadow-sm">

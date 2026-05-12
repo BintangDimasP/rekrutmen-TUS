@@ -38,19 +38,12 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama_posisi" value="{{ old('nama_posisi') }}" placeholder="cth: Dosen Tetap — Sistem Informasi"
-                                   class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                            @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="md:col-span-2">
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi (Prodi Pembuka) <span class="text-red-500">*</span></label>
-                            <select name="prodi_id"
-                                    class="w-full px-4 py-2.5 rounded-lg border @error('prodi_id') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="">— Pilih Prodi —</option>
+                            <select name="prodi_id" id="prodi_id"
+                                    class="w-full px-4 py-2.5 rounded-lg border @error('prodi_id') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
+                                <option value="" data-nama="">— Pilih Prodi —</option>
                                 @foreach($prodis as $prodi)
-                                    <option value="{{ $prodi->id }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>
+                                    <option value="{{ $prodi->id }}" data-nama="{{ $prodi->nama }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>
                                         {{ $prodi->nama }} ({{ $prodi->kode }})
                                     </option>
                                 @endforeach
@@ -58,13 +51,20 @@
                             @error('prodi_id') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
+                        <div class="md:col-span-2">
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_posisi" id="nama_posisi" value="{{ old('nama_posisi') }}" placeholder="Dosen Tetap" readonly
+                                   class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
+                            @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
+                        </div>
+
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Status Publikasi <span class="text-red-500">*</span></label>
                             <select name="status"
                                     class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="draft"  {{ old('status','draft') === 'draft'   ? 'selected' : '' }}>Draft (belum tayang)</option>
-                                <option value="aktif"  {{ old('status') === 'aktif'            ? 'selected' : '' }}>Aktif (tayang sekarang)</option>
-                                <option value="ditutup"{{ old('status') === 'ditutup'          ? 'selected' : '' }}>Ditutup</option>
+                                <option value="draft"  {{ old('status','draft') === 'draft'   ? 'selected' : '' }}>Draft</option>
+                                <option value="aktif"  {{ old('status') === 'aktif'            ? 'selected' : '' }}>Public</option>
+                               
                             </select>
                         </div>
                         <div>
@@ -153,19 +153,33 @@
                 </div>
 
                 {{-- ACTIONS --}}
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="submit" name="status" value="draft"
-                            class="px-6 py-2.5 text-sm font-semibold text-gray-700 bg-amber-50 border border-amber-200 hover:bg-amber-100 rounded-lg transition-colors shadow-sm">
-                        Simpan sebagai Draft
-                    </button>
+                <div class="flex justify-center gap-3 pt-4 border-t border-gray-100">
                     <button type="submit" name="status" value="aktif"
                             class="px-6 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-lg shadow-md transition-colors">
-                        Terbitkan Sekarang
+                        Publikasikan Lowongan
                     </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const prodiSelect = document.getElementById('prodi_id');
+        const namaPosisiInput = document.getElementById('nama_posisi');
+
+        prodiSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const prodiNama = selectedOption.getAttribute('data-nama');
+            
+            if (prodiNama) {
+                namaPosisiInput.value = 'Dosen Tetap S1 ' + prodiNama;
+            } else {
+                namaPosisiInput.value = '';
+            }
+        });
+    });
+</script>
 
 @endsection

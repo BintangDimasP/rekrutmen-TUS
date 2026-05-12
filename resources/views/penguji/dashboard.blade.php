@@ -55,7 +55,7 @@
                                     <div class="text-xs text-gray-500 mt-0.5">{{ $sesiInfo ? $sesiInfo['start'] . ' - ' . $sesiInfo['end'] : '-' }}</div>
                                 </td>
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-700">
-                                    {{ $jadwal->tipe_seleksi == 'tahap1' ? 'Wawancara' : 'Micro Teaching' }}
+                                    {{ $jadwal->tipe_seleksi == 'wawancara' ? 'Wawancara' : 'Micro Teaching' }}
                                 </td>
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-800">{{ $jadwal->pelamar->nama }}</td>
                                 <td class="py-3 px-5">

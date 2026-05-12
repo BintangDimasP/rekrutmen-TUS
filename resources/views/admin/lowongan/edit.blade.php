@@ -37,21 +37,21 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama_posisi" value="{{ old('nama_posisi', $lowongan->nama_posisi) }}"
-                                   class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                            @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
-                        </div>
-
-                        <div class="md:col-span-2">
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi (Prodi Pembuka) <span class="text-red-500">*</span></label>
-                            <select name="prodi_id" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                            <select name="prodi_id" id="prodi_id" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
                                 @foreach($prodis as $prodi)
-                                    <option value="{{ $prodi->id }}" {{ old('prodi_id', $lowongan->prodi_id) == $prodi->id ? 'selected' : '' }}>
+                                    <option value="{{ $prodi->id }}" data-nama="{{ $prodi->nama }}" {{ old('prodi_id', $lowongan->prodi_id) == $prodi->id ? 'selected' : '' }}>
                                         {{ $prodi->nama }} ({{ $prodi->kode }})
                                     </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
+                            <input type="text" name="nama_posisi" id="nama_posisi" value="{{ old('nama_posisi', $lowongan->nama_posisi) }}" readonly
+                                   class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
+                            @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
@@ -142,5 +142,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const prodiSelect = document.getElementById('prodi_id');
+        const namaPosisiInput = document.getElementById('nama_posisi');
+
+        prodiSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const prodiNama = selectedOption.getAttribute('data-nama');
+            
+            if (prodiNama) {
+                namaPosisiInput.value = 'Dosen Tetap S1 ' + prodiNama;
+            }
+        });
+    });
+</script>
 
 @endsection

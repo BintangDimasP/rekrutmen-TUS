@@ -137,48 +137,17 @@
                     <table class="w-full text-left border-collapse" style="min-width: 900px;">
                         <thead>
                             <tr>
-                                <th rowspan="2"
-                                    class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-8 align-middle">No.
+                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-8">No.</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-44">Pelamar</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-52">
+                                    Penguji Micro Teaching <span class="font-normal text-red-300 block">30 mnt pertama</span>
                                 </th>
-                                <th rowspan="2"
-                                    class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-44 align-middle">
-                                    Pelamar</th>
-
-                                {{-- Wawancara header --}}
-                                <th colspan="3"
-                                    class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700">
-                                    Wawancara
-                                    <span class="font-normal text-red-300 ml-1">08.00–14.00</span>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-52">
+                                    Penguji Wawancara <span class="font-normal text-red-300 block">30 mnt kedua</span>
                                 </th>
-
-                                {{-- Micro Teaching header --}}
-                                <th colspan="3"
-                                    class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700">
-                                    Micro Teaching
-                                    <span class="font-normal text-red-300 ml-1">13.00–16.00</span>
-                                </th>
-
-                                <th rowspan="2"
-                                    class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-16 text-center border-l border-red-700 align-middle">
-                                    Status</th>
-                            </tr>
-                            <tr>
-                                {{-- Wawancara sub-headers --}}
-                                <th
-                                    class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 border-l border-red-700 w-52">
-                                    Penguji
-                                </th>
-                                <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-36">Sesi</th>
-                                <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-44">Link Meeting
-                                </th>
-
-                                {{-- Micro sub-headers --}}
-                                <th
-                                    class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 border-l border-red-700 w-52">
-                                    Penguji
-                                </th>
-                                <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-36">Sesi</th>
-                                <th class="bg-red-900 text-red-200 text-[0.6rem] font-medium px-3 py-1.5 w-44">Link Meeting</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-44">Sesi Seleksi</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 w-44">Link Meeting</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-16 text-center border-l border-red-700">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -205,111 +174,24 @@
                                         </div>
                                     </td>
 
-                                    {{-- ═══ WAWANCARA: Penguji (multi, tag style) ═══ --}}
-                                    <td class="py-3 px-3 border-l border-gray-100">
-                                        <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...
-                                        </div>
-                                        <template x-if="!loadingPenguji">
-                                            <div>
-                                                {{-- Tags penguji terpilih --}}
-                                                <div class="flex flex-wrap gap-1 mb-1.5"
-                                                    x-show="assignments[p.id]?.wawancara?.pengujiIds?.length > 0">
-                                                    <template x-for="pgId in assignments[p.id]?.wawancara?.pengujiIds ?? []"
-                                                        :key="pgId">
-                                                        <span
-                                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
-                                                            <span x-text="getPengujiNama(pgId)"></span>
-                                                            <button type="button" @click="removePengujiW(p.id, pgId)"
-                                                                class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                                    stroke-width="2.5" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        d="M6 18L18 6M6 6l12 12" />
-                                                                </svg>
-                                                            </button>
-                                                            {{-- hidden input untuk submit --}}
-                                                            <input type="hidden"
-                                                                :name="`schedule[${p.id}][wawancara][penguji_ids][]`"
-                                                                :value="pgId">
-                                                        </span>
-                                                    </template>
-                                                </div>
-                                                {{-- Dropdown tambah penguji --}}
-                                                <select @change="addPengujiW(p.id, $event)"
-                                                    class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
-                                                    <option value="">+ Tambah penguji</option>
-                                                    <template x-for="pg in availablePengujisW(p.id)" :key="pg.id">
-                                                        <option :value="pg.id" x-text="`${pg.nama} (${pg.kode})`"></option>
-                                                    </template>
-                                                </select>
-                                            </div>
-                                        </template>
-                                    </td>
-
-                                    {{-- ═══ WAWANCARA: Sesi ═══ --}}
-                                    <td class="py-3 px-3">
-                                        <template x-if="!(assignments[p.id]?.wawancara?.pengujiIds?.length > 0)">
-                                            <span class="text-[0.65rem] text-gray-300 italic">Pilih penguji dulu</span>
-                                        </template>
-                                        <template x-if="assignments[p.id]?.wawancara?.pengujiIds?.length > 0">
-                                            <select :name="`schedule[${p.id}][wawancara][sesi]`"
-                                                x-model="assignments[p.id].wawancara.sesi" @change="onSesiChangeW(p.id)"
-                                                class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white"
-                                                :class="{ 'border-red-400 bg-red-50': isSesiConflictW(p.id) }">
-                                                <option value="">— Pilih Sesi —</option>
-                                                <template x-for="(info, sesiKey) in sessions.tahap1" :key="sesiKey">
-                                                    <option :value="sesiKey"
-                                                        :disabled="isSesiDisabledW(p.id, parseInt(sesiKey))"
-                                                        x-text="sesiLabel('tahap1', sesiKey, isSesiDisabledW(p.id, parseInt(sesiKey)))">
-                                                    </option>
-                                                </template>
-                                            </select>
-                                        </template>
-                                    </td>
-
-                                    {{-- ═══ WAWANCARA: Link Meeting ═══ --}}
-                                    <td class="py-3 px-3">
-                                        <template x-if="!assignments[p.id]?.wawancara?.sesi">
-                                            <span class="text-[0.65rem] text-gray-300 italic">Isi sesi dulu</span>
-                                        </template>
-                                        <template x-if="assignments[p.id]?.wawancara?.sesi">
-                                            <input type="url" :name="`schedule[${p.id}][wawancara][link]`"
-                                                x-model="assignments[p.id].wawancara.link"
-                                                placeholder="https://meet.google.com/..."
-                                                class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white placeholder-gray-300">
-                                        </template>
-                                    </td>
-
                                     {{-- ═══ MICRO: Penguji (multi, tag style) ═══ --}}
                                     <td class="py-3 px-3 border-l border-gray-100">
-                                        <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...
-                                        </div>
+                                        <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...</div>
                                         <template x-if="!loadingPenguji">
                                             <div>
-                                                <div class="flex flex-wrap gap-1 mb-1.5"
-                                                    x-show="assignments[p.id]?.micro?.pengujiIds?.length > 0">
-                                                    <template x-for="pgId in assignments[p.id]?.micro?.pengujiIds ?? []"
-                                                        :key="pgId">
-                                                        <span
-                                                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
+                                                <div class="flex flex-wrap gap-1 mb-1.5" x-show="assignments[p.id]?.penguji_micro_ids?.length > 0">
+                                                    <template x-for="pgId in assignments[p.id]?.penguji_micro_ids ?? []" :key="pgId">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
                                                             <span x-text="getPengujiNama(pgId)"></span>
-                                                            <button type="button" @click="removePengujiM(p.id, pgId)"
-                                                                class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
-                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor"
-                                                                    stroke-width="2.5" viewBox="0 0 24 24">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                                        d="M6 18L18 6M6 6l12 12" />
-                                                                </svg>
+                                                            <button type="button" @click="removePengujiM(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                                             </button>
-                                                            <input type="hidden"
-                                                                :name="`schedule[${p.id}][micro][penguji_ids][]`"
-                                                                :value="pgId">
+                                                            <input type="hidden" :name="`schedule[${p.id}][penguji_micro_ids][]`" :value="pgId">
                                                         </span>
                                                     </template>
                                                 </div>
-                                                <select @change="addPengujiM(p.id, $event)"
-                                                    class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
-                                                    <option value="">+ Tambah penguji</option>
+                                                <select @change="addPengujiM(p.id, $event)" class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
+                                                    <option value="">+ Tambah penguji micro</option>
                                                     <template x-for="pg in availablePengujisM(p.id)" :key="pg.id">
                                                         <option :value="pg.id" x-text="`${pg.nama} (${pg.kode})`"></option>
                                                     </template>
@@ -318,35 +200,61 @@
                                         </template>
                                     </td>
 
-                                    {{-- ═══ MICRO: Sesi ═══ --}}
-                                    <td class="py-3 px-3">
-                                        <template x-if="!(assignments[p.id]?.micro?.pengujiIds?.length > 0)">
+                                    {{-- ═══ WAWANCARA: Penguji (multi, tag style) ═══ --}}
+                                    <td class="py-3 px-3 border-l border-gray-100">
+                                        <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...</div>
+                                        <template x-if="!loadingPenguji">
+                                            <div>
+                                                <div class="flex flex-wrap gap-1 mb-1.5" x-show="assignments[p.id]?.penguji_wawancara_ids?.length > 0">
+                                                    <template x-for="pgId in assignments[p.id]?.penguji_wawancara_ids ?? []" :key="pgId">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
+                                                            <span x-text="getPengujiNama(pgId)"></span>
+                                                            <button type="button" @click="removePengujiW(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                            </button>
+                                                            <input type="hidden" :name="`schedule[${p.id}][penguji_wawancara_ids][]`" :value="pgId">
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                                <select @change="addPengujiW(p.id, $event)" class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
+                                                    <option value="">+ Tambah penguji wwncr</option>
+                                                    <template x-for="pg in availablePengujisW(p.id)" :key="pg.id">
+                                                        <option :value="pg.id" x-text="`${pg.nama} (${pg.kode})`"></option>
+                                                    </template>
+                                                </select>
+                                            </div>
+                                        </template>
+                                    </td>
+
+                                    {{-- ═══ SESI (Unified) ═══ --}}
+                                    <td class="py-3 px-3 border-l border-gray-100">
+                                        <template x-if="!(assignments[p.id]?.penguji_micro_ids?.length > 0) && !(assignments[p.id]?.penguji_wawancara_ids?.length > 0)">
                                             <span class="text-[0.65rem] text-gray-300 italic">Pilih penguji dulu</span>
                                         </template>
-                                        <template x-if="assignments[p.id]?.micro?.pengujiIds?.length > 0">
-                                            <select :name="`schedule[${p.id}][micro][sesi]`"
-                                                x-model="assignments[p.id].micro.sesi" @change="onSesiChangeM(p.id)"
+                                        <template x-if="assignments[p.id]?.penguji_micro_ids?.length > 0 || assignments[p.id]?.penguji_wawancara_ids?.length > 0">
+                                            <select :name="`schedule[${p.id}][sesi]`"
+                                                x-model="assignments[p.id].sesi"
                                                 class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white"
-                                                :class="{ 'border-red-400 bg-red-50': isSesiConflictM(p.id) }">
-                                                <option value="">— Pilih Sesi —</option>
-                                                <template x-for="(info, sesiKey) in sessions.tahap2" :key="sesiKey">
+                                                :class="{ 'border-red-400 bg-red-50': isSesiConflict(p.id) }">
+                                                <option value="">— Pilih Sesi (60 Menit) —</option>
+                                                <template x-for="(info, sesiKey) in sessions.micro_teaching" :key="sesiKey">
                                                     <option :value="sesiKey"
-                                                        :disabled="isSesiDisabledM(p.id, parseInt(sesiKey))"
-                                                        x-text="sesiLabel('tahap2', sesiKey, isSesiDisabledM(p.id, parseInt(sesiKey)))">
+                                                        :disabled="isSesiDisabled(p.id, parseInt(sesiKey))"
+                                                        x-text="sesiLabel(sesiKey, isSesiDisabled(p.id, parseInt(sesiKey)))">
                                                     </option>
                                                 </template>
                                             </select>
                                         </template>
                                     </td>
 
-                                    {{-- ═══ MICRO: Link Meeting ═══ --}}
+                                    {{-- ═══ LINK MEETING ═══ --}}
                                     <td class="py-3 px-3">
-                                        <template x-if="!assignments[p.id]?.micro?.sesi">
+                                        <template x-if="!assignments[p.id]?.sesi">
                                             <span class="text-[0.65rem] text-gray-300 italic">Isi sesi dulu</span>
                                         </template>
-                                        <template x-if="assignments[p.id]?.micro?.sesi">
-                                            <input type="url" :name="`schedule[${p.id}][micro][link]`"
-                                                x-model="assignments[p.id].micro.link"
+                                        <template x-if="assignments[p.id]?.sesi">
+                                            <input type="url" :name="`schedule[${p.id}][link]`"
+                                                x-model="assignments[p.id].link"
                                                 placeholder="https://meet.google.com/..."
                                                 class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white placeholder-gray-300">
                                         </template>
@@ -355,16 +263,13 @@
                                     {{-- Status --}}
                                     <td class="py-3 px-3 text-center border-l border-gray-100">
                                         <template x-if="isRowComplete(p.id) && !getConflictWarning(p.id)">
-                                            <span
-                                                class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">Siap</span>
+                                            <span class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">Siap</span>
                                         </template>
                                         <template x-if="getConflictWarning(p.id)">
-                                            <span
-                                                class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">Bentrok</span>
+                                            <span class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-red-100 text-red-700">Bentrok</span>
                                         </template>
                                         <template x-if="!isRowComplete(p.id) && !getConflictWarning(p.id)">
-                                            <span
-                                                class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Belum</span>
+                                            <span class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">Belum</span>
                                         </template>
                                     </td>
 
@@ -491,8 +396,10 @@
                 initAssignment(pelamarId) {
                     if (!this.assignments[pelamarId]) {
                         this.assignments[pelamarId] = {
-                            wawancara: { pengujiIds: [], sesi: '', link: '' },
-                            micro: { pengujiIds: [], sesi: '', link: '' },
+                            penguji_micro_ids: [],
+                            penguji_wawancara_ids: [],
+                            sesi: '',
+                            link: '',
                         };
                     }
                 },
@@ -508,137 +415,87 @@
                     return pg ? `${pg.nama} (${pg.kode})` : `#${pgId}`;
                 },
 
-                /** Penguji yang belum dipilih untuk wawancara pelamar ini */
                 availablePengujisW(pelamarId) {
-                    const selected = this.assignments[pelamarId]?.wawancara?.pengujiIds ?? [];
+                    const selected = this.assignments[pelamarId]?.penguji_wawancara_ids ?? [];
                     return this.pengujis.filter(pg => !selected.map(Number).includes(Number(pg.id)));
                 },
 
-                /** Penguji yang belum dipilih untuk micro pelamar ini */
                 availablePengujisM(pelamarId) {
-                    const selected = this.assignments[pelamarId]?.micro?.pengujiIds ?? [];
+                    const selected = this.assignments[pelamarId]?.penguji_micro_ids ?? [];
                     return this.pengujis.filter(pg => !selected.map(Number).includes(Number(pg.id)));
                 },
 
                 addPengujiW(pelamarId, event) {
                     const val = event.target.value;
                     if (!val) return;
-                    const ids = this.assignments[pelamarId].wawancara.pengujiIds;
+                    const ids = this.assignments[pelamarId].penguji_wawancara_ids;
                     if (!ids.map(Number).includes(Number(val))) ids.push(Number(val));
-                    event.target.value = ''; // reset dropdown
+                    event.target.value = ''; 
                 },
 
                 removePengujiW(pelamarId, pgId) {
-                    const a = this.assignments[pelamarId].wawancara;
-                    a.pengujiIds = a.pengujiIds.filter(id => Number(id) !== Number(pgId));
-                    // Jika semua penguji dihapus, kosongkan sesi & link
-                    if (!a.pengujiIds.length) { a.sesi = ''; a.link = ''; }
+                    const a = this.assignments[pelamarId];
+                    a.penguji_wawancara_ids = a.penguji_wawancara_ids.filter(id => Number(id) !== Number(pgId));
+                    if (!a.penguji_wawancara_ids.length && !a.penguji_micro_ids.length) { a.sesi = ''; a.link = ''; }
                 },
 
                 addPengujiM(pelamarId, event) {
                     const val = event.target.value;
                     if (!val) return;
-                    const ids = this.assignments[pelamarId].micro.pengujiIds;
+                    const ids = this.assignments[pelamarId].penguji_micro_ids;
                     if (!ids.map(Number).includes(Number(val))) ids.push(Number(val));
                     event.target.value = '';
                 },
 
                 removePengujiM(pelamarId, pgId) {
-                    const a = this.assignments[pelamarId].micro;
-                    a.pengujiIds = a.pengujiIds.filter(id => Number(id) !== Number(pgId));
-                    if (!a.pengujiIds.length) { a.sesi = ''; a.link = ''; }
-                },
-
-                onSesiChangeW(pelamarId) {
-                    const a = this.assignments[pelamarId]?.wawancara;
-                    if (a && !a.sesi) a.link = '';
-                },
-
-                onSesiChangeM(pelamarId) {
-                    const a = this.assignments[pelamarId]?.micro;
-                    if (a && !a.sesi) a.link = '';
-                },
-
-                /**
-                 * Apakah sesi wawancara disabled untuk pelamar ini?
-                 * Cek semua penguji yang dipilih — jika salah satu bentrok, sesi disabled.
-                 */
-                isSesiDisabledW(pelamarId, sesiNum) {
                     const a = this.assignments[pelamarId];
-                    if (sesiNum === 4 && parseInt(a?.micro?.sesi) === 1) return true;
+                    a.penguji_micro_ids = a.penguji_micro_ids.filter(id => Number(id) !== Number(pgId));
+                    if (!a.penguji_micro_ids.length && !a.penguji_wawancara_ids.length) { a.sesi = ''; a.link = ''; }
+                },
 
-                    const ids = a?.wawancara?.pengujiIds ?? [];
-                    for (const pgId of ids) {
-                        if (this._isTakenFor(pgId, 'tahap1', sesiNum)) return true;
-                        // cross-conflict: tahap1 S4 ↔ tahap2 S1 (jam 13.00)
-                        if (sesiNum === 4 && this._isTakenFor(pgId, 'tahap2', 1)) return true;
-                        // in-form: penguji ini sudah dipakai di wawancara pelamar lain sesi sama
+                isSesiDisabled(pelamarId, sesiNum) {
+                    const a = this.assignments[pelamarId];
+                    if (!a) return false;
+
+                    const mIds = a.penguji_micro_ids ?? [];
+                    for (const pgId of mIds) {
+                        if (this._isTakenFor(pgId, 'micro_teaching', sesiNum)) return true;
+                        if (this._inFormConflict(pelamarId, pgId, 'micro_teaching', sesiNum)) return true;
+                    }
+
+                    const wIds = a.penguji_wawancara_ids ?? [];
+                    for (const pgId of wIds) {
+                        if (this._isTakenFor(pgId, 'wawancara', sesiNum)) return true;
                         if (this._inFormConflict(pelamarId, pgId, 'wawancara', sesiNum)) return true;
-                        // in-form cross: penguji ini micro S1 di pelamar lain
-                        if (sesiNum === 4 && this._inFormConflict(pelamarId, pgId, 'micro', 1)) return true;
                     }
                     return false;
                 },
 
-                isSesiConflictW(pelamarId) {
-                    const sesi = parseInt(this.assignments[pelamarId]?.wawancara?.sesi ?? '0');
+                isSesiConflict(pelamarId) {
+                    const sesi = parseInt(this.assignments[pelamarId]?.sesi ?? '0');
                     if (!sesi) return false;
-                    return this.isSesiDisabledW(pelamarId, sesi);
+                    return this.isSesiDisabled(pelamarId, sesi);
                 },
 
-                isSesiDisabledM(pelamarId, sesiNum) {
-                    const a = this.assignments[pelamarId];
-                    if (sesiNum === 1 && parseInt(a?.wawancara?.sesi) === 4) return true;
-
-                    const ids = a?.micro?.pengujiIds ?? [];
-                    for (const pgId of ids) {
-                        if (this._isTakenFor(pgId, 'tahap2', sesiNum)) return true;
-                        if (sesiNum === 1 && this._isTakenFor(pgId, 'tahap1', 4)) return true;
-                        if (this._inFormConflict(pelamarId, pgId, 'micro', sesiNum)) return true;
-                        if (sesiNum === 1 && this._inFormConflict(pelamarId, pgId, 'wawancara', 4)) return true;
-                    }
-                    return false;
-                },
-
-                isSesiConflictM(pelamarId) {
-                    const sesi = parseInt(this.assignments[pelamarId]?.micro?.sesi ?? '0');
-                    if (!sesi) return false;
-                    return this.isSesiDisabledM(pelamarId, sesi);
-                },
-
-                /** Cek takenMap dari DB */
                 _isTakenFor(pgId, tipe, sesiNum) {
                     const taken = (this.takenMap[pgId] ?? this.takenMap[String(pgId)])?.[tipe] ?? [];
                     return taken.map(Number).includes(sesiNum);
                 },
 
-                /** Cek in-form: apakah pgId sudah dipakai di pelamar lain untuk tipe+sesi tsb */
                 _inFormConflict(pelamarId, pgId, tipe, sesiNum) {
                     for (const [otherPid, otherA] of Object.entries(this.assignments)) {
                         if (parseInt(otherPid) === parseInt(pelamarId)) continue;
-                        const slot = tipe === 'wawancara' ? otherA.wawancara : otherA.micro;
+                        const ids = tipe === 'wawancara' ? otherA.penguji_wawancara_ids : otherA.penguji_micro_ids;
                         if (
-                            slot.pengujiIds.map(Number).includes(Number(pgId)) &&
-                            parseInt(slot.sesi) === sesiNum
+                            ids.map(Number).includes(Number(pgId)) &&
+                            parseInt(otherA.sesi) === sesiNum
                         ) return true;
                     }
                     return false;
                 },
 
-                /**
-                 * Bentrok 13.00: penguji yang sama ada di wawancara S4 DAN micro S1
-                 * milik pelamar yang sama.
-                 */
                 getConflictWarning(pelamarId) {
-                    const a = this.assignments[pelamarId];
-                    if (!a) return '';
-                    const wSesi = parseInt(a.wawancara.sesi ?? '0');
-                    const mSesi = parseInt(a.micro.sesi ?? '0');
-                    
-                    if (wSesi === 4 && mSesi === 1) {
-                        return 'Bentrok 13.00 — Wawancara S4 & Micro S1 bersamaan.';
-                    }
-                    return '';
+                    return ''; // Cross-conflicts inside same sesi don't exist anymore
                 },
 
                 isValidUrl(url) {
@@ -651,8 +508,10 @@
                     const a = this.assignments[pelamarId];
                     if (!a) return false;
                     return (
-                        a.wawancara.pengujiIds.length > 0 && a.wawancara.sesi !== '' && this.isValidUrl(a.wawancara.link) &&
-                        a.micro.pengujiIds.length > 0 && a.micro.sesi !== '' && this.isValidUrl(a.micro.link)
+                        a.penguji_micro_ids.length > 0 && 
+                        a.penguji_wawancara_ids.length > 0 && 
+                        a.sesi !== '' && 
+                        this.isValidUrl(a.link)
                     );
                 },
 
@@ -661,8 +520,10 @@
                         const a = this.assignments[p.id];
                         if (!a) return false;
                         const hasAnyInput = 
-                            a.wawancara.pengujiIds.length > 0 || a.wawancara.sesi !== '' || a.wawancara.link.trim() !== '' ||
-                            a.micro.pengujiIds.length > 0 || a.micro.sesi !== '' || a.micro.link.trim() !== '';
+                            a.penguji_micro_ids.length > 0 || 
+                            a.penguji_wawancara_ids.length > 0 || 
+                            a.sesi !== '' || 
+                            a.link.trim() !== '';
                         return hasAnyInput && !this.isRowComplete(p.id);
                     });
                 },
@@ -677,15 +538,10 @@
                     );
                 },
 
-                sesiLabel(tipe, sesiKey, isDisabled) {
-                    const info = this.sessions[tipe]?.[sesiKey];
+                sesiLabel(sesiKey, isDisabled) {
+                    const info = this.sessions.micro_teaching?.[sesiKey]; // Both use same block_label
                     if (!info) return `Sesi ${sesiKey}${isDisabled ? ' ✗' : ''}`;
-                    let time = info.time ?? '';
-                    if (!time && info.label) {
-                        const m = info.label.match(/(\d{2}[.:]\d{2}\s*[–\-]\s*\d{2}[.:]\d{2})/);
-                        time = m ? m[1] : '';
-                    }
-                    const base = time ? `Sesi ${sesiKey} (${time})` : `Sesi ${sesiKey}`;
+                    const base = info.block_label || `Sesi ${sesiKey}`;
                     return isDisabled ? base + ' ✗' : base;
                 },
 
@@ -749,10 +605,8 @@
 
                 async onTanggalChange() {
                     Object.values(this.assignments).forEach(a => {
-                        a.wawancara.sesi = '';
-                        a.wawancara.link = '';
-                        a.micro.sesi = '';
-                        a.micro.link = '';
+                        a.sesi = '';
+                        a.link = '';
                     });
                     this.takenMap = {};
                     if (this.tanggal) await this.loadTakenSessions();

@@ -280,12 +280,46 @@
                             <option value="P">Perempuan</option>
                         </select>
                     </div>
-                    {{-- Alamat --}}
-                    <div class="col-span-2 flex flex-col gap-1.5">
-                        <label for="alamat" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Alamat Lengkap <span class="text-red-600">*</span>
+                    {{-- Kewarganegaraan & Status Pernikahan --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label for="kewarganegaraan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            Kewarganegaraan <span class="text-red-600">*</span>
                         </label>
-                        <textarea id="alamat" name="alamat" rows="3"
+                        <select id="kewarganegaraan" name="kewarganegaraan"
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
+                            <option value="" disabled selected>— Pilih —</option>
+                            <option value="WNI">WNI</option>
+                            <option value="WNA">WNA</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label for="status_pernikahan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            Status Pernikahan <span class="text-red-600">*</span>
+                        </label>
+                        <select id="status_pernikahan" name="status_pernikahan"
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
+                            <option value="" disabled selected>— Pilih —</option>
+                            <option value="Belum Kawin">Belum Kawin</option>
+                            <option value="Kawin">Kawin</option>
+                            <option value="Cerai Hidup">Cerai Hidup</option>
+                            <option value="Cerai Mati">Cerai Mati</option>
+                        </select>
+                    </div>
+                    {{-- Alamat Domisili --}}
+                    <div class="col-span-2 flex flex-col gap-1.5">
+                        <label for="alamat_domisili" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            Alamat Domisili <span class="text-red-600">*</span>
+                        </label>
+                        <textarea id="alamat_domisili" name="alamat_domisili" rows="2"
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
+                            placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos"></textarea>
+                    </div>
+                    {{-- Alamat KTP --}}
+                    <div class="col-span-2 flex flex-col gap-1.5">
+                        <label for="alamat_ktp" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            Alamat Sesuai KTP <span class="text-red-600">*</span>
+                        </label>
+                        <textarea id="alamat_ktp" name="alamat_ktp" rows="2"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
                             placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos"></textarea>
                     </div>
@@ -354,6 +388,31 @@
                         <input type="text" id="prodi_pendidikan" name="prodi_pendidikan"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
                             placeholder="Nama program studi">
+                    </div>
+                    {{-- Akreditas & No Ijazah --}}
+                    <div class="flex flex-col gap-1.5">
+                        <label for="akreditas" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            Akreditasi Prodi <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
+                        </label>
+                        <select id="akreditas" name="akreditas"
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
+                            <option value="" disabled selected>— Pilih Akreditasi —</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="Unggul">Unggul</option>
+                            <option value="Baik Sekali">Baik Sekali</option>
+                            <option value="Baik">Baik</option>
+                            <option value="Tidak Terakreditasi">Tidak Terakreditasi</option>
+                        </select>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <label for="no_ijazah" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                            No. Ijazah <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
+                        </label>
+                        <input type="text" id="no_ijazah" name="no_ijazah"
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
+                            placeholder="Nomor Ijazah Anda">
                     </div>
 
                     {{-- Section Divider --}}
@@ -798,7 +857,7 @@
     // ── Validation ────────────────────────────────────────
     const requiredFields = {
         1: ['email', 'password'],
-        2: ['nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'alamat'],
+        2: ['nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'kewarganegaraan', 'status_pernikahan', 'alamat_domisili', 'alamat_ktp'],
         3: ['jenjang', 'ipk', 'institusi', 'prodi_pendidikan'],
         4: [],
         5: [],
@@ -946,6 +1005,28 @@
     document.querySelectorAll('.form-input').forEach(el => {
         el.addEventListener('input', () => el.classList.remove('error'));
         el.addEventListener('change', () => el.classList.remove('error'));
+    });
+
+    // Intercept Enter key / Early Form Submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+        let activeStep = 1;
+        for (let i = 1; i <= TOTAL; i++) {
+            if (document.getElementById('step-' + i).classList.contains('active')) {
+                activeStep = i;
+                break;
+            }
+        }
+        
+        // If we are not on the last step, prevent submission and try to go to next step
+        if (activeStep < TOTAL) {
+            e.preventDefault();
+            nextStep(activeStep);
+        } else {
+            // If on the last step, just validate it first
+            if (!validateStep(activeStep)) {
+                e.preventDefault();
+            }
+        }
     });
 </script>
 </body>

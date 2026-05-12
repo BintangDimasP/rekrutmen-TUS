@@ -22,8 +22,9 @@ class LamaranController extends Controller
             ->where('lowongan_id', $lamaran->lowongan_id)
             ->get();
 
-        $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
-        $micro     = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+        // Get all jadwals grouped by tipe_seleksi
+        $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
+        $micro     = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
 
         return view('admin.lamaran.show', compact('lamaran', 'wawancara', 'micro'));
     }
@@ -51,8 +52,8 @@ class LamaranController extends Controller
 
             $statusLabels = [
                 'menunggu'       => 'Menunggu',
-                'seleksi_tahap1' => 'Seleksi Tahap 1 (Wawancara)',
-                'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching)',
+                'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)',
+                'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)',
                 'diterima'       => 'Diterima',
                 'ditolak'        => 'Ditolak',
             ];

@@ -42,12 +42,17 @@ class RegisteredUserController extends Controller
             'tanggal_lahir' => ['required', 'date'],
             'no_telepon' => ['required', 'string', 'max:20'],
             'jenis_kelamin' => ['required', 'in:L,P'],
-            'alamat' => ['required', 'string'],
+            'kewarganegaraan' => ['required', 'string', 'max:255'],
+            'status_pernikahan' => ['required', 'string', 'max:255'],
+            'alamat_domisili' => ['required', 'string'],
+            'alamat_ktp' => ['required', 'string'],
             
             // Step 3
             'jenjang' => ['nullable', 'in:S1,S2,S3'],
             'institusi' => ['nullable', 'string', 'max:255'],
             'prodi_pendidikan' => ['nullable', 'string', 'max:255'],
+            'akreditas' => ['nullable', 'in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi'],
+            'no_ijazah' => ['nullable', 'string', 'max:255'],
             'ipk' => ['nullable', 'numeric', 'min:0', 'max:4'],
             'ijazah' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'transkrip' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
@@ -81,8 +86,9 @@ class RegisteredUserController extends Controller
         ]);
 
         $pelamarData = $request->only([
-            'nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'alamat',
-            'jenjang', 'institusi', 'prodi_pendidikan', 'ipk',
+            'nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 
+            'kewarganegaraan', 'status_pernikahan', 'alamat_domisili', 'alamat_ktp',
+            'jenjang', 'institusi', 'prodi_pendidikan', 'akreditas', 'no_ijazah', 'ipk',
             'kategori_sertifikat', 'jenis_tes_bahasa', 'skor_bahasa', 'tanggal_tes_bahasa',
             'nidn', 'homebase', 'jabatan_akademik', 'minat_riset', 'h_index'
         ]);

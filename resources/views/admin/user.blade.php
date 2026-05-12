@@ -26,7 +26,7 @@
                 });
             },
             get totalFiltered() { return this.filteredRows.length; },
-            get totalPages() { return Math.max(1, Math.ceil(this.totalFiltered / this.perPage)); },
+            get totalPages() { return this.totalFiltered === 0 ? 1 : Math.ceil(this.totalFiltered / this.perPage); },
             get paginatedStart() { return (this.currentPage - 1) * this.perPage; },
             get paginatedEnd() { return this.currentPage * this.perPage; },
             updateVisibility() {
@@ -34,11 +34,7 @@
                 const filtered = this.filteredRows;
                 rows.forEach(row => {
                     const idx = filtered.indexOf(row);
-                    if (idx === -1 || idx < this.paginatedStart || idx >= this.paginatedEnd) {
-                        row.style.display = 'none';
-                    } else {
-                        row.style.display = '';
-                    }
+                    row.style.display = (idx === -1 || idx < this.paginatedStart || idx >= this.paginatedEnd) ? 'none' : '';
                 });
             },
             resetPage() { this.currentPage = 1; this.updateVisibility(); },
@@ -46,8 +42,11 @@
             nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.updateVisibility(); } },
             goToPage(p) { this.currentPage = p; this.updateVisibility(); }
          }"
-         x-init="$nextTick(() => updateVisibility())"
-         x-effect="search; roleFilter; resetPage()">
+         x-init="
+            $nextTick(() => updateVisibility());
+            $watch('search', () => resetPage());
+            $watch('roleFilter', () => resetPage());
+         ">
 
         {{-- Filter Card --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -218,8 +217,9 @@
                 </span>
                 <div class="flex items-center gap-1">
                     {{-- Previous --}}
-                    <button type="button" @click="prevPage()" :disabled="currentPage === 1"
-                            :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                    <button type="button" @click="prevPage()" 
+                            :disabled="currentPage === 1"
+                            :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] cursor-pointer'"
                             class="px-3 py-1.5 rounded-lg font-medium transition">Prev</button>
 
                     {{-- Page Numbers --}}
@@ -227,13 +227,14 @@
                         <button type="button" @click="goToPage(page)"
                                 x-show="page >= currentPage - 2 && page <= currentPage + 2"
                                 :class="page === currentPage ? 'bg-[#8b1515] text-white font-bold' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
-                                class="px-3 py-1.5 rounded-lg font-medium transition"
+                                class="px-3 py-1.5 rounded-lg font-medium transition cursor-pointer"
                                 x-text="page"></button>
                     </template>
 
                     {{-- Next --}}
-                    <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages"
-                            :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
+                    <button type="button" @click="nextPage()" 
+                            :disabled="currentPage >= totalPages"
+                            :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] cursor-pointer'"
                             class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
                 </div>
             </div>

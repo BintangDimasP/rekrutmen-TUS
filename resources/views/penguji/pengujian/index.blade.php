@@ -70,7 +70,7 @@
                                 $sesiInfo = \App\Models\JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$jadwal->sesi] ?? null;
                                 $sudahDinilai = $jadwal->penilaian !== null;
                             @endphp
-                            <tr data-row data-tipe="{{ $jadwal->tipe_seleksi == 'tahap1' ? 'wawancara' : 'micro' }}"
+                            <tr data-row data-tipe="{{ $jadwal->tipe_seleksi == 'wawancara' ? 'wawancara' : 'micro' }}"
                                 class="hover:bg-gray-50/50 transition-colors h-[52px]">
                                 
                                 {{-- Tanggal --}}
@@ -84,7 +84,7 @@
 
                                 {{-- Seleksi --}}
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-700">
-                                    {{ $jadwal->tipe_seleksi == 'tahap1' ? 'Wawancara' : 'Micro Teaching' }}
+                                    {{ $jadwal->tipe_seleksi == 'wawancara' ? 'Wawancara' : 'Micro Teaching' }}
                                 </td>
 
                                 {{-- Pelamar --}}

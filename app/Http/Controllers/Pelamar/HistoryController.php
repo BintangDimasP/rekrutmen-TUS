@@ -54,8 +54,9 @@ class HistoryController extends Controller
             ->where('lowongan_id', $lamaran->lowongan_id)
             ->get();
 
-        $wawancara = $jadwals->where('tipe_seleksi', 'tahap1')->first();
-        $micro = $jadwals->where('tipe_seleksi', 'tahap2')->first();
+        // Get all jadwals grouped by tipe_seleksi
+        $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
+        $micro = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
 
         return view('pelamar.history.show', compact('lamaran', 'pelamar', 'wawancara', 'micro'));
     }

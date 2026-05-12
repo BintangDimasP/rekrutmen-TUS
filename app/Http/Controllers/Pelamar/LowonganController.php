@@ -121,23 +121,16 @@ class LowonganController extends Controller
 
         $request->validate([
             'file_surat_lamaran' => 'required|file|mimes:pdf|max:5120',
-            'file_berkas_pendukung' => 'nullable|file|mimes:pdf|max:10240',
-            'catatan' => 'nullable|string',
         ]);
 
         $lamaranData = [
             'pelamar_id' => $pelamar->id,
             'lowongan_id' => $lowongan->id,
             'status' => 'menunggu',
-            'catatan' => $request->catatan,
         ];
 
         if ($request->hasFile('file_surat_lamaran')) {
             $lamaranData['file_surat_lamaran'] = $request->file('file_surat_lamaran')->store("lamaran/" . $pelamar->id, 'public');
-        }
-
-        if ($request->hasFile('file_berkas_pendukung')) {
-            $lamaranData['file_berkas_pendukung'] = $request->file('file_berkas_pendukung')->store("lamaran/" . $pelamar->id, 'public');
         }
 
         Lamaran::create($lamaranData);

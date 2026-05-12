@@ -11,8 +11,8 @@ class Lamaran extends Model
 
     const STATUS_LABELS = [
         'menunggu'       => 'Menunggu',
-        'seleksi_tahap1' => 'Seleksi Tahap 1',
-        'seleksi_tahap2' => 'Seleksi Tahap 2',
+        'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)',
+        'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)',
         'diterima'       => 'Diterima',
         'ditolak'        => 'Ditolak',
     ];
@@ -21,9 +21,7 @@ class Lamaran extends Model
         'pelamar_id',
         'lowongan_id',
         'file_surat_lamaran',
-        'file_berkas_pendukung',
         'status',
-        'catatan',
         'tanggal_wawancara',
         'link_zoom',
         'catatan_admin',

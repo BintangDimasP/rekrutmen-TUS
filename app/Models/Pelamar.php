@@ -19,12 +19,18 @@ class Pelamar extends Model
         'tanggal_lahir',
         'no_telepon',
         'jenis_kelamin',
-        'alamat',
+        'kewarganegaraan',
+        'status_pernikahan',
+        'alamat_domisili',
+        'alamat_ktp',
+        'alamat', // Keep for backward compatibility if needed temporarily
 
         // Riwayat Pendidikan Level 1
         'jenjang',
         'institusi',
         'prodi_pendidikan',
+        'akreditas',
+        'no_ijazah',
         'ipk',
         'file_ijazah',
         'file_transkrip',
@@ -33,6 +39,8 @@ class Pelamar extends Model
         'jenjang_2',
         'institusi_2',
         'prodi_pendidikan_2',
+        'akreditas_2',
+        'no_ijazah_2',
         'ipk_2',
         'file_ijazah_2',
         'file_transkrip_2',
@@ -41,6 +49,8 @@ class Pelamar extends Model
         'jenjang_3',
         'institusi_3',
         'prodi_pendidikan_3',
+        'akreditas_3',
+        'no_ijazah_3',
         'ipk_3',
         'file_ijazah_3',
         'file_transkrip_3',
@@ -92,7 +102,7 @@ class Pelamar extends Model
     public function lowongans()
     {
         return $this->belongsToMany(Lowongan::class, 'lamarans')
-                    ->withPivot(['status', 'catatan'])
+                    ->withPivot(['status'])
                     ->withTimestamps();
     }
 

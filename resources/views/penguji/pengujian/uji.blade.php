@@ -7,7 +7,7 @@
     $pelamar = $jadwal->pelamar;
     $lowongan = $jadwal->lowongan;
     $penilaian = $jadwal->penilaian;
-    $isWawancara = $jadwal->tipe_seleksi == 'tahap1';
+    $isWawancara = $jadwal->tipe_seleksi == 'wawancara';
     $detailNilai = $penilaian->detail_nilai ?? [];
 
     if ($isWawancara) {

@@ -42,7 +42,7 @@ class Lowongan extends Model
     public function pelamars()
     {
         return $this->belongsToMany(Pelamar::class, 'lamarans')
-                    ->withPivot(['status', 'catatan'])
+                    ->withPivot(['status'])
                     ->withTimestamps();
     }
 
