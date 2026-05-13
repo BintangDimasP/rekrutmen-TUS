@@ -99,167 +99,265 @@
                 </div>
             </div>
 
-            {{-- 3. JADWAL & HASIL PENILAIAN SELEKSI --}}
+                        {{-- 3. JADWAL & SUMMARY PENILAIAN SELEKSI --}}
+            @php
+                $microDinilai     = $micro->filter(fn($j) => $j->penilaian !== null);
+                $wawancaraDinilai = $wawancara->filter(fn($j) => $j->penilaian !== null);
+
+                $microKategoriLabels = [
+                    1 => 'Perencanaan Pembelajaran',
+                    2 => 'Penguasaan Materi',
+                    3 => 'Sistematika',
+                    4 => 'Pengelolaan Kelas & Interaksi',
+                    5 => 'Sikap & Etika',
+                ];
+                // Wawancara: 8 indikator flat
+                $wawancaraIndikatorLabels = [
+                    1 => 'Motivasi',
+                    2 => 'Kemampuan Mengajar',
+                    3 => 'Kemampuan Mengembangkan Kurikulum',
+                    4 => 'Kemampuan Penelitian & Publikasi',
+                    5 => 'Kemampuan Abdimas',
+                    6 => 'Kemampuan Bekerjasama dengan Tim',
+                    7 => 'Keahlian Lainnya',
+                    8 => 'Komitmen Waktu',
+                ];
+                $wawancaraKategoriLabels = []; // tidak dipakai untuk wawancara
+
+                $nilaiAkhirMicro = $microDinilai->count() > 0
+                    ? round($microDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2)
+                    : null;
+                $nilaiAkhirWawancara = $wawancaraDinilai->count() > 0
+                    ? round($wawancaraDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2)
+                    : null;
+            @endphp
+
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
-                    {{ (($wawancara && $wawancara->count() > 0 && isset($wawancara[0]) && $wawancara[0]->penilaian) || ($micro && $micro->count() > 0 && isset($micro[0]) && $micro[0]->penilaian)) ? 'Nilai Hasil Seleksi' : 'Jadwal Seleksi' }}
+                    Jadwal &amp; Penilaian Seleksi
                 </h3>
-                
-                @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        @if($micro && $micro->count() > 0)
-                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
-                            
-                            @if($micro[0]->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Micro Teaching</h4>
-                            
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Penguasaan Materi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_1 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Keterampilan Pedagogik</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_2 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Pemanfaatan Media</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_3 }}</span>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
-                                <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $micro[0]->penilaian->total_nilai }}</p>
-                            </div>
-                            
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
-                                        @foreach($micro as $microItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
-                            @else
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
-                            
-                            <div class="space-y-4 text-sm text-gray-700">
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
-                                    <p class="font-bold text-gray-800">{{ $micro[0]->tanggal->translatedFormat('d F Y') }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Waktu</p>
-                                    <p class="font-bold text-gray-800">{{ $micro[0]->session_label }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
-                                        @foreach($micro as $microItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
-                                        @endforeach
-                                    </div>
-                                </div>
-                                
-                                @if($micro[0]->link_meeting)
-                                <div class="pt-3">
-                                    <a href="{{ $micro[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
-                                        Link Zoom
-                                    </a>
-                                </div>
-                                @endif
-                            </div>
-                            @endif
-                        </div>
-                        @endif
 
-                        @if($wawancara && $wawancara->count() > 0)
-                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
-                            
-                            @if($wawancara[0]->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Wawancara</h4>
-                            
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kompetensi Kepribadian</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_1 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Visi Tri Dharma</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_2 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kemampuan Adaptasi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_3 }}</span>
-                                </div>
+                @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
+                <div class="space-y-8">
+
+                    {{-- ── MICRO TEACHING ── --}}
+                    @if($micro && $micro->count() > 0)
+                    <div class="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                <span class="text-white font-black text-sm uppercase tracking-widest">Micro Teaching</span>
                             </div>
-                            
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
-                                <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $wawancara[0]->penilaian->total_nilai }}</p>
+                            <div class="flex items-center gap-3 text-red-200 text-xs flex-wrap">
+                                <span>{{ $micro[0]->tanggal->format('d M Y') }}</span>
+                                <span>&bull;</span>
+                                <span>{{ $micro[0]->session_label }}</span>
+                                @if($micro[0]->link_meeting)
+                                <a href="{{ $micro[0]->link_meeting }}" target="_blank" class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs font-bold rounded-lg transition-colors border border-white/20">Link Zoom</a>
+                                @endif
                             </div>
-                            
-                            <div class="space-y-3">
+                        </div>
+
+                        @if($microDinilai->count() === 0)
+                        <div class="p-6 bg-white">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
-                                        @foreach($wawancara as $wawancaraItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
-                                        @endforeach
+                                    <p class="text-sm font-bold text-gray-700">Menunggu Penilaian</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Penguji: {{ $micro->pluck('penguji.nama')->filter()->implode(', ') }} &bull; 0/{{ $micro->count() }} sudah menilai</p>
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        <div class="divide-y divide-gray-100 bg-white">
+                            @foreach($microDinilai->values() as $idx => $jadwalMicro)
+                            @php $p = $jadwalMicro->penilaian; @endphp
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-[#8b1515]/10 text-[#8b1515] flex items-center justify-center text-xs font-black flex-shrink-0">{{ $idx + 1 }}</div>
+                                        <span class="text-sm font-black text-gray-800">{{ $jadwalMicro->penguji->nama ?? '-' }}</span>
                                     </div>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Penguji {{ $idx + 1 }}</span>
                                 </div>
-                            </div>
-                            @else
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
-                            
-                            <div class="space-y-4 text-sm text-gray-700">
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
-                                    <p class="font-bold text-gray-800">{{ $wawancara[0]->tanggal->translatedFormat('d F Y') }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Waktu</p>
-                                    <p class="font-bold text-gray-800">{{ $wawancara[0]->session_label }}</p>
-                                </div>
-                                <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
-                                        @foreach($wawancara as $wawancaraItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
-                                        @endforeach
+
+                                <div class="grid grid-cols-2 md:grid-cols-5 gap-2 mb-4">
+                                    @foreach($microKategoriLabels as $kNum => $kLabel)
+                                    @php $kVal = $p->{'kategori_'.$kNum}; @endphp
+                                    @if($kVal !== null)
+                                    <div class="p-3 rounded-xl bg-gray-50 border border-gray-100 text-center">
+                                        <p class="text-[0.6rem] font-bold text-gray-400 uppercase leading-tight mb-1">{{ $kLabel }}</p>
+                                        <p class="text-lg font-black text-[#8b1515]">{{ $kVal }}</p>
                                     </div>
+                                    @endif
+                                    @endforeach
                                 </div>
-                                
-                                @if($wawancara[0]->link_meeting)
-                                <div class="pt-3">
-                                    <a href="{{ $wawancara[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
-                                        Link Zoom
-                                    </a>
+
+                                <div class="flex flex-wrap items-start gap-3">
+                                    <div class="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl text-white">
+                                        <span class="text-xs font-bold uppercase tracking-wider">Rata-rata</span>
+                                        <span class="text-xl font-black">{{ $p->total_nilai }}</span>
+                                    </div>
+                                    @if($p->rekomendasi)
+                                    @php
+                                        $rekLabels = ['direkomendasikan' => ['label' => 'Direkomendasikan', 'color' => 'bg-green-50 text-green-700 border-green-200'], 'tidak_direkomendasikan' => ['label' => 'Tidak Direkomendasikan', 'color' => 'bg-red-50 text-red-700 border-red-200'], 'perlu_dipertimbangkan' => ['label' => 'Perlu Dipertimbangkan', 'color' => 'bg-yellow-50 text-yellow-700 border-yellow-200']];
+                                        $rek = $rekLabels[$p->rekomendasi] ?? ['label' => $p->rekomendasi, 'color' => 'bg-gray-50 text-gray-700 border-gray-200'];
+                                    @endphp
+                                    <span class="px-3 py-2 rounded-xl text-xs font-bold border {{ $rek['color'] }}">{{ $rek['label'] }}</span>
+                                    @endif
+                                    @if($p->prodi_tujuan)
+                                    <div class="text-xs py-2"><span class="text-gray-400 font-bold uppercase">Prodi Tujuan:</span> <span class="font-bold text-gray-700">{{ $p->prodi_tujuan }}</span></div>
+                                    @endif
+                                    @if($p->kelompok_keahlian)
+                                    @php $kkLabels = ['scout' => 'SCoT', 'ethes' => 'ETHES', 'riib' => 'RIIB']; @endphp
+                                    <div class="text-xs py-2"><span class="text-gray-400 font-bold uppercase">Kelompok:</span> <span class="font-bold text-gray-700">{{ $kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian }}</span></div>
+                                    @endif
+                                    @if($p->bidang_keahlian)
+                                    <div class="text-xs py-2"><span class="text-gray-400 font-bold uppercase">Bidang Keahlian:</span> <span class="font-bold text-gray-700">{{ $p->bidang_keahlian }}</span></div>
+                                    @endif
+                                </div>
+                                @if($p->catatan)
+                                <div class="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p class="text-[0.65rem] font-bold text-gray-400 uppercase mb-1">Catatan</p>
+                                    <p class="text-sm text-gray-700">{{ $p->catatan }}</p>
                                 </div>
                                 @endif
                             </div>
-                            @endif
+                            @endforeach
+
+                            @foreach($micro->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
+                            <div class="px-6 py-4 flex items-center gap-3 bg-yellow-50/50">
+                                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="text-sm font-semibold text-gray-600">{{ $jadwalBelum->penguji->nama ?? '-' }}</span>
+                                <span class="text-xs text-yellow-600 font-bold">Belum menilai</span>
+                            </div>
+                            @endforeach
+
+                            <div class="px-6 py-5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-200 text-xs font-bold uppercase tracking-widest">Nilai Akhir Micro Teaching</p>
+                                    <p class="text-red-200 text-[0.65rem] mt-0.5">Rata-rata dari {{ $microDinilai->count() }} penguji</p>
+                                </div>
+                                <span class="text-4xl font-black text-white">{{ $nilaiAkhirMicro }}</span>
+                            </div>
                         </div>
                         @endif
                     </div>
-                @else
-                    <div class="p-8 rounded-2xl border border-gray-200 bg-gray-50 text-center">
-                        <p class="text-sm font-bold text-gray-600">Belum Ada Jadwal</p>
-                        <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">Jadwal seleksi belum ditentukan. Silakan buat jadwal seleksi di menu Jadwal Seleksi jika diperlukan.</p>
+                    @endif
+
+                    {{-- ── WAWANCARA ── --}}
+                    @if($wawancara && $wawancara->count() > 0)
+                    <div class="rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                                <span class="text-white font-black text-sm uppercase tracking-widest">Wawancara</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-red-200 text-xs flex-wrap">
+                                <span>{{ $wawancara[0]->tanggal->format('d M Y') }}</span>
+                                <span>&bull;</span>
+                                <span>{{ $wawancara[0]->session_label }}</span>
+                                @if($wawancara[0]->link_meeting)
+                                <a href="{{ $wawancara[0]->link_meeting }}" target="_blank" class="px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-xs font-bold rounded-lg transition-colors border border-white/20">Link Zoom</a>
+                                @endif
+                            </div>
+                        </div>
+
+                        @if($wawancaraDinilai->count() === 0)
+                        <div class="p-6 bg-white">
+                            <div class="flex items-center gap-3">
+                                <svg class="w-5 h-5 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <div>
+                                    <p class="text-sm font-bold text-gray-700">Menunggu Penilaian</p>
+                                    <p class="text-xs text-gray-500 mt-0.5">Penguji: {{ $wawancara->pluck('penguji.nama')->filter()->implode(', ') }} &bull; 0/{{ $wawancara->count() }} sudah menilai</p>
+                                </div>
+                            </div>
+                        </div>
+                        @else
+                        <div class="divide-y divide-gray-100 bg-white">
+                            @foreach($wawancaraDinilai->values() as $idx => $jadwalWaw)
+                            @php $p = $jadwalWaw->penilaian; @endphp
+                            <div class="p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-7 h-7 rounded-full bg-[#8b1515]/10 text-[#8b1515] flex items-center justify-center text-xs font-black flex-shrink-0">{{ $idx + 1 }}</div>
+                                        <span class="text-sm font-black text-gray-800">{{ $jadwalWaw->penguji->nama ?? '-' }}</span>
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Penguji {{ $idx + 1 }}</span>
+                                </div>
+
+                                <div class="grid grid-cols-4 gap-2 mb-4">
+                                        @php $detail = $p->detail_nilai ?? []; @endphp
+                                        @foreach($wawancaraIndikatorLabels as $iNum => $iLabel)
+                                        @php $iVal = $detail['k1_item_'.$iNum] ?? null; @endphp
+                                        @if($iVal !== null)
+                                        <div class="p-3 rounded-xl bg-gray-50 border border-gray-100 text-center">
+                                            <p class="text-[0.6rem] font-bold text-gray-400 uppercase leading-tight mb-1">{{ $iLabel }}</p>
+                                            <p class="text-lg font-black text-[#8b1515]">{{ $iVal }}</p>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
+
+                                <div class="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl text-white w-fit">
+                                    <span class="text-xs font-bold uppercase tracking-wider">Rata-rata</span>
+                                    <span class="text-xl font-black">{{ $p->total_nilai }}</span>
+                                </div>
+                                                                @if($p->rekomendasi)
+                                @php
+                                    $rekLabels = ['direkomendasikan' => ['label' => 'Direkomendasikan', 'color' => 'bg-green-50 text-green-700 border-green-200'], 'tidak_direkomendasikan' => ['label' => 'Tidak Direkomendasikan', 'color' => 'bg-red-50 text-red-700 border-red-200'], 'perlu_dipertimbangkan' => ['label' => 'Perlu Dipertimbangkan', 'color' => 'bg-yellow-50 text-yellow-700 border-yellow-200']];
+                                    $rek = $rekLabels[$p->rekomendasi] ?? ['label' => $p->rekomendasi, 'color' => 'bg-gray-50 text-gray-700 border-gray-200'];
+                                @endphp
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <span class="px-3 py-1.5 rounded-xl text-xs font-bold border {{ $rek['color'] }}">{{ $rek['label'] }}</span>
+                                    @if($p->prodi_tujuan)
+                                    <span class="px-3 py-1.5 rounded-xl text-xs font-bold border bg-gray-50 text-gray-700 border-gray-200">Prodi: {{ $p->prodi_tujuan }}</span>
+                                    @endif
+                                </div>
+                                @endif
+                                @if($p->catatan)
+                                <div class="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                                    <p class="text-[0.65rem] font-bold text-gray-400 uppercase mb-1">Catatan</p>
+                                    <p class="text-sm text-gray-700">{{ $p->catatan }}</p>
+                                </div>
+                                @endif
+                            </div>
+                            @endforeach
+
+                            @foreach($wawancara->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
+                            <div class="px-6 py-4 flex items-center gap-3 bg-yellow-50/50">
+                                <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <span class="text-sm font-semibold text-gray-600">{{ $jadwalBelum->penguji->nama ?? '-' }}</span>
+                                <span class="text-xs text-yellow-600 font-bold">Belum menilai</span>
+                            </div>
+                            @endforeach
+
+                            <div class="px-6 py-5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-200 text-xs font-bold uppercase tracking-widest">Nilai Akhir Wawancara</p>
+                                    <p class="text-red-200 text-[0.65rem] mt-0.5">Rata-rata dari {{ $wawancaraDinilai->count() }} penguji</p>
+                                </div>
+                                <span class="text-4xl font-black text-white">{{ $nilaiAkhirWawancara }}</span>
+                            </div>
+                        </div>
+                        @endif
                     </div>
+                    @endif
+
+                </div>
+                @else
+                <div class="p-8 rounded-2xl border border-gray-200 bg-gray-50 text-center">
+                    <p class="text-sm font-bold text-gray-600">Belum Ada Jadwal</p>
+                    <p class="text-xs text-gray-500 mt-1 max-w-sm mx-auto">Jadwal seleksi belum ditentukan. Silakan buat jadwal seleksi di menu Jadwal Seleksi jika diperlukan.</p>
+                </div>
                 @endif
             </div>
 
-            {{-- 4. UBAH STATUS LAMARAN --}}
+{{-- 4. UBAH STATUS LAMARAN --}}
             @php
                 $isFinished = in_array($lamaran->status, ['diterima', 'ditolak']);
                 $hasJadwal = ($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0);
-                $hasBothScores = ($wawancara && $wawancara->count() > 0 && $wawancara[0]->penilaian) && ($micro && $micro->count() > 0 && $micro[0]->penilaian);
+                $hasBothScores = ($wawancara && $wawancara->count() > 0 && $wawancara->every(fn($j) => $j->penilaian !== null)) && ($micro && $micro->count() > 0 && $micro->every(fn($j) => $j->penilaian !== null));
                 $statusOrder = ['menunggu' => 1, 'seleksi_tahap1' => 2, 'seleksi_tahap2' => 3, 'diterima' => 4, 'ditolak' => 4];
                 $currentOrder = $statusOrder[$lamaran->status] ?? 1;
                 

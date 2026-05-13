@@ -11,9 +11,15 @@ class Penilaian extends Model
         'kategori_1',
         'kategori_2',
         'kategori_3',
+        'kategori_4',
+        'kategori_5',
         'detail_nilai',
         'total_nilai',
         'catatan',
+        'rekomendasi',
+        'prodi_tujuan',
+        'kelompok_keahlian',
+        'bidang_keahlian',
     ];
 
     protected $casts = [

@@ -1,47 +1,87 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Form Penilaian Wawancara')
+
+@section('title', 'Form Penilaian Micro Teaching')
 
 @section('content')
 @php
-    $pelamar   = $jadwal->pelamar;
-    $lowongan  = $jadwal->lowongan;
+    $pelamar = $jadwal->pelamar;
+    $lowongan = $jadwal->lowongan;
     $penilaian = $jadwal->penilaian;
     $detailNilai = $penilaian->detail_nilai ?? [];
 
-    // 8 indikator wawancara — masing-masing 1 item (k1_item_1 s/d k1_item_8)
-    $indikators = [
-        1 => 'Motivasi',
-        2 => 'Kemampuan Mengajar',
-        3 => 'Kemampuan Mengembangkan Kurikulum Pengajaran',
-        4 => 'Kemampuan Penelitian & Publikasi',
-        5 => 'Kemampuan Abdimas (Pengabdian Masyarakat)',
-        6 => 'Kemampuan Bekerjasama dengan Tim',
-        7 => 'Keahlian Lainnya',
-        8 => 'Komitmen Waktu dan Kesediaan Melakukan Hal di Luar Tugas Pokok',
+    $rubriks = [
+        'kategori_1' => [
+            'title' => 'Perencanaan Pembelajaran',
+            'items' => [
+                'Calon dosen menyampaikan rencana pembelajaran yang mencakup materi, tujuan, dan aturan kegiatan pembelajaran serta penilaian hasil belajar.',
+                'Calon dosen menyampaikan outline mengenai materi yang akan disampaikan.',
+            ]
+        ],
+        'kategori_2' => [
+            'title' => 'Penguasaan Materi',
+            'items' => [
+                'Calon dosen menunjukkan penguasaan materi pembelajaran.',
+                'Materi yang disampaikan terupdate dengan isu terkini dan relevan terhadap kebutuhan kompetensi yang ditetapkan prodi.',
+                'Calon dosen mengaitkan materi dengan keilmuan lain yang relevan.',
+            ]
+        ],
+        'kategori_3' => [
+            'title' => 'Sistematika (Kemudahan Dipahami)',
+            'items' => [
+                'Calon dosen menjelaskan materi secara sistematis / runtut.',
+                'Calon dosen menjelaskan materi dengan memberikan contoh konkret/nyata.',
+                'Calon dosen menggunakan metode mengajar yang variatif (ceramah, studi kasus, eksperimen, maupun lainnya).',
+                'Calon dosen menggunakan bahasa lisan dan tulis secara jelas, baik, dan benar.',
+                'Calon dosen mengkolaborasikan beberapa media dan atau software dalam penyampaian materi.',
+                'Calon dosen memberikan refleksi dari materi yang disampaikan.',
+            ]
+        ],
+        'kategori_4' => [
+            'title' => 'Pengelolaan Kelas dan Interaksi',
+            'items' => [
+                'Calon dosen memberikan kesempatan untuk adanya interaksi (tanya jawab dan diskusi).',
+                'Calon dosen mampu menciptakan kelas yang interaktif dan menarik perhatian.',
+                'Calon dosen melaksanakan pembelajaran sesuai dengan alokasi waktu yang direncanakan.',
+            ]
+        ],
+        'kategori_5' => [
+            'title' => 'Sikap dan Etika',
+            'items' => [
+                'Calon dosen berpakaian sopan dan bersikap profesional selama melaksanakan pembelajaran.',
+            ]
+        ],
     ];
-    $totalItems = count($indikators); // 8
+
+    // item counts per kategori
+    $itemCounts = [1 => 2, 2 => 3, 3 => 6, 4 => 3, 5 => 1];
+    $totalItems = array_sum($itemCounts); // 15
 
     $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
+    $kelompokKeahlianOptions = [
+        'scout'  => 'Smart Computing Technology (SCoT)',
+        'ethes'  => 'Electrical Engineering and Advanced Technologies (ETHES)',
+        'riib'   => 'Rekayasa Industri dan Inovasi Bisnis (RIIB)',
+    ];
+
     $sesiInfo = \App\Models\JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$jadwal->sesi] ?? null;
-    $today    = \Carbon\Carbon::today();
-    $canTest  = $today->greaterThanOrEqualTo(\Carbon\Carbon::parse($jadwal->tanggal));
+    $today = \Carbon\Carbon::today();
+    $canTest = $today->greaterThanOrEqualTo(\Carbon\Carbon::parse($jadwal->tanggal));
 @endphp
 
-<div class="max-w-5xl mx-auto pb-24" x-data="wawancaraForm()">
-
-    {{-- ── HEADER CARD ── --}}
+<div class="max-w-5xl mx-auto pb-24" x-data="microForm()">
+    <!-- Header Card -->
     <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 mb-6 relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl -mr-20 -mt-20 opacity-50 pointer-events-none"></div>
         <div class="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#8b1515] to-[#6e1010] text-white flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-900/20">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 </div>
                 <div>
                     <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-red-50 text-[#8b1515] text-xs font-bold uppercase tracking-wider mb-2 border border-red-100">
-                        Wawancara
+                        Micro Teaching
                     </div>
                     <h1 class="text-2xl font-extrabold text-gray-900">{{ $pelamar->nama }}</h1>
                     <p class="text-gray-500 mt-1 flex items-center gap-2 text-sm">
@@ -64,7 +104,7 @@
             @endif
         </div>
 
-        {{-- Skala --}}
+        <!-- Scale legend -->
         <div class="relative mt-6 pt-6 border-t border-gray-100">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Panduan Skala Penilaian:</span>
@@ -100,26 +140,35 @@
             </a>
         </div>
     @else
-        <form id="wawancaraForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST">
+        <form id="microForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST">
             @csrf
 
-            {{-- ── INDIKATOR PENILAIAN ── --}}
+            <!-- Rubrik Penilaian -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-5 md:px-6 py-4 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white border border-white/20 flex-shrink-0">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+
+                @foreach($rubriks as $key => $rubrik)
+                @php
+                    $kNum = (int) str_replace('kategori_', '', $key);
+                @endphp
+                <!-- Category Header -->
+                <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] {{ !$loop->last ? 'border-b border-red-800' : '' }} px-5 md:px-6 py-4 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white font-bold text-lg border border-white/20 flex-shrink-0">
+                        {{ $kNum }}
                     </div>
-                    <h3 class="text-white font-bold text-base md:text-lg leading-tight">Indikator Penilaian Wawancara</h3>
+                    <h3 class="text-white font-bold text-base md:text-lg leading-tight">{{ $rubrik['title'] }}</h3>
                 </div>
 
-                <div class="divide-y divide-gray-100">
-                    @foreach($indikators as $itemIdx => $label)
-                    @php $fieldName = "k1_item_{$itemIdx}"; @endphp
+                <!-- Questions -->
+                <div class="divide-y divide-gray-100 {{ !$loop->last ? 'border-b border-gray-200' : '' }}">
+                    @foreach($rubrik['items'] as $itemIdx => $item)
+                    @php $fieldName = "k{$kNum}_item_" . ($itemIdx + 1); @endphp
                     <div class="p-6 md:p-8 flex flex-col gap-6 hover:bg-gray-50/50 transition-colors">
-                        <p class="text-[15px] font-medium text-gray-800 leading-relaxed">
-                            <span class="text-[#8b1515] font-extrabold mr-2">{{ $itemIdx }}.</span>
-                            {{ $label }}
-                        </p>
+                        <div class="flex-1">
+                            <p class="text-[15px] font-medium text-gray-800 leading-relaxed">
+                                <span class="text-[#8b1515] font-extrabold mr-2">{{ $itemIdx + 1 }}.</span>
+                                {{ $item }}
+                            </p>
+                        </div>
                         <div class="flex items-center justify-between gap-2 w-full max-w-xl mx-auto">
                             @for($s = 1; $s <= 5; $s++)
                             <button type="button"
@@ -135,9 +184,10 @@
                     </div>
                     @endforeach
                 </div>
+                @endforeach
             </div>
 
-            {{-- ── CATATAN & INFO TAMBAHAN ── --}}
+            <!-- Catatan & Info Tambahan -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-6">
                 <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-5 md:px-6 py-4 flex items-center gap-3">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
@@ -145,21 +195,29 @@
                 </div>
 
                 <div class="p-6 md:p-8 space-y-6">
-                    {{-- Rekomendasi --}}
+                    <!-- Catatan Penilaian -->
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Catatan Penilaian</label>
+                        <textarea name="catatan" rows="3"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-none"
+                            placeholder="Tuliskan catatan penilaian (opsional)...">{{ old('catatan') }}</textarea>
+                    </div>
+
+                    <!-- Rekomendasi -->
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Rekomendasi <span class="text-red-500">*</span></label>
                         <div class="flex flex-wrap gap-3">
                             @foreach([
-                                'direkomendasikan'       => 'Direkomendasikan',
-                                'tidak_direkomendasikan' => 'Tidak Direkomendasikan',
-                                'perlu_dipertimbangkan'  => 'Masih Perlu Dipertimbangkan',
-                            ] as $val => $rekLabel)
+                                'direkomendasikan'          => ['label' => 'Direkomendasikan',           'color' => 'green'],
+                                'tidak_direkomendasikan'    => ['label' => 'Tidak Direkomendasikan',     'color' => 'red'],
+                                'perlu_dipertimbangkan'     => ['label' => 'Masih Perlu Dipertimbangkan','color' => 'yellow'],
+                            ] as $val => $opt)
                             <label class="flex items-center gap-2.5 cursor-pointer group">
                                 <input type="radio" name="rekomendasi" value="{{ $val }}"
                                     x-model="rekomendasi"
                                     class="w-4 h-4 accent-[#8b1515] cursor-pointer"
                                     {{ old('rekomendasi') === $val ? 'checked' : '' }}>
-                                <span class="text-sm font-semibold text-gray-700 group-hover:text-[#8b1515] transition-colors">{{ $rekLabel }}</span>
+                                <span class="text-sm font-semibold text-gray-700 group-hover:text-[#8b1515] transition-colors">{{ $opt['label'] }}</span>
                             </label>
                             @endforeach
                         </div>
@@ -168,34 +226,57 @@
                         @enderror
                     </div>
 
-                    {{-- Rekomendasi Prodi Tujuan --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
-                        <select name="prodi_tujuan"
-                            class="w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
-                            <option value="">-- Pilih Prodi --</option>
-                            @foreach($prodis as $prodi)
-                                <option value="{{ $prodi->nama }}" {{ old('prodi_tujuan') === $prodi->nama ? 'selected' : '' }}>
-                                    {{ $prodi->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('prodi_tujuan')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Rekomendasi Prodi Tujuan -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
+                            <select name="prodi_tujuan"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                                <option value="">-- Pilih Prodi --</option>
+                                @foreach($prodis as $prodi)
+                                    <option value="{{ $prodi->nama }}" {{ old('prodi_tujuan') === $prodi->nama ? 'selected' : '' }}>
+                                        {{ $prodi->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('prodi_tujuan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Kelompok Keahlian -->
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Kelompok Keahlian <span class="text-red-500">*</span></label>
+                            <select name="kelompok_keahlian"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                                <option value="">-- Pilih Kelompok Keahlian --</option>
+                                @foreach($kelompokKeahlianOptions as $val => $label)
+                                    <option value="{{ $val }}" {{ old('kelompok_keahlian') === $val ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('kelompok_keahlian')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
-                    {{-- Catatan --}}
+                    <!-- Bidang Keahlian Kandidat -->
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Catatan Penilaian</label>
-                        <textarea name="catatan" rows="3"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-none"
-                            placeholder="Tuliskan catatan penilaian (opsional)...">{{ old('catatan') }}</textarea>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Bidang Keahlian Kandidat <span class="text-red-500">*</span></label>
+                        <input type="text" name="bidang_keahlian"
+                            value="{{ old('bidang_keahlian') }}"
+                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition"
+                            placeholder="Contoh: Machine Learning, Sistem Embedded, Manajemen Operasi...">
+                        @error('bidang_keahlian')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                 </div>
             </div>
 
-            {{-- Validation Error --}}
+            <!-- Validation Error -->
             @if($errors->any())
             <div class="mb-6 bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 flex items-start gap-3 shadow-sm">
                 <svg class="w-5 h-5 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
@@ -210,37 +291,39 @@
             </div>
             @endif
 
-            {{-- ── SUMMARY & SUBMIT ── --}}
+            <!-- Summary & Submit -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row mb-6">
-                {{-- Rincian per indikator --}}
-                <div class="flex-1 p-6 md:p-8 md:border-r border-gray-100">
+                <!-- Category Breakdown -->
+                <div class="flex-1 p-6 md:p-8 md:border-r border-gray-100 flex flex-col justify-center">
                     <h3 class="text-sm font-extrabold text-gray-800 mb-5 flex items-center gap-2.5">
                         <svg class="w-5 h-5 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                        Rincian Skor per Indikator
+                        Rincian Skor per Kategori
                     </h3>
-                    <div class="space-y-2">
-                        @foreach($indikators as $itemIdx => $label)
-                        @php $fieldName = "k1_item_{$itemIdx}"; @endphp
-                        <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-3">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-6 h-6 rounded-md bg-red-50 text-[#8b1515] font-bold text-xs flex items-center justify-center flex-shrink-0">{{ $itemIdx }}</div>
-                                <span class="text-xs font-semibold text-gray-700 truncate">{{ $label }}</span>
+                    <div class="space-y-3">
+                        @foreach($rubriks as $key => $rubrik)
+                        @php $kNum = (int) str_replace('kategori_', '', $key); @endphp
+                        <div class="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors">
+                            <div class="flex items-center gap-3 pr-4">
+                                <div class="w-8 h-8 rounded-lg bg-red-50 text-[#8b1515] font-bold text-sm flex items-center justify-center flex-shrink-0">{{ $kNum }}</div>
+                                <span class="text-[13px] md:text-sm font-semibold text-gray-700 line-clamp-1 leading-snug" title="{{ $rubrik['title'] }}">{{ $rubrik['title'] }}</span>
                             </div>
-                            <div class="flex items-center gap-3 flex-shrink-0">
-                                <div class="hidden sm:block w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div class="flex items-center gap-4 flex-shrink-0">
+                                <div class="hidden sm:block w-24 lg:w-32 h-2.5 bg-gray-200 rounded-full overflow-hidden">
                                     <div class="h-full bg-gradient-to-r from-[#8b1515] to-red-500 transition-all duration-500"
-                                        :style="'width: ' + (scores['{{ $fieldName }}'] ? (scores['{{ $fieldName }}'] / 5 * 100) : 0) + '%'"></div>
+                                        :style="'width: ' + (categoryAvg({{ $kNum }}, {{ $itemCounts[$kNum] }}) === '-' ? 0 : (parseFloat(categoryAvg({{ $kNum }}, {{ $itemCounts[$kNum] }})) / 5 * 100)) + '%'"></div>
                                 </div>
-                                <span class="font-extrabold text-sm text-[#8b1515] w-8 text-right"
-                                    x-text="scores['{{ $fieldName }}'] ?? '-'"></span>
+                                <div class="w-10 text-right">
+                                    <span class="font-extrabold text-base text-[#8b1515]"
+                                        x-text="categoryAvg({{ $kNum }}, {{ $itemCounts[$kNum] }}) === '-' ? '-' : categoryAvg({{ $kNum }}, {{ $itemCounts[$kNum] }})"></span>
+                                </div>
                             </div>
                         </div>
                         @endforeach
                     </div>
                 </div>
 
-                {{-- Score + Submit --}}
-                <div class="w-full md:w-72 lg:w-80 bg-gradient-to-br from-[#7a1111] to-[#8b1515] p-6 md:p-8 flex flex-col justify-between text-white relative overflow-hidden flex-shrink-0">
+                <!-- Score Summary & Submit -->
+                <div class="w-full md:w-80 lg:w-96 bg-gradient-to-br from-[#7a1111] to-[#8b1515] p-6 md:p-8 flex flex-col justify-between text-white relative overflow-hidden flex-shrink-0">
                     <div class="absolute top-0 right-0 w-40 h-40 bg-white rounded-full opacity-[0.03] -mr-10 -mt-10 pointer-events-none"></div>
                     <div class="absolute bottom-0 left-0 w-32 h-32 bg-black rounded-full opacity-[0.08] -ml-12 -mb-12 pointer-events-none"></div>
 
@@ -279,11 +362,19 @@
 
 <script>
 document.addEventListener('alpine:init', () => {
-    Alpine.data('wawancaraForm', () => ({
+    Alpine.data('microForm', () => ({
         scores: {
-            @for($i = 1; $i <= 8; $i++)
-                'k1_item_{{ $i }}': {{ $detailNilai["k1_item_{$i}"] ?? 'null' }},
-            @endfor
+            @php
+                $allFields = [];
+                foreach ($itemCounts as $k => $count) {
+                    for ($i = 1; $i <= $count; $i++) {
+                        $allFields[] = "k{$k}_item_{$i}";
+                    }
+                }
+            @endphp
+            @foreach($allFields as $field)
+                '{{ $field }}': {{ $detailNilai[$field] ?? 'null' }},
+            @endforeach
         },
         rekomendasi: '{{ old('rekomendasi', '') }}',
 
@@ -291,16 +382,39 @@ document.addEventListener('alpine:init', () => {
             this.scores[field] = this.scores[field] === val ? null : val;
         },
 
-        filledCount() {
+        categoryFilledCount(k, itemCount) {
             let c = 0;
-            for (let i = 1; i <= 8; i++) {
-                if (this.scores['k1_item_' + i] !== null) c++;
+            for (let i = 1; i <= itemCount; i++) {
+                if (this.scores['k' + k + '_item_' + i] !== null) c++;
+            }
+            return c;
+        },
+
+        categorySum(k, itemCount) {
+            let sum = 0;
+            for (let i = 1; i <= itemCount; i++) {
+                sum += Number(this.scores['k' + k + '_item_' + i]) || 0;
+            }
+            return sum;
+        },
+
+        categoryAvg(k, itemCount) {
+            let filled = this.categoryFilledCount(k, itemCount);
+            if (filled === 0) return '-';
+            return (this.categorySum(k, itemCount) / filled).toFixed(2);
+        },
+
+        filledCount() {
+            const counts = @json($itemCounts);
+            let c = 0;
+            for (const [k, n] of Object.entries(counts)) {
+                c += this.categoryFilledCount(parseInt(k), n);
             }
             return c;
         },
 
         isComplete() {
-            return this.filledCount() === 8;
+            return this.filledCount() === {{ $totalItems }};
         },
 
         canSubmit() {
@@ -309,11 +423,13 @@ document.addEventListener('alpine:init', () => {
 
         totalScore() {
             if (!this.isComplete()) return '-';
-            let sum = 0;
-            for (let i = 1; i <= 8; i++) {
-                sum += Number(this.scores['k1_item_' + i]) || 0;
+            const counts = @json($itemCounts);
+            let totalAvg = 0;
+            let numCategories = Object.keys(counts).length;
+            for (const [k, n] of Object.entries(counts)) {
+                totalAvg += this.categorySum(parseInt(k), n) / n;
             }
-            return (sum / 8).toFixed(2);
+            return (totalAvg / numCategories).toFixed(2);
         },
 
         totalLabel() {

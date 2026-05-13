@@ -236,47 +236,153 @@
                     Hasil Penilaian Seleksi
                 </h3>
                 @php
-                    $wawancara = $jadwals_all->where('tipe_seleksi', 'wawancara')->first();
+                    $wawancaraAll = $jadwals_all->where('tipe_seleksi', 'wawancara');
+                    $microAll     = $jadwals_all->where('tipe_seleksi', 'micro_teaching');
+
+                    $microDinilai     = $microAll->filter(fn($j) => $j->penilaian !== null);
+                    $wawancaraDinilai = $wawancaraAll->filter(fn($j) => $j->penilaian !== null);
+
+                    $microKategoriLabels = [
+                        1 => 'Perencanaan Pembelajaran',
+                        2 => 'Penguasaan Materi',
+                        3 => 'Sistematika',
+                        4 => 'Pengelolaan Kelas & Interaksi',
+                        5 => 'Sikap & Etika',
+                    ];
+                    // Wawancara: 8 indikator flat (k1_item_1 s/d k1_item_8)
+                    $wawancaraIndikatorLabels = [
+                        1 => 'Motivasi',
+                        2 => 'Kemampuan Mengajar',
+                        3 => 'Kemampuan Mengembangkan Kurikulum',
+                        4 => 'Kemampuan Penelitian & Publikasi',
+                        5 => 'Kemampuan Abdimas',
+                        6 => 'Kemampuan Bekerjasama dengan Tim',
+                        7 => 'Keahlian Lainnya',
+                        8 => 'Komitmen Waktu',
+                    ];
+                    $wawancaraKategoriLabels = []; // tidak dipakai untuk wawancara
+
+                    $nilaiAkhirMicro = $microDinilai->count() > 0
+                        ? round($microDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2) : null;
+                    $nilaiAkhirWawancara = $wawancaraDinilai->count() > 0
+                        ? round($wawancaraDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2) : null;
                 @endphp
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="space-y-6">
                     @foreach([
-                        ['title' => 'Wawancara', 'jadwal' => $wawancara, 'k1' => 'Kepribadian & Integritas', 'k2' => 'Visi & Profesionalisme', 'k3' => 'Adaptasi & Kolaborasi'],
-                        ['title' => 'Micro Teaching', 'jadwal' => $micro, 'k1' => 'Penguasaan Materi', 'k2' => 'Keterampilan Pedagogik', 'k3' => 'Media Pembelajaran']
-                    ] as $test)
-                        @if($test['jadwal'] && $test['jadwal']->penilaian)
-                            <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
-                                <h3 class="text-sm font-black text-[#8b1515] uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
-                                    {{ $test['title'] }}
-                                </h3>
-                                <div class="space-y-3">
-                                    <div class="flex justify-between items-center gap-4">
-                                        <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k1'] }}</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']->penilaian->kategori_1 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center gap-4">
-                                        <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k2'] }}</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']->penilaian->kategori_2 }}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center gap-4">
-                                        <span class="text-[0.65rem] font-bold text-gray-500 uppercase truncate">{{ $test['k3'] }}</span>
-                                        <span class="text-sm font-bold text-gray-800">{{ $test['jadwal']->penilaian->kategori_3 }}</span>
-                                    </div>
-                                    <div class="pt-3 mt-3 border-t border-gray-200 flex justify-between items-center">
-                                        <span class="text-xs font-black text-gray-800 uppercase tracking-widest">Total Nilai Akhir</span>
-                                        <span class="text-2xl font-black text-[#8b1515]">{{ $test['jadwal']->penilaian->total_nilai }}</span>
-                                    </div>
-                                </div>
-                            </div>
+                        ['label' => 'Micro Teaching', 'jadwals' => $microAll,     'dinilai' => $microDinilai,     'kategoriLabels' => $microKategoriLabels,     'nilaiAkhir' => $nilaiAkhirMicro,     'isMicro' => true],
+                        ['label' => 'Wawancara',      'jadwals' => $wawancaraAll, 'dinilai' => $wawancaraDinilai, 'kategoriLabels' => $wawancaraKategoriLabels, 'nilaiAkhir' => $nilaiAkhirWawancara, 'isMicro' => false, 'isWawancara' => true, 'indikatorLabels' => $wawancaraIndikatorLabels],
+                    ] as $section)
+                    @if($section['jadwals']->count() > 0)
+                    <div class="rounded-xl border border-gray-100 overflow-hidden">
+                        <div class="bg-[#8b1515]/5 border-b border-gray-100 px-5 py-3 flex items-center justify-between">
+                            <span class="text-xs font-black text-[#8b1515] uppercase tracking-widest">{{ $section['label'] }}</span>
+                            <span class="text-xs text-gray-500 font-medium">{{ $section['dinilai']->count() }}/{{ $section['jadwals']->count() }} penguji menilai</span>
+                        </div>
+
+                        @if($section['dinilai']->count() === 0)
+                        <div class="p-5">
+                            <p class="text-sm text-gray-400 italic">Belum ada penilaian.</p>
+                        </div>
                         @else
-                            <div class="rounded-xl border border-gray-100 p-5 bg-gray-50/50">
-                                <h3 class="text-sm font-black text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">
-                                    {{ $test['title'] }}
-                                </h3>
-                                <p class="text-sm text-gray-400 italic">Belum ada penilaian.</p>
+                        <div class="divide-y divide-gray-100">
+                            @foreach($section['dinilai']->values() as $idx => $jadwalItem)
+                            @php $p = $jadwalItem->penilaian; @endphp
+                            <div class="p-5">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <div class="w-6 h-6 rounded-full bg-[#8b1515]/10 text-[#8b1515] flex items-center justify-center text-xs font-black flex-shrink-0">{{ $idx + 1 }}</div>
+                                    <span class="text-sm font-black text-gray-800">{{ $jadwalItem->penguji->nama ?? '-' }}</span>
+                                </div>
+                                <div class="space-y-1.5 mb-3">
+                                    @if(!empty($section['isWawancara']))
+                                    {{-- Wawancara: grid 4 kolom --}}
+                                    @php $detail = $p->detail_nilai ?? []; @endphp
+                                    <div class="grid grid-cols-4 gap-2 mb-3">
+                                        @foreach($section['indikatorLabels'] as $iNum => $iLabel)
+                                        @php $iVal = $detail['k1_item_'.$iNum] ?? null; @endphp
+                                        @if($iVal !== null)
+                                        <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-center">
+                                            <p class="text-[0.55rem] font-bold text-gray-400 uppercase leading-tight mb-1">{{ $iLabel }}</p>
+                                            <p class="text-base font-black text-[#8b1515]">{{ $iVal }}</p>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
+                                    @else
+                                    {{-- Micro Teaching: grid 5 kolom --}}
+                                    <div class="grid grid-cols-5 gap-2 mb-3">
+                                        @foreach($section['kategoriLabels'] as $kNum => $kLabel)
+                                        @php $kVal = $p->{'kategori_'.$kNum}; @endphp
+                                        @if($kVal !== null)
+                                        <div class="p-2.5 rounded-xl bg-gray-50 border border-gray-100 text-center">
+                                            <p class="text-[0.55rem] font-bold text-gray-400 uppercase leading-tight mb-1">{{ $kLabel }}</p>
+                                            <p class="text-base font-black text-[#8b1515]">{{ $kVal }}</p>
+                                        </div>
+                                        @endif
+                                        @endforeach
+                                    </div>
+                                    @endif
+                                </div>
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                                    <span class="text-xs font-black text-gray-600 uppercase tracking-wider">Rata-rata</span>
+                                    <span class="text-lg font-black text-[#8b1515]">{{ $p->total_nilai }}</span>
+                                </div>
+                                @php
+                                    $rekLabels = [
+                                        'direkomendasikan'       => ['label' => 'Direkomendasikan',           'color' => 'bg-green-50 text-green-700 border-green-200'],
+                                        'tidak_direkomendasikan' => ['label' => 'Tidak Direkomendasikan',     'color' => 'bg-red-50 text-red-700 border-red-200'],
+                                        'perlu_dipertimbangkan'  => ['label' => 'Perlu Dipertimbangkan',      'color' => 'bg-yellow-50 text-yellow-700 border-yellow-200'],
+                                    ];
+                                    $kkLabels = ['scout' => 'SCoT', 'ethes' => 'ETHES', 'riib' => 'RIIB'];
+                                @endphp
+                                @if($p->rekomendasi || $p->prodi_tujuan || $p->kelompok_keahlian || $p->bidang_keahlian || $p->catatan)
+                                <div class="mt-3 space-y-2">
+                                    {{-- Rekomendasi + Prodi Tujuan --}}
+                                    @if($p->rekomendasi || $p->prodi_tujuan)
+                                    <div class="flex flex-wrap gap-2">
+                                        @if($p->rekomendasi)
+                                        @php $rek = $rekLabels[$p->rekomendasi] ?? ['label' => $p->rekomendasi, 'color' => 'bg-gray-50 text-gray-700 border-gray-200']; @endphp
+                                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold border {{ $rek['color'] }}">{{ $rek['label'] }}</span>
+                                        @endif
+                                        @if($p->prodi_tujuan)
+                                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold border bg-blue-50 text-blue-700 border-blue-200">Prodi: {{ $p->prodi_tujuan }}</span>
+                                        @endif
+                                    </div>
+                                    @endif
+                                    {{-- Kelompok Keahlian + Bidang Keahlian (micro only) --}}
+                                    @if($p->kelompok_keahlian || $p->bidang_keahlian)
+                                    <div class="flex flex-wrap gap-2">
+                                        @if($p->kelompok_keahlian)
+                                        <span class="px-2.5 py-1 rounded-lg text-xs font-bold border bg-purple-50 text-purple-700 border-purple-200">{{ $kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian }}</span>
+                                        @endif
+                                        @if($p->bidang_keahlian)
+                                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold border bg-gray-50 text-gray-600 border-gray-200">{{ $p->bidang_keahlian }}</span>
+                                        @endif
+                                    </div>
+                                    @endif
+                                    {{-- Catatan --}}
+                                    @if($p->catatan)
+                                    <p class="text-xs text-gray-500 italic border-t border-gray-100 pt-2">{{ $p->catatan }}</p>
+                                    @endif
+                                </div>
+                                @endif
                             </div>
+                            @endforeach
+
+                            <div class="px-5 py-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] flex items-center justify-between">
+                                <div>
+                                    <p class="text-red-200 text-[0.65rem] font-bold uppercase tracking-widest">Nilai Akhir {{ $section['label'] }}</p>
+                                    <p class="text-red-200 text-[0.6rem] mt-0.5">Rata-rata dari {{ $section['dinilai']->count() }} penguji</p>
+                                </div>
+                                <span class="text-3xl font-black text-white">{{ $section['nilaiAkhir'] }}</span>
+                            </div>
+                        </div>
                         @endif
+                    </div>
+                    @endif
                     @endforeach
                 </div>
+            </div>
             </div>
         </div>
     </div>
