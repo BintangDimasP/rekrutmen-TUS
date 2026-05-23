@@ -178,6 +178,10 @@
 
                         {{-- Aksi --}}
                         <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                            @php
+                                $anyDone = ($row->micro->isNotEmpty() && $row->micro->whereNotNull('penilaian')->count() > 0)
+                                        || ($row->wawancara->isNotEmpty() && $row->wawancara->whereNotNull('penilaian')->count() > 0);
+                            @endphp
                             <button type="button"
                                 @click="openEdit({
                                     pelamarId:  {{ $row->pelamar->id }},
@@ -195,9 +199,10 @@
                                     pengujiM: {{ $pengujiM }},
                                     allPgIds: {{ $allPgIds }},
                                     pengujiData: {{ $pengujiDataJson }},
+                                    readOnly: {{ $anyDone ? 'true' : 'false' }},
                                 })"
                                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                title="Edit jadwal">
+                                title="{{ $anyDone ? 'Lihat jadwal (read only)' : 'Edit jadwal' }}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
@@ -277,7 +282,7 @@
 
         <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between flex-shrink-0">
             <div>
-                <h2 class="text-base font-bold text-white">Edit Jadwal Seleksi</h2>
+                <h2 class="text-base font-bold text-white" x-text="modal.readOnly ? 'Detail Jadwal Seleksi' : 'Edit Jadwal Seleksi'"></h2>
                 <p class="text-xs text-red-200 mt-0.5" x-text="modal.pelamarNama"></p>
             </div>
             <button @click="modal.open=false"
@@ -292,37 +297,55 @@
             <input type="hidden" name="pelamar_id"  :value="modal.pelamarId">
             <input type="hidden" name="lowongan_id" :value="modal.lowonganId">
 
+          
+
             {{-- Tanggal --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Tanggal Seleksi</label>
                 <input type="date" name="tanggal" x-model="modal.tanggal" @change="loadTaken()"
+                       :disabled="modal.readOnly"
+                       :class="modal.readOnly ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''"
                        class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                <p x-show="modal.loadingTaken" class="text-[0.7rem] text-gray-400 mt-1 italic">Memuat ketersediaan sesi...</p>
+                <p x-show="modal.loadingTaken && !modal.readOnly" class="text-[0.7rem] text-gray-400 mt-1 italic">Memuat ketersediaan sesi...</p>
             </div>
 
             {{-- Penguji Micro Teaching --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Penguji Micro Teaching <span class="font-normal text-gray-400">(30 mnt pertama)</span></label>
-                <div x-show="modal.loadingPengujis" class="text-xs text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">Memuat...</div>
-                <template x-if="!modal.loadingPengujis">
+                {{-- Read-only: tampilkan sebagai teks --}}
+                <template x-if="modal.readOnly">
+                    <div class="flex flex-wrap gap-1">
+                        <template x-for="pgId in modal.selectedMPenguji" :key="pgId">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.65rem] text-red-800" x-text="getPengujiNama(pgId)"></span>
+                        </template>
+                        <span x-show="modal.selectedMPenguji.length === 0" class="text-xs text-gray-400 italic">-</span>
+                    </div>
+                </template>
+                {{-- Editable --}}
+                <template x-if="!modal.readOnly">
                     <div>
-                        <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedMPenguji.length > 0">
-                            <template x-for="pgId in modal.selectedMPenguji" :key="pgId">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.65rem] text-red-800">
-                                    <span x-text="getPengujiNama(pgId)"></span>
-                                    <button type="button" @click="toggleMPenguji(pgId)" class="text-red-300 hover:text-red-600 ml-0.5">&times;</button>
-                                    <input type="hidden" name="micro_penguji_ids[]" :value="pgId">
-                                </span>
-                            </template>
-                        </div>
-                        <select @change="toggleMPenguji($event.target.value); $event.target.value = ''"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                            <option value="">+ Tambah penguji micro</option>
-                            <template x-for="pg in modal.availablePengujis" :key="pg.id">
-                                <option :value="pg.id" :disabled="modal.selectedMPenguji.includes(parseInt(pg.id))"
-                                    x-text="`${pg.nama} (${pg.kode})`"></option>
-                            </template>
-                        </select>
+                        <div x-show="modal.loadingPengujis" class="text-xs text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">Memuat...</div>
+                        <template x-if="!modal.loadingPengujis">
+                            <div>
+                                <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedMPenguji.length > 0">
+                                    <template x-for="pgId in modal.selectedMPenguji" :key="pgId">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.65rem] text-red-800">
+                                            <span x-text="getPengujiNama(pgId)"></span>
+                                            <button type="button" @click="toggleMPenguji(pgId)" class="text-red-300 hover:text-red-600 ml-0.5">&times;</button>
+                                            <input type="hidden" name="micro_penguji_ids[]" :value="pgId">
+                                        </span>
+                                    </template>
+                                </div>
+                                <select @change="toggleMPenguji($event.target.value); $event.target.value = ''"
+                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                                    <option value="">+ Tambah penguji micro</option>
+                                    <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                        <option :value="pg.id" :disabled="modal.selectedMPenguji.includes(parseInt(pg.id))"
+                                            x-text="`${pg.nama} (${pg.kode})`"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
                     </div>
                 </template>
             </div>
@@ -330,26 +353,40 @@
             {{-- Penguji Wawancara --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Penguji Wawancara <span class="font-normal text-gray-400">(30 mnt kedua)</span></label>
-                <div x-show="modal.loadingPengujis" class="text-xs text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">Memuat...</div>
-                <template x-if="!modal.loadingPengujis">
+                {{-- Read-only --}}
+                <template x-if="modal.readOnly">
+                    <div class="flex flex-wrap gap-1">
+                        <template x-for="pgId in modal.selectedWPenguji" :key="pgId">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[0.65rem] text-blue-800" x-text="getPengujiNama(pgId)"></span>
+                        </template>
+                        <span x-show="modal.selectedWPenguji.length === 0" class="text-xs text-gray-400 italic">-</span>
+                    </div>
+                </template>
+                {{-- Editable --}}
+                <template x-if="!modal.readOnly">
                     <div>
-                        <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedWPenguji.length > 0">
-                            <template x-for="pgId in modal.selectedWPenguji" :key="pgId">
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[0.65rem] text-blue-800">
-                                    <span x-text="getPengujiNama(pgId)"></span>
-                                    <button type="button" @click="toggleWPenguji(pgId)" class="text-blue-300 hover:text-blue-600 ml-0.5">&times;</button>
-                                    <input type="hidden" name="wawancara_penguji_ids[]" :value="pgId">
-                                </span>
-                            </template>
-                        </div>
-                        <select @change="toggleWPenguji($event.target.value); $event.target.value = ''"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                            <option value="">+ Tambah penguji wawancara</option>
-                            <template x-for="pg in modal.availablePengujis" :key="pg.id">
-                                <option :value="pg.id" :disabled="modal.selectedWPenguji.includes(parseInt(pg.id))"
-                                    x-text="`${pg.nama} (${pg.kode})`"></option>
-                            </template>
-                        </select>
+                        <div x-show="modal.loadingPengujis" class="text-xs text-gray-400 italic px-3 py-2 border border-gray-200 rounded-lg">Memuat...</div>
+                        <template x-if="!modal.loadingPengujis">
+                            <div>
+                                <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedWPenguji.length > 0">
+                                    <template x-for="pgId in modal.selectedWPenguji" :key="pgId">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[0.65rem] text-blue-800">
+                                            <span x-text="getPengujiNama(pgId)"></span>
+                                            <button type="button" @click="toggleWPenguji(pgId)" class="text-blue-300 hover:text-blue-600 ml-0.5">&times;</button>
+                                            <input type="hidden" name="wawancara_penguji_ids[]" :value="pgId">
+                                        </span>
+                                    </template>
+                                </div>
+                                <select @change="toggleWPenguji($event.target.value); $event.target.value = ''"
+                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
+                                    <option value="">+ Tambah penguji wawancara</option>
+                                    <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                        <option :value="pg.id" :disabled="modal.selectedWPenguji.includes(parseInt(pg.id))"
+                                            x-text="`${pg.nama} (${pg.kode})`"></option>
+                                    </template>
+                                </select>
+                            </div>
+                        </template>
                     </div>
                 </template>
             </div>
@@ -357,33 +394,48 @@
             {{-- Sesi (unified, sama persis dengan create) --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Sesi Seleksi <span class="font-normal text-gray-400">(60 menit)</span></label>
-                <select name="sesi" x-model="modal.wSesi"
-                        class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white"
-                        :class="{ 'border-red-400 bg-red-50': modal.wSesi && isSesiBlocked(parseInt(modal.wSesi)) }">
-                    <option value="">— Pilih Sesi —</option>
-                    <template x-for="(info, key) in mSessions" :key="key">
-                        <option :value="key"
-                                :disabled="isSesiBlocked(parseInt(key))"
-                                x-text="sesiLabel(key, info, isSesiBlocked(parseInt(key)))">
-                        </option>
-                    </template>
-                </select>
-                <p x-show="modal.wSesi && isSesiBlocked(parseInt(modal.wSesi))"
-                   class="text-[0.7rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
+                <template x-if="modal.readOnly">
+                    <p class="text-sm text-gray-700 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg" x-text="modal.wSesi ? (mSessions[modal.wSesi]?.label ?? 'Sesi ' + modal.wSesi) : '-'"></p>
+                </template>
+                <template x-if="!modal.readOnly">
+                    <div>
+                        <select name="sesi" x-model="modal.wSesi"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white"
+                                :class="{ 'border-red-400 bg-red-50': modal.wSesi && isSesiBlocked(parseInt(modal.wSesi)) }">
+                            <option value="">— Pilih Sesi —</option>
+                            <template x-for="(info, key) in mSessions" :key="key">
+                                <option :value="key"
+                                        :disabled="isSesiBlocked(parseInt(key))"
+                                        x-text="sesiLabel(key, info, isSesiBlocked(parseInt(key)))">
+                                </option>
+                            </template>
+                        </select>
+                        <p x-show="modal.wSesi && isSesiBlocked(parseInt(modal.wSesi))"
+                           class="text-[0.7rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
+                    </div>
+                </template>
             </div>
 
             {{-- Link Meeting --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Link Meeting</label>
-                <input type="url" name="link" x-model="modal.wLink" placeholder="https://meet.google.com/..."
-                       class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                <template x-if="modal.readOnly">
+                    <p class="text-sm px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                        <a x-show="modal.wLink" :href="modal.wLink" target="_blank" x-text="modal.wLink" class="text-blue-600 hover:underline break-all text-xs"></a>
+                        <span x-show="!modal.wLink" class="text-gray-400 italic">-</span>
+                    </p>
+                </template>
+                <template x-if="!modal.readOnly">
+                    <input type="url" name="link" x-model="modal.wLink" placeholder="https://meet.google.com/..."
+                           class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                </template>
             </div>
 
             {{-- Buttons --}}
             <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
                 <button type="button" @click="modal.open=false"
-                        class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Batal</button>
-                <button type="submit"
+                        class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Tutup</button>
+                <button x-show="!modal.readOnly" type="submit"
                         :disabled="hasConflict()"
                         :class="hasConflict() ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#8b1515] hover:bg-red-900 text-white'"
                         class="px-5 py-2 text-sm font-bold rounded-lg transition">
@@ -404,6 +456,7 @@ function jadwalIndex() {
     return {
         modal: {
             open: false,
+            readOnly: false,
             pelamarId: null, lowonganId: null, prodiId: null, pelamarNama: '',
             tanggal: '', wSesi: '', mSesi: '',
             wLink: '', mLink: '',
@@ -424,6 +477,7 @@ function jadwalIndex() {
             this.modal.lowonganId  = d.lowonganId;
             this.modal.prodiId     = d.prodiId;
             this.modal.pelamarNama = d.pelamarNama;
+            this.modal.readOnly    = d.readOnly || false;
             this.modal.tanggal     = d.tanggal;
             this.modal.wSesi       = d.wSesi !== null ? String(d.wSesi) : '';
             this.modal.mSesi       = d.mSesi !== null ? String(d.mSesi) : '';

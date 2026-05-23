@@ -18,8 +18,8 @@
             </div>
             
             <a href="{{ route('admin.lowongan.create') }}"
-               class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
-                + Tambah Lowongan
+               class="inline-flex items-center justify-center px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
+                Tambah Lowongan
             </a>
         </div>
 
@@ -73,30 +73,24 @@
                             </td>
                             <td class="py-3 px-5">
                                 @if($lowongan->status === 'aktif')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-green-100 text-green-700">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>Aktif
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-green-100 text-green-700">
+                                        Aktif
                                     </span>
                                 @elseif($lowongan->status === 'draft')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-amber-100 text-amber-700">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>Draft
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-amber-100 text-amber-700">
+                                        Draft
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-gray-100 text-gray-600">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-gray-400 inline-block"></span>Ditutup
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-gray-100 text-gray-600">
+                                        Ditutup
                                     </span>
                                 @endif
                             </td>
                             <td class="py-3 px-5">
-                                <div class="flex items-center justify-end gap-2">
-                                    <a href="{{ route('admin.lowongan.show', $lowongan) }}" class="text-gray-400 hover:text-blue-600 transition-colors p-1.5 rounded" title="Lihat Pelamar">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                    </a>
-                                    <a href="{{ route('admin.lowongan.edit', $lowongan) }}" class="text-gray-400 hover:text-amber-600 transition-colors p-1.5 rounded" title="Edit Lowongan">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                    </a>
-                                    <button type="button" @click="showDeleteModal = true" class="text-gray-400 hover:text-red-600 transition-colors p-1.5 rounded" title="Hapus">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
+                                <div class="flex items-center justify-end gap-3 text-sm">
+                                    <a href="{{ route('admin.lowongan.show', $lowongan) }}" class="text-blue-600 hover:text-blue-800 hover:underline transition-colors font-medium">Detail</a>
+                                    <a href="{{ route('admin.lowongan.edit', $lowongan) }}" class="text-amber-600 hover:text-amber-800 hover:underline transition-colors font-medium">Edit</a>
+                                    <button type="button" @click="showDeleteModal = true" class="text-red-600 hover:text-red-800 hover:underline transition-colors font-medium">Hapus</button>
 
                                     {{-- ── Delete Modal ── --}}
                                     <div x-show="showDeleteModal" x-transition.opacity
@@ -150,7 +144,7 @@
                                     <h3 class="text-gray-700 font-semibold text-sm">Belum ada lowongan</h3>
                                     <p class="text-gray-400 text-xs">Buat lowongan pertama dengan menekan tombol "Tambah Lowongan".</p>
                                     <a href="{{ route('admin.lowongan.create') }}" class="mt-1 px-4 py-2 bg-[#8b1515] text-white text-xs font-semibold rounded-lg hover:bg-red-900 transition-colors">
-                                        + Tambah Lowongan
+                                        Tambah Lowongan
                                     </a>
                                 </div>
                             </td>

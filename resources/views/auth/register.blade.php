@@ -690,16 +690,16 @@
 
                     <div class="col-span-2 flex flex-col gap-1.5">
                         <label for="jabatan_akademik" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Jabatan Akademik
+                            Jabatan Fungsional Akademik
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
                         </label>
                         <select id="jabatan_akademik" name="jabatan_akademik"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" selected>— Pilih jabatan (jika ada) —</option>
-                            <option value="asisten_ahli">Asisten Ahli</option>
-                            <option value="lektor">Lektor</option>
-                            <option value="lektor_kepala">Lektor Kepala</option>
-                            <option value="profesor">Profesor / Guru Besar</option>
+                            <option value="non_jabatan" selected>Non Jabatan (NJAD)</option>
+                            <option value="guru_besar">Guru Besar (GB)</option>
+                            <option value="lektor_kepala">Lektor Kepala (LK)</option>
+                            <option value="lektor">Lektor (L)</option>
+                            <option value="asisten_ahli">Asisten Ahli (AA)</option>
                         </select>
                     </div>
 

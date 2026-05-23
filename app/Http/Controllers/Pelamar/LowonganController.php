@@ -47,8 +47,11 @@ class LowonganController extends Controller
         // Get all data
         $allLowongans = $query->latest()->get();
 
-        // Separate them
-        $availableLowongans = $allLowongans->whereNotIn('id', $appliedLowonganIds)->values();
+        // Separate them — lowongan penuh tidak masuk available
+        $availableLowongans = $allLowongans
+            ->whereNotIn('id', $appliedLowonganIds)
+            ->filter(fn($l) => !$l->isFull())
+            ->values();
         $appliedLowongans = $allLowongans->whereIn('id', $appliedLowonganIds)->values();
 
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
@@ -100,6 +103,12 @@ class LowonganController extends Controller
             return redirect()->route('pelamar.history.index')->with('warning', 'Anda sudah melamar pada posisi ini.');
         }
 
+        // Cek kuota
+        if ($lowongan->isFull()) {
+            return redirect()->route('pelamar.lowongan.show', $lowongan->id)
+                ->with('warning', 'Kuota lowongan ini sudah penuh.');
+        }
+
         return view('pelamar.lowongan.apply', compact('lowongan', 'pelamar'));
     }
 
@@ -119,14 +128,21 @@ class LowonganController extends Controller
             return redirect()->route('pelamar.history.index')->with('warning', 'Anda sudah melamar pada posisi ini.');
         }
 
+        // Cek kuota (double-check saat submit)
+        if ($lowongan->isFull()) {
+            return redirect()->route('pelamar.lowongan.show', $lowongan->id)
+                ->with('warning', 'Kuota lowongan ini sudah penuh, lamaran tidak dapat dikirim.');
+        }
+
         $request->validate([
             'file_surat_lamaran' => 'required|file|mimes:pdf|max:5120',
         ]);
 
         $lamaranData = [
-            'pelamar_id' => $pelamar->id,
-            'lowongan_id' => $lowongan->id,
-            'status' => 'menunggu',
+            'pelamar_id'    => $pelamar->id,
+            'lowongan_id'   => $lowongan->id,
+            'status'        => 'menunggu',
+            'snapshot_data' => $pelamar->toArray(),
         ];
 
         if ($request->hasFile('file_surat_lamaran')) {

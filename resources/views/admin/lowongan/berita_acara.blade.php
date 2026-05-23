@@ -2,262 +2,162 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Berita Acara</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita Acara — {{ $lowongan->nama_posisi }}</title>
+    <!-- load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Times New Roman', 'Times', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * { margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 12pt;
-            color: #000;
-            background: #fff;
+        @media print {
+            body {
+                background-color: #ffffff !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .page {
+                margin: 0 !important;
+                box-shadow: none !important;
+                width: 297mm !important;
+                height: 210mm !important;
+            }
         }
-
-        /* ==== PAGE ==== */
-        .page {
-            padding: 18mm 20mm 18mm 25mm;
-        }
-
-        /* ==== KOP ==== */
-        .kop-wrapper {
-            text-align: center;
-            border-bottom: 3px solid #000;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-        }
-
-        .kop-logo {
-            height: 70px;
-            width: auto;
-            margin-bottom: 6px;
-        }
-
-        .kop-logo-placeholder {
-            display: inline-block;
-            width: 70px;
-            height: 70px;
-            background: #8b1515;
-            text-align: center;
-            line-height: 70px;
-            font-size: 26pt;
-            font-weight: bold;
-            color: #fff;
-            margin-bottom: 6px;
-        }
-
-        .kop-nama {
-            font-size: 14.5pt;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #000;
-        }
-
-        .kop-alamat {
-            font-size: 9pt;
-            color: #333;
-            line-height: 1.5;
-            margin-top: 3px;
-        }
-
-        /* ==== JUDUL ==== */
-        .judul-wrapper {
-            text-align: center;
-            margin: 16px 0 6px 0;
-        }
-
-        .judul-wrapper h2 {
-            font-size: 12.5pt;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        .judul-nomor {
-            font-size: 10pt;
-            color: #333;
-            margin-top: 4px;
-        }
-
-        /* ==== BODY ==== */
-        .body-p {
-            font-size: 12pt;
-            line-height: 1.9;
-            text-align: justify;
-            margin-top: 20px;
-        }
-
-        .body-p + .body-p {
-            margin-top: 12px;
-        }
-
-        /* ==== TABEL KANDIDAT ==== */
-        .t-kandidat {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-            font-size: 11pt;
-        }
-
-        .t-kandidat th {
-            border: 1px solid #aaa;
-            padding: 6px 8px;
-            text-align: center;
-            font-weight: bold;
-            background-color: #f2f2f2;
-        }
-
-        .t-kandidat td {
-            border: 1px solid #aaa;
-            padding: 5px 8px;
-            vertical-align: middle;
-        }
-
-        .td-no     { text-align: center; width: 32px; }
-        .td-status { text-align: center; width: 105px; font-weight: bold; }
-        .td-empty  { height: 22px; }
-
-        /* ==== PENUTUP ==== */
-        .penutup {
-            font-size: 12pt;
-            line-height: 1.9;
-            text-align: justify;
-            margin-top: 16px;
-        }
-
-        /* ==== TTD ==== */
-        .t-ttd {
-            width: 100%;
-            margin-top: 36px;
-            font-size: 11.5pt;
-        }
-
-        .t-ttd td {
-            vertical-align: top;
-            width: 50%;
-            line-height: 1.7;
-        }
-
-        .t-ttd .right {
-            text-align: right;
-        }
-
-        .ttd-line {
-            display: inline-block;
-            border-top: 1px solid #000;
-            min-width: 175px;
-            text-align: center;
-            padding-top: 3px;
-            font-size: 10.5pt;
-            margin-top: 58px;
+        @page {
+            size: A4 landscape;
+            margin: 0;
         }
     </style>
 </head>
-<body>
-<div class="page">
+<body class="bg-gray-200 font-serif text-[10.5pt] text-black">
 
-    {{-- ===== KOP ===== --}}
-    @php $logoPath = public_path('images/logo-telu.png'); @endphp
-    <div class="kop-wrapper">
-        @if(file_exists($logoPath))
-            <img src="{{ $logoPath }}" alt="Logo" class="kop-logo">
-        @else
-            <span class="kop-logo-placeholder">T</span>
-        @endif
-        <div class="kop-nama">Telkom University Surabaya</div>
-        <div class="kop-alamat">
-            JL. Ketintang No.156, Gayungan, Surabaya, Jawa Timur 60231<br>
-           
-        </div>
-    </div>
-
-    {{-- ===== JUDUL ===== --}}
-    <div class="judul-wrapper">
-        <h2>Berita Acara Hasil Seleksi Rekrutmen</h2>
-        <div class="judul-nomor">Nomor: &nbsp;..., SK-REKTUS/....{{ now()->year }}</div>
-    </div>
-
-    {{-- ===== PARAGRAF 1 ===== --}}
-    <p class="body-p">
-        Pada hari ini, {{ $hari }} tanggal {{ $tanggalFormatted }},
-        bertempat di Sekretariat Telkom University Surabaya, Panitia Seleksi telah melakukan
-        evaluasi akhir terhadap seluruh kandidat yang mengikuti proses rekrutmen.
-    </p>
-
-    {{-- ===== PARAGRAF 2 ===== --}}
-    <p class="body-p">
-        Berikut adalah daftar nama kandidat yang telah mengikuti serangkaian tahapan seleksi
-        secara keseluruhan pada lowongan {{ $lowongan->nama_posisi }} oleh
-       Prodi {{ $lowongan->prodi?->nama ?? '-' }}
-        (meliputi Seleksi Administrasi, Seleksi Wawancara, dan Micro Teaching)
-        beserta status kelulusan akhir:
-    </p>
-
-    {{-- ===== TABEL KANDIDAT ===== --}}
-    <table class="t-kandidat" cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th class="td-no">No</th>
-                <th>Nama Kandidat</th>
-                <th>Jabatan</th>
-                <th class="td-status">Status Akhir</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($kandidats as $i => $lamaran)
-            <tr>
-                <td class="td-no">{{ $i + 1 }}</td>
-                <td>{{ $lamaran->pelamar->nama }}</td>
-                <td>
-                    Dosen Pengajar
-                </td>
-                <td class="td-status {{ $lamaran->status === 'diterima' ? 'diterima' : 'ditolak' }}">
-                    {{ strtoupper($lamaran->status_label) }}
-                </td>
-            </tr>
-            @empty
-            <tr>
-                <td colspan="4" style="text-align:center;font-style:italic;color:#777;padding:14px;">
-                    Belum ada kandidat yang diterima atau ditolak.
-                </td>
-            </tr>
-            @endforelse
-            {{-- Baris kosong agar tabel tidak terlalu pendek --}}
-            @for($x = 0; $x < max(0, 3 - $kandidats->count()); $x++)
-            <tr>
-                <td class="td-no td-empty">&nbsp;</td>
-                <td class="td-empty">&nbsp;</td>
-                <td class="td-empty">&nbsp;</td>
-                <td class="td-empty">&nbsp;</td>
-            </tr>
-            @endfor
-        </tbody>
-    </table>
-
-    {{-- ===== PENUTUP ===== --}}
-    <p class="penutup">
-        Demikian Berita Acara ini dibuat dengan sebenarnya untuk menjadi dokumen acuan dan dapat
-        dipergunakan sebagaimana mestinya.
-    </p>
-
-    {{-- ===== TANDA TANGAN ===== --}}
-    <table class="t-ttd" cellpadding="0" cellspacing="0">
-        <tr>
-            <td>
-                Mengetahui,<br>
-                Ketua Panitia Seleksi
-                <br>
-                <span class="ttd-line">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span>
-            </td>
-            <td class="right">
-                Surabaya, {{ $tanggalFormatted }}<br>
-                Sekretaris Panitia
-                <br>
-                <span class="ttd-line">(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span>
-            </td>
-        </tr>
-    </table>
-
+<div class="no-print fixed top-4 right-4 z-50 flex gap-2">
+    <button onclick="window.print()" class="px-5 py-2 bg-[#8b1515] text-white font-bold rounded-lg text-sm cursor-pointer shadow hover:bg-red-900 transition">🖨️ Cetak</button>
+    <button onclick="window.close()" class="px-4 py-2 bg-white text-gray-700 border border-gray-300 font-bold rounded-lg text-sm cursor-pointer shadow hover:bg-gray-100 transition">✕ Tutup</button>
 </div>
+
+<div class="page w-[297mm] min-h-[210mm] mx-auto bg-white p-[12mm_18mm_0_18mm] relative shadow-xl">
+    <div class="relative flex flex-col justify-between min-h-[calc(210mm-24mm)]">
+        
+        {{-- HEADER --}}
+        <div class="text-center mb-2">
+            <div class="mb-1 flex justify-center">
+                <img src="{{ asset('images/logo-telu.png') }}" alt="Logo Telkom University" class="w-[60px] h-auto">
+            </div>
+            <div class="font-serif text-[13pt] font-bold uppercase tracking-wider leading-tight">TELKOM UNIVERSITY SURABAYA</div>
+            <hr class="border-t-4 border-black my-2">
+            <div class="font-serif text-[10.5pt] font-bold uppercase leading-normal tracking-wide">
+                PENETAPAN HASIL AKHIR MICROTEACHING DAN WAWANCARA REKRUT DOSEN TENAGA PROFESIONAL<br>
+                UNIVERSITAS TELKOM (KAMPUS KOTA SURABAYA)<br>
+                BATCH 1 TAHUN {{ now()->year }}
+            </div>
+            <div class="text-[8.5pt] mt-1 font-bold">SDM03/TUKS/{{ now()->year }}</div>
+        </div>
+
+        {{-- PEMBUKA --}}
+        <p class="font-serif text-[10pt] leading-relaxed text-justify mb-2">
+            Pada hari ini <strong class="font-bold">{{ $hariStr }}</strong> tanggal <strong class="font-bold">{{ $tglStr }}</strong>
+            bulan <strong class="font-bold">{{ $bulanStr }}</strong> tahun <strong class="font-bold">{{ $tahunStr }}</strong>,
+            bertempat di Ruang Rapat Universitas Telkom (Kampus Kota Surabaya), telah ditetapkan Hasil
+            Akhir Microteaching dan Wawancara Rekrut Dosen Tenaga Profesional Universitas Telkom (Kampus Kota Surabaya)
+            Batch 1 tahun {{ now()->year }} untuk dapat ditindak lanjuti dalam proses psikotest dengan rincian sebagai berikut :
+        </p>
+
+        {{-- TABEL UTAMA --}}
+        <table class="w-full border-collapse border border-black font-serif text-[8.5pt] mb-3">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[22px]" rowspan="2">No</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[70px]" rowspan="2">Nama</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[52px]" colspan="3">Nilai Kualifikasi (40%)</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[44px]" rowspan="2">Nilai Akhir</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt]" rowspan="2">Catatan</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[72px]" rowspan="2">Rekomendasi</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[90px]" rowspan="2">Prodi</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[34px]" rowspan="2">JFA</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[36px]" rowspan="2">Pendidikan</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[80px]" rowspan="2">Kelompok Keahlian</th>
+                </tr>
+                <tr class="bg-gray-100">
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[52px]">Nilai Kualifikasi (40%)</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[52px]">Nilai Microteaching (20%)</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[52px]">Nilai Wawancara (40%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($kandidats as $i => $k)
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-black p-1 text-center">{{ $i + 1 }}</td>
+                    <td class="border border-black p-1 text-left font-semibold">{{ $k->nama }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->avgKualifikasi ?? '-' }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->avgMicro ?? '-' }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->avgWawancara ?? '-' }}</td>
+                    <td class="border border-black p-1 text-center font-bold">{{ $k->hasilAkhir ?? '-' }}</td>
+                    <td class="border border-black p-1 text-justify text-[8pt] leading-normal">{{ $k->catatan ?: '-' }}</td>
+                    <td class="border border-black p-1 text-center font-bold">{{ $k->rekomendasi }}</td>
+                    <td class="border border-black p-1 text-left">{{ $k->prodiTujuan }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->jfaLabel }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->jenjangDisplay }}</td>
+                    <td class="border border-black p-1 text-center text-[8pt]">{{ $k->kelompokKeahlian }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="12" class="border border-black p-3 text-center italic text-gray-500">
+                        Belum ada kandidat yang ditetapkan.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+
+        {{-- TANDA TANGAN --}}
+        <div class="text-center font-serif text-[10pt] mb-1">{{ $tanggalFormatted }}</div>
+        <div class="text-center font-serif text-[10pt] font-bold mb-3">Mengetahui dan Menyetujui,</div>
+
+        <div class="grid grid-cols-4 gap-4 items-stretch font-serif text-[9.5pt]">
+            <!-- Direktur -->
+            <div class="flex flex-col justify-between items-center text-center h-[110px]">
+                <div class="font-bold leading-normal flex items-start justify-center h-[2.8em] text-center w-full">
+                    Direktur Universitas Telkom Kampus Surabaya
+                </div>
+                <div class="font-bold mt-auto w-full">(................................)</div>
+            </div>
+            <!-- Wakil Direktur Akademik -->
+            <div class="flex flex-col justify-between items-center text-center h-[110px]">
+                <div class="font-bold leading-normal flex items-start justify-center h-[2.8em] text-center w-full">
+                    Wakil Direktur Bidang Akademik dan Riset
+                </div>
+                <div class="font-bold mt-auto w-full">(................................)</div>
+            </div>
+            <!-- Wakil Direktur Sumber Daya -->
+            <div class="flex flex-col justify-between items-center text-center h-[110px]">
+                <div class="font-bold leading-normal flex items-start justify-center h-[2.8em] text-center w-full">
+                    Wakil Direktur Bidang Sumber Daya
+                </div>
+                <div class="font-bold mt-auto w-full">(................................)</div>
+            </div>
+            <!-- Kepala Urusan SDM -->
+            <div class="flex flex-col justify-between items-center text-center h-[110px]">
+                <div class="font-bold leading-normal flex items-start justify-center h-[2.8em] text-center w-full">
+                    Kepala Urusan SDM
+                </div>
+                <div class="font-bold mt-auto w-full">(................................)</div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<script>window.addEventListener('load', () => setTimeout(() => window.print(), 400));</script>
 </body>
 </html>

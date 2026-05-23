@@ -5,7 +5,11 @@
 
 @section('content')
 @php
-    $pelamar = $jadwal->pelamar;
+    $pelamarLive = $jadwal->pelamar;
+    $lamaran = \App\Models\Lamaran::where('pelamar_id', $pelamarLive->id)
+        ->where('lowongan_id', $jadwal->lowongan_id)
+        ->first();
+    $pelamar  = $lamaran ? $lamaran->effective_pelamar : $pelamarLive;
     $lowongan = $jadwal->lowongan;
     $penilaian = $jadwal->penilaian;
     $detailNilai = $penilaian->detail_nilai ?? [];
@@ -195,14 +199,7 @@
                 </div>
 
                 <div class="p-6 md:p-8 space-y-6">
-                    <!-- Catatan Penilaian -->
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Catatan Penilaian</label>
-                        <textarea name="catatan" rows="3"
-                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-none"
-                            placeholder="Tuliskan catatan penilaian (opsional)...">{{ old('catatan') }}</textarea>
-                    </div>
-
+                    
                     <!-- Rekomendasi -->
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-3">Rekomendasi <span class="text-red-500">*</span></label>
@@ -272,6 +269,12 @@
                         @error('bidang_keahlian')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Catatan Penilaian</label>
+                        <textarea name="catatan" rows="3"
+                            class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-none"
+                            placeholder="Tuliskan catatan penilaian (opsional)...">{{ old('catatan') }}</textarea>
                     </div>
                 </div>
             </div>

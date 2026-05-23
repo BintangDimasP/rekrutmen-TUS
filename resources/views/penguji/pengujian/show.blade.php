@@ -4,7 +4,11 @@
 
 @section('content')
 @php
-    $pelamar = $jadwal->pelamar;
+    $pelamarLive = $jadwal->pelamar;
+    $lamaran = \App\Models\Lamaran::where('pelamar_id', $pelamarLive->id)
+        ->where('lowongan_id', $jadwal->lowongan_id)
+        ->first();
+    $pelamar = $lamaran ? $lamaran->effective_pelamar : $pelamarLive;
     $lowongan = $jadwal->lowongan;
     $penilaian = $jadwal->penilaian;
     $isWawancara = $jadwal->tipe_seleksi == 'wawancara';
@@ -14,12 +18,16 @@
 
     // Get all schedules for this pelamar to check Micro Teaching evaluation status
     $jadwals_all = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)->with('penilaian')->get();
-    $micro = $jadwals_all->where('tipe_seleksi', 'micro_teaching')->first();
-    $microSudahDinilai = $micro && $micro->penilaian;
-    $isMicro = $jadwal->tipe_seleksi == 'micro_teaching';
-    
-    // Can evaluate if it's Micro OR (it's Wawancara and Micro is already evaluated)
-    $canEvaluate = $isMicro || $microSudahDinilai;
+    $microAll    = $jadwals_all->where('tipe_seleksi', 'micro_teaching');
+    $isMicro     = $jadwal->tipe_seleksi == 'micro_teaching';
+
+    // Wawancara boleh dilakukan jika SEMUA penguji micro sudah menilai
+    $microSelesai = $microAll->isNotEmpty() && $microAll->every(fn($j) => $j->penilaian !== null);
+    $microProgress = $microAll->count() > 0
+        ? $microAll->filter(fn($j) => $j->penilaian !== null)->count() . '/' . $microAll->count()
+        : '0/0';
+
+    $canEvaluate = $isMicro || $microSelesai;
 @endphp
 
 <div class="space-y-6">
@@ -42,7 +50,7 @@
                     </div>
                     <div>
                         <h1 class="text-xl font-bold text-white">{{ $pelamar->nama }}</h1>
-                        <p class="text-red-200 text-sm mt-0.5">{{ $pelamar->user?->email }}</p>
+                        <p class="text-red-200 text-sm mt-0.5">{{ $pelamarLive->user?->email }}</p>
                         <div class="flex items-center gap-3 mt-2 flex-wrap">
                             @if($isWawancara)
                                 <span class="inline-flex px-2 py-0.5 bg-white/20 text-white text-xs font-bold rounded">Wawancara</span>
@@ -88,7 +96,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                 Mulai Uji
                             </button>
-                            <span class="text-[0.65rem] text-red-200 mt-1.5 font-medium">Selesaikan Micro Teaching dahulu</span>
+                            <span class="text-[0.65rem] text-red-200 mt-1.5 font-medium">Selesaikan Micro Teaching dahulu ({{ $microProgress }} penguji menilai)</span>
                         </div>
                     @endif
                 </div>

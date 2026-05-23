@@ -49,15 +49,29 @@ class Lowongan extends Model
     // ── Computed ──────────────────────────────────────────────────
 
     /**
-     * Sisa kuota (kuota dikurangi jumlah pendaftar yang aktif).
+     * Sisa kuota — hanya hitung lamaran yang aktif (bukan ditolak).
      */
     public function getSisaKuotaAttribute(): int
     {
-        return max(0, $this->kuota - $this->lamarans()->count());
+        $aktif = $this->lamarans()->whereNotIn('status', ['ditolak'])->count();
+        return max(0, $this->kuota - $aktif);
     }
 
-    public function isAktif(): bool
+    /**
+     * Override status attribute.
+     * Jika status aktif di DB, tapi tanggal_tutup sudah lewat atau sisa_kuota <= 0,
+     * otomatis anggap statusnya adalah 'ditutup'.
+     */
+    public function getStatusAttribute($value): string
     {
-        return $this->status === 'aktif' && $this->tanggal_tutup->isFuture();
+        if ($value === 'aktif') {
+            if ($this->tanggal_tutup && $this->tanggal_tutup->isPast()) {
+                return 'ditutup';
+            }
+            if ($this->sisa_kuota <= 0) {
+                return 'ditutup';
+            }
+        }
+        return $value ?? 'draft';
     }
 }

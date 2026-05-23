@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\PelamarNilaiExport;
 use App\Http\Controllers\Controller;
 use App\Imports\PelamarImport;
 use App\Models\Pelamar;

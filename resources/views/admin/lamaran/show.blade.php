@@ -4,7 +4,9 @@
 
 @section('content')
 @php
-    $pelamar = $lamaran->pelamar;
+    // Gunakan snapshot data jika tersedia, fallback ke data live
+    $pelamar = $lamaran->effective_pelamar;
+    $hasSnapshot = !empty($lamaran->snapshot_data);
 @endphp
 
 
@@ -36,6 +38,12 @@
                         <p class="text-red-200 text-sm mt-0.5">Melamar Posisi: <strong class="text-white">{{ $lamaran->lowongan->nama_posisi }}</strong></p>
                         <div class="flex items-center gap-3 mt-2 flex-wrap">
                             <span class="text-red-200 text-xs">Dilamar pada: {{ $lamaran->created_at->format('d M Y') }}</span>
+                            @if($hasSnapshot)
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white/70 text-[0.6rem] font-semibold">
+                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                Data saat melamar
+                            </span>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -62,15 +70,7 @@
         <div class="p-6 md:p-8 space-y-8">
 
                         {{-- 1. DETAIL PELAMAR LAINNYA (RIWAYAT PENDIDIKAN, DOKUMEN, DLL) --}}
-            <div x-data="{ expanded: false }" class="pt-6 border-t border-gray-100">
-                <button @click="expanded = !expanded" class="flex items-center justify-between w-full p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200">
-                    <span class="text-sm font-bold text-gray-800">Lihat Detail Profil Pelamar Lainnya</span>
-                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" :class="{'rotate-180': expanded}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                
-                <div x-show="expanded" x-collapse class="mt-6 space-y-8">
-
-                <div class="p-6 md:p-8 space-y-8">
+            <div class="pt-6 space-y-8">
 
             {{-- 1. DATA DIRI --}}
             <div>
@@ -272,7 +272,16 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                             <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nidn ?: '-' }}</p></div>
                             <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->homebase ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jabatan_akademik ? ucwords(str_replace('_', ' ', $pelamar->jabatan_akademik)) : '-' }}</p></div>
+                            @php
+                                $jfaLabels = [
+                                    'guru_besar' => 'Guru Besar (GB)',
+                                    'lektor_kepala' => 'Lektor Kepala (LK)',
+                                    'lektor' => 'Lektor (L)',
+                                    'asisten_ahli' => 'Asisten Ahli (AA)',
+                                    'non_jabatan' => 'Non Jabatan (NJAD)',
+                                ];
+                            @endphp
+                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Fungsional Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jabatan_akademik ? ($jfaLabels[$pelamar->jabatan_akademik] ?? ucwords(str_replace('_', ' ', $pelamar->jabatan_akademik))) : '-' }}</p></div>
                             <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->h_index ?: '-' }}</p></div>
                         </div>
                         <div class="mt-3"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Minat Riset & Keahlian</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $pelamar->minat_riset ?: '-' }}</p></div>
@@ -310,9 +319,6 @@
                             <p class="text-sm text-gray-400 italic">-</p>
                         @endif
                     </div>
-                    
-                </div>
-            </div>
 
             {{-- 2. JADWAL & SUMMARY PENILAIAN SELEKSI --}}
             @php
@@ -364,13 +370,7 @@
                     : null;
             @endphp
 
-            <div x-data="{ expandedJadwal: true }" class="pt-6 border-t border-gray-100">
-                <button @click="expandedJadwal = !expandedJadwal" class="flex items-center justify-between w-full p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors border border-gray-200">
-                    <span class="text-sm font-bold text-gray-800">Summary Penilaian</span>
-                    <svg class="w-5 h-5 text-gray-500 transform transition-transform" :class="{'rotate-180': expandedJadwal}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                
-                <div x-show="expandedJadwal" x-collapse class="mt-6">
+            <div class="pt-6 border-t border-gray-100">
                     <div>
                         <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                             Jadwal &amp; Penilaian Seleksi
@@ -396,19 +396,19 @@
                         </div>
                         @else
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
+                            <table class="w-full text-sm border border-gray-200 border-collapse">
                                 <thead>
                                     <tr class="bg-gray-50 text-xs text-gray-500 border-b border-gray-200">
-                                        <th class="px-4 py-2 text-left font-semibold">Penguji</th>
+                                        <th class="px-4 py-2 text-left font-semibold border border-gray-200">Penguji</th>
                                         @foreach($microKategoriLabels as $kNum => $kShort)
-                                        <th class="px-3 py-2 text-center font-semibold" title="{{ $microKategoriTooltips[$kNum] }}">{{ $kShort }}</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200" title="{{ $microKategoriTooltips[$kNum] }}">{{ $kShort }}</th>
                                         @endforeach
-                                        <th class="px-3 py-2 text-center font-semibold">Avg</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Status</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Prodi</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Kelompok</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Bidang</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Catatan</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Kelompok</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -420,38 +420,38 @@
                                         $kkLabels = ['scout' => 'SCoT', 'ethes' => 'ETHES', 'riib' => 'RIIB'];
                                     @endphp
                                     <tr class="hover:bg-gray-50/50">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap" title="{{ $jadwalMicro->penguji->nama ?? '' }}">{{ $jadwalMicro->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalMicro->penguji->nama ?? '' }}">{{ $jadwalMicro->penguji->kode ?? '-' }}</td>
                                         @foreach($microKategoriLabels as $kNum => $kShort)
-                                        <td class="px-3 py-2.5 text-center font-bold text-gray-800">{{ $p->{'kategori_'.$kNum} ?? '-' }}</td>
+                                        <td class="px-3 py-2.5 text-center font-bold text-gray-800 border border-gray-200">{{ $p->{'kategori_'.$kNum} ?? '-' }}</td>
                                         @endforeach
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-xs font-bold rounded">{{ $p->total_nilai }}</span>
                                         </td>
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             @if($rek)
                                             <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ $rek['color'] }}">{{ $rek['label'] }}</span>
                                             @else
                                             <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700">{{ $p->prodi_tujuan ?: '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700">{{ $p->kelompok_keahlian ? ($kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian) : '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700">{{ $p->bidang_keahlian ?: '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs">{{ $p->catatan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->kelompok_keahlian ? ($kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian) : '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
                                     @foreach($micro->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
                                     <tr class="bg-yellow-50/40">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
-                                        <td colspan="{{ count($microKategoriLabels) + 7 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold">Belum menilai</td>
+                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
+                                        <td colspan="{{ count($microKategoriLabels) + 7 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 @if($nilaiAkhirMicro !== null)
                                 <tfoot>
                                     <tr class="bg-gray-100 border-t border-gray-200">
-                                        <td class="px-4 py-2.5 text-xs font-bold text-gray-600 uppercase" colspan="{{ count($microKategoriLabels) + 1 }}">Nilai Akhir <span class="font-normal text-gray-400">(rata-rata {{ $microDinilai->count() }} penguji)</span></td>
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-4 py-2.5 text-xs text-center font-bold text-gray-600 uppercase " colspan="{{ count($microKategoriLabels) + 1 }}">Nilai Akhir </td>
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirMicro }}</span>
                                         </td>
                                         <td colspan="6"></td>
@@ -481,17 +481,17 @@
                         </div>
                         @else
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
+                            <table class="w-full text-sm border border-gray-200 border-collapse">
                                 <thead>
                                     <tr class="bg-gray-50 text-xs text-gray-500 border-b border-gray-200">
-                                        <th class="px-4 py-2 text-left font-semibold">Penguji</th>
+                                        <th class="px-4 py-2 text-left font-semibold border border-gray-200">Penguji</th>
                                         @foreach($wawancaraIndikatorLabels as $iNum => $iShort)
-                                        <th class="px-3 py-2 text-center font-semibold" title="{{ $wawancaraIndikatorTooltips[$iNum] }}">{{ $iShort }}</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200" title="{{ $wawancaraIndikatorTooltips[$iNum] }}">{{ $iShort }}</th>
                                         @endforeach
-                                        <th class="px-3 py-2 text-center font-semibold">Avg</th>
-                                        <th class="px-3 py-2 text-center font-semibold">Status</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Prodi</th>
-                                        <th class="px-3 py-2 text-left font-semibold">Catatan</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
+                                        <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -503,39 +503,39 @@
                                         $rek = $p->rekomendasi ? ($rekLabels[$p->rekomendasi] ?? ['label' => $p->rekomendasi, 'color' => 'bg-gray-50 text-gray-700']) : null;
                                     @endphp
                                     <tr class="hover:bg-gray-50/50">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap" title="{{ $jadwalWaw->penguji->nama ?? '' }}">{{ $jadwalWaw->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalWaw->penguji->nama ?? '' }}">{{ $jadwalWaw->penguji->kode ?? '-' }}</td>
                                         @foreach($wawancaraIndikatorLabels as $iNum => $iShort)
-                                        <td class="px-3 py-2.5 text-center font-bold text-gray-800">{{ $detail['k1_item_'.$iNum] ?? '-' }}</td>
+                                        <td class="px-3 py-2.5 text-center font-bold text-gray-800 border border-gray-200">{{ $detail['k1_item_'.$iNum] ?? '-' }}</td>
                                         @endforeach
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-xs font-bold rounded">{{ $p->total_nilai }}</span>
                                         </td>
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             @if($rek)
                                             <span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ $rek['color'] }}">{{ $rek['label'] }}</span>
                                             @else
                                             <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700">{{ $p->prodi_tujuan ?: '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs">{{ $p->catatan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
                                     @foreach($wawancara->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
                                     <tr class="bg-yellow-50/40">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
-                                        <td colspan="{{ count($wawancaraIndikatorLabels) + 4 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold">Belum menilai</td>
+                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
+                                        <td colspan="{{ count($wawancaraIndikatorLabels) + 4 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                                 @if($nilaiAkhirWawancara !== null)
                                 <tfoot>
                                     <tr class="bg-gray-100 border-t border-gray-200">
-                                        <td class="px-4 py-2.5 text-xs font-bold text-gray-600 uppercase" colspan="{{ count($wawancaraIndikatorLabels) + 1 }}">Nilai Akhir <span class="font-normal text-gray-400">(rata-rata {{ $wawancaraDinilai->count() }} penguji)</span></td>
-                                        <td class="px-3 py-2.5 text-center">
+                                        <td class="px-4 py-2.5 text-xs text-center font-bold text-gray-600 uppercase border border-gray-200" colspan="{{ count($wawancaraIndikatorLabels) + 1 }}">Nilai Akhir</td>
+                                        <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirWawancara }}</span>
                                         </td>
-                                        <td colspan="3"></td>
+                                        <td colspan="3" class="border border-gray-200"></td>
                                     </tr>
                                 </tfoot>
                                 @endif
@@ -554,8 +554,112 @@
                     </div>
                     @endif
 
+                    {{-- ── KUALIFIKASI DOSEN ── --}}
+                    @php
+                        // Ambil status rekrutmen dari penilaian wawancara (penguji pertama yang menilai)
+                        $statusRekrutmenNilai = $wawancaraDinilai->first()?->penilaian?->status_rekrutmen ?? null;
+
+                        // Skor SPT (Jalur Lamaran / Pendidikan)
+                        $jenjangTertinggi = collect([$pelamar->jenjang_3, $pelamar->jenjang_2, $pelamar->jenjang])
+                            ->filter()
+                            ->map(fn($j) => strtolower(trim($j)))
+                            ->first();
+                        $isS3 = $jenjangTertinggi && (str_contains($jenjangTertinggi, 's3') || str_contains($jenjangTertinggi, 'doktor'));
+                        $isS2 = $jenjangTertinggi && (str_contains($jenjangTertinggi, 's2') || str_contains($jenjangTertinggi, 'magister') || str_contains($jenjangTertinggi, 'master'));
+
+                        $sptSkor = 0;
+                        $sptLabel = '-';
+                        if ($isS3) {
+                            if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 5; $sptLabel = 'S3 Prof Full Time'; }
+                            elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 4; $sptLabel = 'S3 Praktisi Part Time'; }
+                            elseif ($statusRekrutmenNilai === 'on_going')            { $sptSkor = 3; $sptLabel = 'S3 On Going'; }
+                            else { $sptSkor = 3; $sptLabel = 'S3 (status belum diisi)'; }
+                        } elseif ($isS2) {
+                            if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 2; $sptLabel = 'S2 Prof Full Time'; }
+                            elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 1; $sptLabel = 'S2 Praktisi Part Time'; }
+                            else { $sptSkor = 1; $sptLabel = 'S2 (status belum diisi)'; }
+                        }
+
+                        // Skor JFA
+                        $jfaSkorMap = ['guru_besar' => 5, 'lektor_kepala' => 4, 'lektor' => 3, 'asisten_ahli' => 2, 'non_jabatan' => 1];
+                        $jfaLabelMap = ['guru_besar' => 'Guru Besar (GB)', 'lektor_kepala' => 'Lektor Kepala (LK)', 'lektor' => 'Lektor (L)', 'asisten_ahli' => 'Asisten Ahli (AA)', 'non_jabatan' => 'Non Jabatan (NJAD)'];
+                        $jfaKey = $pelamar->jabatan_akademik ?? 'non_jabatan';
+                        $jfaSkor = $jfaSkorMap[$jfaKey] ?? 1;
+                        $jfaLabel = $jfaLabelMap[$jfaKey] ?? 'Non Jabatan (NJAD)';
+
+                        // Skor H-Index
+                        $hIndex = (int) ($pelamar->h_index ?? 0);
+                        if ($hIndex > 10)      { $hSkor = 5; }
+                        elseif ($hIndex >= 5)  { $hSkor = 4; }
+                        elseif ($hIndex >= 2)  { $hSkor = 3; }
+                        elseif ($hIndex >= 1)  { $hSkor = 2; }
+                        else                   { $hSkor = 1; }
+
+                        // AVG Kualifikasi = rata-rata 3 komponen
+                        $avgKualifikasi = ($sptSkor > 0 || $jfaSkor > 0 || $hSkor > 0)
+                            ? round(($sptSkor + $jfaSkor + $hSkor) / 3, 2)
+                            : null;
+
+                        // Hasil Akhir
+                        $hasilAkhir = null;
+                        if ($nilaiAkhirMicro !== null && $nilaiAkhirWawancara !== null && $avgKualifikasi !== null) {
+                            $hasilAkhir = round(
+                                ($nilaiAkhirMicro * 0.20) + ($nilaiAkhirWawancara * 0.40) + ($avgKualifikasi * 0.40),
+                                2
+                            );
+                        }
+                    @endphp
+
+                    @if($nilaiAkhirWawancara !== null || $avgKualifikasi !== null)
+                    <div class="mt-8">
+                        <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Kualifikasi & Hasil Akhir</h4>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden">
+                            <table class="w-full text-sm border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-xs text-gray-500">
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">SPT</th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">JFA</th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">H-Index</th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">Avg Kualifikasi</th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">AVG Micro </th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">AVG WWC </th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">AVG Kual</th>
+                                        <th class="px-4 py-2 text-center font-semibold border border-gray-200">Hasil Akhir</th>
+                                    </tr>
+                                    
+                                </thead>
+                                <tbody class="bg-white">
+                                    <tr class="hover:bg-gray-50/50">
+                                        <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">
+                                            @if($sptSkor > 0) {{ $sptSkor }} @else <span class="text-gray-300">-</span> @endif
+                                        </td>
+                                        <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $jfaSkor }}</td>
+                                        <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $hSkor }}</td>
+                                        <td class="px-4 py-3 text-center border border-gray-200">
+                                            @if($avgKualifikasi !== null)
+                                            <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $avgKualifikasi }}</span>
+                                            @else <span class="text-gray-300">-</span> @endif
+                                        </td>
+                                        <td class="px-4 py-3 text-center font-bold text-gray-700 border border-gray-200">{{ $nilaiAkhirMicro ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-center font-bold text-gray-700 border border-gray-200">{{ $nilaiAkhirWawancara ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-center font-bold text-gray-700 border border-gray-200">{{ $avgKualifikasi ?? '-' }}</td>
+                                        <td class="px-4 py-3 text-center border border-gray-200 bg-gray-800">
+                                            @if($hasilAkhir !== null)
+                                            <span class="text-xl font-black text-white">{{ $hasilAkhir }}</span>
+                                            @else <span class="text-gray-400 text-xs">Belum lengkap</span> @endif
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
+                                <p class="text-[0.65rem] text-gray-400">(Micro×20%) + (WWC×40%) + (Kualifikasi×40%)</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     {{-- STATUS LAMARAN --}}
-                    <div class="pt-6 border-t border-gray-100">
+                    <div id="status-lamaran" class="pt-6 border-t border-gray-100">
                         @php
                             $isFinished = in_array($lamaran->status, ['diterima', 'ditolak']);
                             $hasJadwal = ($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0);
@@ -563,20 +667,21 @@
                             $statusOrder = ['menunggu' => 1, 'seleksi_tahap1' => 2, 'seleksi_tahap2' => 3, 'diterima' => 4, 'ditolak' => 4];
                             $currentOrder = $statusOrder[$lamaran->status] ?? 1;
 
-                            // Stepper steps — diterima & ditolak adalah cabang di step 4
                             $steps = [
-                                ['key' => 'menunggu',       'label' => 'Menunggu',      'sub' => 'Administrasi'],
-                                ['key' => 'seleksi_tahap1', 'label' => 'Tahap 1',       'sub' => 'Seleksi Administrasi'],
-                                ['key' => 'seleksi_tahap2', 'label' => 'Tahap 2',       'sub' => 'Micro Teaching & Wawancara'],
-                                ['key' => 'final',          'label' => 'Keputusan',     'sub' => $lamaran->status === 'diterima' ? 'Diterima' : ($lamaran->status === 'ditolak' ? 'Ditolak' : 'Diterima / Ditolak')],
+                                ['key' => 'menunggu',       'label' => 'Menunggu',   'sub' => 'Administrasi'],
+                                ['key' => 'seleksi_tahap1', 'label' => 'Tahap 1',    'sub' => 'Seleksi Administrasi'],
+                                ['key' => 'seleksi_tahap2', 'label' => 'Tahap 2',    'sub' => 'Micro Teaching & Wawancara'],
+                                ['key' => 'final',          'label' => 'Keputusan',  'sub' => $lamaran->status === 'diterima' ? 'Diterima' : ($lamaran->status === 'ditolak' ? 'Ditolak' : 'Diterima / Ditolak')],
                             ];
                         @endphp
 
-                        <div x-data="{ editing: false }">
+                        <div x-data="{ editing: false, selected: '{{ $lamaran->status }}' }">
+
+                            {{-- HEADER --}}
                             <div class="flex items-center justify-between mb-5">
                                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">Status Lamaran</h3>
                                 @if(!$isFinished)
-                                <button @click="editing = !editing"
+                                <button @click="editing = !editing; selected = '{{ $lamaran->status }}'"
                                     class="p-1.5 rounded-lg transition-colors"
                                     :class="editing ? 'bg-gray-100 text-gray-600' : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'"
                                     title="Ubah Status">
@@ -585,24 +690,22 @@
                                 @endif
                             </div>
 
-                            {{-- STEPPER --}}
-                            <div class="flex items-start gap-0 mb-6">
+                            {{-- STEPPER (read-only) --}}
+                            <div x-show="!editing" class="flex items-start">
                                 @foreach($steps as $i => $step)
                                 @php
-                                    $stepOrder = $i + 1;
-                                    // step 4 = final (diterima/ditolak)
                                     if ($step['key'] === 'final') {
-                                        $isDone    = in_array($lamaran->status, ['diterima', 'ditolak']);
-                                        $isActive  = $isDone;
-                                        $isPast    = false;
+                                        $isActive = in_array($lamaran->status, ['diterima', 'ditolak']);
+                                        $isPast   = false;
                                     } else {
-                                        $keyOrder  = $statusOrder[$step['key']] ?? 1;
-                                        $isDone    = $currentOrder > $keyOrder;
-                                        $isActive  = $lamaran->status === $step['key'];
-                                        $isPast    = $isDone;
+                                        $keyOrder = $statusOrder[$step['key']] ?? 1;
+                                        $isActive = $lamaran->status === $step['key'];
+                                        $isPast   = $currentOrder > $keyOrder;
                                     }
-
-                                    if ($isActive) {
+                                    if ($isActive && $step['key'] === 'final') {
+                                        $circleClass = $lamaran->status === 'diterima' ? 'bg-green-600 border-green-600 text-white' : 'bg-red-600 border-red-600 text-white';
+                                        $labelClass  = $lamaran->status === 'diterima' ? 'text-green-700 font-bold' : 'text-red-700 font-bold';
+                                    } elseif ($isActive) {
                                         $circleClass = 'bg-[#8b1515] border-[#8b1515] text-white';
                                         $labelClass  = 'text-[#8b1515] font-bold';
                                     } elseif ($isPast) {
@@ -612,78 +715,95 @@
                                         $circleClass = 'bg-white border-gray-300 text-gray-400';
                                         $labelClass  = 'text-gray-400 font-medium';
                                     }
-
-                                    // Final step: warna sesuai hasil
-                                    if ($step['key'] === 'final' && $isActive) {
-                                        if ($lamaran->status === 'diterima') {
-                                            $circleClass = 'bg-green-600 border-green-600 text-white';
-                                            $labelClass  = 'text-green-700 font-bold';
-                                        } elseif ($lamaran->status === 'ditolak') {
-                                            $circleClass = 'bg-red-600 border-red-600 text-white';
-                                            $labelClass  = 'text-red-700 font-bold';
-                                        }
-                                    }
                                 @endphp
                                 <div class="flex-1 flex flex-col items-center relative">
-                                    {{-- Connector line kiri --}}
                                     @if($i > 0)
                                     <div class="absolute top-4 right-1/2 w-full h-0.5 {{ $isPast || $isActive ? 'bg-gray-700' : 'bg-gray-200' }} -translate-y-1/2 z-0"></div>
                                     @endif
-                                    {{-- Circle --}}
-                                    <div class="relative z-10 w-8 h-8 rounded-full border-2 flex items-center justify-center {{ $circleClass }} transition-all">
+                                    <div class="relative z-10 w-8 h-8 rounded-full border-2 flex items-center justify-center {{ $circleClass }}">
                                         @if($isPast)
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                                         @else
                                         <span class="text-xs font-bold">{{ $i + 1 }}</span>
                                         @endif
                                     </div>
-                                    {{-- Label --}}
                                     <p class="mt-2 text-xs text-center {{ $labelClass }}">{{ $step['label'] }}</p>
                                     <p class="text-[0.6rem] text-center text-gray-400 leading-tight mt-0.5">{{ $step['sub'] }}</p>
                                 </div>
                                 @endforeach
                             </div>
 
-                            {{-- EDITABLE FORM --}}
+                            {{-- STEPPER EDIT (form terintegrasi) --}}
                             @if(!$isFinished)
-                            <form x-show="editing" method="POST" action="{{ route('admin.lamaran.update', $lamaran) }}" x-cloak class="border-t border-gray-100 pt-4 text-center">
+                            <form x-show="editing" x-cloak method="POST" action="{{ route('admin.lamaran.update', $lamaran) }}">
                                 @csrf
                                 @method('PUT')
-                                <p class="text-xs text-gray-500 mb-3">Pilih status baru:</p>
-                                <div class="flex flex-wrap justify-center gap-2 mb-4">
-                                    @foreach(['menunggu' => 'Menunggu', 'seleksi_tahap1' => 'Tahap 1', 'seleksi_tahap2' => 'Tahap 2', 'diterima' => 'Diterima', 'ditolak' => 'Ditolak'] as $val => $label)
+
+                                <div class="flex items-start">
+                                    @php
+                                        $editSteps = [
+                                            ['key' => 'menunggu',       'val' => 'menunggu',       'label' => 'Menunggu',   'sub' => 'Administrasi',                  'order' => 1],
+                                            ['key' => 'seleksi_tahap1', 'val' => 'seleksi_tahap1', 'label' => 'Tahap 1',    'sub' => 'Seleksi Administrasi',          'order' => 2],
+                                            ['key' => 'seleksi_tahap2', 'val' => 'seleksi_tahap2', 'label' => 'Tahap 2',    'sub' => 'Micro Teaching & Wawancara',    'order' => 3],
+                                            ['key' => 'final_d',        'val' => 'diterima',        'label' => 'Diterima',   'sub' => 'Keputusan Akhir',               'order' => 4],
+                                            ['key' => 'final_t',        'val' => 'ditolak',         'label' => 'Ditolak',    'sub' => 'Keputusan Akhir',               'order' => 4],
+                                        ];
+                                    @endphp
+                                    @foreach($editSteps as $j => $es)
                                     @php
                                         $isDisabled = false;
-                                        $targetOrder = $statusOrder[$val];
-                                        if ($targetOrder < $currentOrder) $isDisabled = true;
-                                        if ($val === 'seleksi_tahap2' && !$hasJadwal && $currentOrder < 3) $isDisabled = true;
-                                        if (($val === 'diterima' || $val === 'ditolak') && !$hasBothScores) $isDisabled = true;
+                                        if ($es['order'] < $currentOrder) $isDisabled = true;
+                                        if ($es['val'] === 'seleksi_tahap2' && !$hasJadwal && $currentOrder < 3) $isDisabled = true;
+                                        if (in_array($es['val'], ['diterima','ditolak']) && !$hasBothScores) $isDisabled = true;
                                     @endphp
-                                    <label class="{{ $isDisabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}" {{ $isDisabled ? 'title="Syarat belum terpenuhi atau tidak bisa kembali"' : '' }}>
-                                        <input type="radio" name="status" value="{{ $val }}" class="sr-only peer"
-                                               {{ $lamaran->status === $val ? 'checked' : '' }} {{ $isDisabled ? 'disabled' : '' }}>
-                                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all select-none
-                                            peer-checked:bg-gray-800 peer-checked:text-white peer-checked:border-gray-800
-                                            bg-white text-gray-600 border-gray-200 hover:border-gray-400">
-                                            {{ $label }}
-                                        </span>
-                                    </label>
+                                    <div class="flex-1 flex flex-col items-center relative">
+                                        @if($j > 0)
+                                        <div class="absolute top-4 right-1/2 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0"></div>
+                                        @endif
+                                        <label class="relative z-10 {{ $isDisabled ? 'cursor-not-allowed' : 'cursor-pointer' }}"
+                                               {{ $isDisabled ? 'title="Syarat belum terpenuhi"' : '' }}>
+                                            <input type="radio" name="status" value="{{ $es['val'] }}"
+                                                   x-model="selected"
+                                                   class="sr-only"
+                                                   {{ $lamaran->status === $es['val'] ? 'checked' : '' }}
+                                                   {{ $isDisabled ? 'disabled' : '' }}>
+                                            <div class="w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all"
+                                                 :class="selected === '{{ $es['val'] }}'
+                                                     ? '{{ in_array($es['val'], ['diterima']) ? 'bg-green-600 border-green-600' : (in_array($es['val'], ['ditolak']) ? 'bg-red-600 border-red-600' : 'bg-[#8b1515] border-[#8b1515]') }} text-white'
+                                                     : '{{ $isDisabled ? 'bg-gray-100 border-gray-200 text-gray-300' : 'bg-white border-gray-300 text-gray-400 hover:border-gray-500' }}'">
+                                                <span class="text-xs font-bold">{{ $j + 1 }}</span>
+                                            </div>
+                                        </label>
+                                        <p class="mt-2 text-xs text-center font-medium"
+                                           :class="selected === '{{ $es['val'] }}' ? 'text-gray-800 font-bold' : '{{ $isDisabled ? 'text-gray-300' : 'text-gray-500' }}'">
+                                            {{ $es['label'] }}
+                                        </p>
+                                        <p class="text-[0.6rem] text-center text-gray-400 leading-tight mt-0.5">{{ $es['sub'] }}</p>
+                                    </div>
                                     @endforeach
                                 </div>
-                                <button type="submit" class="px-4 py-1.5 bg-[#8b1515] hover:bg-red-900 text-white text-xs font-semibold rounded-lg transition-colors">
-                                    Simpan
-                                </button>
-                                <button type="button" @click="editing = false" class="ml-2 px-4 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-semibold rounded-lg transition-colors">
-                                    Batal
-                                </button>
+
+                                {{-- Tombol simpan muncul di bawah stepper, hanya jika pilihan berubah --}}
+                                <div class="flex justify-center gap-2 mt-4" x-show="selected !== '{{ $lamaran->status }}'">
+                                    <button type="submit" class="px-4 py-1.5 bg-[#8b1515] hover:bg-red-900 text-white text-xs font-semibold rounded-lg transition-colors">
+                                        Simpan
+                                    </button>
+                                    <button type="button" @click="editing = false; selected = '{{ $lamaran->status }}'" class="px-4 py-1.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 text-xs font-semibold rounded-lg transition-colors">
+                                        Batal
+                                    </button>
+                                </div>
+                                <div class="flex justify-center mt-3" x-show="selected === '{{ $lamaran->status }}'">
+                                    <button type="button" @click="editing = false" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                                        Tutup
+                                    </button>
+                                </div>
                             </form>
                             @else
-                            <p class="text-xs text-gray-400 border-t border-gray-100 pt-3">Alur seleksi telah selesai.</p>
+                            <p class="text-xs text-gray-400 mt-4">Alur seleksi telah selesai.</p>
                             @endif
+
                         </div>
                     </div>
-                    </div>
-                </div>
             </div>
 
 
@@ -693,3 +813,17 @@
 </div>
 
 @endsection
+
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const el = document.getElementById('status-lamaran');
+        if (el) {
+            setTimeout(() => {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 150);
+        }
+    });
+</script>
+@endif
+

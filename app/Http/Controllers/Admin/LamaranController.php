@@ -22,11 +22,25 @@ class LamaranController extends Controller
             ->where('lowongan_id', $lamaran->lowongan_id)
             ->get();
 
-        // Get all jadwals grouped by tipe_seleksi
         $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
         $micro     = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
 
         return view('admin.lamaran.show', compact('lamaran', 'wawancara', 'micro'));
+    }
+
+    public function cetak(Lamaran $lamaran)
+    {
+        $lamaran->load(['pelamar.user', 'lowongan.prodi']);
+
+        $jadwals = JadwalSeleksi::with(['penguji', 'penilaian'])
+            ->where('pelamar_id', $lamaran->pelamar_id)
+            ->where('lowongan_id', $lamaran->lowongan_id)
+            ->get();
+
+        $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
+        $micro     = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
+
+        return view('admin.lamaran.cetak', compact('lamaran', 'wawancara', 'micro'));
     }
 
     /**

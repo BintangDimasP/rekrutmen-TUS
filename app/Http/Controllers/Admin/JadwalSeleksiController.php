@@ -349,20 +349,33 @@ class JadwalSeleksiController extends Controller
 
         $pelamarId  = (int) $request->pelamar_id;
         $lowonganId = (int) $request->lowongan_id;
+
+        // Cek apakah semua penilaian sudah done — jika iya, tolak edit
+        $group = JadwalSeleksi::with('penilaian')
+            ->where('pelamar_id', $pelamarId)
+            ->where('lowongan_id', $lowonganId)
+            ->get();
+
+        $micro     = $group->where('tipe_seleksi', 'micro_teaching');
+        $wawancara = $group->where('tipe_seleksi', 'wawancara');
+        $allDone   = $micro->isNotEmpty() && $micro->every(fn($j) => $j->penilaian !== null)
+                  && $wawancara->isNotEmpty() && $wawancara->every(fn($j) => $j->penilaian !== null);
+
+        if ($allDone) {
+            return back()->withErrors(['edit' => 'Jadwal tidak dapat diedit karena semua penilaian sudah selesai.']);
+        }
         $tanggal    = $request->tanggal;
         $sesi       = $request->filled('sesi') ? (int) $request->sesi : null;
         $link       = $request->link;
         $newWPengujiIds = $request->input('wawancara_penguji_ids', []);
         $newMPengujiIds = $request->input('micro_penguji_ids', []);
 
-        // Ambil semua jadwal dalam group
+        // Reload group dengan relasi penguji untuk proses selanjutnya
         $group    = JadwalSeleksi::with('penguji')
             ->where('pelamar_id', $pelamarId)
             ->where('lowongan_id', $lowonganId)
             ->get();
         $groupIds = $group->pluck('id')->toArray();
-
-        // Track penguji lama untuk notifikasi
         $oldWPengujiIds = $group->where('tipe_seleksi', 'wawancara')->pluck('penguji_id')->unique()->toArray();
         $oldMPengujiIds = $group->where('tipe_seleksi', 'micro_teaching')->pluck('penguji_id')->unique()->toArray();
 

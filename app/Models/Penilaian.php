@@ -20,6 +20,7 @@ class Penilaian extends Model
         'prodi_tujuan',
         'kelompok_keahlian',
         'bidang_keahlian',
+        'status_rekrutmen',
     ];
 
     protected $casts = [

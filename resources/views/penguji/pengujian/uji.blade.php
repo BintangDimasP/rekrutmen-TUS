@@ -4,7 +4,11 @@
 
 @section('content')
 @php
-    $pelamar   = $jadwal->pelamar;
+    $pelamarLive = $jadwal->pelamar;
+    $lamaran     = \App\Models\Lamaran::where('pelamar_id', $pelamarLive->id)
+        ->where('lowongan_id', $jadwal->lowongan_id)
+        ->first();
+    $pelamar   = $lamaran ? $lamaran->effective_pelamar : $pelamarLive;
     $lowongan  = $jadwal->lowongan;
     $penilaian = $jadwal->penilaian;
     $detailNilai = $penilaian->detail_nilai ?? [];
@@ -27,6 +31,27 @@
     $sesiInfo = \App\Models\JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$jadwal->sesi] ?? null;
     $today    = \Carbon\Carbon::today();
     $canTest  = $today->greaterThanOrEqualTo(\Carbon\Carbon::parse($jadwal->tanggal));
+
+    // Deteksi jenjang pendidikan tertinggi (S3 > S2)
+    $jenjangList = collect([$pelamar->jenjang, $pelamar->jenjang_2, $pelamar->jenjang_3])
+        ->filter()->map(fn($j) => strtolower(trim($j)));
+    $hasS3 = $jenjangList->contains(fn($j) => str_contains($j, 's3') || str_contains($j, 'doktor'));
+    $hasS2 = $jenjangList->contains(fn($j) => str_contains($j, 's2') || str_contains($j, 'magister') || str_contains($j, 'master'));
+
+    // Opsi status rekrutmen
+    $statusRekrutmenOptions = [];
+    if ($hasS3) {
+        $statusRekrutmenOptions = [
+            'on_going'             => 'On Going',
+            'praktisi_part_time'   => 'Praktisi Part Time',
+            'profesional_full_time'=> 'Profesional Full Time',
+        ];
+    } elseif ($hasS2) {
+        $statusRekrutmenOptions = [
+            'praktisi_part_time'   => 'Praktisi Part Time',
+            'profesional_full_time'=> 'Profesional Full Time',
+        ];
+    }
 @endphp
 
 <div class="max-w-5xl mx-auto pb-24" x-data="wawancaraForm()">
@@ -171,7 +196,7 @@
                     {{-- Rekomendasi Prodi Tujuan --}}
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
-                        <select name="prodi_tujuan"
+                        <select name="prodi_tujuan" x-model="prodiTujuan"
                             class="w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
                             <option value="">-- Pilih Prodi --</option>
                             @foreach($prodis as $prodi)
@@ -184,6 +209,29 @@
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
+
+                    {{-- Status Rekrutmen (muncul jika S2 atau S3) --}}
+                    @if(!empty($statusRekrutmenOptions))
+                    <div>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">
+                            Status Rekrutmen
+                            <span class="text-red-500">*</span>
+                            <span class="ml-2 text-xs font-normal text-gray-400">(Terdeteksi jenjang {{ $hasS3 ? 'S3' : 'S2' }})</span>
+                        </label>
+                        <select name="status_rekrutmen" x-model="statusRekrutmen"
+                            class="w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                            <option value="">-- Pilih Status --</option>
+                            @foreach($statusRekrutmenOptions as $val => $label)
+                                <option value="{{ $val }}" {{ old('status_rekrutmen', $penilaian->status_rekrutmen ?? '') === $val ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('status_rekrutmen')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    @endif
 
                     {{-- Catatan --}}
                     <div>
@@ -286,6 +334,9 @@ document.addEventListener('alpine:init', () => {
             @endfor
         },
         rekomendasi: '{{ old('rekomendasi', '') }}',
+        prodiTujuan: '{{ old('prodi_tujuan', '') }}',
+        statusRekrutmen: '{{ old('status_rekrutmen', '') }}',
+        hasStatusRekrutmen: {{ !empty($statusRekrutmenOptions) ? 'true' : 'false' }},
 
         setScore(field, val) {
             this.scores[field] = this.scores[field] === val ? null : val;
@@ -304,7 +355,11 @@ document.addEventListener('alpine:init', () => {
         },
 
         canSubmit() {
-            return this.isComplete() && this.rekomendasi !== '';
+            if (!this.isComplete()) return false;
+            if (this.rekomendasi === '') return false;
+            if (this.prodiTujuan === '') return false;
+            if (this.hasStatusRekrutmen && this.statusRekrutmen === '') return false;
+            return true;
         },
 
         totalScore() {

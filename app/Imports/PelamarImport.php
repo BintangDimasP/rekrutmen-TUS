@@ -94,7 +94,7 @@ class PelamarImport implements ToModel, WithHeadingRow, WithValidation
             'skor_bahasa'       => 'nullable|numeric|min:0',
             'kategori_sertifikat' => 'nullable|in:kompetensi,keahlian_khusus',
             'jenis_tes_bahasa'  => 'nullable|in:PBT,TOEFL_ITP,EPrT,CBT,IBT,IELTS,AcEPT',
-            'jabatan_akademik'  => 'nullable|in:asisten_ahli,lektor,lektor_kepala,profesor',
+            'jabatan_akademik'  => 'nullable|in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan',
             'h_index'           => 'nullable|integer|min:0',
         ];
     }

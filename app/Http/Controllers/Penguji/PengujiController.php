@@ -87,13 +87,20 @@ class PengujiController extends Controller
         }
 
         if ($jadwal->tipe_seleksi === 'wawancara') {
-            $micro = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
+            $microJadwals = JadwalSeleksi::where('pelamar_id', $jadwal->pelamar_id)
                 ->where('tipe_seleksi', 'micro_teaching')
-                ->whereHas('penilaian')
-                ->first();
+                ->with('penilaian')
+                ->get();
 
-            if (!$micro) {
-                abort(403, 'Penilaian Micro Teaching harus diselesaikan terlebih dahulu sebelum melakukan penilaian Wawancara.');
+            if ($microJadwals->isEmpty()) {
+                abort(403, 'Belum ada jadwal Micro Teaching untuk pelamar ini.');
+            }
+
+            $belumDinilai = $microJadwals->filter(fn($j) => $j->penilaian === null);
+            if ($belumDinilai->isNotEmpty()) {
+                $count = $microJadwals->count();
+                $done  = $microJadwals->count() - $belumDinilai->count();
+                abort(403, "Semua penilaian Micro Teaching harus selesai terlebih dahulu ({$done}/{$count} penguji sudah menilai).");
             }
         }
 
@@ -129,9 +136,10 @@ class PengujiController extends Controller
         $totalItems = 8;
 
         $rules = [
-            'catatan'      => 'nullable|string',
-            'rekomendasi'  => 'required|in:direkomendasikan,tidak_direkomendasikan,perlu_dipertimbangkan',
-            'prodi_tujuan' => 'required|string|max:255',
+            'catatan'          => 'nullable|string',
+            'rekomendasi'      => 'required|in:direkomendasikan,tidak_direkomendasikan,perlu_dipertimbangkan',
+            'prodi_tujuan'     => 'required|string|max:255',
+            'status_rekrutmen' => 'nullable|in:on_going,praktisi_part_time,profesional_full_time',
         ];
         for ($i = 1; $i <= $totalItems; $i++) {
             $rules["k1_item_{$i}"] = 'required|integer|min:1|max:5';
@@ -151,12 +159,13 @@ class PengujiController extends Controller
 
         Penilaian::create([
             'jadwal_seleksi_id' => $jadwal->id,
-            'kategori_1'        => $total, // rata-rata keseluruhan (tidak ada sub-kategori)
+            'kategori_1'        => $total,
             'detail_nilai'      => $detail,
             'total_nilai'       => $total,
             'catatan'           => $request->catatan,
             'rekomendasi'       => $request->rekomendasi,
             'prodi_tujuan'      => $request->prodi_tujuan,
+            'status_rekrutmen'  => $request->status_rekrutmen,
         ]);
 
         return redirect()->route('penguji.pengujian.show', $jadwal->id)->with('success', 'Penilaian Wawancara berhasil disimpan.');

@@ -21,6 +21,7 @@ class Lamaran extends Model
         'pelamar_id',
         'lowongan_id',
         'file_surat_lamaran',
+        'snapshot_data',
         'status',
         'tanggal_wawancara',
         'link_zoom',
@@ -29,6 +30,7 @@ class Lamaran extends Model
 
     protected $casts = [
         'tanggal_wawancara' => 'date',
+        'snapshot_data'     => 'array',
     ];
 
     public function pelamar()
@@ -44,5 +46,24 @@ class Lamaran extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUS_LABELS[$this->status] ?? $this->status;
+    }
+
+    /**
+     * Kembalikan object pelamar yang "efektif" untuk tampilan:
+     * pakai snapshot jika ada, fallback ke relasi live.
+     */
+    public function getEffectivePelamarAttribute(): object
+    {
+        if (!empty($this->snapshot_data)) {
+            $snap = $this->snapshot_data;
+            // Cast date fields agar konsisten
+            foreach (['tanggal_lahir', 'tanggal_tes_bahasa'] as $field) {
+                if (!empty($snap[$field])) {
+                    $snap[$field] = \Carbon\Carbon::parse($snap[$field]);
+                }
+            }
+            return (object) $snap;
+        }
+        return $this->pelamar;
     }
 }

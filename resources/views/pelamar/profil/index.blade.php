@@ -427,14 +427,18 @@
                         <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->homebase ?: '-' }}</p>
                         <input x-show="isEditing" x-cloak type="text" name="homebase" value="{{ old('homebase',$pelamar->homebase) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1" >
                     </div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Akademik</p>
-                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jabatan_akademik ? ucwords(str_replace('_', ' ', $pelamar->jabatan_akademik)) : '-' }}</p>
+                    <div>
+                        @php
+                            $jfaLabels = ['guru_besar' => 'Guru Besar (GB)', 'lektor_kepala' => 'Lektor Kepala (LK)', 'lektor' => 'Lektor (L)', 'asisten_ahli' => 'Asisten Ahli (AA)', 'non_jabatan' => 'Non Jabatan (NJAD)'];
+                        @endphp
+                        <p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Fungsional Akademik</p>
+                        <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jabatan_akademik && $pelamar->jabatan_akademik !== 'non_jabatan' ? ($jfaLabels[$pelamar->jabatan_akademik] ?? ucwords(str_replace('_', ' ', $pelamar->jabatan_akademik))) : 'Non Jabatan (NJAD)' }}</p>
                         <select x-show="isEditing" x-cloak name="jabatan_akademik" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
-                            <option value="">-</option>
-                            <option value="asisten_ahli" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='asisten_ahli'?'selected':'' }}>Asisten Ahli</option>
-                            <option value="lektor" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='lektor'?'selected':'' }}>Lektor</option>
-                            <option value="lektor_kepala" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='lektor_kepala'?'selected':'' }}>Lektor Kepala</option>
-                            <option value="profesor" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='profesor'?'selected':'' }}>Profesor</option>
+                            <option value="non_jabatan" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)==='non_jabatan' || !$pelamar->jabatan_akademik ?'selected':'' }}>Non Jabatan (NJAD)</option>
+                            <option value="guru_besar" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='guru_besar'?'selected':'' }}>Guru Besar (GB)</option>
+                            <option value="lektor_kepala" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='lektor_kepala'?'selected':'' }}>Lektor Kepala (LK)</option>
+                            <option value="lektor" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='lektor'?'selected':'' }}>Lektor (L)</option>
+                            <option value="asisten_ahli" {{ old('jabatan_akademik',$pelamar->jabatan_akademik)=='asisten_ahli'?'selected':'' }}>Asisten Ahli (AA)</option>
                         </select>
                     </div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">H-Index</p>

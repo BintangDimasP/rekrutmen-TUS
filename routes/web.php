@@ -47,6 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Lamaran Management (View/Update/Hapus)
         Route::get('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'show'])->name('admin.lamaran.show');
+        Route::get('admin/lamaran/{lamaran}/cetak', [\App\Http\Controllers\Admin\LamaranController::class, 'cetak'])->name('admin.lamaran.cetak');
         Route::put('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'update'])->name('admin.lamaran.update');
         Route::delete('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'destroy'])->name('admin.lamaran.destroy');
 

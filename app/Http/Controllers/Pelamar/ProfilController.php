@@ -75,7 +75,7 @@ class ProfilController extends Controller
             // Riwayat Akademik Dasar
             'nidn'              => 'nullable|string|max:255',
             'homebase'          => 'nullable|string|max:255',
-            'jabatan_akademik'  => 'nullable|in:asisten_ahli,lektor,lektor_kepala,profesor',
+            'jabatan_akademik'  => 'nullable|in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan',
             'minat_riset'       => 'nullable|string',
             'h_index'           => 'nullable|integer|min:0',
             'file_kartu_dosen'  => 'nullable|file|mimes:pdf|max:5120',

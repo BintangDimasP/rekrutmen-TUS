@@ -71,7 +71,7 @@ class RegisteredUserController extends Controller
             // Step 5
             'nidn' => ['nullable', 'string', 'max:255'],
             'homebase' => ['nullable', 'string', 'max:255'],
-            'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,profesor'],
+            'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan'],
             'minat_riset' => ['nullable', 'string'],
             'h_index' => ['nullable', 'integer', 'min:0'],
             'kartu_dosen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],

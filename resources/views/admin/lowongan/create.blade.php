@@ -57,21 +57,20 @@
                                    class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
                             @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
-
-                        <div>
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Status Publikasi <span class="text-red-500">*</span></label>
-                            <select name="status"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="draft"  {{ old('status','draft') === 'draft'   ? 'selected' : '' }}>Draft</option>
-                                <option value="aktif"  {{ old('status') === 'aktif'            ? 'selected' : '' }}>Public</option>
-                               
-                            </select>
-                        </div>
+                      
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan Pendaftaran <span class="text-red-500">*</span></label>
                             <input type="date" name="tanggal_tutup" value="{{ old('tanggal_tutup') }}"
                                    class="w-full px-4 py-2.5 rounded-lg border @error('tanggal_tutup') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                             @error('tanggal_tutup') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Kuota Pendaftaran <span class="text-red-500">*</span></label>
+                            
+                                <input type="number" name="kuota" value="{{ old('kuota', 1) }}" min="1" placeholder="cth: 5"
+                                       class="w-full px-4 py-2.5 rounded-lg border @error('kuota') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                            
+                            @error('kuota') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
@@ -124,15 +123,7 @@
                             </select>
                         </div>
 
-                        <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Kuota Pendaftaran <span class="text-red-500">*</span></label>
-                            <div class="flex items-center gap-3">
-                                <input type="number" name="kuota" value="{{ old('kuota', 1) }}" min="1" placeholder="cth: 5"
-                                       class="w-40 px-4 py-2.5 rounded-lg border @error('kuota') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <span class="text-sm text-gray-500">orang. Kuota akan berkurang otomatis seiring masuknya pelamar.</span>
-                            </div>
-                            @error('kuota') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
-                        </div>
+                        
                     </div>
                 </div>
 
@@ -142,12 +133,7 @@
                         <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">
                             Deskripsi & Dokumen Persyaratan
                         </h3>
-                        <span class="text-gray-400 text-[0.65rem] font-bold uppercase">Sudah diisi otomatis</span>
                     </div>
-                    
-                    <p class="text-xs text-blue-700 bg-blue-50 rounded-lg px-4 py-2.5 mb-4 leading-relaxed font-medium">
-                        Deskripsi berikut sudah diisi template standar dokumen TUS. Anda dapat mengedit atau menambahkan informasi.
-                    </p>
                     <textarea name="deskripsi" rows="12"
                               class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-mono leading-relaxed focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y">{{ old('deskripsi', $defaultDeskripsi) }}</textarea>
                 </div>
