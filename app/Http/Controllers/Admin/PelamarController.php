@@ -28,7 +28,37 @@ class PelamarController extends Controller
     public function show(Pelamar $pelamar)
     {
         $pelamar->load(['user', 'lamarans.lowongan.prodi']);
-        return view('admin.pelamar.show', compact('pelamar'));
+
+        $activeLamaranId = request('lamaran_id');
+        $activeLamaran = null;
+
+        if ($activeLamaranId) {
+            $activeLamaran = $pelamar->lamarans->firstWhere('id', $activeLamaranId);
+        }
+
+        if (!$activeLamaran) {
+            $activeLamaran = $pelamar->lamarans->first();
+        }
+
+        $snapshot = null;
+        if ($activeLamaran) {
+            $snapshot = $activeLamaran->effective_pelamar;
+        }
+
+        // Jadwal seleksi untuk lamaran aktif
+        $micro = collect();
+        $wawancara = collect();
+        if ($activeLamaran) {
+            $jadwals = \App\Models\JadwalSeleksi::where('pelamar_id', $pelamar->id)
+                ->where('lowongan_id', $activeLamaran->lowongan_id)
+                ->with(['penguji', 'penilaian', 'lowongan'])
+                ->orderBy('sesi')
+                ->get();
+            $micro     = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
+            $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
+        }
+
+        return view('admin.pelamar.show', compact('pelamar', 'activeLamaran', 'snapshot', 'micro', 'wawancara'));
     }
 
     /**

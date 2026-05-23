@@ -20,7 +20,7 @@ class DashboardController extends Controller
         $totalDiterima = Lamaran::where('status', 'diterima')->count();
 
         // 2. Ringkasan Cepat
-        $activeLowongan = Lowongan::where('status', 'Buka')->count();
+        $activeLowongan = Lowongan::all()->filter(fn($l) => $l->status === 'aktif')->count();
         $totalLamaran = Lamaran::count();
         $acceptanceRate = $totalLamaran > 0 ? round(($totalDiterima / $totalLamaran) * 100, 1) : 0;
 
@@ -87,6 +87,10 @@ class DashboardController extends Controller
                 'diterima' => $diterimaCount,
             ];
         }
+
+        // Set minimal batas atas 10 agar perubahan visual batang grafik terlihat jelas
+        // saat jumlah data pelamar masih tergolong sedikit.
+        $maxChartValue = max(10, $maxChartValue);
 
         return view('admin.dashboard', compact(
             'totalLowongan', 'totalPelamar', 'totalDiterima',

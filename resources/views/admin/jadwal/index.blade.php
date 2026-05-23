@@ -9,30 +9,20 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <form method="GET" action="{{ route('admin.jadwal.index') }}" class="flex flex-col sm:flex-row gap-3 items-end w-full lg:w-auto">
             <div>
-                
-                <input type="date" name="tanggal" value="{{ request('tanggal') }}"
-                       class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition w-full sm:w-auto">
+                <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()"
+                       class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition w-full sm:w-auto cursor-pointer" title="Pilih Tanggal Seleksi">
             </div>
-            <div>
-               
-                <select name="penguji_id" class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white w-full sm:min-w-[200px]">
-                    <option value="">Semua Penguji</option>
-                    @foreach($pengujis as $p)
-                        <option value="{{ $p->id }}" {{ request('penguji_id')==$p->id?'selected':'' }}>{{ $p->nama }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                <button type="submit" class="px-4 py-2 bg-gray-800 text-white text-sm font-semibold rounded-lg hover:bg-gray-700 transition">Filter</button>
-                @if(request()->hasAny(['tanggal','penguji_id']))
+            
+            @if(request('tanggal'))
+                <div class="flex items-center mt-2 sm:mt-0">
                     <a href="{{ route('admin.jadwal.index') }}" class="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Reset</a>
-                @endif
-            </div>
+                </div>
+            @endif
         </form>
         
         <a href="{{ route('admin.jadwal.create') }}"
            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
-            + Jadwalkan Seleksi
+            Buat Jadwal
         </a>
     </div>
 
@@ -291,14 +281,15 @@
             </button>
         </div>
 
-        <form action="{{ route('admin.jadwal.updateGroup') }}" method="POST" class="p-6 space-y-5 overflow-y-auto flex-1">
-            @csrf
-            @method('PUT')
-            <input type="hidden" name="pelamar_id"  :value="modal.pelamarId">
-            <input type="hidden" name="lowongan_id" :value="modal.lowonganId">
+        <form action="{{ route('admin.jadwal.updateGroup') }}" method="POST" class="px-6 pb-6 pt-4 flex flex-col overflow-y-auto flex-1">
+            <div class="hidden">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="pelamar_id"  :value="modal.pelamarId">
+                <input type="hidden" name="lowongan_id" :value="modal.lowonganId">
+            </div>
 
-          
-
+            <div class="space-y-5 flex-1">
             {{-- Tanggal --}}
             <div>
                 <label class="block text-xs font-semibold text-gray-700 mb-1.5">Tanggal Seleksi</label>
@@ -431,15 +422,16 @@
                 </template>
             </div>
 
+            </div>
+
             {{-- Buttons --}}
-            <div class="flex justify-end gap-3 pt-3 border-t border-gray-100">
-                <button type="button" @click="modal.open=false"
-                        class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-lg transition">Tutup</button>
+            <div class="flex justify-center gap-3 pt-5 mt-5 border-t border-gray-100">
+                
                 <button x-show="!modal.readOnly" type="submit"
                         :disabled="hasConflict()"
                         :class="hasConflict() ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#8b1515] hover:bg-red-900 text-white'"
                         class="px-5 py-2 text-sm font-bold rounded-lg transition">
-                    Simpan Perubahan
+                    Simpan
                 </button>
             </div>
         </form>

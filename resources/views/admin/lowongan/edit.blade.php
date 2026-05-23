@@ -5,27 +5,29 @@
 @section('content')
 
 <div class="max-w-5xl mx-auto space-y-6">
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+        <a href="{{ route('admin.lowongan.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Lowongan</a>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="font-semibold text-gray-800">{{ $lowongan->nama_posisi }}</span>
+    </div>
 
     <!-- Single Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         
         <!-- RED HEADER -->
-        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8">
+        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-4 md:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <div class="flex items-center gap-4">
-                        <a href="{{ route('admin.lowongan.index') }}" class="p-2 bg-white/20 hover:bg-white/30 rounded-xl transition-colors text-white ring-2 ring-white/30">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                        </a>
-                        <h1 class="text-xl font-bold text-white">Edit Lowongan</h1>
+                        
+                        <h1 class="text-xl font-bold text-white">Edit Lowongan </h1>
                     </div>
-                    <p class="text-red-200 text-sm mt-1.5 ml-14">{{ $lowongan->nama_posisi }}</p>
                 </div>
             </div>
         </div>
 
         <!-- CONTENT -->
-        <div class="p-6 md:p-8">
+        <div class="px-6 pb-6 pt-0 md:px-8 md:pb-8 md:pt-0">
             <form method="POST" action="{{ route('admin.lowongan.update', $lowongan) }}" class="space-y-8">
                 @csrf
                 @method('PUT')
@@ -59,7 +61,7 @@
                             <select name="status" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                                 <option value="draft"   {{ old('status', $lowongan->status) === 'draft'   ? 'selected' : '' }}>Draft</option>
                                 <option value="aktif"   {{ old('status', $lowongan->status) === 'aktif'   ? 'selected' : '' }}>Aktif</option>
-                                <option value="ditutup" {{ old('status', $lowongan->status) === 'ditutup' ? 'selected' : '' }}>Ditutup</option>
+                                
                             </select>
                         </div>
                         <div>
@@ -133,9 +135,9 @@
                 </div>
 
                 {{-- ACTIONS --}}
-                <div class="flex justify-end pt-4 border-t border-gray-100 gap-3">
+                <div class="flex justify-center pt-4 border-t border-gray-100 gap-3">
                     <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#8b1515] hover:bg-red-900 text-white text-sm font-bold rounded-lg shadow-md shadow-red-900/20 transition-all">
-                        Simpan Perubahan
+                        Simpan
                     </button>
                 </div>
             </form>

@@ -17,17 +17,17 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         
         <!-- RED HEADER -->
-        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-6 md:p-8">
+        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-4 md:p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <h1 class="text-xl font-bold text-white">Tambah Lowongan Baru</h1>
-                    <p class="text-red-200 text-sm mt-1.5">Isi seluruh informasi posisi yang akan dibuka untuk pelamar.</p>
+                   
                 </div>
             </div>
         </div>
 
         <!-- CONTENT -->
-        <div class="p-6 md:p-8">
+        <div class="px-6 pb-6 pt-0 md:px-8 md:pb-8 md:pt-0">
             <form method="POST" action="{{ route('admin.lowongan.store') }}" class="space-y-8">
                 @csrf
 
@@ -142,7 +142,7 @@
                 <div class="flex justify-center gap-3 pt-4 border-t border-gray-100">
                     <button type="submit" name="status" value="aktif"
                             class="px-6 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-lg shadow-md transition-colors">
-                        Publikasikan Lowongan
+                        Submit
                     </button>
                 </div>
             </form>

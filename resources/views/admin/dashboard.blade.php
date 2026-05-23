@@ -31,8 +31,9 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
     {{-- Chart Area (spans 2 cols) --}}
-    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <div class="flex items-center justify-between mb-6">
+    {{-- Chart Area (spans 2 cols) --}}
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col">
+        <div class="flex items-center justify-between mb-6 flex-shrink-0">
             <div>
                 <h2 class="text-[0.95rem] font-bold text-gray-800">Statistik Pelamar Tahun {{ $currentYear }}</h2>
                 <p class="text-xs text-gray-400 mt-0.5">Jumlah pelamar mendaftar per bulan</p>
@@ -49,36 +50,41 @@
         </div>
 
         {{-- Dynamic bar chart --}}
-        <div class="flex items-end justify-between gap-1 sm:gap-2 h-44 px-1 sm:px-2">
+        <div class="flex-1 flex gap-0.5 sm:gap-1 px-1 sm:px-2 min-h-[200px]">
             @foreach($chartData as $data)
                 @php
-                    $hLamaran = ($data['lamaran'] / $maxChartValue) * 100; // Percentage of max container height
-                    $hDiterima = $data['lamaran'] > 0 ? ($data['diterima'] / $maxChartValue) * 100 : 0;
+                    $hLamaran = $data['lamaran'] > 0 ? max(round(($data['lamaran'] / $maxChartValue) * 100), 2) : 0;
+                    $hDiterima = $data['diterima'] > 0 ? max(round(($data['diterima'] / $maxChartValue) * 100), 2) : 0;
                 @endphp
-                <div class="flex flex-col items-center gap-1 flex-1 group relative">
+                <div class="flex-1 flex flex-col items-center justify-end group relative h-full">
                     {{-- Tooltip --}}
-                    <div class="absolute bottom-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[0.65rem] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    @if($data['lamaran'] > 0)
+                    <div class="absolute bottom-[calc(100%-1.5rem)] left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[0.65rem] py-1 px-2.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 shadow-lg">
                         Masuk: {{ $data['lamaran'] }}<br>Diterima: {{ $data['diterima'] }}
                     </div>
+                    @endif
 
-                    <div class="w-full flex flex-col justify-end items-center h-full relative">
-                        {{-- lamaran bar --}}
-                        <div class="w-[70%] sm:w-4/5 rounded-t-md bg-[#8b1515] transition-all duration-500 hover:opacity-90 relative overflow-hidden"
-                             style="height: {{ max($hLamaran, 1) }}%;">
-                             
-                             {{-- diterima bar (stacked inside or overlaid at bottom) --}}
-                             @if($hDiterima > 0)
-                                <div class="absolute bottom-0 left-0 w-full bg-emerald-400 transition-all duration-500" style="height: {{ ($data['diterima'] / $data['lamaran']) * 100 }}%"></div>
-                             @endif
-                        </div>
+                    {{-- Dual Bars side-by-side --}}
+                    <div class="flex items-end justify-center gap-px w-full flex-1">
+                        {{-- Lamaran masuk (merah) --}}
+                        @if($hLamaran > 0)
+                        <div class="w-[38%] rounded-t-sm bg-[#8b1515] transition-all duration-500 hover:opacity-90 cursor-pointer"
+                             style="height: {{ $hLamaran }}%;"></div>
+                        @endif
+                        {{-- Diterima (hijau) --}}
+                        @if($hDiterima > 0)
+                        <div class="w-[38%] rounded-t-sm bg-emerald-400 transition-all duration-500 hover:opacity-90 cursor-pointer"
+                             style="height: {{ $hDiterima }}%;"></div>
+                        @endif
                     </div>
-                    <span class="text-[0.55rem] sm:text-[0.6rem] text-gray-400 font-medium">{{ $data['month'] }}</span>
+
+                    <span class="text-[0.55rem] sm:text-[0.6rem] text-gray-400 font-medium mt-2 flex-shrink-0">{{ $data['month'] }}</span>
                 </div>
             @endforeach
         </div>
 
         {{-- Y-axis hint --}}
-        <div class="mt-3 border-t border-gray-100 pt-3 flex items-center justify-between text-[0.65rem] text-gray-400 px-1">
+        <div class="mt-4 border-t border-gray-100 pt-3 flex items-center justify-between text-[0.65rem] text-gray-400 px-1 flex-shrink-0">
             <span>*Data terhubung langsung ke database</span>
             <a href="{{ route('admin.pelamar.index') }}" class="text-[#8b1515] font-semibold cursor-pointer hover:underline text-xs">Lihat detail pelamar →</a>
         </div>

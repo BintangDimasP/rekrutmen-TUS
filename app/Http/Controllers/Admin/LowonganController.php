@@ -137,6 +137,27 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                          ->with('success', 'Lowongan "' . $lowongan->nama_posisi . '" berhasil diperbarui.');
     }
 
+    /** Toggle status lowongan */
+    public function toggleStatus(Lowongan $lowongan)
+    {
+        $rawStatus = $lowongan->getRawOriginal('status');
+        $newStatus = $rawStatus === 'aktif' ? 'ditutup' : 'aktif';
+
+        if ($newStatus === 'aktif') {
+            if ($lowongan->tanggal_tutup && $lowongan->tanggal_tutup->isPast()) {
+                return redirect()->route('admin.lowongan.index')->with('error', 'Gagal mem-publish! Tanggal tutup lowongan sudah lewat. Silakan edit tanggal tutup terlebih dahulu.');
+            }
+            if ($lowongan->sisa_kuota <= 0) {
+                return redirect()->route('admin.lowongan.index')->with('error', 'Gagal mem-publish! Kuota lowongan tidak mencukupi atau sudah habis.');
+            }
+        }
+
+        $lowongan->update(['status' => $newStatus]);
+
+        $message = $newStatus === 'aktif' ? 'Lowongan berhasil dipublish (Aktif).' : 'Lowongan berhasil di-unpublish (Ditutup).';
+        return redirect()->route('admin.lowongan.index')->with('success', $message);
+    }
+
     /** Hapus lowongan */
     public function destroy(Lowongan $lowongan)
     {

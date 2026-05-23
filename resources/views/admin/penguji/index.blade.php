@@ -81,7 +81,7 @@
             </div>
             
             <button type="button" @click="openAddModal = true" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto cursor-pointer">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                
                 Tunjuk Penguji
             </button>
         </div>
@@ -116,11 +116,12 @@
                             <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}</td>
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
                             <td class="py-3 px-5 text-sm">
-                                @if($penguji->is_kaprodi)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800">Merangkap Kaprodi</span>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
+                                <div class="flex flex-wrap gap-1.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800">Penguji</span>
+                                    @if($penguji->is_kaprodi)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800">Kaprodi</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="py-3 px-5 text-sm">
                                 <div class="flex items-center justify-center gap-2">
@@ -183,7 +184,7 @@
                 <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="background: #8b1515;">
                     <div>
                         <h2 class="text-base font-semibold text-white">Tunjuk Penguji</h2>
-                        <p class="text-xs text-white/60 mt-0.5">Pilih dosen untuk dijadikan penguji</p>
+                        
                     </div>
                     <button type="button" @click="openAddModal = false" class="w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all" style="border: 1.5px solid rgba(255,255,255,0.3);">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -218,24 +219,24 @@
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
                                     <tr>
-                                        <th class="py-3 px-5 w-10"></th>
-                                        <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Nama Dosen</th>
+                                        <th class="py-3 px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Nama Dosen</th>
                                         <th class="py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Prodi</th>
+                                        <th class="py-3 px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider text-center w-20">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-gray-50">
                                     @foreach($calonPengujis as $calon)
                                         <tr class="hover:bg-[#8b1515]/[0.03] transition-colors group"
                                             x-show="(searchDosen === '' || '{{ strtolower($calon->nama) }}'.includes(searchDosen.toLowerCase())) && (filterProdi === '' || filterProdi === '{{ $calon->prodi_id }}')">
-                                            <td class="py-3.5 px-5 text-center">
-                                                <input type="checkbox" name="dosen_ids[]" value="{{ $calon->id }}" class="w-4 h-4 rounded border-gray-300 cursor-pointer focus:ring-2 focus:ring-[#8b1515]/20" style="accent-color: #8b1515;">
-                                            </td>
-                                            <td class="py-3.5 px-4">
+                                            <td class="py-3.5 px-5">
                                                 <div class="text-sm font-medium text-gray-800 group-hover:text-[#8b1515] transition-colors">{{ $calon->nama }}</div>
                                                 <div class="text-xs text-gray-400 font-medium mt-0.5">{{ $calon->kode }} &middot; {{ $calon->email }}</div>
                                             </td>
                                             <td class="py-3.5 px-4">
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-500">{{ $calon->prodi?->nama ?? '-' }}</span>
+                                            </td>
+                                            <td class="py-3.5 px-5 text-center">
+                                                <input type="checkbox" name="dosen_ids[]" value="{{ $calon->id }}" class="w-4 h-4 rounded border-gray-300 cursor-pointer focus:ring-2 focus:ring-[#8b1515]/20" style="accent-color: #8b1515;">
                                             </td>
                                         </tr>
                                     @endforeach

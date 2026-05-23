@@ -145,7 +145,7 @@
                                         class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left">
                                         
                                         <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
-                                            <h2 class="text-xl font-semibold text-white tracking-tight">Kredensial Login</h2>
+                                            <h2 class="text-xl font-semibold text-white tracking-tight">Edit Akun</h2>
                                             <button type="button" @click="openEditModal = false" class="w-7 h-7 flex items-center justify-center rounded-lg border-2 border-white/60 text-white hover:bg-white/15 hover:border-white transition-all">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                             </button>

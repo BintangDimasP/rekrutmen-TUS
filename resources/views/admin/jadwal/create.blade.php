@@ -9,7 +9,7 @@
         <div class="flex items-center gap-2 text-sm text-gray-500 mb-6">
             <a href="{{ route('admin.jadwal.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Jadwal Seleksi</a>
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            <span class="font-semibold text-gray-800">Penjadwalan Baru</span>
+            <span class="font-semibold text-gray-800">Penjadwalan Seleksi</span>
         </div>
 
         {{-- Error Laravel --}}

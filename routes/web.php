@@ -43,6 +43,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('admin/lowongan', \App\Http\Controllers\Admin\LowonganController::class)
             ->names('admin.lowongan')
             ->parameters(['lowongan' => 'lowongan']);
+        Route::patch('admin/lowongan/{lowongan}/toggle-status', [\App\Http\Controllers\Admin\LowonganController::class, 'toggleStatus'])->name('admin.lowongan.toggleStatus');
         Route::get('admin/lowongan/{lowongan}/berita-acara', [\App\Http\Controllers\Admin\LowonganController::class, 'beritaAcara'])->name('admin.lowongan.beritaAcara');
 
         // Lamaran Management (View/Update/Hapus)

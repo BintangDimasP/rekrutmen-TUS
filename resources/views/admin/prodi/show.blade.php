@@ -7,7 +7,38 @@
 
 
     {{-- Main Container --}}
-    <div x-data="{ openAddModal: false {{ $errors->any() && !old('edit_dosen_id') && !$errors->has('file') ? ', openAddModal: true' : '' }}, openImportModal: false {{ $errors->has('file') ? ', openImportModal: true' : '' }} }"
+    <div x-data="{ 
+            openAddModal: false {{ $errors->any() && !old('edit_dosen_id') && !$errors->has('file') ? ', openAddModal: true' : '' }}, 
+            openImportModal: false {{ $errors->has('file') ? ', openImportModal: true' : '' }},
+            search: '',
+            statusFilter: '',
+            get filteredRows() {
+                return Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]')).filter(row => {
+                    const name = row.dataset.name || '';
+                    const nip = row.dataset.nip || '';
+                    const status = row.dataset.status || '';
+                    const matchSearch = this.search === '' || 
+                        name.includes(this.search.toLowerCase()) || 
+                        nip.includes(this.search.toLowerCase());
+                    const matchStatus = this.statusFilter === '' || 
+                        status === this.statusFilter ||
+                        (status === 'rangkap' && (this.statusFilter === 'penguji' || this.statusFilter === 'kaprodi'));
+                    return matchSearch && matchStatus;
+                });
+            },
+            updateVisibility() {
+                const rows = Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]'));
+                const filtered = this.filteredRows;
+                rows.forEach(row => {
+                    row.style.display = filtered.includes(row) ? '' : 'none';
+                });
+            }
+        }"
+        x-init="
+            $watch('search', () => updateVisibility());
+            $watch('statusFilter', () => updateVisibility());
+            $nextTick(() => updateVisibility());
+        "
         class="max-w-6xl mx-auto">
 
         <div class="space-y-6">
@@ -24,38 +55,40 @@
             <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
                 <div class="relative w-full sm:w-72">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <input type="text" placeholder="Cari dosen..."
+                    <input type="text" x-model="search" placeholder="Cari dosen..."
                         class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm">
+                </div>
+
+                {{-- Dropdown Filter Status --}}
+                <div class="relative w-full sm:w-48">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                        </svg>
+                    </div>
+                    <select x-model="statusFilter" class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
+                        <option value="">Semua Status</option>
+                        <option value="penguji">Penguji</option>
+                        <option value="kaprodi">Kaprodi</option>
+                    </select>
                 </div>
             </div>
 
             <div class="flex items-center gap-3 w-full lg:w-auto">
-                <button type="button"
-                    class="flex-1 lg:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    Filter
-                </button>
                 <button type="button" @click="openImportModal = true"
                     class="flex-1 lg:flex-none px-4 py-2.5 bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 text-sm font-semibold rounded-xl shadow-sm transition-colors flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
-                    Import Excel
+                     Excel
                 </button>
                 <button type="button" @click="openAddModal = true"
                     class="flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
-                    </svg>
+                    
                     Tambah Dosen
                 </button>
             </div>
@@ -77,10 +110,24 @@
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right w-[12%]">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                         @forelse($dosens as $dosen)
+                            @php
+                                $statusStr = '';
+                                if ($dosen->is_penguji && $dosen->is_kaprodi) {
+                                    $statusStr = 'rangkap';
+                                } elseif ($dosen->is_penguji) {
+                                    $statusStr = 'penguji';
+                                } elseif ($dosen->is_kaprodi) {
+                                    $statusStr = 'kaprodi';
+                                }
+                            @endphp
                             <tr x-data="{ showDeleteModal: false, openEditModal: false {{ $errors->any() && old('edit_dosen_id') == $dosen->id ? ', openEditModal: true' : '' }} }"
-                                class="hover:bg-gray-50 transition-colors">
+                                class="hover:bg-gray-50 transition-colors"
+                                data-row
+                                data-name="{{ strtolower(addslashes($dosen->nama)) }}"
+                                data-nip="{{ strtolower(addslashes($dosen->nip ?? '')) }} {{ strtolower(addslashes($dosen->nidn ?? '')) }}"
+                                data-status="{{ $statusStr }}">
                                 <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">{{ $dosen->nama }}</td>
                                 <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $dosen->kode }}</td>
                                 <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}
