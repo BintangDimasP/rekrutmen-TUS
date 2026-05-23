@@ -225,7 +225,7 @@
             {{-- FORM --}}
             <div>
                 <div class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider pb-2.5 border-b border-gray-100 mb-3">
-                    Kirim Lamaran
+                    Dokumen Pelengkap
                 </div>
                 <div class="text-[12px] text-gray-500 mb-6">Data CV, Ijazah, dan KTP akan ditarik otomatis dari profil Anda. Pastikan profil Anda sudah lengkap.</div>
 
@@ -238,9 +238,8 @@
                             Surat Lamaran <span class="text-[#8b1515]">*</span>
                         </label>
                         <div class="file-upload-area" onclick="document.getElementById('file_surat_lamaran').click()" style="cursor:pointer;">
-                            <div class="file-icon-box">📄</div>
                             <div>
-                                <div class="text-[13px] font-medium text-gray-500" id="label_surat_lamaran">Pilih file atau klik di sini</div>
+                                <div class="text-[13px] font-medium text-gray-500" id="label_surat_lamaran">Upload Berkas</div>
                                 <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
                             </div>
                         </div>
@@ -253,12 +252,52 @@
                     </div>
 
 
+                    {{-- SK Penyetaraan (Lulusan Luar Negeri) --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                            SK Penyetaraan <span class="text-gray-400 font-normal normal-case">(opsional, bagi lulusan Luar Negeri)</span>
+                        </label>
+                        <div class="file-upload-area" onclick="document.getElementById('file_sk_penyetaraan').click()" style="cursor:pointer;">
+                            <div>
+                                <div class="text-[13px] font-medium text-gray-500" id="label_sk_penyetaraan">Upload Berkas</div>
+                                <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
+                            </div>
+                        </div>
+                        <input id="file_sk_penyetaraan" type="file" name="file_sk_penyetaraan" accept=".pdf"
+                               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
+                               onchange="document.getElementById('label_sk_penyetaraan').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                        @error('file_sk_penyetaraan')
+                            <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
+                    {{-- Surat Pemberhentian (Bekerja di Instansi Lain) --}}
+                    <div>
+                        <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+                            Surat Pemberhentian <span class="text-gray-400 font-normal normal-case">(opsional, apabila bekerja di Instansi Lain)</span>
+                        </label>
+                        <div class="file-upload-area" onclick="document.getElementById('file_surat_pemberhentian').click()" style="cursor:pointer;">
+                            <div>
+                                <div class="text-[13px] font-medium text-gray-500" id="label_surat_pemberhentian">Upload Berkas</div>
+                                <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
+                            </div>
+                        </div>
+                        <input id="file_surat_pemberhentian" type="file" name="file_surat_pemberhentian" accept=".pdf"
+                               style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
+                               onchange="document.getElementById('label_surat_pemberhentian').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                        @error('file_surat_pemberhentian')
+                            <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
                     {{-- Form Footer --}}
                     <div class="pt-2 flex justify-center">
                         <button type="submit" id="btn-kirim-lamaran"
                                 onclick="return validateLamaranForm()"
                                 class="btn-kirim w-full sm:w-auto flex-shrink-0 px-8 py-3 bg-[#8b1515] text-white text-[13.5px] font-bold rounded-xl shadow-sm">
-                            Kirim Lamaran Sekarang
+                            Ajukan Lamaran
                         </button>
                     </div>
 

@@ -10,7 +10,9 @@
     showEdu3: {{ old('jenjang_3', $pelamar->jenjang_3) ? 'true' : 'false' }},
     jenjang1: '{{ old('jenjang', $pelamar->jenjang) }}',
     jenjang2: '{{ old('jenjang_2', $pelamar->jenjang_2) }}',
-    jenjang3: '{{ old('jenjang_3', $pelamar->jenjang_3) }}'
+    jenjang3: '{{ old('jenjang_3', $pelamar->jenjang_3) }}',
+    nidn: '{{ old('nidn', $pelamar->nidn) }}',
+    homebase: '{{ old('homebase', $pelamar->homebase) }}'
 }">
 
     <!-- Single Card -->
@@ -421,11 +423,11 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIDN</p>
                         <p x-show="!isEditing" class="text-sm font-mono text-gray-700 mt-0.5">{{ $pelamar->nidn ?: '-' }}</p>
-                        <input x-show="isEditing" x-cloak type="text" name="nidn" value="{{ old('nidn',$pelamar->nidn) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1" >
+                        <input x-show="isEditing" x-cloak type="text" name="nidn" x-model="nidn" value="{{ old('nidn',$pelamar->nidn) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1" >
                     </div>
                     <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Homebase</p>
                         <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">{{ $pelamar->homebase ?: '-' }}</p>
-                        <input x-show="isEditing" x-cloak type="text" name="homebase" value="{{ old('homebase',$pelamar->homebase) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1" >
+                        <input x-show="isEditing" x-cloak type="text" name="homebase" x-model="homebase" value="{{ old('homebase',$pelamar->homebase) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1" >
                     </div>
                     <div>
                         @php
@@ -453,7 +455,13 @@
             </div>
 
             {{-- 6. DOKUMEN PELAMAR BER-HOMEBASE --}}
-            <div>
+            <div x-show="(!isEditing && '{{ $pelamar->nidn }}' !== '') || (isEditing && nidn && homebase)" x-cloak
+                x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 -translate-y-4"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-4">
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Dokumen Pelamar Ber-Homebase
                 </h3>

@@ -21,6 +21,8 @@ class Lamaran extends Model
         'pelamar_id',
         'lowongan_id',
         'file_surat_lamaran',
+        'file_sk_penyetaraan',
+        'file_surat_pemberhentian',
         'snapshot_data',
         'status',
         'tanggal_wawancara',

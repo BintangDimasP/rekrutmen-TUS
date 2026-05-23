@@ -449,16 +449,24 @@
                         $jenjangTertinggi = collect([$data->jenjang_3, $data->jenjang_2, $data->jenjang])->filter()->map(fn($j) => strtolower(trim($j)))->first();
                         $isS3 = $jenjangTertinggi && (str_contains($jenjangTertinggi,'s3') || str_contains($jenjangTertinggi,'doktor'));
                         $isS2 = $jenjangTertinggi && (str_contains($jenjangTertinggi,'s2') || str_contains($jenjangTertinggi,'magister') || str_contains($jenjangTertinggi,'master'));
-                        $sptSkor = 0;
-                        if ($isS3) { $sptSkor = $statusRekrutmenNilai === 'profesional_full_time' ? 5 : ($statusRekrutmenNilai === 'praktisi_part_time' ? 4 : 3); }
-                        elseif ($isS2) { $sptSkor = $statusRekrutmenNilai === 'profesional_full_time' ? 2 : 1; }
+                        $sptSkor = 0; $sptPending = false;
+                        if ($isS3) {
+                            if ($statusRekrutmenNilai === 'profesional_full_time') $sptSkor = 5;
+                            elseif ($statusRekrutmenNilai === 'praktisi_part_time') $sptSkor = 4;
+                            elseif ($statusRekrutmenNilai === 'on_going') $sptSkor = 3;
+                            else $sptPending = true;
+                        } elseif ($isS2) {
+                            if ($statusRekrutmenNilai === 'profesional_full_time') $sptSkor = 2;
+                            elseif ($statusRekrutmenNilai === 'praktisi_part_time') $sptSkor = 1;
+                            else $sptPending = true;
+                        }
                         $jfaSkorMap = ['guru_besar'=>5,'lektor_kepala'=>4,'lektor'=>3,'asisten_ahli'=>2,'non_jabatan'=>1];
                         $jfaKey = $data->jabatan_akademik ?? 'non_jabatan';
                         $jfaSkor = $jfaSkorMap[$jfaKey] ?? 1;
                         $hIndex = (int)($data->h_index ?? 0);
                         $hSkor = $hIndex > 10 ? 5 : ($hIndex >= 5 ? 4 : ($hIndex >= 2 ? 3 : ($hIndex >= 1 ? 2 : 1)));
-                        $avgKualifikasi = round(($sptSkor + $jfaSkor + $hSkor) / 3, 2);
-                        $hasilAkhir = ($nilaiAkhirMicro !== null && $nilaiAkhirWawancara !== null) ? round(($nilaiAkhirMicro * 0.20) + ($nilaiAkhirWawancara * 0.40) + ($avgKualifikasi * 0.40), 2) : null;
+                        $avgKualifikasi = $sptPending ? null : round(($sptSkor + $jfaSkor + $hSkor) / 3, 2);
+                        $hasilAkhir = ($nilaiAkhirMicro !== null && $nilaiAkhirWawancara !== null && $avgKualifikasi !== null) ? round(($nilaiAkhirMicro * 0.20) + ($nilaiAkhirWawancara * 0.40) + ($avgKualifikasi * 0.40), 2) : null;
                     @endphp
                     @if($nilaiAkhirWawancara !== null || $nilaiAkhirMicro !== null)
                     <div>
@@ -476,7 +484,7 @@
                                     <th class="px-4 py-2 text-center font-semibold border border-gray-200">Hasil Akhir</th>
                                 </tr></thead>
                                 <tbody class="bg-white"><tr class="hover:bg-gray-50/50">
-                                    <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $sptSkor ?: '-' }}</td>
+                                    <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $sptPending ? '-' : $sptSkor }}</td>
                                     <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $jfaSkor }}</td>
                                     <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $hSkor }}</td>
                                     <td class="px-4 py-3 text-center border border-gray-200"><span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $avgKualifikasi }}</span></td>

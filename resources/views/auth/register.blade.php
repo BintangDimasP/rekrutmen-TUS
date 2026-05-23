@@ -139,10 +139,10 @@
 </nav>
 
 {{-- ── Main Wrapper ── --}}
-<div id="cardWrapper" class="max-w-md mx-auto px-4 py-10">
+<div class="flex flex-col items-center pt-16 pb-20 px-4 w-full min-h-[calc(100vh-60px)]">
 
     {{-- Step Indicator --}}
-    <div class="flex items-center justify-center mb-12" id="stepIndicator">
+    <div class="w-full max-w-2xl flex items-center justify-center mb-16" id="stepIndicator">
         @php $steps = [1=>'Akun',2=>'Data Diri',3=>'Pendidikan',4=>'Dokumen',5=>'Akademik']; @endphp
         @foreach($steps as $n => $label)
             <div class="relative flex flex-col items-center">
@@ -168,8 +168,9 @@
     </div>
 
     {{-- Form --}}
-    <form id="registerForm" action="#" method="POST" enctype="multipart/form-data" novalidate>
-        @csrf
+    <div id="cardWrapper" class="w-full max-w-md transition-all duration-500 ease-in-out">
+        <form id="registerForm" action="#" method="POST" enctype="multipart/form-data" novalidate>
+            @csrf
 
         {{-- ═══════════════════════════════════════ --}}
         {{-- STEP 1 — BUAT AKUN                      --}}
@@ -187,7 +188,7 @@
                         </label>
                         <input type="email" id="email" name="email"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="nama@email.com">
+                            placeholder="nama@email.com" value="{{ old('email') }}">
                     </div>
                     {{-- Password --}}
                     <div class="flex flex-col gap-1.5">
@@ -233,7 +234,7 @@
                         </label>
                         <input type="text" id="nik" name="nik" maxlength="16"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="16 digit NIK sesuai KTP">
+                            placeholder="16 digit NIK sesuai KTP" value="{{ old('nik') }}">
                     </div>
                     {{-- Nama --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -242,7 +243,7 @@
                         </label>
                         <input type="text" id="nama" name="nama"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nama sesuai KTP">
+                            placeholder="Nama sesuai KTP" value="{{ old('nama') }}">
                     </div>
                     {{-- Tempat & Tanggal Lahir --}}
                     <div class="flex flex-col gap-1.5">
@@ -251,14 +252,14 @@
                         </label>
                         <input type="text" id="tempat_lahir" name="tempat_lahir"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Kota tempat lahir">
+                            placeholder="Kota tempat lahir" value="{{ old('tempat_lahir') }}">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="tanggal_lahir" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Tanggal Lahir <span class="text-red-600">*</span>
                         </label>
                         <input type="date" id="tanggal_lahir" name="tanggal_lahir"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 transition">
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 transition" value="{{ old('tanggal_lahir') }}">
                     </div>
                     {{-- Telepon & Jenis Kelamin --}}
                     <div class="flex flex-col gap-1.5">
@@ -267,7 +268,7 @@
                         </label>
                         <input type="tel" id="no_telepon" name="no_telepon"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="08xxxxxxxxxx">
+                            placeholder="08xxxxxxxxxx" value="{{ old('no_telepon') }}">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="jenis_kelamin" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
@@ -276,8 +277,8 @@
                         <select id="jenis_kelamin" name="jenis_kelamin"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih —</option>
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
+                            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
                         </select>
                     </div>
                     {{-- Kewarganegaraan & Status Pernikahan --}}
@@ -288,8 +289,8 @@
                         <select id="kewarganegaraan" name="kewarganegaraan"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih —</option>
-                            <option value="WNI">WNI</option>
-                            <option value="WNA">WNA</option>
+                            <option value="WNI" {{ old('kewarganegaraan') == 'WNI' ? 'selected' : '' }}>WNI</option>
+                            <option value="WNA" {{ old('kewarganegaraan') == 'WNA' ? 'selected' : '' }}>WNA</option>
                         </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
@@ -299,10 +300,10 @@
                         <select id="status_pernikahan" name="status_pernikahan"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih —</option>
-                            <option value="Belum Kawin">Belum Kawin</option>
-                            <option value="Kawin">Kawin</option>
-                            <option value="Cerai Hidup">Cerai Hidup</option>
-                            <option value="Cerai Mati">Cerai Mati</option>
+                            <option value="Belum Kawin" {{ old('status_pernikahan') == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
+                            <option value="Kawin" {{ old('status_pernikahan') == 'Kawin' ? 'selected' : '' }}>Kawin</option>
+                            <option value="Cerai Hidup" {{ old('status_pernikahan') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                            <option value="Cerai Mati" {{ old('status_pernikahan') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
                         </select>
                     </div>
                     {{-- Alamat Domisili --}}
@@ -358,9 +359,9 @@
                         <select id="jenjang" name="jenjang"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih jenjang —</option>
-                            <option value="S1">S1 (Sarjana)</option>
-                            <option value="S2">S2 (Magister)</option>
-                            <option value="S3">S3 (Doktor)</option>
+                            <option value="S1" {{ old('jenjang') == 'S1' ? 'selected' : '' }}>S1 (Sarjana)</option>
+                            <option value="S2" {{ old('jenjang') == 'S2' ? 'selected' : '' }}>S2 (Magister)</option>
+                            <option value="S3" {{ old('jenjang') == 'S3' ? 'selected' : '' }}>S3 (Doktor)</option>
                         </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
@@ -369,7 +370,7 @@
                         </label>
                         <input type="number" id="ipk" name="ipk" min="0" max="4" step="0.01"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 3.75">
+                            placeholder="Contoh: 3.75" value="{{ old('ipk') }}">
                     </div>
                     {{-- Institusi --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -378,7 +379,7 @@
                         </label>
                         <input type="text" id="institusi" name="institusi"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nama universitas / institut / perguruan tinggi">
+                            placeholder="Nama universitas / institut / perguruan tinggi" value="{{ old('institusi') }}">
                     </div>
                     {{-- Prodi --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -387,7 +388,7 @@
                         </label>
                         <input type="text" id="prodi_pendidikan" name="prodi_pendidikan"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nama program studi">
+                            placeholder="Nama program studi" value="{{ old('prodi_pendidikan') }}">
                     </div>
                     {{-- Akreditas & No Ijazah --}}
                     <div class="flex flex-col gap-1.5">
@@ -397,13 +398,13 @@
                         <select id="akreditas" name="akreditas"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih Akreditasi —</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="Unggul">Unggul</option>
-                            <option value="Baik Sekali">Baik Sekali</option>
-                            <option value="Baik">Baik</option>
-                            <option value="Tidak Terakreditasi">Tidak Terakreditasi</option>
+                            <option value="A" {{ old('akreditas') == 'A' ? 'selected' : '' }}>A</option>
+                            <option value="B" {{ old('akreditas') == 'B' ? 'selected' : '' }}>B</option>
+                            <option value="C" {{ old('akreditas') == 'C' ? 'selected' : '' }}>C</option>
+                            <option value="Unggul" {{ old('akreditas') == 'Unggul' ? 'selected' : '' }}>Unggul</option>
+                            <option value="Baik Sekali" {{ old('akreditas') == 'Baik Sekali' ? 'selected' : '' }}>Baik Sekali</option>
+                            <option value="Baik" {{ old('akreditas') == 'Baik' ? 'selected' : '' }}>Baik</option>
+                            <option value="Tidak Terakreditasi" {{ old('akreditas') == 'Tidak Terakreditasi' ? 'selected' : '' }}>Tidak Terakreditasi</option>
                         </select>
                     </div>
                     <div class="flex flex-col gap-1.5">
@@ -412,7 +413,7 @@
                         </label>
                         <input type="text" id="no_ijazah" name="no_ijazah"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nomor Ijazah Anda">
+                            placeholder="Nomor Ijazah Anda" value="{{ old('no_ijazah') }}">
                     </div>
 
                     {{-- Section Divider --}}
@@ -554,8 +555,8 @@
                         </label>
                         <select name="kategori_sertifikat" class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih kategori —</option>
-                            <option value="kompetensi">Kompetensi</option>
-                            <option value="keahlian_khusus">Keahlian Khusus</option>
+                            <option value="kompetensi" {{ old('kategori_sertifikat') == 'kompetensi' ? 'selected' : '' }}>Kompetensi</option>
+                            <option value="keahlian_khusus" {{ old('kategori_sertifikat') == 'keahlian_khusus' ? 'selected' : '' }}>Keahlian Khusus</option>
                         </select>
                     </div>
 
@@ -590,13 +591,13 @@
                         </label>
                         <select name="jenis_tes_bahasa" class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
                             <option value="" disabled selected>— Pilih jenis tes —</option>
-                            <option value="PBT">PBT (Paper-Based TOEFL)</option>
-                            <option value="TOEFL_ITP">TOEFL (ITP/Institutional)</option>
-                            <option value="EPrT">EPrT (English Proficiency Test)</option>
-                            <option value="CBT">CBT (Computer-Based TOEFL)</option>
-                            <option value="IBT">IBT (Internet-Based TOEFL)</option>
-                            <option value="IELTS">IELTS</option>
-                            <option value="AcEPT">AcEPT (Academic English Proficiency Test)</option>
+                            <option value="PBT" {{ old('jenis_tes_bahasa') == 'PBT' ? 'selected' : '' }}>PBT (Paper-Based TOEFL)</option>
+                            <option value="TOEFL_ITP" {{ old('jenis_tes_bahasa') == 'TOEFL_ITP' ? 'selected' : '' }}>TOEFL (ITP/Institutional)</option>
+                            <option value="EPrT" {{ old('jenis_tes_bahasa') == 'EPrT' ? 'selected' : '' }}>EPrT (English Proficiency Test)</option>
+                            <option value="CBT" {{ old('jenis_tes_bahasa') == 'CBT' ? 'selected' : '' }}>CBT (Computer-Based TOEFL)</option>
+                            <option value="IBT" {{ old('jenis_tes_bahasa') == 'IBT' ? 'selected' : '' }}>IBT (Internet-Based TOEFL)</option>
+                            <option value="IELTS" {{ old('jenis_tes_bahasa') == 'IELTS' ? 'selected' : '' }}>IELTS</option>
+                            <option value="AcEPT" {{ old('jenis_tes_bahasa') == 'AcEPT' ? 'selected' : '' }}>AcEPT (Academic English Proficiency Test)</option>
                         </select>
                     </div>
 
@@ -607,7 +608,7 @@
                         </label>
                         <input type="number" name="skor_bahasa" min="0" step="0.5"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 550">
+                            placeholder="Contoh: 550" value="{{ old('skor_bahasa') }}">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -616,7 +617,7 @@
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
                         </label>
                         <input type="date" name="tanggal_tes_bahasa"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 transition">
+                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 transition" value="{{ old('tanggal_tes_bahasa') }}">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -675,7 +676,7 @@
                         </label>
                         <input type="text" id="nidn" name="nidn" maxlength="20"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nomor Induk Dosen Nasional">
+                            placeholder="Nomor Induk Dosen Nasional" value="{{ old('nidn') }}">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -685,7 +686,7 @@
                         </label>
                         <input type="text" id="homebase" name="homebase"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Perguruan tinggi asal NIDN">
+                            placeholder="Perguruan tinggi asal NIDN" value="{{ old('homebase') }}">
                     </div>
 
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -695,11 +696,11 @@
                         </label>
                         <select id="jabatan_akademik" name="jabatan_akademik"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="non_jabatan" selected>Non Jabatan (NJAD)</option>
-                            <option value="guru_besar">Guru Besar (GB)</option>
-                            <option value="lektor_kepala">Lektor Kepala (LK)</option>
-                            <option value="lektor">Lektor (L)</option>
-                            <option value="asisten_ahli">Asisten Ahli (AA)</option>
+                            <option value="non_jabatan" selected {{ old('jabatan_akademik') == 'non_jabatan' ? 'selected' : '' }}>Non Jabatan (NJAD)</option>
+                            <option value="guru_besar" {{ old('jabatan_akademik') == 'guru_besar' ? 'selected' : '' }}>Guru Besar (GB)</option>
+                            <option value="lektor_kepala" {{ old('jabatan_akademik') == 'lektor_kepala' ? 'selected' : '' }}>Lektor Kepala (LK)</option>
+                            <option value="lektor" {{ old('jabatan_akademik') == 'lektor' ? 'selected' : '' }}>Lektor (L)</option>
+                            <option value="asisten_ahli" {{ old('jabatan_akademik') == 'asisten_ahli' ? 'selected' : '' }}>Asisten Ahli (AA)</option>
                         </select>
                     </div>
 
@@ -728,7 +729,7 @@
                         </label>
                         <input type="number" id="h_index" name="h_index" min="0"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 5">
+                            placeholder="Contoh: 5" value="{{ old('h_index') }}">
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -761,7 +762,8 @@
             </div>
         </div>
 
-    </form>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -999,7 +1001,18 @@
     }
 
     // Init
-    showStep(1);
+    @if ($errors->any())
+        let delay = 100;
+        @foreach ($errors->all() as $error)
+            setTimeout(() => {
+                showToast('Validasi Gagal', '{!! addslashes($error) !!}', 'error', 7000);
+            }, delay);
+            delay += 300;
+        @endforeach
+        showStep(1);
+    @else
+        showStep(1);
+    @endif
 
     // Clear error state on input
     document.querySelectorAll('.form-input').forEach(el => {

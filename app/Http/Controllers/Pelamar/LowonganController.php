@@ -135,7 +135,9 @@ class LowonganController extends Controller
         }
 
         $request->validate([
-            'file_surat_lamaran' => 'required|file|mimes:pdf|max:5120',
+            'file_surat_lamaran'       => 'required|file|mimes:pdf|max:5120',
+            'file_sk_penyetaraan'      => 'nullable|file|mimes:pdf|max:5120',
+            'file_surat_pemberhentian' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
         $lamaranData = [
@@ -147,6 +149,14 @@ class LowonganController extends Controller
 
         if ($request->hasFile('file_surat_lamaran')) {
             $lamaranData['file_surat_lamaran'] = $request->file('file_surat_lamaran')->store("lamaran/" . $pelamar->id, 'public');
+        }
+
+        if ($request->hasFile('file_sk_penyetaraan')) {
+            $lamaranData['file_sk_penyetaraan'] = $request->file('file_sk_penyetaraan')->store("lamaran/" . $pelamar->id, 'public');
+        }
+
+        if ($request->hasFile('file_surat_pemberhentian')) {
+            $lamaranData['file_surat_pemberhentian'] = $request->file('file_surat_pemberhentian')->store("lamaran/" . $pelamar->id, 'public');
         }
 
         Lamaran::create($lamaranData);

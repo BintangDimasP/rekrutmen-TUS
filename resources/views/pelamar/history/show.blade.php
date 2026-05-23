@@ -62,58 +62,83 @@
                     </a>
                     @endif
 
+                    @if($lamaran->file_sk_penyetaraan)
+                    <a href="{{ Storage::url($lamaran->file_sk_penyetaraan) }}" target="_blank" class="flex items-center justify-between p-5 rounded-2xl border border-gray-100 hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all bg-gray-50/50 group">
+                        <div>
+                            <p class="text-sm font-bold text-gray-800 group-hover:text-[#8b1515] transition-colors">SK Penyetaraan</p>
+                            <p class="text-[0.7rem] text-gray-500 mt-1 font-medium">Lulusan Luar Negeri</p>
+                        </div>
+                        <span class="px-4 py-1.5 rounded-lg bg-white border border-gray-200 text-[0.7rem] font-bold text-gray-600 group-hover:bg-[#8b1515] group-hover:text-white group-hover:border-[#8b1515] transition-colors shadow-sm">Preview</span>
+                    </a>
+                    @endif
+
+                    @if($lamaran->file_surat_pemberhentian)
+                    <a href="{{ Storage::url($lamaran->file_surat_pemberhentian) }}" target="_blank" class="flex items-center justify-between p-5 rounded-2xl border border-gray-100 hover:border-gray-300 hover:shadow-md hover:-translate-y-0.5 transition-all bg-gray-50/50 group">
+                        <div>
+                            <p class="text-sm font-bold text-gray-800 group-hover:text-[#8b1515] transition-colors">Surat Pemberhentian</p>
+                            <p class="text-[0.7rem] text-gray-500 mt-1 font-medium">Dari Instansi Lain</p>
+                        </div>
+                        <span class="px-4 py-1.5 rounded-lg bg-white border border-gray-200 text-[0.7rem] font-bold text-gray-600 group-hover:bg-[#8b1515] group-hover:text-white group-hover:border-[#8b1515] transition-colors shadow-sm">Preview</span>
+                    </a>
+                    @endif
+
 
                 </div>
             </div>
 
             {{-- Section: Jadwal Seleksi --}}
             <div>
+                @php
+                    $hasAnyPenilaian = (
+                        ($wawancara && $wawancara->contains(fn($j) => $j->penilaian !== null)) ||
+                        ($micro     && $micro->contains(fn($j) => $j->penilaian !== null))
+                    );
+                @endphp
                 <h3 class="text-base font-bold text-gray-800 mb-5 pb-3 border-b border-gray-100">
-                    {{ (($wawancara && $wawancara->count() > 0 && isset($wawancara[0]) && $wawancara[0]->penilaian) || ($micro && $micro->count() > 0 && isset($micro[0]) && $micro[0]->penilaian)) ? 'Nilai Hasil Seleksi' : 'Jadwal Seleksi' }}
+                    {{ $hasAnyPenilaian ? 'Nilai Hasil Seleksi' : 'Jadwal Seleksi' }}
                 </h3>
                 
                 @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
+                    @php
+                        $microDinilai     = $micro     ? $micro->filter(fn($j) => $j->penilaian !== null)     : collect();
+                        $wawancaraDinilai = $wawancara ? $wawancara->filter(fn($j) => $j->penilaian !== null) : collect();
+
+                        $microRata     = $microDinilai->count() > 0
+                            ? round($microDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2)
+                            : null;
+                        $wawancaraRata = $wawancaraDinilai->count() > 0
+                            ? round($wawancaraDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2)
+                            : null;
+                    @endphp
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @if($micro && $micro->count() > 0)
                         <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
-                            
-                            @if($micro[0]->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Micro Teaching</h4>
-                            
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Penguasaan Materi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_1 }}</span>
+
+                            @if($microRata !== null)
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
+
+                            <div class="flex items-center justify-between p-5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-5 text-white">
+                                <div>
+                                    <p class="text-[0.65rem] font-bold uppercase tracking-wider opacity-80">Nilai Rata-rata</p>
+                                    <p class="text-[0.6rem] mt-0.5 opacity-70">{{ $microDinilai->count() }} penguji menilai</p>
                                 </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Keterampilan Pedagogik</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_2 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Pemanfaatan Media</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $micro[0]->penilaian->kategori_3 }}</span>
-                                </div>
+                                <p class="text-3xl font-black">{{ $microRata }}</p>
                             </div>
-                            
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
-                                <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $micro[0]->penilaian->total_nilai }}</p>
-                            </div>
-                            
+
                             <div class="space-y-3">
                                 <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
+                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-2">Penguji</p>
+                                    <div class="space-y-1.5">
                                         @foreach($micro as $microItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
+                                        <p class="text-sm font-semibold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
                                     </div>
                                 </div>
                             </div>
                             @else
                             <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
-                            
+
                             <div class="space-y-4 text-sm text-gray-700">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
@@ -131,7 +156,7 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                
+
                                 @if($micro[0]->link_meeting)
                                 <div class="pt-3">
                                     <a href="{{ $micro[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
@@ -147,43 +172,31 @@
                         @if($wawancara && $wawancara->count() > 0)
                         <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
-                            
-                            @if($wawancara[0]->penilaian)
-                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-4">Wawancara</h4>
-                            
-                            <div class="space-y-2 mb-4">
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kompetensi Kepribadian</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_1 }}</span>
+
+                            @if($wawancaraRata !== null)
+                            <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
+
+                            <div class="flex items-center justify-between p-5 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-5 text-white">
+                                <div>
+                                    <p class="text-[0.65rem] font-bold uppercase tracking-wider opacity-80">Nilai Rata-rata</p>
+                                    <p class="text-[0.6rem] mt-0.5 opacity-70">{{ $wawancaraDinilai->count() }} penguji menilai</p>
                                 </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Visi Tri Dharma</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_2 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-red-50/50 border border-red-100/50">
-                                    <span class="text-xs font-semibold text-gray-700">Kemampuan Adaptasi</span>
-                                    <span class="text-sm font-black text-[#8b1515]">{{ $wawancara[0]->penilaian->kategori_3 }}</span>
-                                </div>
+                                <p class="text-3xl font-black">{{ $wawancaraRata }}</p>
                             </div>
-                            
-                            <div class="flex items-center justify-between p-4 bg-gradient-to-r from-[#7a1111] to-[#8b1515] rounded-xl shadow-sm mb-4 text-white">
-                                <p class="text-xs font-bold uppercase tracking-wider">Total Nilai</p>
-                                <p class="text-2xl font-black">{{ $wawancara[0]->penilaian->total_nilai }}</p>
-                            </div>
-                            
+
                             <div class="space-y-3">
                                 <div>
-                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
+                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-2">Penguji</p>
+                                    <div class="space-y-1.5">
                                         @foreach($wawancara as $wawancaraItem)
-                                        <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
+                                        <p class="text-sm font-semibold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
                                     </div>
                                 </div>
                             </div>
                             @else
                             <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
-                            
+
                             <div class="space-y-4 text-sm text-gray-700">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
@@ -201,7 +214,7 @@
                                         @endforeach
                                     </div>
                                 </div>
-                                
+
                                 @if($wawancara[0]->link_meeting)
                                 <div class="pt-3">
                                     <a href="{{ $wawancara[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">

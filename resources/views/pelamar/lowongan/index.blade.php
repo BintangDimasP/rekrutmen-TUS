@@ -27,9 +27,16 @@
                         </select>
                     </div>
 
-                    @if(request()->filled('prodi_id'))
-                        <a href="{{ route('pelamar.lowongan.index') }}" class="text-xs text-red-600 hover:underline font-medium">Reset</a>
-                    @endif
+                    {{-- Filter Saved Toggle --}}
+                    <button type="button" @click="showOnlySaved = !showOnlySaved"
+                        class="h-10 w-10 rounded-lg border flex items-center justify-center transition-all bg-white"
+                        :class="showOnlySaved ? 'border-gray-400' : 'border-gray-200 hover:border-gray-400'"
+                        title="Tampilkan Lowongan Tersimpan">
+                        <svg class="w-5 h-5 transition-colors duration-300" :fill="showOnlySaved ? '#8b1515' : 'none'" stroke="#8b1515" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                        </svg>
+                    </button>
                 </div>
 
             </form>
@@ -38,7 +45,8 @@
         {{-- Lowongan Cards Grid (Available) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($availableLowongans as $lowongan)
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col p-6 relative">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col p-6 relative"
+                     x-show="!showOnlySaved || isSaved({{ $lowongan->id }})">
 
                     {{-- Header: Title & Logo --}}
                     <div class="flex items-start justify-between gap-4 mb-5">
@@ -111,11 +119,19 @@
                     <p class="text-sm text-gray-500 mt-2">Coba sesuaikan filter Anda.</p>
                 </div>
             @endforelse
+
+            {{-- Frontend Empty State --}}
+            <div class="col-span-full bg-white border border-gray-100 rounded-3xl p-16 text-center"
+                 x-show="showOnlySaved && {{ $availableLowongans->count() }} > 0 && !savedIds.some(id => @json($availableLowongans->pluck('id')).includes(id))"
+                 x-cloak>
+                <h2 class="text-xl font-bold text-gray-800">Tidak ada lowongan tersimpan</h2>
+                <p class="text-sm text-gray-500 mt-2">Anda belum menyimpan lowongan apa pun atau lowongan yang disimpan tidak sesuai dengan filter prodi.</p>
+            </div>
         </div>
 
         {{-- Applied Lowongan Section --}}
         @if($appliedLowongans->count() > 0)
-            <div class="pt-8 mt-12 mb-12">
+            <div class="pt-8 mt-12 mb-12" x-show="!showOnlySaved">
                 <h2 class="text-xl font-bold text-gray-800 mb-6">Sudah Dilamar</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-60">
                     @foreach($appliedLowongans as $lowongan)
@@ -196,6 +212,7 @@
             document.addEventListener('alpine:init', () => {
                 Alpine.data('lowonganApp', () => ({
                     savedIds: @json($savedLowonganIds),
+                    showOnlySaved: {{ request('filter') === 'saved' ? 'true' : 'false' }},
 
                     isSaved(id) {
                         return this.savedIds.includes(id);

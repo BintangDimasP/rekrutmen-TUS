@@ -74,4 +74,12 @@ class Lowongan extends Model
         }
         return $value ?? 'draft';
     }
+
+    /**
+     * Cek apakah kuota lowongan sudah penuh.
+     */
+    public function isFull(): bool
+    {
+        return $this->sisa_kuota <= 0;
+    }
 }

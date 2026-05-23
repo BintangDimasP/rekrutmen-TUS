@@ -241,6 +241,22 @@
                                     <p class="text-xs text-gray-400 mt-1">-</p>
                                 @endif
                             </div>
+                            <div>
+                                <p class="text-[0.6rem] font-black text-gray-400 uppercase">SK Penyetaraan <span class="normal-case font-medium text-gray-300">(Lulusan LN)</span></p>
+                                @if($lamaran->file_sk_penyetaraan)
+                                    <a href="{{ asset('storage/' . $lamaran->file_sk_penyetaraan) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                @else
+                                    <p class="text-xs text-gray-400 mt-1">-</p>
+                                @endif
+                            </div>
+                            <div>
+                                <p class="text-[0.6rem] font-black text-gray-400 uppercase">Surat Pemberhentian <span class="normal-case font-medium text-gray-300">(Instansi Lain)</span></p>
+                                @if($lamaran->file_surat_pemberhentian)
+                                    <a href="{{ asset('storage/' . $lamaran->file_surat_pemberhentian) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                @else
+                                    <p class="text-xs text-gray-400 mt-1">-</p>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -288,6 +304,7 @@
                     </div>
 
                     {{-- DOKUMEN PELAMAR BER-HOMEBASE --}}
+                    @if($pelamar->nidn || $pelamar->homebase)
                     <div>
                         <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                             Dokumen Pelamar Ber-Homebase
@@ -319,6 +336,7 @@
                             <p class="text-sm text-gray-400 italic">-</p>
                         @endif
                     </div>
+                    @endif
 
             {{-- 2. JADWAL & SUMMARY PENILAIAN SELEKSI --}}
             @php
@@ -569,15 +587,19 @@
 
                         $sptSkor = 0;
                         $sptLabel = '-';
+                        $sptPending = false; // true bila S2/S3 tapi status rekrutmen belum diisi penguji
                         if ($isS3) {
                             if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 5; $sptLabel = 'S3 Prof Full Time'; }
                             elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 4; $sptLabel = 'S3 Praktisi Part Time'; }
                             elseif ($statusRekrutmenNilai === 'on_going')            { $sptSkor = 3; $sptLabel = 'S3 On Going'; }
-                            else { $sptSkor = 3; $sptLabel = 'S3 (status belum diisi)'; }
+                            else { $sptPending = true; $sptLabel = 'S3 (belum dinilai)'; }
                         } elseif ($isS2) {
                             if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 2; $sptLabel = 'S2 Prof Full Time'; }
                             elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 1; $sptLabel = 'S2 Praktisi Part Time'; }
-                            else { $sptSkor = 1; $sptLabel = 'S2 (status belum diisi)'; }
+                            else { $sptPending = true; $sptLabel = 'S2 (belum dinilai)'; }
+                        } else {
+                            // S1 / D3 / lainnya: tidak mendapat skor SPT, namun tidak menunggu penilaian
+                            $sptLabel = $jenjangTertinggi ? strtoupper($jenjangTertinggi) : '-';
                         }
 
                         // Skor JFA
@@ -595,10 +617,10 @@
                         elseif ($hIndex >= 1)  { $hSkor = 2; }
                         else                   { $hSkor = 1; }
 
-                        // AVG Kualifikasi = rata-rata 3 komponen
-                        $avgKualifikasi = ($sptSkor > 0 || $jfaSkor > 0 || $hSkor > 0)
-                            ? round(($sptSkor + $jfaSkor + $hSkor) / 3, 2)
-                            : null;
+                        // AVG Kualifikasi: dihitung kecuali sedang menunggu status rekrutmen S2/S3
+                        $avgKualifikasi = $sptPending
+                            ? null
+                            : round(($sptSkor + $jfaSkor + $hSkor) / 3, 2);
 
                         // Hasil Akhir
                         $hasilAkhir = null;
@@ -631,7 +653,7 @@
                                 <tbody class="bg-white">
                                     <tr class="hover:bg-gray-50/50">
                                         <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">
-                                            @if($sptSkor > 0) {{ $sptSkor }} @else <span class="text-gray-300">-</span> @endif
+                                            @if($sptPending) <span class="text-gray-300">-</span> @else {{ $sptSkor }} @endif
                                         </td>
                                         <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $jfaSkor }}</td>
                                         <td class="px-4 py-3 text-center font-black text-gray-800 text-base border border-gray-200">{{ $hSkor }}</td>

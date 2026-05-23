@@ -217,15 +217,18 @@
     $isS3 = $jenjangTertinggi && (str_contains($jenjangTertinggi, 's3') || str_contains($jenjangTertinggi, 'doktor'));
     $isS2 = $jenjangTertinggi && (str_contains($jenjangTertinggi, 's2') || str_contains($jenjangTertinggi, 'magister') || str_contains($jenjangTertinggi, 'master'));
 
-    $sptSkor = 0; $sptLabel = '-';
+    $sptSkor = 0; $sptLabel = '-'; $sptPending = false;
     if ($isS3) {
         if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 5; $sptLabel = 'S3 Prof Full Time'; }
         elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 4; $sptLabel = 'S3 Praktisi Part Time'; }
         elseif ($statusRekrutmenNilai === 'on_going')            { $sptSkor = 3; $sptLabel = 'S3 On Going'; }
-        else { $sptSkor = 3; $sptLabel = 'S3'; }
+        else { $sptPending = true; $sptLabel = 'S3 (belum dinilai)'; }
     } elseif ($isS2) {
         if ($statusRekrutmenNilai === 'profesional_full_time') { $sptSkor = 2; $sptLabel = 'S2 Prof Full Time'; }
-        else { $sptSkor = 1; $sptLabel = 'S2 Praktisi Part Time'; }
+        elseif ($statusRekrutmenNilai === 'praktisi_part_time')  { $sptSkor = 1; $sptLabel = 'S2 Praktisi Part Time'; }
+        else { $sptPending = true; $sptLabel = 'S2 (belum dinilai)'; }
+    } else {
+        $sptLabel = $jenjangTertinggi ? strtoupper($jenjangTertinggi) : '-';
     }
 
     $jfaSkorMap  = ['guru_besar' => 5, 'lektor_kepala' => 4, 'lektor' => 3, 'asisten_ahli' => 2, 'non_jabatan' => 1];
@@ -241,9 +244,9 @@
     elseif ($hIndex >= 1) $hSkor = 2;
     else $hSkor = 1;
 
-    $avgKualifikasi = round(($sptSkor + $jfaSkor + $hSkor) / 3, 4);
+    $avgKualifikasi = $sptPending ? null : round(($sptSkor + $jfaSkor + $hSkor) / 3, 4);
     $hasilAkhir = null;
-    if ($avgMicro !== null && $avgWawancara !== null) {
+    if ($avgMicro !== null && $avgWawancara !== null && $avgKualifikasi !== null) {
         $hasilAkhir = round(($avgKualifikasi * 0.40) + ($avgMicro * 0.20) + ($avgWawancara * 0.40), 2);
     }
 
