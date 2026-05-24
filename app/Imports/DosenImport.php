@@ -3,33 +3,39 @@
 namespace App\Imports;
 
 use App\Models\Dosen;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\OnEachRow;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
+use Maatwebsite\Excel\Row;
 
-class DosenImport implements ToModel, WithHeadingRow, WithValidation
+class DosenImport implements OnEachRow, WithHeadingRow, WithValidation
 {
-    protected $prodi_id;
+    protected int $prodi_id;
 
-    public function __construct($prodi_id)
+    public function __construct(int $prodi_id)
     {
         $this->prodi_id = $prodi_id;
     }
 
-    public function model(array $row)
+    /**
+     * Dosen biasa TIDAK mendapat akun user.
+     * Akun user hanya dibuat saat dosen ditunjuk sebagai penguji atau kaprodi.
+     */
+    public function onRow(Row $row): void
     {
-        // Email dosen biasa selalu '-' (tidak punya akses login)
-        // Email akan di-generate otomatis saat ditunjuk sebagai penguji/kaprodi
-        return new Dosen([
-            'nama'       => $row['nama'],
-            'kode'       => strtoupper($row['kode']),
-            'nip'        => $row['nip'] ?? null,
-            'nidn'       => $row['nidn'] ?? null,
+        $data = $row->toArray();
+
+        Dosen::create([
+            'nama'       => $data['nama'],
+            'kode'       => strtoupper($data['kode']),
+            'nip'        => $data['nip'] ?? null,
+            'nidn'       => $data['nidn'] ?? null,
             'email'      => '-',
             'prodi_id'   => $this->prodi_id,
             'is_kaprodi' => false,
             'is_penguji' => false,
         ]);
+        // Sengaja tidak memanggil getOrCreateUser() — dosen biasa bukan user sistem
     }
 
     public function rules(): array

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\NotDosenInternalDomain;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,7 +33,11 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             // Step 1
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => [
+                'required', 'string', 'lowercase', 'email', 'max:255',
+                'unique:'.User::class,
+                new NotDosenInternalDomain(),
+            ],
             'password' => ['required', Rules\Password::defaults()],
             
             // Step 2

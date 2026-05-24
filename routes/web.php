@@ -111,6 +111,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/notifikasi', [\App\Http\Controllers\NotifikasiController::class, 'index'])->name('notifikasi.index');
     Route::post('/notifikasi/{notifikasi}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
     Route::post('/notifikasi/baca-semua', [\App\Http\Controllers\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca.semua');
+
+    // Switch role (untuk dosen rangkap penguji + kaprodi)
+    Route::post('/role/switch', [\App\Http\Controllers\RoleSwitchController::class, 'switch'])->name('role.switch');
 });
 
 // Profile Management (Breeze default)

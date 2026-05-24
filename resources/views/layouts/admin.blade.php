@@ -109,9 +109,80 @@
         </div>
 
         {{-- User Card --}}
-        <div class="px-4 py-5 border-b border-white/10">
+        @php $isRangkap = auth()->check() && auth()->user()->is_penguji && auth()->user()->is_kaprodi; @endphp
+        <div class="px-4 py-5 border-b border-white/10"
+             @if($isRangkap) x-data="{ open: false }" @click.outside="open = false" @endif>
+
+            @if($isRangkap)
+            @php
+                $currentRole = auth()->user()->role;
+                $targetRole  = $currentRole === 'kaprodi' ? 'penguji' : 'kaprodi';
+                $targetLabel = ucfirst($targetRole);
+            @endphp
+
+            {{-- Clickable profile block (dropdown trigger) --}}
+            <button @click="open = !open" type="button"
+                    class="w-full flex items-center gap-3 text-left rounded-xl px-1 py-1 -mx-1
+                           hover:bg-white/8 transition-colors group"
+                    :class="sidebarCollapsed ? 'lg:justify-center' : ''">
+                <div class="w-11 h-11 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center text-white font-bold text-base ring-2 ring-white/30">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                </div>
+                <div class="user-info flex-1 overflow-hidden min-w-0" :class="sidebarCollapsed ? 'lg:hidden' : ''">
+                    <p class="text-[0.7rem] text-white/70 font-medium tracking-wide uppercase mb-0.5">
+                        {{ auth()->user()->role ?? 'Admin' }}
+                    </p>
+                    <p class="text-white font-bold text-[0.95rem] truncate leading-tight">
+                        {{ auth()->user()->name ?? 'Nama User' }}
+                    </p>
+                </div>
+                {{-- Chevron --}}
+                <svg class="w-3.5 h-3.5 text-white/40 flex-shrink-0 transition-transform duration-200 group-hover:text-white/60"
+                     :class="[open ? 'rotate-180' : '', sidebarCollapsed ? 'lg:hidden' : '']"
+                     fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </button>
+
+            {{-- Glass dropdown panel --}}
+            <div x-show="open"
+                 x-transition:enter="transition ease-out duration-150"
+                 x-transition:enter-start="opacity-0 -translate-y-1 scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="transition ease-in duration-100"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 -translate-y-1 scale-95"
+                 style="display:none;"
+                 class="mt-2 rounded-xl overflow-hidden
+                        bg-white/10 backdrop-blur-md border border-white/20 shadow-xl"
+                 :class="sidebarCollapsed ? 'lg:hidden' : ''">
+
+                {{-- Current role --}}
+                <div class="flex items-center gap-2.5 px-3 py-2.5 cursor-default">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white flex-shrink-0"></span>
+                    <span class="text-[0.78rem] font-semibold text-white">{{ ucfirst($currentRole) }}</span>
+                    <span class="ml-auto text-[0.65rem] text-white/50 font-medium">Aktif</span>
+                </div>
+
+                <div class="h-px bg-white/15 mx-3"></div>
+
+                {{-- Switch to other role --}}
+                <form method="POST" action="{{ route('role.switch') }}">
+                    @csrf
+                    <input type="hidden" name="role" value="{{ $targetRole }}">
+                    <button type="submit"
+                            class="w-full flex items-center gap-2.5 px-3 py-2.5
+                                   text-white/70 hover:text-white hover:bg-white/10
+                                   text-[0.78rem] font-semibold transition-colors">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white/30 flex-shrink-0"></span>
+                        <span>Pindah ke {{ $targetLabel }}</span>
+                    </button>
+                </form>
+            </div>
+
+            @else
+            {{-- Non-rangkap: profile block biasa, tidak interaktif --}}
             <div class="flex items-center gap-3">
-                {{-- Avatar --}}
                 <div class="w-11 h-11 rounded-full bg-white/20 flex-shrink-0 flex items-center justify-center text-white font-bold text-base ring-2 ring-white/30">
                     {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
                 </div>
@@ -119,11 +190,12 @@
                     <p class="text-[0.7rem] text-white/70 font-medium tracking-wide uppercase mb-0.5">
                         {{ auth()->user()->role ?? 'Admin' }}
                     </p>
-                    <p class="text-white font-bold text-[0.95rem] truncate leading-tight mb-0.5">
+                    <p class="text-white font-bold text-[0.95rem] truncate leading-tight">
                         {{ auth()->user()->name ?? 'Nama User' }}
                     </p>
                 </div>
             </div>
+            @endif
         </div>
 
         {{-- Navigation --}}

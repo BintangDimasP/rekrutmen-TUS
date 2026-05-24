@@ -115,7 +115,7 @@ class KaprodiController extends Controller
      */
     public function showPelamar(Pelamar $pelamar)
     {
-        $prodiId = $this->getProdiId();
+        $prodiId     = $this->getProdiId();
         $lowonganIds = Lowongan::where('prodi_id', $prodiId)->pluck('id');
 
         // Pastikan pelamar ini memang melamar ke prodi kaprodi
@@ -124,11 +124,25 @@ class KaprodiController extends Controller
             abort(403, 'Pelamar ini tidak melamar ke prodi Anda.');
         }
 
-        // Load relasi yang diperlukan
-        $pelamar->load(['user', 'lamarans' => function($q) use ($lowonganIds) {
+        // Load lamaran + lowongan milik prodi ini
+        $pelamar->load(['user', 'lamarans' => function ($q) use ($lowonganIds) {
             $q->whereIn('lowongan_id', $lowonganIds)->with('lowongan');
         }]);
 
-        return view('kaprodi.pelamar-show', compact('pelamar'));
+        // Untuk setiap lamaran, ambil jadwal seleksinya
+        $jadwalPerLamaran = [];
+        foreach ($pelamar->lamarans as $lamaran) {
+            $jadwals = \App\Models\JadwalSeleksi::with(['penguji', 'penilaian'])
+                ->where('pelamar_id', $pelamar->id)
+                ->where('lowongan_id', $lamaran->lowongan_id)
+                ->get();
+
+            $jadwalPerLamaran[$lamaran->id] = [
+                'micro'     => $jadwals->where('tipe_seleksi', 'micro_teaching')->values(),
+                'wawancara' => $jadwals->where('tipe_seleksi', 'wawancara')->values(),
+            ];
+        }
+
+        return view('kaprodi.pelamar-show', compact('pelamar', 'jadwalPerLamaran'));
     }
 }

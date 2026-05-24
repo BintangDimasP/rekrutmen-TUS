@@ -4,15 +4,13 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckRole
 {
     /**
-     * Handle an incoming request.
-     *
-     * Setiap role memiliki akun user terpisah, jadi tidak perlu exception khusus.
-     * Penguji login dengan email @penguji, kaprodi login dengan email @kaprodi.
+     * Cek role aktif user untuk akses area.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
@@ -22,6 +20,14 @@ class CheckRole
 
         if (! $user) {
             return redirect('/');
+        }
+
+        // Dosen tanpa role aktif (belum ditunjuk) → tidak boleh masuk area apapun
+        if (empty($user->role)) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return redirect('/login')->withErrors(['email' => 'Akun Anda belum memiliki akses. Hubungi administrator.']);
         }
 
         if ($user->role !== $role) {

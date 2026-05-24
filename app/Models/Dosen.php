@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Hash;
 
 class Dosen extends Model
 {
+    public const PENGAJAR_DOMAIN  = 'pengajar.telkomuniversity.ac.id';
+    public const DEFAULT_PASSWORD = 'dosen123';
+
     protected $fillable = [
         'nama',
         'kode',
@@ -24,49 +28,73 @@ class Dosen extends Model
         'is_kaprodi' => 'boolean',
     ];
 
-    /**
-     * Prodi tempat dosen ini bernaung.
-     */
+    // ── Relasi ────────────────────────────────────────────────────
+
     public function prodi(): BelongsTo
     {
         return $this->belongsTo(Prodi::class);
     }
 
     /**
-     * Akun user yang terhubung dengan dosen ini (bisa lebih dari 1: penguji + kaprodi).
+     * Akun user aktif milik dosen ini (hanya ada kalau sedang menjabat penguji/kaprodi).
      */
-    public function users(): HasMany
+    public function user(): HasOne
     {
-        return $this->hasMany(User::class, 'dosen_id');
+        return $this->hasOne(User::class, 'dosen_id');
     }
 
-    /**
-     * Generate email prefix dari 2 kata pertama nama dosen.
-     * Contoh: "Bintang Dimas Prawira Satya" -> "bintangdimas"
-     */
+    // ── Email helpers ─────────────────────────────────────────────
+
     public function generateEmailPrefix(): string
     {
-        $parts = preg_split('/\s+/', trim($this->nama));
-        return strtolower(implode('', array_slice($parts, 0, 2)));
+        $parts  = preg_split('/\s+/', trim($this->nama));
+        $prefix = strtolower(implode('', array_slice($parts, 0, 2)));
+        return preg_replace('/[^a-z0-9]/', '', $prefix);
     }
 
     /**
-     * Generate email unik untuk domain tertentu, dengan penomoran otomatis jika duplikat.
+     * Generate email @pengajar yang unik (terhadap users lain, kecuali user milik dosen ini sendiri).
      */
-    public function generateUniqueEmail(string $domain): string
+    public function generateUniqueEmail(?int $exceptUserId = null): string
     {
-        $prefix = $this->generateEmailPrefix();
-        $email = $prefix . '@' . $domain;
-
-        // Cek duplikat di tabel users (kecuali milik dosen ini sendiri)
+        $prefix  = $this->generateEmailPrefix();
+        $email   = $prefix . '@' . self::PENGAJAR_DOMAIN;
         $counter = 1;
-        while (User::where('email', $email)->where(function ($q) {
-            $q->whereNull('dosen_id')->orWhere('dosen_id', '!=', $this->id);
-        })->exists()) {
-            $email = $prefix . $counter . '@' . $domain;
+
+        while (
+            User::where('email', $email)
+                ->when($exceptUserId, fn($q) => $q->where('id', '!=', $exceptUserId))
+                ->exists()
+        ) {
+            $email = $prefix . $counter . '@' . self::PENGAJAR_DOMAIN;
             $counter++;
         }
 
         return $email;
+    }
+
+    /**
+     * Ambil user yang sudah ada, atau buat baru dengan password default.
+     * HANYA dipanggil saat dosen ditunjuk sebagai penguji atau kaprodi.
+     */
+    public function getOrCreateUser(): User
+    {
+        $user = $this->user;
+
+        if ($user) {
+            return $user;
+        }
+
+        return User::create([
+            'name'           => $this->nama,
+            'email'          => $this->generateUniqueEmail(),
+            'password'       => Hash::make(self::DEFAULT_PASSWORD),
+            'password_plain' => self::DEFAULT_PASSWORD,
+            'role'           => null,   // caller akan set role yang tepat
+            'is_penguji'     => false,
+            'is_kaprodi'     => false,
+            'prodi_id'       => $this->prodi_id,
+            'dosen_id'       => $this->id,
+        ]);
     }
 }

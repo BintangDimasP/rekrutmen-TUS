@@ -16,6 +16,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_penguji',
+        'is_kaprodi',
         'prodi_id',
         'dosen_id',
         'password_plain',
@@ -31,6 +33,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
+            'is_penguji'        => 'boolean',
+            'is_kaprodi'        => 'boolean',
         ];
     }
 
@@ -40,6 +44,25 @@ class User extends Authenticatable
     public function isPelamar(): bool  { return $this->role === 'pelamar'; }
     public function isPenguji(): bool  { return $this->role === 'penguji'; }
     public function isKaprodi(): bool  { return $this->role === 'kaprodi'; }
+
+    /**
+     * Apakah user (dosen) memiliki rangkap role penguji + kaprodi.
+     */
+    public function hasMultipleRoles(): bool
+    {
+        return $this->is_penguji && $this->is_kaprodi;
+    }
+
+    /**
+     * Daftar role yang dimiliki user dosen (untuk switcher).
+     */
+    public function availableDosenRoles(): array
+    {
+        $roles = [];
+        if ($this->is_penguji) $roles[] = 'penguji';
+        if ($this->is_kaprodi) $roles[] = 'kaprodi';
+        return $roles;
+    }
 
     // ── Relasi ────────────────────────────────────────────────────
 
@@ -62,17 +85,6 @@ class User extends Authenticatable
     public function dosen(): BelongsTo
     {
         return $this->belongsTo(Dosen::class);
-    }
-
-    /**
-     * Akun penguji yang terhubung dengan kaprodi ini.
-     */
-    public function penguji_user()
-    {
-        return $this->hasOne(User::class, 'dosen_id', 'dosen_id')
-                    ->whereNotNull('users.dosen_id')
-                    ->where('role', 'penguji')
-                    ->where('id', '!=', $this->id);
     }
 
     /**

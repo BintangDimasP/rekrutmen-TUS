@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\User;
+use App\Rules\NotDosenInternalDomain;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,8 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -24,7 +27,10 @@ class ProfileUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique(User::class)->ignore($user->id),
+                // Hanya pelamar yang dilarang pakai domain dosen internal.
+                // Akun dosen (penguji/kaprodi) memang seharusnya pakai domain pengajar.
+                ...($user && $user->role === 'pelamar' ? [new NotDosenInternalDomain()] : []),
             ],
         ];
     }

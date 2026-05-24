@@ -11,78 +11,58 @@ use Illuminate\Support\Facades\Hash;
 
 class PengujiController extends Controller
 {
-    /**
-     * Tampilkan tabel dosen yang merupakan penguji.
-     */
     public function index(Request $request)
     {
-        $pengujis = Dosen::with('prodi')->where('is_penguji', true)->get();
+        $pengujis = Dosen::with(['prodi', 'user'])->where('is_penguji', true)->get();
 
-        // Ambil email penguji dari tabel users untuk setiap penguji
-        $pengujiEmails = User::whereIn('dosen_id', $pengujis->pluck('id'))
-            ->where('role', 'penguji')
-            ->pluck('email', 'dosen_id');
+        $pengujiEmails = $pengujis
+            ->mapWithKeys(fn($d) => [$d->id => $d->user?->email])
+            ->filter();
 
-        // Calon penguji adalah dosen yang belum menjadi penguji (untuk form Tunjuk)
         $calonPengujis = Dosen::with('prodi')->where('is_penguji', false)->get();
-
-        // Daftar semua prodi untuk filter
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
         return view('admin.penguji.index', compact('pengujis', 'pengujiEmails', 'calonPengujis', 'prodis'));
     }
 
-    /**
-     * Detail penguji.
-     */
     public function show(Dosen $penguji)
     {
-        $penguji->load('prodi');
-
-        // Ambil email akun penguji
-        $pengujiEmail = User::where('dosen_id', $penguji->id)
-            ->where('role', 'penguji')
-            ->value('email');
+        $penguji->load(['prodi', 'user']);
+        $pengujiEmail = $penguji->user?->email;
 
         return view('admin.penguji.show', compact('penguji', 'pengujiEmail'));
     }
 
     /**
      * Tunjuk dosen-dosen terpilih menjadi penguji.
-     * Buat akun user baru dengan email @penguji.telkomuniversity.ac.id
+     * Buat akun user jika belum ada. Kalau sudah ada (kaprodi), cukup set flag.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'dosen_ids' => 'required|array',
+            'dosen_ids'   => 'required|array',
             'dosen_ids.*' => 'exists:dosens,id',
         ]);
 
         DB::transaction(function () use ($request) {
-            $dosens = Dosen::whereIn('id', $request->dosen_ids)->get();
-
-            foreach ($dosens as $dosen) {
-                // Update status dosen
+            foreach (Dosen::whereIn('id', $request->dosen_ids)->get() as $dosen) {
                 $dosen->update(['is_penguji' => true]);
 
-                // Cek apakah sudah punya akun penguji
-                $existingPenguji = User::where('dosen_id', $dosen->id)
-                    ->where('role', 'penguji')
-                    ->first();
+                $user = $dosen->getOrCreateUser();
 
-                if (!$existingPenguji) {
-                    // Generate email penguji dan buat akun baru
-                    $email = $dosen->generateUniqueEmail('penguji.telkomuniversity.ac.id');
+                $update = [
+                    'is_penguji'     => true,
+                    'password'       => Hash::make(Dosen::DEFAULT_PASSWORD),
+                    'password_plain' => Dosen::DEFAULT_PASSWORD,
+                ];
 
-                    User::create([
-                        'name'     => $dosen->nama,
-                        'email'    => $email,
-                        'password' => Hash::make('penguji123'),
-                        'role'     => 'penguji',
-                        'prodi_id' => $dosen->prodi_id,
-                        'dosen_id' => $dosen->id,
-                    ]);
+                // Jika user belum punya role aktif → set penguji
+                // Jika sudah kaprodi → biarkan role tetap kaprodi (rangkap via flag)
+                if (empty($user->role)) {
+                    $update['role'] = 'penguji';
                 }
+
+                $user->update($update);
             }
         });
 
@@ -91,19 +71,29 @@ class PengujiController extends Controller
 
     /**
      * Cabut status penguji dari dosen.
-     * Hapus akun user penguji. Jika juga bukan kaprodi, email dosen kembali ke '-'.
+     * Kalau masih kaprodi → set role='kaprodi', hapus flag is_penguji.
+     * Kalau tidak ada role lain → hapus akun user sepenuhnya.
      */
     public function destroy(Dosen $penguji)
     {
         DB::transaction(function () use ($penguji) {
             $penguji->update(['is_penguji' => false]);
 
-            // Hapus akun penguji (akun kaprodi tetap ada jika ada)
-            User::where('dosen_id', $penguji->id)
-                ->where('role', 'penguji')
-                ->delete();
+            $user = $penguji->user;
+            if (!$user) return;
+
+            if ($user->is_kaprodi) {
+                $user->update([
+                    'is_penguji' => false,
+                    'role'       => 'kaprodi',
+                ]);
+            } else {
+                // Tidak ada role tersisa → hapus akun
+                $user->delete();
+            }
         });
 
-        return redirect()->route('admin.penguji.index')->with('success', 'Status penguji untuk ' . $penguji->nama . ' telah dicabut.');
+        return redirect()->route('admin.penguji.index')
+            ->with('success', 'Status penguji untuk ' . $penguji->nama . ' telah dicabut.');
     }
 }

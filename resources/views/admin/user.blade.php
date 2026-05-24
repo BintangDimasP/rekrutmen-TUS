@@ -98,22 +98,24 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                         @forelse($users as $user)
+                        @php
+                            $isMulti = $user->is_penguji && $user->is_kaprodi;
+                            // Untuk filter: dosen rangkap match baik 'penguji' maupun 'kaprodi'
+                            $matchPenguji = $user->is_penguji ? '1' : '0';
+                        @endphp
                         <tr x-data="{ openEditModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" 
                             class="hover:bg-gray-50 transition-colors h-[52px]"
                             data-row
                             data-name="{{ strtolower(addslashes($user->name)) }}"
-                            data-email="{{ strtolower(addslashes($user->email)) }}{{ $user->penguji_user ? ' ' . strtolower(addslashes($user->penguji_user->email)) : '' }}"
+                            data-email="{{ strtolower(addslashes($user->email)) }}"
                             data-role="{{ $user->role }}"
-                            data-is-penguji="{{ $user->role === 'kaprodi' && $user->penguji_user ? '1' : '0' }}">
+                            data-is-penguji="{{ $matchPenguji }}">
                             <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate">{{ $user->name }}</td>
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium">
                                 <div class="font-medium text-[0.8rem] truncate">{{ $user->email }}</div>
-                                @if($user->role === 'kaprodi' && $user->penguji_user)
-                                    <div class="font-medium text-[0.8rem] text-blue-600 mt-1 truncate">{{ $user->penguji_user->email }}</div>
-                                @endif
                             </td>
                             <td class="py-3 px-5 text-sm">
-                                @if($user->role === 'kaprodi' && $user->penguji_user)
+                                @if($isMulti)
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-bold bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
                                 @elseif($user->role === 'admin')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>
@@ -123,8 +125,6 @@
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800 uppercase">Penguji</span>
                                 @elseif($user->role === 'kaprodi')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 uppercase">Kaprodi</span>
-                                @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-gray-100 text-gray-800 uppercase">{{ $user->role }}</span>
                                 @endif
                             </td>
                             <td class="py-3 px-5 text-sm">
@@ -170,25 +170,11 @@
                                                 </div>
                                                 @endif
 
-                                                @if($user->role === 'kaprodi' && $user->penguji_user)
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Kata Sandi (Kaprodi) - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
-                                                    <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
-                                                    @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
-                                                </div>
-
-                                                <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Kata Sandi (Penguji) - <span class="text-blue-600">Lama: {{ $user->penguji_user->password_plain ?? '-' }}</span></label>
-                                                    <input type="password" name="penguji_password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
-                                                    @if($errors->has('penguji_password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('penguji_password') }}</p> @endif
-                                                </div>
-                                                @else
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
                                                     <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
                                                     @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
                                                 </div>
-                                                @endif
                                             </div>
 
                                             <div class="px-6 py-4 bg-gray-50 flex justify-center border-t border-gray-100">
