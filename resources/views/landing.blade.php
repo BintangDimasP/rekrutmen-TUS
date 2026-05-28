@@ -213,62 +213,61 @@
         <div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
             @forelse($lowongans as $index => $lowongan)
             <div class="lowongan-card relative overflow-hidden bg-white border-[1.5px] border-gray-200 rounded-2xl p-6 flex flex-col animate-on-scroll fade-scale" style="transition-delay: {{ ($index * 0.1) + 0.1 }}s">
-                <div class="flex items-start gap-4 mb-5">
+                <div class="flex items-start gap-4 mb-4">
                     <div class="shrink-0">
-                        <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
+                        <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                             @if($lowongan->prodi && $lowongan->prodi->logo)
                                 <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}" class="w-full h-full object-contain p-1">
                             @else
-                                <span class="text-2xl font-bold text-gray-400">{{ substr($lowongan->nama_posisi, 0, 1) }}</span>
+                                <span class="text-xl font-bold text-gray-400">{{ substr($lowongan->nama_posisi, 0, 1) }}</span>
                             @endif
                         </div>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="text-base font-bold text-gray-900 mb-1 leading-snug">{{ $lowongan->nama_posisi }}</div>
-                        <div class="text-xs text-gray-500 font-medium">{{ $lowongan->prodi->nama ?? 'Semua Prodi' }}</div>
+                        <div class="text-base font-bold text-gray-900 leading-snug mb-1">{{ $lowongan->nama_posisi }}</div>
+                        <div class="text-xs text-gray-400 font-medium">{{ $lowongan->prodi->nama ?? 'Semua Prodi' }}</div>
                     </div>
                 </div>
 
-                <div class="flex flex-col gap-3 mb-5 p-4 bg-gray-50 rounded-xl">
-                    <div class="flex items-center gap-2.5 text-sm">
-                        <svg class="w-[18px] h-[18px] shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                {{-- Meta: lokasi + deadline --}}
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/>
                         </svg>
-                        <span class="text-gray-700 font-medium">Surabaya</span>
+                        <span>Surabaya</span>
                     </div>
-                    <div class="flex items-center gap-2.5 text-sm">
-                        <svg class="w-[18px] h-[18px] shrink-0 text-gray-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <span class="text-gray-200">|</span>
+                    <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                        <svg class="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span class="text-gray-700 font-medium">{{ $lowongan->tanggal_tutup->format('j F Y') }}</span>
+                        <span>{{ $lowongan->tanggal_tutup->format('j M Y') }}</span>
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-2 mb-5">
-                    <span class="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700">{{ $lowongan->jenjang_minimal }}</span>
-                    <span class="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700">IPK > {{ number_format($lowongan->minimal_ipk, 2) }}</span>
-                    <span class="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700">{{ $lowongan->kuota }} Kuota</span>
-                    <span class="px-3 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700">Full-Time</span>
+                <div class="flex flex-wrap gap-1.5 mb-5">
+                    <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">{{ $lowongan->jenjang_minimal }}</span>
+                    <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">IPK > {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                    <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">{{ $lowongan->kuota }} Kuota</span>
+                    <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">Full-Time</span>
                 </div>
 
                 <div class="mt-auto pt-4 border-t border-gray-100">
                     @auth
                         @if(auth()->user()->role === 'pelamar')
                             <a href="{{ route('pelamar.lowongan.show', $lowongan) }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full group">
-                                 Detail
-                               
+                                Detail
                             </a>
                         @else
                             <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
-                                 Detail
-                                
+                                Detail
                             </a>
                         @endif
                     @else
                         <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
-                             Detail
-                            
+                            Detail
                         </a>
                     @endauth
                 </div>

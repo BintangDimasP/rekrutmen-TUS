@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // User Management
         Route::get('admin/user', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.user.index');
         Route::put('admin/user/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.user.update');
+        Route::delete('admin/user/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.user.destroy');
 
         // Penguji Management
         Route::get('admin/penguji', [\App\Http\Controllers\Admin\PengujiController::class, 'index'])->name('admin.penguji.index');
@@ -47,10 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('admin/lowongan/{lowongan}/berita-acara', [\App\Http\Controllers\Admin\LowonganController::class, 'beritaAcara'])->name('admin.lowongan.beritaAcara');
 
         // Lamaran Management (View/Update/Hapus)
+        Route::get('admin/lowongan/{lowongan}/lamaran', [\App\Http\Controllers\Admin\LamaranController::class, 'index'])->name('admin.lamaran.index');
+        Route::get('admin/lowongan/{lowongan}/lamaran/export', [\App\Http\Controllers\Admin\LamaranController::class, 'exportExcel'])->name('admin.lamaran.export');
+        Route::get('admin/lowongan/{lowongan}/lamaran/export-nilai', [\App\Http\Controllers\Admin\LamaranController::class, 'exportNilai'])->name('admin.lamaran.exportNilai');
         Route::get('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'show'])->name('admin.lamaran.show');
         Route::get('admin/lamaran/{lamaran}/cetak', [\App\Http\Controllers\Admin\LamaranController::class, 'cetak'])->name('admin.lamaran.cetak');
         Route::put('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'update'])->name('admin.lamaran.update');
         Route::delete('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'destroy'])->name('admin.lamaran.destroy');
+        Route::get('admin/lowongan/{lowongan}/lamaran/filter', [\App\Http\Controllers\Admin\LamaranController::class, 'filter'])->name('admin.lamaran.filter');
 
         // Pelamar Management (Global)
         Route::get('admin/pelamar', [\App\Http\Controllers\Admin\PelamarController::class, 'index'])->name('admin.pelamar.index');
@@ -104,6 +109,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('role:kaprodi')->prefix('kaprodi')->name('kaprodi.')->group(function () {
         Route::get('/dashboard', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'dashboard'])->name('dashboard');
         Route::get('/pelamar', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'pelamar'])->name('pelamar.index');
+        Route::get('/pelamar/filter', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'filterPelamar'])->name('pelamar.filter');
         Route::get('/pelamar/{pelamar}', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'showPelamar'])->name('pelamar.show');
     });
 
@@ -114,6 +120,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Switch role (untuk dosen rangkap penguji + kaprodi)
     Route::post('/role/switch', [\App\Http\Controllers\RoleSwitchController::class, 'switch'])->name('role.switch');
+
+    // Pengaturan password (pelamar, penguji, kaprodi)
+    Route::middleware('role:pelamar,penguji,kaprodi')->group(function () {
+        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+        Route::put('/settings/password', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.password.update');
+    });
 });
 
 // Profile Management (Breeze default)

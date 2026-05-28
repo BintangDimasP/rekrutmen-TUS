@@ -17,37 +17,16 @@ class LowonganController extends Controller
     {
         $pelamar = auth()->user()->pelamar;
         
-        $query = Lowongan::with('prodi')
-            ->where('status', 'aktif');
-
-        // Filter status lowongan
-        if ($request->status_lowongan === 'closed') {
-            $query->where('tanggal_tutup', '<', now());
-        } elseif ($request->status_lowongan === 'open') {
-            $query->where('tanggal_tutup', '>=', now());
-        } else {
-            // Default show only open
-            $query->where('tanggal_tutup', '>=', now());
-        }
-
-        // Filter prodi
-        if ($request->filled('prodi_id')) {
-            $query->where('prodi_id', $request->prodi_id);
-        }
+        $allLowongans = Lowongan::with('prodi')
+            ->where('status', 'aktif')
+            ->where('tanggal_tutup', '>=', now())
+            ->latest()
+            ->get();
 
         $savedLowonganIds = $pelamar->savedLowongans()->pluck('lowongans.id')->toArray();
-        
-        // Filter saved
-        if ($request->filter === 'saved') {
-            $query->whereIn('id', $savedLowonganIds);
-        }
-
         $appliedLowonganIds = $pelamar->lamarans()->pluck('lowongan_id')->toArray();
 
-        // Get all data
-        $allLowongans = $query->latest()->get();
-
-        // Separate them — lowongan penuh tidak masuk available
+        // Separate — lowongan penuh tidak masuk available
         $availableLowongans = $allLowongans
             ->whereNotIn('id', $appliedLowonganIds)
             ->filter(fn($l) => !$l->isFull())

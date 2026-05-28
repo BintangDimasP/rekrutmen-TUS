@@ -3,49 +3,166 @@
 @section('title', 'Histori Lamaran')
 
 @section('content')
-<div class="max-w-6xl mx-auto space-y-6">
+<div class="max-w-6xl mx-auto space-y-6"
+     x-data="{
+         search: '',
+         statusFilter: [],
+         prodiFilter: [],
+         statusOpen: false,
+         prodiOpen: false,
 
+         get hasFilters() { return this.statusFilter.length > 0 || this.prodiFilter.length > 0 || this.search !== ''; },
 
-    {{-- Filter Card --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-        <form method="GET" action="{{ route('pelamar.history.index') }}" class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
-                {{-- Filter Prodi --}}
-                <div class="relative w-full sm:w-64">
-                                          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                        </svg>
+         clearAll() { this.statusFilter = []; this.prodiFilter = []; this.search = ''; },
+
+         removeStatus(val) { this.statusFilter = this.statusFilter.filter(v => v !== val); },
+         removeProdi(val) { this.prodiFilter = this.prodiFilter.filter(v => v !== val); },
+
+         matchRow(row) {
+             const matchStatus = this.statusFilter.length === 0 || this.statusFilter.includes(row.dataset.status);
+             const matchProdi  = this.prodiFilter.length === 0 || this.prodiFilter.includes(row.dataset.prodi);
+             const matchSearch = this.search === '' || (row.dataset.posisi || '').includes(this.search.toLowerCase());
+             return matchStatus && matchProdi && matchSearch;
+         },
+
+         updateRows() {
+             this.$refs.tbody.querySelectorAll('tr[data-row]').forEach(row => {
+                 row.style.display = this.matchRow(row) ? '' : 'none';
+             });
+             const visible = this.$refs.tbody.querySelectorAll('tr[data-row]:not([style*=none])').length;
+             this.$refs.count.textContent = visible;
+         }
+     }"
+     x-init="$watch('statusFilter', () => updateRows()); $watch('prodiFilter', () => updateRows()); $watch('search', () => updateRows());">
+
+    {{-- Filter Chips Bar --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
+        <div class="flex items-center gap-3 flex-wrap">
+{{-- Prodi Chip --}}
+            <div class="relative" @click.outside="prodiOpen = false">
+                <button type="button" @click="prodiOpen = !prodiOpen"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="prodiFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                    Prodi
+                    <span x-show="prodiFilter.length > 0" x-text="prodiFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
+                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                {{-- Dropdown --}}
+                <div x-show="prodiOpen" x-transition
+                     class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div class="px-4 py-3 border-b border-gray-100">
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p>
                     </div>
-                    <select name="prodi_id" onchange="this.form.submit()" 
-                            class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
-                        <option value="">Filter</option>
+                    <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
                         @foreach($prodis as $prodi)
-                            <option value="{{ $prodi->id }}" {{ request('prodi_id') == $prodi->id ? 'selected' : '' }}>{{ $prodi->nama }}</option>
+                        <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                            <input type="checkbox" value="{{ $prodi->nama }}" x-model="prodiFilter"
+                                   class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
+                            <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
+                        </label>
                         @endforeach
-                    </select>
+                    </div>
+                    <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex justify-end">
+                        <button type="button" @click="prodiOpen = false" class="text-xs font-bold text-[#8b1515] hover:underline">Tutup</button>
+                    </div>
                 </div>
+            </div>
+            {{-- Status Chip --}}
+            <div class="relative" @click.outside="statusOpen = false">
+                <button type="button" @click="statusOpen = !statusOpen"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="statusFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                    Status
+                    <span x-show="statusFilter.length > 0" x-text="statusFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
+                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
 
-                {{-- Filter Status --}}
-                <div class="relative w-full sm:w-48">
-                    <select name="status" onchange="this.form.submit()" 
-                            class="w-full px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm appearance-none cursor-pointer">
-                        <option value="">Status</option>
-                        <option value="menunggu" {{ request('status') == 'menunggu' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="seleksi_tahap1" {{ request('status') == 'seleksi_tahap1' ? 'selected' : '' }}>Seleksi Tahap 1 (Administrasi)</option>
-                        <option value="seleksi_tahap2" {{ request('status') == 'seleksi_tahap2' ? 'selected' : '' }}>Seleksi Tahap 2 (Micro Teaching & Wawancara)</option>
-                        <option value="diterima" {{ request('status') == 'diterima' ? 'selected' : '' }}>Diterima</option>
-                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                    </select>
+                {{-- Dropdown --}}
+                <div x-show="statusOpen" x-transition
+                     class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div class="px-4 py-3 border-b border-gray-100">
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p>
+                    </div>
+                    <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
+                        @php
+                            $statuses = [
+                                'menunggu'       => ['label' => 'Menunggu',                              'color' => 'text-gray-600'],
+                                'seleksi_tahap1' => ['label' => 'Seleksi Tahap 1 (Administrasi)',        'color' => 'text-blue-600'],
+                                'seleksi_tahap2' => ['label' => 'Seleksi Tahap 2 (Micro & Wawancara)',   'color' => 'text-indigo-600'],
+                                'diterima'       => ['label' => 'Diterima',                              'color' => 'text-green-600'],
+                                'ditolak'        => ['label' => 'Ditolak',                               'color' => 'text-red-600'],
+                            ];
+                        @endphp
+                        @foreach($statuses as $key => $info)
+                        <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors group">
+                            <input type="checkbox" value="{{ $key }}" x-model="statusFilter"
+                                   class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
+                            <span class="text-sm font-medium {{ $info['color'] }} group-hover:opacity-80">{{ $info['label'] }}</span>
+                        </label>
+                        @endforeach
+                    </div>
+                    <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex justify-end">
+                        <button type="button" @click="statusOpen = false" class="text-xs font-bold text-[#8b1515] hover:underline">Tutup</button>
+                    </div>
                 </div>
             </div>
 
-            @if(request()->filled('prodi_id') || request()->filled('status'))
-                <div>
-                    <a href="{{ route('pelamar.history.index') }}" class="text-xs text-red-600 hover:underline">Reset Filter</a>
+            
+
+            {{-- Active filter tags --}}
+            <template x-for="s in statusFilter" :key="'s-'+s">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
+                    <span x-text="s.replace('_', ' ')"></span>
+                    <button type="button" @click="removeStatus(s)" class="ml-0.5 hover:text-red-800">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </span>
+            </template>
+            <template x-for="p in prodiFilter" :key="'p-'+p">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
+                    <span x-text="p"></span>
+                    <button type="button" @click="removeProdi(p)" class="ml-0.5 hover:text-blue-900">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </span>
+            </template>
+
+            {{-- Clear All --}}
+            <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                Clear Filters
+            </button>
+
+            {{-- Search (animated) --}}
+            <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                <div class="relative flex items-center">
+                    {{-- Magnify button --}}
+                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
+                    {{-- Expanding input --}}
+                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                        <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari lowongan..."
+                               @keydown.escape="search = ''; searchOpen = false"
+                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                    </div>
+                    {{-- Close button --}}
+                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                            @click="search = ''; searchOpen = false"
+                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
                 </div>
-            @endif
-        </form>
+            </div>
+           
+        </div>
     </div>
 
     {{-- Table History --}}
@@ -61,9 +178,13 @@
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-100" x-ref="tbody">
                     @forelse($lamarans as $lamaran)
-                    <tr class="hover:bg-gray-50 transition-colors">
+                    <tr class="hover:bg-gray-50 transition-colors"
+                        data-row
+                        data-status="{{ $lamaran->status }}"
+                        data-prodi="{{ $lamaran->lowongan->prodi->nama ?? '' }}"
+                        data-posisi="{{ strtolower($lamaran->lowongan->nama_posisi) }}">
                         <td class="py-3 px-5">
                             <div class="text-sm font-semibold text-gray-600 text-center">{{ $lamaran->lowongan->nama_posisi }}</div>
                         </td>
@@ -72,7 +193,6 @@
                         </td>
                         <td class="py-3 px-5">
                             <div class="text-sm text-gray-600 text-center">{{ $lamaran->created_at->format('d M Y') }}</div>
-                            
                         </td>
                         <td class="py-3 px-5 text-center">
                             @php

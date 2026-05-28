@@ -9,21 +9,25 @@
 
     {{-- Stats Cards --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Total Lamaran</div>
-            <div class="text-4xl font-black text-gray-800">{{ $totalLamaran }}</div>
+       
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ number_format($totalLamaran) }}</p>
+            <p class="text-sm font-medium text-gray-500">Total Lamaran</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Sedang Diproses</div>
-            <div class="text-4xl font-black text-gray-800">{{ $lamaranAktif }}</div>
+        
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ number_format($lamaranAktif) }}</p>
+            <p class="text-sm font-medium text-gray-500">Sedang Diproses</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Diterima</div>
-            <div class="text-4xl font-black text-gray-800">{{ $lamaranDiterima }}</div>
+        
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ number_format($lamaranDiterima) }}</p>
+            <p class="text-sm font-medium text-gray-500">Diterima</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Ditolak</div>
-            <div class="text-4xl font-black text-gray-800">{{ $lamaranDitolak }}</div>
+        
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ number_format($lamaranDitolak) }}</p>
+            <p class="text-sm font-medium text-gray-500">Ditolak</p>
         </div>
     </div>
 

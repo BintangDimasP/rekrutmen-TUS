@@ -51,15 +51,9 @@
                 <p class="text-sm font-semibold text-gray-800 font-medium">{{ $penguji->nidn ?? '—' }}</p>
             </div>
 
-            {{-- Email --}}
-            <div class="sm:col-span-2">
-                <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
-                <p class="text-sm font-semibold text-gray-800 font-medium">{{ $pengujiEmail ?? '—' }}</p>
-            </div>
-
             {{-- Prodi --}}
             <div>
-                <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Homebase Prodi</p>
+                <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Program Studi</p>
                 <p class="text-sm font-semibold text-gray-800">{{ $penguji->prodi?->nama ?? '—' }}</p>
             </div>
 
@@ -67,6 +61,11 @@
             <div>
                 <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Kode Dosen</p>
                 <p class="text-sm font-semibold text-gray-800 font-medium">{{ $penguji->kode }}</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <p class="text-[0.7rem] font-bold text-gray-400 uppercase tracking-widest mb-1">Email</p>
+                <p class="text-sm font-semibold text-gray-800 font-medium">{{ $pengujiEmail ?? '—' }}</p>
             </div>
         </div>
 

@@ -135,7 +135,7 @@
                         </h3>
                     </div>
                     <textarea name="deskripsi" rows="12"
-                              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-mono leading-relaxed focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y">{{ old('deskripsi', $defaultDeskripsi) }}</textarea>
+                              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium leading-relaxed focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y">{{ old('deskripsi', $defaultDeskripsi) }}</textarea>
                 </div>
 
                 {{-- ACTIONS --}}

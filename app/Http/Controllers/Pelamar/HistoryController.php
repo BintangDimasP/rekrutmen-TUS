@@ -16,21 +16,11 @@ class HistoryController extends Controller
     {
         $pelamar = auth()->user()->pelamar;
         
-        $query = Lamaran::with(['lowongan.prodi'])
+        $lamarans = Lamaran::with(['lowongan.prodi'])
             ->where('pelamar_id', $pelamar->id)
-            ->latest();
+            ->latest()
+            ->paginate(100); // Load all — pelamar biasanya punya < 50 lamaran
 
-        if ($request->filled('prodi_id')) {
-            $query->whereHas('lowongan', function($q) use ($request) {
-                $q->where('prodi_id', $request->prodi_id);
-            });
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        $lamarans = $query->paginate(10)->appends($request->query());
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
         return view('pelamar.history.index', compact('lamarans', 'prodis'));

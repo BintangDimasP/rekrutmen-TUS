@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class Dosen extends Model
 {
+    use HasFactory;
     public const PENGAJAR_DOMAIN  = 'pengajar.telkomuniversity.ac.id';
     public const DEFAULT_PASSWORD = 'dosen123';
 

@@ -4,28 +4,83 @@
 
 @section('content')
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6" x-data="{ search: '', filterProdi: '' }">
 
-        {{-- Filter & Action --}}
-        <div
-            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full lg:w-auto">
-                <div class="relative w-full sm:w-72">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+        {{-- Filter & Action (with attached + button) --}}
+        <div class="relative">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
+                <div class="flex items-center gap-3 flex-wrap">
+
+                    {{-- Prodi Chip --}}
+                    <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
+                        <button type="button" @click="prodiOpen = !prodiOpen"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                                :class="filterProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                            Prodi
+                            <span x-show="filterProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                            <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="prodiOpen" x-transition class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                            <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p></div>
+                            <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
+                                @foreach($prodis as $prodi)
+                                <button type="button" @click="filterProdi = filterProdi === '{{ $prodi->id }}' ? '' : '{{ $prodi->id }}'; prodiOpen = false"
+                                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left" :class="filterProdi === '{{ $prodi->id }}' ? 'bg-gray-50' : ''">
+                                    <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterProdi === '{{ $prodi->id }}' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
+                                        <svg x-show="filterProdi === '{{ $prodi->id }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
+                                </button>
+                                @endforeach
+                            </div>
+                        </div>
                     </div>
-                    <input type="text" placeholder="Cari nama posisi..."
-                        class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition shadow-sm">
+
+                    {{-- Active tag --}}
+                    @foreach($prodis as $prodi)
+                    <span x-show="filterProdi === '{{ $prodi->id }}'" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
+                        {{ $prodi->nama }}
+                        <button type="button" @click="filterProdi = ''" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                    </span>
+                    @endforeach
+
+                    {{-- Clear --}}
+                    <button x-show="filterProdi !== '' || search !== ''" x-transition type="button" @click="filterProdi = ''; search = ''" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Clear
+                    </button>
+
+                    {{-- Search (animated, right side) --}}
+                    <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                        <div class="relative flex items-center">
+                            {{-- Magnify button --}}
+                            <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                                    class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                                    :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            </button>
+                            {{-- Expanding input --}}
+                            <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                                 :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                                <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama posisi..."
+                                       @keydown.escape="search = ''; searchOpen = false"
+                                       class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                            </div>
+                            {{-- Close button --}}
+                            <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                                    @click="search = ''; searchOpen = false"
+                                    class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            {{-- + Button (outside card, flush right) --}}
             <a href="{{ route('admin.lowongan.create') }}"
-                class="inline-flex items-center justify-center px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
-                Tambah Lowongan
+               class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Tambah Lowongan">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             </a>
         </div>
 

@@ -35,6 +35,7 @@ class JadwalSeleksiController extends Controller
 
         $jadwals  = $query->get();
         $pengujis = Dosen::where('is_penguji', true)->orderBy('nama')->get();
+        $prodis   = Prodi::orderBy('nama')->get();
 
         // Gabungkan baris pelamar+lowongan yang sama menjadi satu baris tabel
         $rows = $jadwals
@@ -63,7 +64,7 @@ class JadwalSeleksiController extends Controller
             })
             ->values();
 
-        return view('admin.jadwal.index', compact('rows', 'jadwals', 'pengujis'));
+        return view('admin.jadwal.index', compact('rows', 'jadwals', 'pengujis', 'prodis'));
     }
 
     // ── Form penjadwalan ─────────────────────────────────────────────────

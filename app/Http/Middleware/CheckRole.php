@@ -14,7 +14,7 @@ class CheckRole
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
         $user = $request->user();
 
@@ -30,7 +30,8 @@ class CheckRole
             return redirect('/login')->withErrors(['email' => 'Akun Anda belum memiliki akses. Hubungi administrator.']);
         }
 
-        if ($user->role !== $role) {
+        // Support multiple roles: role:pelamar,penguji,kaprodi
+        if (!in_array($user->role, $roles)) {
             return redirect()->route($user->role . '.dashboard');
         }
 

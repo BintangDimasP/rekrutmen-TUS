@@ -36,7 +36,8 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     public function index()
     {
         $lowongans = Lowongan::with('prodi')->latest()->paginate(10);
-        return view('admin.lowongan.index', compact('lowongans'));
+        $prodis    = Prodi::orderBy('nama')->get();
+        return view('admin.lowongan.index', compact('lowongans', 'prodis'));
     }
 
     /** Form buat lowongan baru */
@@ -86,11 +87,10 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                          ->with('success', 'Lowongan "' . $validated['nama_posisi'] . '" berhasil dibuat.');
     }
 
-    /** Detail lowongan (beserta daftar pelamar) */
+    /** Detail lowongan — redirect ke daftar lamaran */
     public function show(Lowongan $lowongan)
     {
-        $lowongan->load(['prodi', 'lamarans.pelamar.user']);
-        return view('admin.lowongan.show', compact('lowongan'));
+        return redirect()->route('admin.lamaran.index', $lowongan);
     }
 
     /** Form edit lowongan */

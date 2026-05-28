@@ -28,8 +28,46 @@ class UserController extends Controller
     }
 
     /**
-     * Update email dan/atau password user.
+     * Hapus/cabut akses user.
+     * - Pelamar: hapus user + data pelamar sepenuhnya.
+     * - Penguji/Kaprodi/Rangkap (dosen): cabut role saja, data dosen tetap ada.
      */
+    public function destroy(User $user)
+    {
+        // Jangan izinkan hapus admin
+        if ($user->role === 'admin') {
+            return back()->withErrors(['delete' => 'Akun admin tidak dapat dihapus.']);
+        }
+
+        $isPelamarRole = $user->role === 'pelamar';
+
+        DB::transaction(function () use ($user, $isPelamarRole) {
+            if ($isPelamarRole) {
+                // Hapus data pelamar dan user sepenuhnya
+                if ($user->pelamar) {
+                    $user->pelamar->delete();
+                }
+                $user->delete();
+            } else {
+                // Dosen (penguji/kaprodi/rangkap): hapus akun user, kembalikan dosen jadi biasa
+                if ($user->dosen) {
+                    $user->dosen->update([
+                        'is_penguji' => false,
+                        'is_kaprodi' => false,
+                    ]);
+                }
+
+                // Hapus akun user sepenuhnya — dosen tidak lagi bisa akses sistem
+                $user->delete();
+            }
+        });
+
+        $message = $isPelamarRole
+            ? 'Akun pelamar berhasil dihapus.'
+            : 'Akun & role dosen berhasil dihapus. Dosen kembali tanpa akses sistem.';
+
+        return back()->with('success', $message);
+    }
     public function update(Request $request, User $user)
     {
         $isPelamar = $user->role === 'pelamar';

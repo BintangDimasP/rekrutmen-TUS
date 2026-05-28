@@ -6,22 +6,22 @@
 <div class="max-w-6xl mx-auto space-y-8">
 
     {{-- Stats Cards --}}
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Total Pelamar</div>
-            <div class="text-4xl font-black text-gray-800">{{ $totalPelamar }}</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ $totalPelamar }}</p>
+            <p class="text-sm font-medium text-gray-500">Total Pelamar</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Sedang Diproses</div>
-            <div class="text-4xl font-black text-gray-800">{{ $totalProses }}</div>
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ $totalProses }}</p>
+            <p class="text-sm font-medium text-gray-500">Sedang Diproses</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Diterima</div>
-            <div class="text-4xl font-black text-gray-800">{{ $totalDiterima }}</div>
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ $totalDiterima }}</p>
+            <p class="text-sm font-medium text-gray-500">Diterima</p>
         </div>
-        <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-gray-200 transition-colors">
-            <div class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-widest mb-3">Ditolak</div>
-            <div class="text-4xl font-black text-gray-800">{{ $totalDitolak }}</div>
+        <div class="bg-white rounded-xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] px-5 py-5 h-[120px] flex flex-col justify-end border border-gray-100 transition-all hover:shadow-md">
+            <p class="font-bold text-3xl text-gray-800 mb-1">{{ $totalDitolak }}</p>
+            <p class="text-sm font-medium text-gray-500">Ditolak</p>
         </div>
     </div>
 

@@ -2,30 +2,151 @@
 @section('title', 'Penjadwalan')
 @section('content')
 
-<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="initPagination()">
+<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="initPagination(); $watch('search', () => filterBySearch())">
 
 
-    {{-- Filter & Action --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <form method="GET" action="{{ route('admin.jadwal.index') }}" class="flex flex-col sm:flex-row gap-3 items-end w-full lg:w-auto">
-            <div>
-                <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()"
-                       class="px-4 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition w-full sm:w-auto cursor-pointer" title="Pilih Tanggal Seleksi">
-            </div>
-            
-            @if(request('tanggal'))
-                <div class="flex items-center mt-2 sm:mt-0">
-                    <a href="{{ route('admin.jadwal.index') }}" class="px-4 py-2 bg-gray-100 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-200 transition">Reset</a>
+    {{-- Filter Chips Bar (with attached + button) --}}
+    <div class="relative">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
+            <div class="flex items-center gap-3 flex-wrap">
+
+                {{-- Tanggal Chip --}}
+                <div class="relative" x-data="{ tanggalOpen: false }" @click.outside="tanggalOpen = false">
+                    <button type="button" @click="tanggalOpen = !tanggalOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="'{{ request('tanggal') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Tanggal
+                        @if(request('tanggal'))
+                        <span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                        @endif
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="tanggalOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="tanggalOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Pilih Tanggal</p></div>
+                        <form method="GET" action="{{ route('admin.jadwal.index') }}" class="p-4">
+                            <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
+                            <button type="submit" class="w-full mt-3 px-4 py-2 bg-[#8b1515] text-white text-sm font-bold rounded-lg hover:bg-red-900 transition-colors">Apply</button>
+                        </form>
+                    </div>
                 </div>
-            @endif
-        </form>
-        
+
+                {{-- Prodi Chip --}}
+                <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
+                    <button type="button" @click="prodiOpen = !prodiOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="'{{ request('prodi_id') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                        Prodi
+                        @if(request('prodi_id'))<span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>@endif
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="prodiOpen" x-transition class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p></div>
+                        <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
+                            @foreach($prodis as $prodi)
+                            <a href="{{ route('admin.jadwal.index', array_merge(request()->query(), ['prodi_id' => $prodi->id])) }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors {{ request('prodi_id') == $prodi->id ? 'bg-gray-50' : '' }}">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center {{ request('prodi_id') == $prodi->id ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300' }}">
+                                    @if(request('prodi_id') == $prodi->id)<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>@endif
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Status Chip --}}
+                <div class="relative" x-data="{ statusOpen: false }" @click.outside="statusOpen = false">
+                    <button type="button" @click="statusOpen = !statusOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="'{{ request('status') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Status
+                        @if(request('status'))<span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>@endif
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
+                        <div class="p-3 space-y-1">
+                            @php $statuses = ['belum' => ['Belum Dinilai', 'text-yellow-600'], 'sebagian' => ['Sebagian Dinilai', 'text-blue-600'], 'selesai' => ['Selesai', 'text-green-600']]; @endphp
+                            @foreach($statuses as $key => [$label, $color])
+                            <a href="{{ route('admin.jadwal.index', array_merge(request()->query(), ['status' => $key])) }}"
+                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 {{ request('status') == $key ? 'bg-gray-50' : '' }}">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center {{ request('status') == $key ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300' }}">
+                                    @if(request('status') == $key)<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>@endif
+                                </span>
+                                <span class="text-sm font-medium {{ $color }}">{{ $label }}</span>
+                            </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Active filter tags --}}
+                @if(request('tanggal'))
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
+                    {{ \Carbon\Carbon::parse(request('tanggal'))->format('d M Y') }}
+                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['tanggal' => '']))) }}" class="ml-0.5 hover:text-red-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
+                </span>
+                @endif
+                @if(request('prodi_id'))
+                @foreach($prodis as $p) @if($p->id == request('prodi_id'))
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
+                    {{ $p->nama }}
+                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['prodi_id' => '']))) }}" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
+                </span>
+                @endif @endforeach
+                @endif
+                @if(request('status'))
+                @php $statusLabels = ['belum' => 'Belum Dinilai', 'sebagian' => 'Sebagian Dinilai', 'selesai' => 'Selesai']; @endphp
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-50 border border-green-200 text-xs font-semibold text-green-700">
+                    {{ $statusLabels[request('status')] ?? request('status') }}
+                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['status' => '']))) }}" class="ml-0.5 hover:text-green-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
+                </span>
+                @endif
+
+                @if(request('tanggal') || request('prodi_id') || request('status'))
+                <a href="{{ route('admin.jadwal.index') }}" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Clear Filters
+                </a>
+                @endif
+
+                {{-- Search (animated) --}}
+                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                    <div class="relative flex items-center">
+                        {{-- Magnify button --}}
+                        <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                                class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                                :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </button>
+                        {{-- Expanding input --}}
+                        <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                             :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                            <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama pelamar..."
+                                   @keydown.escape="search = ''; searchOpen = false"
+                                   class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                        </div>
+                        {{-- Close button --}}
+                        <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                                @click="search = ''; searchOpen = false"
+                                class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        {{-- + Button (outside card, flush right) --}}
         <a href="{{ route('admin.jadwal.create') }}"
-           class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-xl shadow-md hover:bg-red-900 transition-colors shrink-0 w-full lg:w-auto">
-            Buat Jadwal
+           class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Buat Jadwal">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
         </a>
     </div>
-
     {{-- Table --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" x-data="jadwalTable()">
         <div class="overflow-x-auto">
@@ -63,7 +184,7 @@
                         $pengujiDataJson = json_encode($pengujiData);
                         $allPgIds = json_encode($allPgIds);
                     @endphp
-                    <tr class="hover:bg-gray-50/60 transition-colors align-middle" data-row>
+                    <tr class="hover:bg-gray-50/60 transition-colors align-middle" data-row data-pelamar="{{ strtolower($row->pelamar->nama) }}">
 
                         {{-- Tanggal --}}
                         <td class="py-4 px-4 align-top">
@@ -446,6 +567,7 @@ const _base  = '{{ url("/") }}';
 
 function jadwalIndex() {
     return {
+        search: '',
         modal: {
             open: false,
             readOnly: false,
@@ -631,6 +753,19 @@ function jadwalIndex() {
             // Fallback ke availablePengujis (data dari API)
             const penguji = this.modal.availablePengujis.find(p => p.id === pgId);
             return penguji ? `${penguji.nama} (${penguji.kode})` : `Penguji #${pgId}`;
+        },
+
+        filterBySearch() {
+            const rows = document.querySelectorAll('tr[data-row]');
+            const query = this.search.toLowerCase().trim();
+            rows.forEach(row => {
+                if (!query) {
+                    row.style.display = '';
+                } else {
+                    const pelamar = row.dataset.pelamar || '';
+                    row.style.display = pelamar.includes(query) ? '' : 'none';
+                }
+            });
         },
     };
 }

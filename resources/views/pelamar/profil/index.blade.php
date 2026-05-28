@@ -518,8 +518,8 @@
                 </div>
             </div>
 
-            <div x-show="isEditing" x-cloak class="pt-6 border-t border-gray-100 flex items-center justify-end gap-3">
-                <button type="button" @click="isEditing = false" class="px-6 py-2.5 bg-gray-100 text-gray-600 text-sm font-bold rounded-lg hover:bg-gray-200 transition-all">Batal</button>
+            <div x-show="isEditing" x-cloak class="pt-6 border-t border-gray-100 flex items-center justify-center gap-3">
+                
                 <button type="submit" class="px-8 py-2.5 bg-[#8b1515] text-white text-sm font-bold rounded-lg shadow-md shadow-[#8b1515]/20 hover:bg-red-900 transition-all">
                     Simpan Perubahan
                 </button>

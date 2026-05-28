@@ -2,14 +2,45 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\LamaranExport;
+use App\Exports\LamaranNilaiExport;
 use App\Http\Controllers\Controller;
 use App\Models\JadwalSeleksi;
 use App\Models\Lamaran;
+use App\Models\Lowongan;
 use App\Models\Notifikasi;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LamaranController extends Controller
 {
+    /**
+     * Tampilkan daftar lamaran untuk lowongan tertentu.
+     */
+    public function index(Lowongan $lowongan)
+    {
+        $lowongan->load(['lamarans.pelamar.user', 'prodi']);
+        return view('admin.lamaran.index', compact('lowongan'));
+    }
+
+    /**
+     * Export daftar lamaran ke Excel.
+     */
+    public function exportExcel(Lowongan $lowongan)
+    {
+        $filename = 'Lamaran_' . str_replace(' ', '_', $lowongan->nama_posisi) . '_' . now()->format('Ymd') . '.xlsx';
+        return Excel::download(new LamaranExport($lowongan), $filename);
+    }
+
+    /**
+     * Export rekap nilai pelamar per lowongan ke Excel.
+     */
+    public function exportNilai(Lowongan $lowongan)
+    {
+        $filename = 'Nilai_' . str_replace(' ', '_', $lowongan->nama_posisi) . '_' . now()->format('Ymd') . '.xlsx';
+        return Excel::download(new LamaranNilaiExport($lowongan), $filename);
+    }
+
     /**
      * Tampilkan detail lamaran pelamar.
      */
@@ -95,7 +126,46 @@ class LamaranController extends Controller
         $lowongan_id = $lamaran->lowongan_id;
         $lamaran->delete();
 
-        return redirect()->route('admin.lowongan.show', $lowongan_id)->with('success', 'Data lamaran berhasil dihapus.');
+        return redirect()->route('admin.lamaran.index', $lowongan_id)->with('success', 'Data lamaran berhasil dihapus.');
+    }
+
+    /**
+     * Filter dan search lamaran via AJAX
+     */
+    public function filter(Request $request, Lowongan $lowongan)
+    {
+        $search = $request->input('search', '');
+        $status = $request->input('status', '');
+
+        $lamarans = $lowongan->lamarans()
+            ->with(['pelamar.user'])
+            ->get()
+            ->filter(function ($lamaran) use ($search, $status) {
+                $matchSearch = empty($search) || 
+                    stripos($lamaran->pelamar->nama, $search) !== false ||
+                    stripos($lamaran->pelamar->no_telepon, $search) !== false;
+                
+                $matchStatus = empty($status) || $lamaran->status === $status;
+                
+                return $matchSearch && $matchStatus;
+            })
+            ->values();
+
+        return response()->json([
+            'lamarans' => $lamarans->map(function ($lamaran) {
+                return [
+                    'id' => $lamaran->id,
+                    'nama' => $lamaran->pelamar->nama,
+                    'jenjang' => $lamaran->pelamar->jenjang,
+                    'institusi' => $lamaran->pelamar->institusi,
+                    'prodi_pendidikan' => $lamaran->pelamar->prodi_pendidikan,
+                    'no_telepon' => $lamaran->pelamar->no_telepon,
+                    'email' => $lamaran->pelamar->user?->email,
+                    'status' => $lamaran->status,
+                    'status_label' => $lamaran->status_label,
+                ];
+            }),
+        ]);
     }
 }
 
