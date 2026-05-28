@@ -15,7 +15,13 @@ class HistoryController extends Controller
     public function index(Request $request)
     {
         $pelamar = auth()->user()->pelamar;
-        
+
+        // Guard: jika record Pelamar belum ada, arahkan ke halaman profil
+        if (!$pelamar) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Lengkapi profil Anda terlebih dahulu.');
+        }
+
         $lamarans = Lamaran::with(['lowongan.prodi'])
             ->where('pelamar_id', $pelamar->id)
             ->latest()

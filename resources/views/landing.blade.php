@@ -10,6 +10,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+    <!-- Leaflet (peta + pin point) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+
     <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
@@ -51,19 +56,64 @@
         #navbar.scrolled .logo-scrolled { opacity: 1; }
 
         /* ─── Panduan Card Hover Effects ─── */
-        /* ─── Panduan Card Hover Effects ─── */
-.panduan-card { 
-    transition: background 0.15s ease, border-color 0.15s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease; 
-}
-.panduan-card:hover { background: #8b1515; border-color: #8b1515; transform: translateY(-6px); box-shadow: 0 16px 40px rgba(185,28,28,0.3); }
-.panduan-card:hover .panduan-num { opacity: 0; transform: translateY(-10px); }
-.panduan-card:hover .panduan-hover-num { transform: translateX(-50%) scale(1); }
-.panduan-card:hover .panduan-title { color: #fff; }
-.panduan-card:hover .panduan-desc { color: rgba(255,255,255,0.85); }
+        .panduan-card {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+        }
+        .panduan-card:hover {
+            background: #8b1515;
+            border-color: #8b1515;
+            transform: translateY(-6px);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.10);
+        }
 
-.panduan-num { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-.panduan-hover-num { transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); transform: translateX(-50%) scale(0); }
-/* ❌ HAPUS seluruh blok .panduan-hover-num::after */
+        /* Angka "01"–"04": snap hilang saat hover */
+        .panduan-num {
+            transition: none;
+        }
+        .panduan-card:hover .panduan-num {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
+        .panduan-num::after {
+            transition: none;
+        }
+        .panduan-card:hover .panduan-num::after {
+            opacity: 0;
+        }
+
+        /* Bubble angka besar: animasi pop dari bawah saat hover */
+        .panduan-hover-num {
+            transition:
+                opacity 0.25s ease,
+                transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            transform: translateX(-50%) translateY(20px) scale(0.5);
+        }
+        .panduan-card:hover .panduan-hover-num {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0) scale(1);
+        }
+
+        /* Judul & deskripsi: instant */
+        .panduan-title { transition: none; }
+        .panduan-desc  { transition: none; }
+        .panduan-card:hover .panduan-title { color: #fff; }
+        .panduan-card:hover .panduan-desc  { color: rgba(255,255,255,0.82); }
+
+        /* Dissolve masuk saat scroll reveal */
+        .panduan-num-dissolve {
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .panduan-card.in-view .panduan-num-dissolve {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .panduan-card:nth-child(1) .panduan-num-dissolve { transition-delay: 0.15s; }
+        .panduan-card:nth-child(2) .panduan-num-dissolve { transition-delay: 0.28s; }
+        .panduan-card:nth-child(3) .panduan-num-dissolve { transition-delay: 0.41s; }
+        .panduan-card:nth-child(4) .panduan-num-dissolve { transition-delay: 0.54s; }
 
         /* ─── Lowongan Card ─── */
         .lowongan-card { transition: all 0.3s ease; }
@@ -100,6 +150,7 @@
                 <a href="#hero" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Beranda</a>
                 <a href="#panduan" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Panduan</a>
                 <a href="#lowongan" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Lowongan</a>
+                <a href="#lokasi" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Lokasi</a>
             </div>
 
             <div class="flex items-center gap-3">
@@ -158,9 +209,9 @@
             <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.1s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">1</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
-                    <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">01</div>
-                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug transition-colors duration-[400ms]">Buat Akun</div>
-                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed transition-colors duration-[400ms] flex-1">Daftarkan diri Anda dengan membuat akun baru menggunakan email aktif Anda.</p>
+                    <div class="panduan-num panduan-num-dissolve text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">01</div>
+                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug">Buat Akun</div>
+                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Daftarkan diri Anda dengan membuat akun baru menggunakan email aktif Anda.</p>
                 </div>
             </div>
 
@@ -168,9 +219,9 @@
             <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.2s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">2</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
-                    <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">02</div>
-                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug transition-colors duration-[400ms]">Daftar & Isi Data Pribadi</div>
-                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed transition-colors duration-[400ms] flex-1">Lengkapi profil dan data pribadi Anda sesuai dengan dokumen yang dimiliki.</p>
+                    <div class="panduan-num panduan-num-dissolve text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">02</div>
+                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug">Daftar & Isi Data Pribadi</div>
+                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Lengkapi profil dan data pribadi Anda sesuai dengan dokumen yang dimiliki.</p>
                 </div>
             </div>
 
@@ -178,9 +229,9 @@
             <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.3s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">3</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
-                    <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">03</div>
-                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug transition-colors duration-[400ms]">Pilih Posisi Lowongan</div>
-                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed transition-colors duration-[400ms] flex-1">Cari dan pilih posisi dosen yang sesuai dengan bidang keahlian Anda.</p>
+                    <div class="panduan-num panduan-num-dissolve text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">03</div>
+                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug">Pilih Posisi Lowongan</div>
+                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Cari dan pilih posisi dosen yang sesuai dengan bidang keahlian Anda.</p>
                 </div>
             </div>
 
@@ -188,9 +239,9 @@
             <div class="panduan-card relative overflow-visible mt-10 bg-white border-[1.5px] border-gray-200 rounded-2xl min-h-[320px] flex flex-col cursor-pointer animate-on-scroll fade-scale" style="transition-delay: 0.4s">
                 <div class="panduan-hover-num absolute -top-10 left-1/2 w-20 h-20 rounded-full bg-[#8b1515] flex items-center justify-center text-2xl font-bold text-white border-4 border-white shadow-lg z-10">4</div>
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
-                    <div class="panduan-num text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">04</div>
-                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug transition-colors duration-[400ms]">Ajukan Lamaran</div>
-                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed transition-colors duration-[400ms] flex-1">Unggah dokumen pendukung dan kirimkan lamaran Anda untuk diproses.</p>
+                    <div class="panduan-num panduan-num-dissolve text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">04</div>
+                    <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug">Ajukan Lamaran</div>
+                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Unggah dokumen pendukung dan kirimkan lamaran Anda untuk diproses.</p>
                 </div>
             </div>
         </div>
@@ -304,6 +355,91 @@
         @endif
     </section>
 
+    {{-- ========================= LOKASI ========================= --}}
+    <section id="lokasi" class="bg-gray-50 py-16 px-8">
+        <div class="max-w-[1200px] mx-auto">
+
+            {{-- Header --}}
+            <div class="flex flex-col md:flex-row md:items-center md:gap-16 mb-10 animate-on-scroll slide-bottom">
+                <div class="md:w-[40%] shrink-0">
+                    <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+                        Telkom University<br>
+                        <span class="text-[#8b1515]">Surabaya</span>
+                    </h2>
+                </div>
+                <div class="mt-5 md:mt-0 md:w-[60%]">
+                    <p class="text-gray-500 text-base leading-relaxed">
+                        Telkom University Surabaya merupakan kampus yang berdedikasi mencetak generasi unggul di bidang teknologi dan bisnis. Kami membuka kesempatan bagi akademisi terbaik untuk bergabung dan berkontribusi dalam ekosistem pendidikan yang inovatif dan kolaboratif.
+                    </p>
+                </div>
+            </div>
+
+            {{-- Peta interaktif dengan pin point (Leaflet + OpenStreetMap) --}}
+            <div id="map-telu-surabaya" class="w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm animate-on-scroll fade-scale mb-10" style="height: 400px; z-index: 0;"></div>
+
+            {{-- Info bar bawah --}}
+            <div class="flex flex-col md:flex-row md:items-stretch md:gap-8 gap-6 animate-on-scroll slide-bottom">
+
+                {{-- Foto gedung --}}
+                <div class="shrink-0 w-full md:w-[200px] h-[130px] rounded-xl overflow-hidden shadow-sm">
+                    {{-- Simpan foto gedung di: storage/app/public/images/telu-surabaya.jpg --}}
+                    @if(file_exists(storage_path('app/public/images/telu-surabaya.jpg')))
+                        <img src="{{ asset('storage/images/telu-surabaya.jpg') }}"
+                             alt="Gedung Telkom University Surabaya"
+                             class="w-full h-full object-cover">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-[#8b1515] to-[#5a0d0d] flex items-center justify-center">
+                            <div class="text-white text-center px-3">
+                                <svg class="w-8 h-8 mx-auto mb-1 opacity-80" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"/>
+                                </svg>
+                                <span class="text-[10px] font-bold tracking-wider">TEL-U SURABAYA</span>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                {{-- Alamat --}}
+                <div class="flex-1 min-w-0 md:border-l md:border-gray-200 md:pl-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-[#8b1515] shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        <span class="text-xs font-bold tracking-widest text-gray-900 uppercase">Alamat</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed">
+                        Jl. Ketintang No.156, Ketintang,<br>
+                        Kec. Gayungan, Surabaya,<br>
+                        Jawa Timur 60231
+                    </p>
+                </div>
+
+                {{-- Kontak --}}
+                <div class="flex-1 min-w-0 md:border-l md:border-gray-200 md:pl-8">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-4 h-4 text-[#8b1515] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/>
+                        </svg>
+                        <span class="text-xs font-bold tracking-widest text-gray-900 uppercase">Informasi Kontak</span>
+                    </div>
+                    <p class="text-sm text-gray-600 leading-relaxed mb-1">+62 31 8439 9000</p>
+                    <p class="text-sm text-gray-600 leading-relaxed">rekrutmen@telkomuniversity.ac.id</p>
+                </div>
+
+                {{-- Tombol Get Directions --}}
+                <div class="shrink-0 self-start md:self-center">
+                    <a href="https://www.google.com/maps/search/?api=1&query=-7.314908,112.726939"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="inline-flex items-center gap-2 no-underline bg-[#8b1515] text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5 hover:shadow-lg whitespace-nowrap">
+                        Lokasi
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     {{-- ========================= FOOTER ========================= --}}
     <footer class="bg-[#1a1a1a] text-gray-400 text-sm">
         <div class="max-w-[1200px] mx-auto px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -394,6 +530,10 @@
             document.querySelectorAll('.animate-on-scroll').forEach(el => {
                 observer.observe(el);
             });
+            // Observe panduan-card secara terpisah untuk dissolve angka
+            document.querySelectorAll('.panduan-card').forEach(el => {
+                observer.observe(el);
+            });
         });
 
         // ─── Smooth scroll for anchor links ───
@@ -406,6 +546,67 @@
                     target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
+        });
+    </script>
+
+    {{-- Leaflet untuk peta lokasi --}}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mapEl = document.getElementById('map-telu-surabaya');
+            if (!mapEl || typeof L === 'undefined') return;
+
+            // Koordinat Telkom University Surabaya — Jl. Ketintang No.156
+            const lat = -7.314908;
+            const lng = 112.726939;
+
+            const map = L.map('map-telu-surabaya', {
+                center: [lat, lng],
+                zoom: 16,
+                scrollWheelZoom: false,
+            });
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
+            }).addTo(map);
+
+            // Pin point custom warna merah Telkom
+            const pinIcon = L.divIcon({
+                className: 'telu-pin',
+                html: `
+                    <div style="position: relative; width: 36px; height: 48px;">
+                        <svg viewBox="0 0 36 48" width="36" height="48" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 0C8.06 0 0 8.06 0 18c0 13.5 18 30 18 30s18-16.5 18-30C36 8.06 27.94 0 18 0z" fill="#8b1515"/>
+                            <circle cx="18" cy="18" r="7" fill="#fff"/>
+                            <circle cx="18" cy="18" r="3.5" fill="#8b1515"/>
+                        </svg>
+                    </div>
+                `,
+                iconSize: [36, 48],
+                iconAnchor: [18, 48],
+                popupAnchor: [0, -42],
+            });
+
+            L.marker([lat, lng], { icon: pinIcon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="font-family: 'Inter', sans-serif; min-width: 200px;">
+                        <div style="font-weight: 700; color: #8b1515; font-size: 13px; margin-bottom: 4px;">Telkom University Surabaya</div>
+                        <div style="font-size: 12px; color: #4b5563; line-height: 1.5;">
+                            Jl. Ketintang No.156, Ketintang,<br>
+                            Kec. Gayungan, Surabaya,<br>
+                            Jawa Timur 60231
+                        </div>
+                    </div>
+                `)
+                .openPopup();
+
+            // Aktifkan scroll wheel zoom hanya saat user klik peta dulu
+            map.on('focus', () => map.scrollWheelZoom.enable());
+            map.on('blur', () => map.scrollWheelZoom.disable());
         });
     </script>
 </body>

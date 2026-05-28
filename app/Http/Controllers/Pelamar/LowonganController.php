@@ -16,7 +16,13 @@ class LowonganController extends Controller
     public function index(Request $request)
     {
         $pelamar = auth()->user()->pelamar;
-        
+
+        // Guard: jika record Pelamar belum ada, arahkan ke halaman profil
+        if (!$pelamar) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Lengkapi profil Anda terlebih dahulu sebelum melihat lowongan.');
+        }
+
         $allLowongans = Lowongan::with('prodi')
             ->where('status', 'aktif')
             ->where('tanggal_tutup', '>=', now())

@@ -12,6 +12,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Smart redirect: /dashboard akan otomatis mengarahkan ke dashboard yang sesuai rolenya
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
+
+        // Jika role null atau tidak dikenal, logout dan arahkan ke login
+        $validRoles = ['admin', 'pelamar', 'penguji', 'kaprodi'];
+        if (!$role || !in_array($role, $validRoles)) {
+            \Illuminate\Support\Facades\Auth::logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
+            return redirect('/login')->withErrors(['email' => 'Akun Anda belum memiliki akses. Hubungi administrator.']);
+        }
+
         return redirect()->route("{$role}.dashboard");
     })->name('dashboard');
 
