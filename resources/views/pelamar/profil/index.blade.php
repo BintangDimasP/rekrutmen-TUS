@@ -76,6 +76,7 @@
             if (res.status === 200) {
                 if(window.showProfilToast) window.showProfilToast('Verifikasi Berhasil', 'Memuat ulang halaman...', 'success');
                 if (this.otpTimer) clearInterval(this.otpTimer);
+                this.otpMode = false;
                 setTimeout(() => { window.location.reload(); }, 1500);
             } else {
                 this.isLoadingOtp = false;
@@ -84,6 +85,82 @@
         })
         .catch(err => {
             this.isLoadingOtp = false;
+            if(window.showProfilToast) window.showProfilToast('Kesalahan Jaringan', 'Terjadi kesalahan saat memverifikasi.', 'error');
+        });
+    },
+    // ── Phone OTP (WhatsApp) ─────────────────
+    phoneOtpModal: false,
+    phoneOtpCode: '',
+    isLoadingPhoneOtp: false,
+    phoneOtpCountdown: 60,
+    phoneOtpExpired: false,
+    phoneOtpTimer: null,
+    phoneOtpSent: false,
+    startPhoneCountdown() {
+        this.phoneOtpCountdown = 300; // 5 minutes
+        this.phoneOtpExpired = false;
+        if (this.phoneOtpTimer) clearInterval(this.phoneOtpTimer);
+        this.phoneOtpTimer = setInterval(() => {
+            this.phoneOtpCountdown--;
+            if (this.phoneOtpCountdown <= 0) {
+                this.phoneOtpExpired = true;
+                clearInterval(this.phoneOtpTimer);
+            }
+        }, 1000);
+    },
+    get phoneOtpTimeDisplay() {
+        const s = Math.max(0, this.phoneOtpCountdown);
+        return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+    },
+    get phoneOtpArcOffset() {
+        const circ = 100.53;
+        return circ * (1 - Math.max(0, this.phoneOtpCountdown) / 300);
+    },
+    sendPhoneOtp() {
+        this.isLoadingPhoneOtp = true;
+        fetch('{{ route('phone.otp.send') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        })
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(res => {
+            this.isLoadingPhoneOtp = false;
+            if (res.status === 200) {
+                this.phoneOtpSent = true;
+                this.phoneOtpCode = '';
+                this.phoneOtpModal = true;
+                this.startPhoneCountdown();
+            } else {
+                if(window.showProfilToast) window.showProfilToast('Gagal', res.body.message, 'error');
+            }
+        })
+        .catch(err => {
+            this.isLoadingPhoneOtp = false;
+            if(window.showProfilToast) window.showProfilToast('Kesalahan Jaringan', 'Terjadi kesalahan saat menghubungi server.', 'error');
+        });
+    },
+    verifyPhoneOtp() {
+        if(this.phoneOtpCode.length !== 6) return;
+        this.isLoadingPhoneOtp = true;
+        fetch('{{ route('phone.otp.verify') }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+            body: JSON.stringify({ otp: this.phoneOtpCode })
+        })
+        .then(res => res.json().then(data => ({ status: res.status, body: data })))
+        .then(res => {
+            if (res.status === 200) {
+                if(window.showProfilToast) window.showProfilToast('Verifikasi Berhasil', 'Memuat ulang halaman...', 'success');
+                if (this.phoneOtpTimer) clearInterval(this.phoneOtpTimer);
+                this.phoneOtpModal = false;
+                setTimeout(() => { window.location.reload(); }, 1500);
+            } else {
+                this.isLoadingPhoneOtp = false;
+                if(window.showProfilToast) window.showProfilToast('Verifikasi Gagal', res.body.message, 'error');
+            }
+        })
+        .catch(err => {
+            this.isLoadingPhoneOtp = false;
             if(window.showProfilToast) window.showProfilToast('Kesalahan Jaringan', 'Terjadi kesalahan saat memverifikasi.', 'error');
         });
     }
@@ -196,7 +273,22 @@
                         @error('status_pernikahan')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                     </div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Telepon / WA</p>
-                        <p x-show="!isEditing" class="text-sm font-semibold text-gray-700 mt-0.5">{{ $pelamar->no_telepon ?: '-' }}</p>
+                        <div x-show="!isEditing" class="flex items-center gap-2 mt-0.5 flex-wrap">
+                            <p class="text-sm font-semibold text-gray-700">{{ $pelamar->no_telepon ?: '-' }}</p>
+                            @if($pelamar->no_telepon)
+                                @if($pelamar->phone_verified_at)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 border border-green-200 text-[0.6rem] font-bold text-green-700">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                        Terverifikasi
+                                    </span>
+                                @else
+                                    <button type="button" @click="sendPhoneOtp()" :disabled="isLoadingPhoneOtp"
+                                        class="text-[0.65rem] font-bold text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap flex-shrink-0 inline-flex items-center gap-1 disabled:opacity-50">
+                                        <span x-text="isLoadingPhoneOtp ? 'Mengirim...' : 'Verifikasi by WA'"></span>
+                                    </button>
+                                @endif
+                            @endif
+                        </div>
                         <input x-show="isEditing" x-cloak type="text" name="no_telepon" value="{{ old('no_telepon',$pelamar->no_telepon) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         @error('no_telepon')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                     </div>
@@ -215,63 +307,7 @@
                                 @endif
                             </div>
 
-                            <!-- OTP Mode (Biasa, tidak melayang) -->
-                            @if(!auth()->user()->hasVerifiedEmail())
-                            <div x-show="otpMode" x-cloak class="mt-0.5">
-                                <p class="text-sm font-semibold text-gray-700 mb-3">{{ $pelamar->user?->email }}</p>
-                                
-                                <div class="flex flex-col gap-2">
-                                    <p class="text-[0.55rem] font-black text-gray-400 uppercase tracking-widest">Kode OTP</p>
-                                    <div class="flex items-center gap-3">
-                                        <div class="relative flex items-center gap-1 flex-shrink-0">
-                                            <input type="text" x-model="otpCode" @input="verifyOtp" maxlength="6"
-                                                class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
-                                                :disabled="isLoadingOtp" autocomplete="one-time-code" inputmode="numeric">
-                                            <template x-for="i in 6">
-                                                <div class="w-7 h-8 border-[1.5px] rounded-md flex items-center justify-center text-sm font-bold transition-all duration-150 select-none"
-                                                     :class="{
-                                                        'border-[#8b1515] ring-1 ring-[#8b1515]/10 bg-white text-[#8b1515]': otpCode.length === i-1 || (i===6 && otpCode.length===6),
-                                                        'border-gray-300 bg-white text-gray-800': otpCode.length !== i-1 && !(i===6 && otpCode.length===6)
-                                                     }">
-                                                    <span x-text="otpCode[i-1] || ''"></span>
-                                                </div>
-                                            </template>
-                                        </div>
-                                        <div class="flex items-center flex-shrink-0 justify-center">
-                                            <div x-show="!otpExpired" class="flex flex-col items-center gap-0.5">
-                                                <div class="relative" style="width:24px;height:24px;">
-                                                    <svg width="24" height="24" viewBox="0 0 40 40" class="rotate-[-90deg]">
-                                                        <circle cx="20" cy="20" r="16" fill="none" stroke="#e5e7eb" stroke-width="3.5"/>
-                                                        <circle cx="20" cy="20" r="16" fill="none"
-                                                                :stroke="otpCountdown <= 10 ? '#ef4444' : '#8b1515'"
-                                                                stroke-width="3.5" stroke-linecap="round"
-                                                                stroke-dasharray="100.53" :stroke-dashoffset="otpArcOffset"
-                                                                style="transition: stroke-dashoffset 1s linear;"/>
-                                                    </svg>
-                                                    <div class="absolute inset-0 flex items-center justify-center">
-                                                        <svg class="w-2 h-2 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                <span class="text-[9px] font-bold tabular-nums leading-none"
-                                                      :class="otpCountdown <= 10 ? 'text-red-500' : 'text-[#8b1515]'"
-                                                      x-text="otpTimeDisplay"></span>
-                                            </div>
-                                            <button type="button" x-show="otpExpired" x-cloak @click="sendOtp" :disabled="isLoadingOtp"
-                                                    class="flex flex-col items-center gap-0.5 group disabled:opacity-50 transition-all cursor-pointer">
-                                                <div class="w-6 h-6 rounded-full border-[1.5px] border-[#8b1515]/30 bg-red-50 group-hover:bg-red-100 flex items-center justify-center transition-colors">
-                                                    <svg class="w-3 h-3 text-[#8b1515]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                                    </svg>
-                                                </div>
-                                                <span class="text-[9px] font-black text-[#8b1515] leading-none whitespace-nowrap uppercase tracking-wider">Kirim Ulang</span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
+                            <!-- OTP Mode dipindah ke modal -->
                         </div>
                         <div x-show="isEditing" x-cloak>
                             <p class="text-[0.55rem] font-black text-gray-400 uppercase">Alamat Email</p>
@@ -697,6 +733,125 @@
         </div>
     </div>
     </form>
+
+    {{-- ── WhatsApp Phone OTP Modal ── --}}
+    <template x-teleport="body">
+        <div x-show="phoneOtpModal" x-transition.opacity
+             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="phoneOtpModal = false; if(phoneOtpTimer) clearInterval(phoneOtpTimer);" style="display: none;">
+            <div x-show="phoneOtpModal"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[380px] overflow-hidden text-center relative">
+
+            {{-- Close --}}
+            <button type="button" @click="phoneOtpModal = false; if(phoneOtpTimer) clearInterval(phoneOtpTimer);"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 pb-6">
+                {{-- WhatsApp Icon --}}
+                <div class="mx-auto mb-4 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
+                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                </div>
+
+                <h2 class="text-xl font-extrabold text-gray-800 mb-1">Input Kode OTP</h2>
+                <p class="text-sm text-gray-500 mb-6">Kami telah mengirim kode OTP 6 digit ke WhatsApp <span class="font-bold text-gray-700">{{ $pelamar->no_telepon }}</span></p>
+
+                {{-- Step 2: Enter OTP --}}
+                <div>
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <div class="relative flex items-center gap-1 flex-shrink-0">
+                            <input type="text" x-model="phoneOtpCode" @input="verifyPhoneOtp()" maxlength="6"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
+                                :disabled="isLoadingPhoneOtp" autocomplete="one-time-code" inputmode="numeric">
+                            <template x-for="i in 6">
+                                <div class="w-9 h-11 border-[1.5px] rounded-lg flex items-center justify-center text-base font-bold transition-all duration-150 select-none"
+                                     :class="{
+                                        'border-green-500 ring-1 ring-green-500/20 bg-white text-green-700': phoneOtpCode.length === i-1 || (i===6 && phoneOtpCode.length===6),
+                                        'border-gray-300 bg-white text-gray-800': phoneOtpCode.length !== i-1 && !(i===6 && phoneOtpCode.length===6)
+                                     }">
+                                    <span x-text="phoneOtpCode[i-1] || ''"></span>
+                                </div>
+                            </template>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center gap-2 mt-2">
+                        <div x-show="!phoneOtpExpired" class="text-sm font-semibold text-gray-500">
+                            Sisa waktu <span :class="phoneOtpCountdown <= 30 ? 'text-red-500' : 'text-green-600'" x-text="phoneOtpTimeDisplay"></span>
+                        </div>
+                        <button type="button" x-show="phoneOtpExpired" x-cloak @click="sendPhoneOtp()" :disabled="isLoadingPhoneOtp"
+                                class="text-sm font-bold text-green-600 hover:text-green-700 underline underline-offset-2 disabled:opacity-50 transition-colors">
+                            Kirim Ulang Kode OTP
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </template>
+
+    {{-- ── Email OTP Modal ── --}}
+    <template x-teleport="body">
+        <div x-show="otpMode" x-transition.opacity
+             class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="otpMode = false; if(otpTimer) clearInterval(otpTimer);" style="display: none;">
+            <div x-show="otpMode"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[380px] overflow-hidden text-center relative">
+
+            {{-- Close --}}
+            <button type="button" @click="otpMode = false; if(otpTimer) clearInterval(otpTimer);"
+                class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors z-10">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+
+            <div class="p-8 pb-6">
+                {{-- Email Icon --}}
+                <div class="mx-auto mb-4 w-16 h-16 bg-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                </div>
+
+                <h2 class="text-xl font-extrabold text-gray-800 mb-1">Input Kode OTP</h2>
+                <p class="text-sm text-gray-500 mb-6">Kami telah mengirim kode OTP 6 digit ke email <span class="font-bold text-gray-700">{{ $pelamar->user?->email }}</span></p>
+
+                {{-- Enter OTP --}}
+                <div>
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                        <div class="relative flex items-center gap-1 flex-shrink-0">
+                            <input type="text" x-model="otpCode" @input="verifyOtp()" maxlength="6"
+                                class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
+                                :disabled="isLoadingOtp" autocomplete="one-time-code" inputmode="numeric">
+                            <template x-for="i in 6">
+                                <div class="w-9 h-11 border-[1.5px] rounded-lg flex items-center justify-center text-base font-bold transition-all duration-150 select-none"
+                                     :class="{
+                                        'border-amber-500 ring-1 ring-amber-500/20 bg-white text-amber-700': otpCode.length === i-1 || (i===6 && otpCode.length===6),
+                                        'border-gray-300 bg-white text-gray-800': otpCode.length !== i-1 && !(i===6 && otpCode.length===6)
+                                     }">
+                                    <span x-text="otpCode[i-1] || ''"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center gap-2 mt-2">
+                        <div x-show="!otpExpired" class="text-sm font-semibold text-gray-500">
+                            Sisa waktu <span :class="otpCountdown <= 10 ? 'text-red-500' : 'text-amber-600'" x-text="otpTimeDisplay"></span>
+                        </div>
+                        <button type="button" x-show="otpExpired" x-cloak @click="sendOtp()" :disabled="isLoadingOtp"
+                                class="text-sm font-bold text-amber-600 hover:text-amber-700 underline underline-offset-2 disabled:opacity-50 transition-colors">
+                            Kirim Ulang Kode OTP
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </template>
 
    
 </div>

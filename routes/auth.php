@@ -68,6 +68,12 @@ Route::middleware('auth')->group(function () {
     Route::post('email-otp/verify', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'verifyOtp'])
                 ->name('email.otp.verify');
 
+    // Phone Verification OTP via WhatsApp (AJAX)
+    Route::post('phone-otp/send', [\App\Http\Controllers\Auth\PhoneVerificationOtpController::class, 'sendOtp'])
+                ->name('phone.otp.send');
+    Route::post('phone-otp/verify', [\App\Http\Controllers\Auth\PhoneVerificationOtpController::class, 'verifyOtp'])
+                ->name('phone.otp.verify');
+
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])

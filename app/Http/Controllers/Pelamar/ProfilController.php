@@ -25,7 +25,7 @@ class ProfilController extends Controller
             'nama'          => 'required|string|max:255',
             'tempat_lahir'  => 'required|string|max:255',
             'tanggal_lahir' => 'required|date',
-            'no_telepon'    => 'required|string|max:20',
+            'no_telepon'    => ['required', 'string', 'regex:/^08[0-9]{8,13}$/'],
             'jenis_kelamin' => 'required|in:L,P',
             'kewarganegaraan' => 'required|string|max:255',
             'status_pernikahan' => 'required|string|max:255',
@@ -120,6 +120,11 @@ class ProfilController extends Controller
                 }
                 $data[$field] = $request->file($field)->store("pelamar/" . $pelamar->user_id, 'public');
             }
+        }
+
+        // Reset phone verification if phone number changed
+        if ($pelamar->no_telepon !== $request->no_telepon) {
+            $data['phone_verified_at'] = null;
         }
 
         $pelamar->update($data);

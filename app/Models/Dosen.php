@@ -20,6 +20,7 @@ class Dosen extends Model
         'nip',
         'nidn',
         'email',
+        'no_telepon',
         'prodi_id',
         'is_penguji',
         'is_kaprodi',

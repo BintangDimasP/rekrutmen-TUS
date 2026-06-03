@@ -100,6 +100,12 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
+        // Cek verifikasi nomor telepon
+        if (!$pelamar->phone_verified_at) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
+        }
+
         return view('pelamar.lowongan.apply', compact('lowongan', 'pelamar'));
     }
 
@@ -129,6 +135,12 @@ class LowonganController extends Controller
         if (!auth()->user()->hasVerifiedEmail()) {
             return redirect()->route('pelamar.profil.index')
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
+        }
+
+        // Cek verifikasi nomor telepon
+        if (!$pelamar->phone_verified_at) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
         }
 
         $request->validate([

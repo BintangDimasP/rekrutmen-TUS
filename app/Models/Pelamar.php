@@ -18,6 +18,7 @@ class Pelamar extends Model
         'tempat_lahir',
         'tanggal_lahir',
         'no_telepon',
+        'phone_verified_at',
         'jenis_kelamin',
         'kewarganegaraan',
         'status_pernikahan',
@@ -85,6 +86,7 @@ class Pelamar extends Model
     protected $casts = [
         'tanggal_lahir'      => 'date',
         'tanggal_tes_bahasa' => 'date',
+        'phone_verified_at'  => 'datetime',
         'ipk'                => 'decimal:2',
         'skor_bahasa'        => 'decimal:2',
     ];

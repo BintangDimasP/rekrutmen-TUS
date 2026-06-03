@@ -903,6 +903,13 @@
                 showToast('Peringatan', 'NIK harus terdiri dari 16 digit angka.', 'warning');
                 return false;
             }
+
+            const no_telp = document.getElementById('no_telepon').value;
+            if (!/^08[0-9]{8,13}$/.test(no_telp)) {
+                document.getElementById('no_telepon').classList.add('error');
+                showToast('Peringatan', 'Format No. Telepon harus diawali "08" dan berisi angka (10-15 digit).', 'warning');
+                return false;
+            }
         }
 
         return true;

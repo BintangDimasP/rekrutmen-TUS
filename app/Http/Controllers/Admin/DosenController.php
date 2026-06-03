@@ -21,10 +21,11 @@ class DosenController extends Controller
     public function store(Request $request, Prodi $prodi)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'kode' => ['required', 'string', 'max:50', 'unique:dosens,kode'],
-            'nip'  => ['nullable', 'string', 'max:50'],
-            'nidn' => ['nullable', 'string', 'max:50'],
+            'nama'       => ['required', 'string', 'max:255'],
+            'kode'       => ['required', 'string', 'max:50', 'unique:dosens,kode'],
+            'nip'        => ['nullable', 'string', 'max:50'],
+            'nidn'       => ['nullable', 'string', 'max:50'],
+            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{8,13}$/'],
         ]);
 
         $isKaprodi = $request->boolean('is_kaprodi');
@@ -39,6 +40,7 @@ class DosenController extends Controller
                 'kode'       => strtoupper($request->kode),
                 'nip'        => $request->nip,
                 'nidn'       => $request->nidn,
+                'no_telepon' => $request->no_telepon,
                 'email'      => '-',
                 'prodi_id'   => $prodi->id,
                 'is_kaprodi' => $isKaprodi,
@@ -62,10 +64,11 @@ class DosenController extends Controller
     public function update(Request $request, Dosen $dosen)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:255'],
-            'kode' => ['required', 'string', 'max:50', 'unique:dosens,kode,' . $dosen->id],
-            'nip'  => ['nullable', 'string', 'max:50'],
-            'nidn' => ['nullable', 'string', 'max:50'],
+            'nama'       => ['required', 'string', 'max:255'],
+            'kode'       => ['required', 'string', 'max:50', 'unique:dosens,kode,' . $dosen->id],
+            'nip'        => ['nullable', 'string', 'max:50'],
+            'nidn'       => ['nullable', 'string', 'max:50'],
+            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{8,13}$/'],
         ]);
 
         $isKaprodi  = $request->boolean('is_kaprodi');
@@ -83,6 +86,7 @@ class DosenController extends Controller
                 'kode'       => strtoupper($request->kode),
                 'nip'        => $request->nip,
                 'nidn'       => $request->nidn,
+                'no_telepon' => $request->no_telepon,
                 'is_kaprodi' => $isKaprodi,
                 // is_penguji dikelola via PengujiController
             ]);
