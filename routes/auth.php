@@ -62,6 +62,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
+    // Email Verification OTP (AJAX)
+    Route::post('email-otp/send', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'sendOtp'])
+                ->name('email.otp.send');
+    Route::post('email-otp/verify', [\App\Http\Controllers\Auth\EmailVerificationOtpController::class, 'verifyOtp'])
+                ->name('email.otp.verify');
+
     Route::put('password', [PasswordController::class, 'update'])->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])

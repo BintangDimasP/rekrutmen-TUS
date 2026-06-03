@@ -222,7 +222,7 @@
             </div>
 
             @else
-            {{-- FORM --}}
+            {{-- FORM (selalu tampil; guard email dihandle via JS toast) --}}
             <div>
                 <div class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider pb-2.5 border-b border-gray-100 mb-3">
                     Dokumen Pelengkap
@@ -237,7 +237,7 @@
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                             Surat Lamaran <span class="text-[#8b1515]">*</span>
                         </label>
-                        <div class="file-upload-area" onclick="document.getElementById('file_surat_lamaran').click()" style="cursor:pointer;">
+                        <div class="file-upload-area" onclick="handleUploadClick(event, 'file_surat_lamaran', 'label_surat_lamaran')" style="cursor:pointer;">
                             <div>
                                 <div class="text-[13px] font-medium text-gray-500" id="label_surat_lamaran">Upload Berkas</div>
                                 <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
@@ -245,7 +245,7 @@
                         </div>
                         <input id="file_surat_lamaran" type="file" name="file_surat_lamaran" accept=".pdf"
                                style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
-                               onchange="document.getElementById('label_surat_lamaran').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                               onchange="document.getElementById('label_surat_lamaran').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Upload Berkas'">
                         @error('file_surat_lamaran')
                             <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
                         @enderror
@@ -257,7 +257,7 @@
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                             SK Penyetaraan <span class="text-gray-400 font-normal normal-case">(opsional, bagi lulusan Luar Negeri)</span>
                         </label>
-                        <div class="file-upload-area" onclick="document.getElementById('file_sk_penyetaraan').click()" style="cursor:pointer;">
+                        <div class="file-upload-area" onclick="handleUploadClick(event, 'file_sk_penyetaraan', 'label_sk_penyetaraan')" style="cursor:pointer;">
                             <div>
                                 <div class="text-[13px] font-medium text-gray-500" id="label_sk_penyetaraan">Upload Berkas</div>
                                 <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
@@ -265,7 +265,7 @@
                         </div>
                         <input id="file_sk_penyetaraan" type="file" name="file_sk_penyetaraan" accept=".pdf"
                                style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
-                               onchange="document.getElementById('label_sk_penyetaraan').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                               onchange="document.getElementById('label_sk_penyetaraan').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Upload Berkas'">
                         @error('file_sk_penyetaraan')
                             <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
                         @enderror
@@ -277,7 +277,7 @@
                         <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
                             Surat Pemberhentian <span class="text-gray-400 font-normal normal-case">(opsional, apabila bekerja di Instansi Lain)</span>
                         </label>
-                        <div class="file-upload-area" onclick="document.getElementById('file_surat_pemberhentian').click()" style="cursor:pointer;">
+                        <div class="file-upload-area" onclick="handleUploadClick(event, 'file_surat_pemberhentian', 'label_surat_pemberhentian')" style="cursor:pointer;">
                             <div>
                                 <div class="text-[13px] font-medium text-gray-500" id="label_surat_pemberhentian">Upload Berkas</div>
                                 <div class="text-[11px] text-gray-400 mt-0.5">Format PDF, maks. 5MB</div>
@@ -285,7 +285,7 @@
                         </div>
                         <input id="file_surat_pemberhentian" type="file" name="file_surat_pemberhentian" accept=".pdf"
                                style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"
-                               onchange="document.getElementById('label_surat_pemberhentian').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Pilih file atau klik di sini'">
+                               onchange="document.getElementById('label_surat_pemberhentian').textContent = this.files[0] ? '✓ ' + this.files[0].name : 'Upload Berkas'">
                         @error('file_surat_pemberhentian')
                             <p class="text-xs text-red-500 font-semibold mt-1.5">{{ $message }}</p>
                         @enderror
@@ -305,7 +305,37 @@
 
                 @push('scripts')
                 <script>
+                    // Flag dari server: apakah email sudah terverifikasi
+                    var emailVerified = {{ auth()->user()->hasVerifiedEmail() ? 'true' : 'false' }};
+                    var userEmail    = '{{ auth()->user()->email }}';
+
+                    /**
+                     * Intercept klik pada area upload.
+                     * Jika email belum terverifikasi → tampilkan toast dan batalkan.
+                     */
+                    function handleUploadClick(event, inputId, labelId) {
+                        if (!emailVerified) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            showLamaranToast(
+                                'Email Belum Diverifikasi',
+                                'Verifikasi alamat email <strong>' + userEmail + '</strong> terlebih dahulu sebelum mengunggah dokumen.',
+                                'warning'
+                            );
+                            return;
+                        }
+                        document.getElementById(inputId).click();
+                    }
+
                     function validateLamaranForm() {
+                        if (!emailVerified) {
+                            showLamaranToast(
+                                'Email Belum Diverifikasi',
+                                'Verifikasi alamat email <strong>' + userEmail + '</strong> terlebih dahulu sebelum mengajukan lamaran.',
+                                'warning'
+                            );
+                            return false;
+                        }
                         var suratInput = document.getElementById('file_surat_lamaran');
                         if (!suratInput.files || suratInput.files.length === 0) {
                             showLamaranToast('Upload Belum Lengkap', 'Surat Lamaran wajib diunggah sebelum mengirim lamaran. Format file: PDF, maksimal 5MB.', 'error');
@@ -315,28 +345,34 @@
                     }
 
                     function showLamaranToast(title, message, type) {
-                        // Remove existing toast if any
                         var existing = document.getElementById('lamaran-toast');
                         if (existing) existing.remove();
 
                         var colors = {
-                            error: { bar: '#ef4444', icon: '#ef4444' },
+                            error:   { bar: '#ef4444', icon: '#ef4444' },
                             warning: { bar: '#f59e0b', icon: '#f59e0b' },
                             success: { bar: '#22c55e', icon: '#22c55e' },
-                            info: { bar: '#3b82f6', icon: '#3b82f6' }
+                            info:    { bar: '#3b82f6', icon: '#3b82f6' }
                         };
                         var c = colors[type] || colors.error;
                         var icons = {
-                            error: '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>',
+                            error:   '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>',
                             warning: '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>',
                             success: '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>',
-                            info: '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+                            info:    '<svg width="18" height="18" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
                         };
 
                         var toast = document.createElement('div');
                         toast.id = 'lamaran-toast';
-                        toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;min-width:320px;max-width:400px;background:white;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.1);border:1px solid #e5e7eb;overflow:hidden;animation:toastSlideIn 0.3s ease forwards;';
-                        toast.innerHTML = '<div style="width:5px;align-self:stretch;background:' + c.bar + ';flex-shrink:0;border-radius:8px 0 0 8px;"></div><div style="width:36px;height:36px;border-radius:50%;background:' + c.icon + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:12px 0 12px 8px;">' + (icons[type] || icons.error) + '</div><div style="flex:1;padding:12px 8px 12px 0;"><div style="font-size:0.875rem;font-weight:700;color:#1f2937;margin-bottom:2px;">' + title + '</div><div style="font-size:0.75rem;color:#6b7280;line-height:1.4;">' + message + '</div></div><button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;padding:8px;margin-right:8px;opacity:0.4;font-size:1rem;line-height:1;color:#374151;">&times;</button>';
+                        toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:9999;display:flex;align-items:center;gap:12px;min-width:320px;max-width:420px;background:white;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:1px solid #e5e7eb;overflow:hidden;animation:toastSlideIn 0.3s ease forwards;';
+                        toast.innerHTML =
+                            '<div style="width:5px;align-self:stretch;background:' + c.bar + ';flex-shrink:0;border-radius:8px 0 0 8px;"></div>' +
+                            '<div style="width:36px;height:36px;border-radius:50%;background:' + c.icon + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:12px 0 12px 10px;">' + (icons[type] || icons.error) + '</div>' +
+                            '<div style="flex:1;padding:12px 8px 12px 0;">' +
+                                '<div style="font-size:0.875rem;font-weight:700;color:#1f2937;margin-bottom:2px;">' + title + '</div>' +
+                                '<div style="font-size:0.75rem;color:#6b7280;line-height:1.5;">' + message + '</div>' +
+                            '</div>' +
+                            '<button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;padding:8px;margin-right:8px;opacity:0.4;font-size:1.1rem;line-height:1;color:#374151;">&times;</button>';
 
                         if (!document.getElementById('toast-anim-style')) {
                             var style = document.createElement('style');
@@ -346,13 +382,13 @@
                         }
 
                         document.body.appendChild(toast);
-                        setTimeout(function() { if (toast.parentElement) toast.remove(); }, 5000);
+                        setTimeout(function() { if (toast.parentElement) toast.remove(); }, 5500);
                     }
                 </script>
                 @endpush
             </div>
-            @endif
 
+            @endif {{-- end: existing / tanggal_tutup / else --}}
         </div>
     </div>
 

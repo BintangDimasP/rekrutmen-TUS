@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 
 // Autentikasi group
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     // Smart redirect: /dashboard akan otomatis mengarahkan ke dashboard yang sesuai rolenya
     Route::get('/dashboard', function () {

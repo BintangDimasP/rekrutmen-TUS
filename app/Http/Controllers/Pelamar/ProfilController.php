@@ -20,6 +20,7 @@ class ProfilController extends Controller
 
         $request->validate([
             // Data Diri
+            'email'         => 'required|email|max:255|unique:users,email,' . auth()->id(),
             'nik'           => 'required|string|size:16|unique:pelamars,nik,' . $pelamar->id,
             'nama'          => 'required|string|max:255',
             'tempat_lahir'  => 'required|string|max:255',
@@ -123,8 +124,19 @@ class ProfilController extends Controller
 
         $pelamar->update($data);
 
-        // Sync name to user table
-        auth()->user()->update(['name' => $request->nama]);
+        // Sync name and email to user table
+        $user = auth()->user();
+        $user->name = $request->nama;
+        
+        if ($user->email !== $request->email) {
+            $user->email = $request->email;
+            $user->email_verified_at = null; // Reset verification status for new email
+            $user->save();
+            // Automatically send new verification email
+            $user->sendEmailVerificationNotification();
+        } else {
+            $user->save();
+        }
 
         return redirect()->route('pelamar.profil.index')->with('success', 'Profil berhasil diperbarui.');
     }

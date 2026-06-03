@@ -1,0 +1,150 @@
+@startuml Sistem Rekrutmen Dosen
+left to right direction
+skinparam packageStyle rectangle
+scale 0.8
+
+title Use Case Diagram - Sistem Rekrutmen Dosen
+
+actor Pelamar as P
+actor Admin as A
+actor Kaprodi as K
+actor "Penguji" as D
+actor System as S
+
+rectangle "Sistem Rekrutmen Dosen" {
+  
+  package "Autentikasi" {
+    (Register) as UC01
+    (Login) as UC02
+    (Logout) as UC03
+    (Verifikasi Email OTP) as UC04
+    (Reset Password) as UC05
+    (Switch Role) as UC06
+  }
+  
+  package "Profil Pelamar" {
+    (Kelola Profil) as UC10
+    (Edit Data Diri) as UC11
+    (Upload Dokumen) as UC12
+    (Data Akademik) as UC13
+  }
+  
+  package "Lowongan & Lamaran" {
+    (Lihat Lowongan) as UC20
+    (Daftar Lamaran) as UC21
+    (Tracking Status) as UC22
+    (History Lamaran) as UC23
+  }
+  
+  package "Admin - Lowongan" {
+    (Kelola Lowongan) as UC30
+    (Ubah Status Lowongan) as UC31
+  }
+  
+  package "Admin - Lamaran" {
+    (Kelola Lamaran) as UC40
+    (Update Status Lamaran) as UC41
+    (Export Data) as UC42
+  }
+  
+  package "Admin - Jadwal" {
+    (Buat Jadwal Seleksi) as UC50
+    (Assign Penguji) as UC51
+  }
+  
+  package "Admin - Master" {
+    (Kelola Prodi) as UC60
+    (Kelola Dosen) as UC61
+    (Kelola Pelamar) as UC62
+    (Import Data) as UC63
+  }
+  
+  package "Admin - Dashboard" {
+    (Dashboard & Statistik) as UC70
+  }
+  
+  package "Kaprodi" {
+    (Monitor Pelamar Prodi) as UC80
+    (Lihat Nilai Seleksi) as UC81
+  }
+  
+  package "Penguji" {
+    (Jadwal Pengujian) as UC90
+    (Nilai Micro Teaching) as UC91
+    (Nilai Wawancara) as UC92
+  }
+  
+  package "Notifikasi" {
+    (Notifikasi Email) as UC100
+    (Notifikasi In-App) as UC101
+  }
+  
+  package "Pengaturan" {
+    (Setting Sistem) as UC110
+  }
+}
+
+' Pelamar
+P --> UC01
+P --> UC02
+P --> UC03
+P --> UC04
+P --> UC05
+P --> UC10
+P --> UC11
+P --> UC12
+P --> UC13
+P --> UC20
+P --> UC21
+P --> UC22
+P --> UC23
+P --> UC101
+
+' Admin
+A --> UC02
+A --> UC03
+A --> UC06
+A --> UC30
+A --> UC31
+A --> UC40
+A --> UC41
+A --> UC42
+A --> UC50
+A --> UC51
+A --> UC60
+A --> UC61
+A --> UC62
+A --> UC63
+A --> UC70
+A --> UC110
+A --> UC101
+
+' Kaprodi
+K --> UC02
+K --> UC03
+K --> UC06
+K --> UC80
+K --> UC81
+K --> UC101
+
+' Penguji
+D --> UC02
+D --> UC03
+D --> UC06
+D --> UC90
+D --> UC91
+D --> UC92
+D --> UC101
+
+' System
+S --> UC100
+
+' Includes
+UC04 ..> UC100 : <<include>>
+UC05 ..> UC100 : <<include>>
+UC41 ..> UC100 : <<include>>
+UC50 ..> UC100 : <<include>>
+UC21 ..> UC10 : <<include>>
+UC21 ..> UC12 : <<include>>
+
+@enduml

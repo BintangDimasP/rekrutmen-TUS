@@ -240,13 +240,13 @@
                                                 <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus dosen ini?</h2>
                                                 <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Data yang dihapus tidak dapat dikembalikan!</p>
 
-                                                <div class="flex justify-center gap-3">
-                                                    <form method="POST" action="{{ route('admin.dosen.destroy', $dosen) }}" class="flex-1 m-0">
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <form method="POST" action="{{ route('admin.dosen.destroy', $dosen) }}" class="contents">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
                                                     </form>
-                                                    <button type="button" @click="showDeleteModal = false" class="flex-1 w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                                                    <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
                                                 </div>
                                             </div>
                                         </div>

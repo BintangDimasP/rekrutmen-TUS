@@ -152,6 +152,7 @@
             </div>
 
             <form action="{{ route('login') }}" method="POST" class="space-y-5">
+                @csrf
                 
                 <div>
                     <label for="email" class="block text-[11px] font-bold text-gray-600 tracking-wider uppercase mb-2">Email</label>

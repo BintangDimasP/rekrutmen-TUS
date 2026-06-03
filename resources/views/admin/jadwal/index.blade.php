@@ -153,14 +153,14 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px; width:100%">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[12%]">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[14%]">Lowongan</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[14%]">Pelamar</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[16%]">Micro Teaching</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[8%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap border-l border-red-700 w-[16%]">Wawancara</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[8%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center border-l border-red-700 w-[12%]">Aksi</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[12%]">Tanggal</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[14%]">Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[14%]">Pelamar</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[16%]">Micro Teaching</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[16%]">Wawancara</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[12%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -192,19 +192,19 @@
                         </td>
 
                         {{-- Lowongan --}}
-                        <td class="py-4 px-4 border-l border-gray-100 align-top">
+                        <td class="py-4 px-4 align-top">
                             <div class="text-sm font-bold text-[#8b1515]">{{ $row->lowongan->nama_posisi }}</div>
                             <div class="text-[0.75rem] font-medium text-gray-500 mt-1">{{ $row->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
 
                         {{-- Pelamar --}}
-                        <td class="py-4 px-4 border-l border-gray-100 align-top">
+                        <td class="py-4 px-4 align-top">
                             <div class="text-sm font-bold text-gray-800">{{ $row->pelamar->nama }}</div>
-                            <div class="text-[0.75rem] text-gray-500 font-medium mt-1">{{ $row->pelamar->user?->email ?? '-' }}</div>
+                            <div class="text-[0.75rem] text-gray-500 font-medium mt-1 truncate" title="{{ $row->pelamar->user?->email ?? '' }}">{{ $row->pelamar->user?->email ?? '-' }}</div>
                         </td>
 
                         {{-- Micro Teaching --}}
-                        <td class="py-4 px-4 border-l border-gray-100 align-top">
+                        <td class="py-4 px-4 align-top">
                             @if($mFirst && $mInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
                                     <div><strong>Sesi {{ $mFirst->sesi }} :</strong>  ({{ $mInfo['start'] }} – {{ $mInfo['end'] }})</div>
@@ -228,7 +228,7 @@
                         </td>
 
                         {{-- Status Micro --}}
-                        <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                        <td class="py-4 px-4 text-center align-top">
                             @if($row->micro->isNotEmpty())
                                 @php
                                     $mTotal = $row->micro->count();
@@ -246,7 +246,7 @@
                         </td>
 
                         {{-- Wawancara --}}
-                        <td class="py-4 px-4 border-l border-gray-100 align-top">
+                        <td class="py-4 px-4 align-top">
                             @if($wFirst && $wInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
                                     <div><strong>Sesi {{ $wFirst->sesi }} :</strong>  ({{ $wInfo['start'] }} – {{ $wInfo['end'] }})</div>
@@ -270,7 +270,7 @@
                         </td>
 
                         {{-- Status Wawancara --}}
-                        <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                        <td class="py-4 px-4 text-center align-top">
                             @if($row->wawancara->isNotEmpty())
                                 @php
                                     $wTotal = $row->wawancara->count();
@@ -288,7 +288,7 @@
                         </td>
 
                         {{-- Aksi --}}
-                        <td class="py-4 px-4 border-l border-gray-100 text-center align-top">
+                        <td class="py-4 px-4 text-center align-top">
                             @php
                                 $anyDone = ($row->micro->isNotEmpty() && $row->micro->whereNotNull('penilaian')->count() > 0)
                                         || ($row->wawancara->isNotEmpty() && $row->wawancara->whereNotNull('penilaian')->count() > 0);

@@ -94,6 +94,12 @@ class LowonganController extends Controller
                 ->with('warning', 'Kuota lowongan ini sudah penuh.');
         }
 
+        // Cek verifikasi email
+        if (!auth()->user()->hasVerifiedEmail()) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
+        }
+
         return view('pelamar.lowongan.apply', compact('lowongan', 'pelamar'));
     }
 
@@ -117,6 +123,12 @@ class LowonganController extends Controller
         if ($lowongan->isFull()) {
             return redirect()->route('pelamar.lowongan.show', $lowongan->id)
                 ->with('warning', 'Kuota lowongan ini sudah penuh, lamaran tidak dapat dikirim.');
+        }
+
+        // Cek verifikasi email
+        if (!auth()->user()->hasVerifiedEmail()) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
         $request->validate([
