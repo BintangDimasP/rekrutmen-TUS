@@ -3,8 +3,38 @@
 @section('title', 'Pengaturan Akun')
 
 @section('content')
-<div class="max-w-lg mx-auto">
+<div class="{{ auth()->user()->role === 'pelamar' ? 'max-w-lg' : 'max-w-4xl' }} mx-auto"
+     x-data="{
+        photoModal: false,
+        deletePhotoModal: false,
+        previewUrl: null,
+        fileName: '',
+        openFile() { this.$refs.fotoInput.click(); },
+        onFileChange(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            this.fileName = file.name;
+            const reader = new FileReader();
+            reader.onload = (ev) => { this.previewUrl = ev.target.result; };
+            reader.readAsDataURL(file);
+        },
+        resetForm() {
+            this.previewUrl = null;
+            this.fileName = '';
+            this.$refs.fotoInput.value = '';
+        }
+     }">
 
+    {{-- Flash success --}}
+    @if(session('success'))
+        <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
+             class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2 mb-6">
+            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- ─────────────── Combined Card ─────────────── --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         {{-- Header --}}
@@ -12,64 +42,223 @@
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-lg font-bold text-white">Ubah Password</h2>
+                    <h2 class="text-lg font-bold text-white">Pengaturan Akun</h2>
                     <p class="text-red-200 text-xs mt-0.5">{{ auth()->user()->email }}</p>
                 </div>
             </div>
         </div>
 
-        {{-- Form --}}
-        <form method="POST" action="{{ route('settings.password.update') }}" class="p-8 space-y-5">
-            @csrf
-            @method('PUT')
+        {{-- Two-column body --}}
+        @php $isPelamar = auth()->user()->role === 'pelamar'; @endphp
+        <div class="{{ $isPelamar ? 'grid grid-cols-1' : 'grid grid-cols-1 md:grid-cols-2' }}">
 
-            {{-- Password Lama --}}
-            <div>
-                <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Password Lama</label>
-                <input type="password" name="current_password"
-                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
-                              focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all
-                              @error('current_password') border-red-400 bg-red-50 @enderror"
-                       placeholder="Masukkan password lama">
-                @error('current_password')
-                    <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
-                @enderror
-            </div>
+            {{-- ── Kiri: Foto Profil (non-pelamar only) ── --}}
+            @if(!$isPelamar)
+            <div class="p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/40">
 
-            {{-- Password Baru --}}
-            <div>
-                <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Password Baru</label>
-                <input type="password" name="password"
-                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
-                              focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all
-                              @error('password') border-red-400 bg-red-50 @enderror"
-                       placeholder="Minimal 8 karakter">
-                @error('password')
-                    <p class="text-xs text-red-500 mt-1.5 font-medium">{{ $message }}</p>
-                @enderror
-            </div>
+                <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Foto Profil</h3>
 
-            {{-- Konfirmasi Password --}}
-            <div>
-                <label class="block text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Konfirmasi Password Baru</label>
-                <input type="password" name="password_confirmation"
-                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
-                              focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all"
-                       placeholder="Ulangi password baru">
-            </div>
+                {{-- Avatar dengan pencil --}}
+                <div class="relative mb-4">
+                    <div class="w-32 h-32 rounded-full bg-gradient-to-br from-[#8b1515] to-[#6e1010] flex items-center justify-center text-white text-5xl font-bold ring-4 ring-white shadow-lg overflow-hidden">
+                        @if(auth()->user()->foto_profil_url)
+                            <img src="{{ auth()->user()->foto_profil_url }}" alt="Foto Profil" class="w-full h-full object-cover">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                        @endif
+                    </div>
 
-            <div class="pt-2">
-                <button type="submit"
-                        class="w-full py-3 bg-[#8b1515] hover:bg-red-900 text-white font-bold text-sm rounded-xl shadow-md transition-colors">
-                    Simpan Password
-                </button>
+                    <button type="button" @click="photoModal = true"
+                            class="absolute bottom-1 right-1 w-10 h-10 bg-[#8b1515] hover:bg-red-900 text-white rounded-full shadow-lg flex items-center justify-center transition-all ring-4 ring-white"
+                            title="Ubah Foto Profil">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <p class="text-sm font-bold text-gray-800 mt-1 text-center">{{ auth()->user()->name }}</p>
+                <p class="text-xs text-gray-500 text-center capitalize">{{ auth()->user()->role }}</p>
+
+                @if(auth()->user()->foto_profil)
+                    <button type="button" @click="deletePhotoModal = true"
+                            class="mt-5 text-xs font-semibold text-red-600 hover:text-red-700 hover:underline transition-colors">
+                        Hapus Foto Profil
+                    </button>
+                @endif
             </div>
-        </form>
+            @endif
+
+            {{-- ── Kanan: Form Password ── --}}
+            <div class="{{ $isPelamar ? 'p-8' : 'p-8' }}">
+                <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Ubah Password</h3>
+
+                <form method="POST" action="{{ route('settings.password.update') }}" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1.5">Password Lama</label>
+                        <input type="password" name="current_password"
+                               class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
+                                      focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all
+                                      @error('current_password') border-red-400 bg-red-50 @enderror"
+                               placeholder="Password saat ini">
+                        @error('current_password')
+                            <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1.5">Password Baru</label>
+                        <input type="password" name="password"
+                               class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
+                                      focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all
+                                      @error('password') border-red-400 bg-red-50 @enderror"
+                               placeholder="Minimal 8 karakter">
+                        @error('password')
+                            <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-600 mb-1.5">Konfirmasi Password Baru</label>
+                        <input type="password" name="password_confirmation"
+                               class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
+                                      focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all"
+                               placeholder="Ulangi password baru">
+                    </div>
+
+                    <div class="pt-3">
+                        <button type="submit"
+                                class="w-full py-2.5 bg-[#8b1515] hover:bg-red-900 text-white font-bold text-sm rounded-xl shadow-md transition-colors">
+                            Simpan Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+
+    {{-- ─────────────── Modal Upload Foto ─────────────── --}}
+    <template x-teleport="body">
+        <div x-show="photoModal" x-transition.opacity style="display:none;"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="photoModal = false; resetForm()">
+            <div x-show="photoModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+                <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white">Ubah Foto Profil</h3>
+                    <button type="button" @click="photoModal = false; resetForm()"
+                            class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/40 text-white hover:bg-white/10 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form method="POST" action="{{ route('settings.foto.update') }}" enctype="multipart/form-data" class="p-6 space-y-5">
+                    @csrf
+
+                    {{-- Preview Area --}}
+                    <div class="flex flex-col items-center">
+                        <div class="w-32 h-32 rounded-full bg-gray-100 ring-4 ring-gray-100 shadow-inner overflow-hidden flex items-center justify-center">
+                            <template x-if="previewUrl">
+                                <img :src="previewUrl" alt="Preview" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!previewUrl">
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8b1515] to-[#6e1010] text-white text-4xl font-bold">
+                                    @if(auth()->user()->foto_profil_url)
+                                        <img src="{{ auth()->user()->foto_profil_url }}" alt="Foto Profil" class="w-full h-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 1)) }}
+                                    @endif
+                                </div>
+                            </template>
+                        </div>
+
+                        <p class="text-xs text-gray-500 mt-3" x-show="!fileName">Pilih file gambar baru</p>
+                        <p class="text-xs text-gray-700 font-medium mt-3 truncate max-w-full" x-show="fileName" x-text="fileName"></p>
+                    </div>
+
+                    {{-- Hidden file input --}}
+                    <input type="file" name="foto_profil" accept="image/jpeg,image/jpg,image/png,image/webp"
+                           x-ref="fotoInput" @change="onFileChange($event)" class="hidden">
+
+                    {{-- Tombol pilih file --}}
+                    <button type="button" @click="openFile()"
+                            class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Pilih File
+                    </button>
+
+                    @error('foto_profil')
+                        <p class="text-xs text-red-500 font-medium text-center">{{ $message }}</p>
+                    @enderror
+
+                    <p class="text-[0.7rem] text-gray-400 text-center">Format: JPG, JPEG, PNG, WEBP — Maksimal 2 MB</p>
+
+                    {{-- Action --}}
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" @click="photoModal = false; resetForm()"
+                                class="flex-1 py-2.5 border border-gray-300 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="!previewUrl"
+                                :class="previewUrl ? 'bg-[#8b1515] hover:bg-red-900 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
+                                class="flex-1 py-2.5 text-white text-sm font-bold rounded-xl shadow-md transition-colors">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    {{-- ─────────────── Modal Konfirmasi Hapus Foto ─────────────── --}}
+    <template x-teleport="body">
+        <div x-show="deletePhotoModal" x-transition.opacity style="display:none;"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="deletePhotoModal = false">
+            <div x-show="deletePhotoModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                <button type="button" @click="deletePhotoModal = false"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2">Hapus foto profil?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Foto akan kembali ke<br>tampilan inisial nama.</p>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <form method="POST" action="{{ route('settings.foto.delete') }}" class="contents">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Yes</button>
+                    </form>
+                    <button type="button" @click="deletePhotoModal = false"
+                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">No</button>
+                </div>
+            </div>
+        </div>
+    </template>
 
 </div>
 @endsection

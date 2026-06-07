@@ -40,14 +40,14 @@ class LamaranModelTest extends TestCase
     {
         $lamaran = $this->makeLamaran(['status' => 'seleksi_tahap1']);
 
-        $this->assertSame('Seleksi Tahap 1 (Administrasi)', $lamaran->getStatusLabelAttribute());
+        $this->assertSame('Seleksi Tahap 1', $lamaran->getStatusLabelAttribute());
     }
 
     public function test_status_label_seleksi_tahap2(): void
     {
         $lamaran = $this->makeLamaran(['status' => 'seleksi_tahap2']);
 
-        $this->assertSame('Seleksi Tahap 2 (Micro Teaching & Wawancara)', $lamaran->getStatusLabelAttribute());
+        $this->assertSame('Seleksi Tahap 2', $lamaran->getStatusLabelAttribute());
     }
 
     public function test_status_label_diterima(): void
@@ -62,6 +62,13 @@ class LamaranModelTest extends TestCase
         $lamaran = $this->makeLamaran(['status' => 'ditolak']);
 
         $this->assertSame('Ditolak', $lamaran->getStatusLabelAttribute());
+    }
+
+    public function test_status_label_mengundurkan_diri(): void
+    {
+        $lamaran = $this->makeLamaran(['status' => 'mengundurkan_diri']);
+
+        $this->assertSame('Mengundurkan Diri', $lamaran->getStatusLabelAttribute());
     }
 
     public function test_status_label_unknown_status_returns_raw_value(): void
@@ -139,7 +146,7 @@ class LamaranModelTest extends TestCase
 
     public function test_status_labels_constant_contains_all_expected_keys(): void
     {
-        $expected = ['menunggu', 'seleksi_tahap1', 'seleksi_tahap2', 'diterima', 'ditolak'];
+        $expected = ['menunggu', 'seleksi_tahap1', 'seleksi_tahap2', 'diterima', 'ditolak', 'mengundurkan_diri'];
 
         foreach ($expected as $key) {
             $this->assertArrayHasKey($key, Lamaran::STATUS_LABELS, "Key '$key' tidak ada di STATUS_LABELS");

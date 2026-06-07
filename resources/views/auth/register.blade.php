@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pendaftaran Pelamar — Telkom University</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -25,10 +26,10 @@
         /* File selected state */
         .file-upload-area.has-file {
             border-style: solid;
-            border-color: #8b1515;
-            background: #fef2f2;
+            border-color: #9ca3af;
+            background: #f3f4f6;
         }
-        .file-upload-area.has-file .upload-icon { color: #8b1515; }
+        .file-upload-area.has-file .upload-icon { color: #6b7280; }
         .file-upload-area.has-file .file-label { display: none; }
         .file-upload-area .file-selected { display: none; }
         .file-upload-area.has-file .file-selected { display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0; }
@@ -116,6 +117,19 @@
         .form-input.error {
             border-color: #ef4444 !important;
             box-shadow: 0 0 0 3px rgba(239,68,68,.1) !important;
+        }
+
+        /* Override browser autofill blue/yellow background */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active,
+        select:-webkit-autofill,
+        textarea:-webkit-autofill {
+            -webkit-box-shadow: 0 0 0 1000px #f9fafb inset !important;
+            -webkit-text-fill-color: #111827 !important;
+            box-shadow: 0 0 0 1000px #f9fafb inset !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
     </style>
 </head>
@@ -234,7 +248,8 @@
                         </label>
                         <input type="text" id="nik" name="nik" maxlength="16"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="16 digit NIK sesuai KTP" value="{{ old('nik') }}">
+                            placeholder="16 digit NIK sesuai KTP" value="{{ old('nik') }}"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                     </div>
                     {{-- Nama --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -246,13 +261,107 @@
                             placeholder="Nama sesuai KTP" value="{{ old('nama') }}">
                     </div>
                     {{-- Tempat & Tanggal Lahir --}}
-                    <div class="flex flex-col gap-1.5">
+                    <div class="flex flex-col gap-1.5"
+                         x-data="{
+                            open: false,
+                            query: '{{ old('tempat_lahir') }}',
+                            places: [
+                                {l:'Kota Banda Aceh',v:'Banda Aceh'},{l:'Kota Sabang',v:'Sabang'},{l:'Kota Langsa',v:'Langsa'},{l:'Kota Lhokseumawe',v:'Lhokseumawe'},{l:'Kota Subulussalam',v:'Subulussalam'},
+                                {l:'Kabupaten Aceh Besar',v:'Aceh Besar'},{l:'Kabupaten Aceh Barat',v:'Aceh Barat'},{l:'Kabupaten Aceh Selatan',v:'Aceh Selatan'},{l:'Kabupaten Aceh Tengah',v:'Aceh Tengah'},{l:'Kabupaten Aceh Tenggara',v:'Aceh Tenggara'},{l:'Kabupaten Aceh Timur',v:'Aceh Timur'},{l:'Kabupaten Aceh Utara',v:'Aceh Utara'},{l:'Kabupaten Bener Meriah',v:'Bener Meriah'},{l:'Kabupaten Bireuen',v:'Bireuen'},{l:'Kabupaten Gayo Lues',v:'Gayo Lues'},{l:'Kabupaten Nagan Raya',v:'Nagan Raya'},{l:'Kabupaten Pidie',v:'Pidie'},{l:'Kabupaten Pidie Jaya',v:'Pidie Jaya'},{l:'Kabupaten Simeulue',v:'Simeulue'},{l:'Kabupaten Aceh Barat Daya',v:'Aceh Barat Daya'},{l:'Kabupaten Aceh Jaya',v:'Aceh Jaya'},{l:'Kabupaten Aceh Singkil',v:'Aceh Singkil'},
+                                {l:'Kota Medan',v:'Medan'},{l:'Kota Binjai',v:'Binjai'},{l:'Kota Tebing Tinggi',v:'Tebing Tinggi'},{l:'Kota Pematangsiantar',v:'Pematangsiantar'},{l:'Kota Tanjungbalai',v:'Tanjungbalai'},{l:'Kota Sibolga',v:'Sibolga'},{l:'Kota Padang Sidempuan',v:'Padang Sidempuan'},{l:'Kota Gunungsitoli',v:'Gunungsitoli'},
+                                {l:'Kabupaten Asahan',v:'Asahan'},{l:'Kabupaten Batubara',v:'Batubara'},{l:'Kabupaten Dairi',v:'Dairi'},{l:'Kabupaten Deli Serdang',v:'Deli Serdang'},{l:'Kabupaten Humbang Hasundutan',v:'Humbang Hasundutan'},{l:'Kabupaten Karo',v:'Karo'},{l:'Kabupaten Labuhanbatu',v:'Labuhanbatu'},{l:'Kabupaten Labuhanbatu Selatan',v:'Labuhanbatu Selatan'},{l:'Kabupaten Labuhanbatu Utara',v:'Labuhanbatu Utara'},{l:'Kabupaten Langkat',v:'Langkat'},{l:'Kabupaten Mandailing Natal',v:'Mandailing Natal'},{l:'Kabupaten Nias',v:'Nias'},{l:'Kabupaten Nias Barat',v:'Nias Barat'},{l:'Kabupaten Nias Selatan',v:'Nias Selatan'},{l:'Kabupaten Nias Utara',v:'Nias Utara'},{l:'Kabupaten Padang Lawas',v:'Padang Lawas'},{l:'Kabupaten Padang Lawas Utara',v:'Padang Lawas Utara'},{l:'Kabupaten Pakpak Bharat',v:'Pakpak Bharat'},{l:'Kabupaten Samosir',v:'Samosir'},{l:'Kabupaten Serdang Bedagai',v:'Serdang Bedagai'},{l:'Kabupaten Simalungun',v:'Simalungun'},{l:'Kabupaten Tapanuli Selatan',v:'Tapanuli Selatan'},{l:'Kabupaten Tapanuli Tengah',v:'Tapanuli Tengah'},{l:'Kabupaten Tapanuli Utara',v:'Tapanuli Utara'},{l:'Kabupaten Toba',v:'Toba'},
+                                {l:'Kota Padang',v:'Padang'},{l:'Kota Solok',v:'Solok'},{l:'Kota Sawahlunto',v:'Sawahlunto'},{l:'Kota Padang Panjang',v:'Padang Panjang'},{l:'Kota Bukittinggi',v:'Bukittinggi'},{l:'Kota Payakumbuh',v:'Payakumbuh'},{l:'Kota Pariaman',v:'Pariaman'},
+                                {l:'Kabupaten Agam',v:'Agam'},{l:'Kabupaten Dharmasraya',v:'Dharmasraya'},{l:'Kabupaten Kepulauan Mentawai',v:'Kepulauan Mentawai'},{l:'Kabupaten Lima Puluh Kota',v:'Lima Puluh Kota'},{l:'Kabupaten Padang Pariaman',v:'Padang Pariaman'},{l:'Kabupaten Pasaman',v:'Pasaman'},{l:'Kabupaten Pasaman Barat',v:'Pasaman Barat'},{l:'Kabupaten Pesisir Selatan',v:'Pesisir Selatan'},{l:'Kabupaten Sijunjung',v:'Sijunjung'},{l:'Kabupaten Solok',v:'Solok'},{l:'Kabupaten Solok Selatan',v:'Solok Selatan'},{l:'Kabupaten Tanah Datar',v:'Tanah Datar'},
+                                {l:'Kota Pekanbaru',v:'Pekanbaru'},{l:'Kota Dumai',v:'Dumai'},
+                                {l:'Kabupaten Bengkalis',v:'Bengkalis'},{l:'Kabupaten Indragiri Hilir',v:'Indragiri Hilir'},{l:'Kabupaten Indragiri Hulu',v:'Indragiri Hulu'},{l:'Kabupaten Kampar',v:'Kampar'},{l:'Kabupaten Kepulauan Meranti',v:'Kepulauan Meranti'},{l:'Kabupaten Kuantan Singingi',v:'Kuantan Singingi'},{l:'Kabupaten Pelalawan',v:'Pelalawan'},{l:'Kabupaten Rokan Hilir',v:'Rokan Hilir'},{l:'Kabupaten Rokan Hulu',v:'Rokan Hulu'},{l:'Kabupaten Siak',v:'Siak'},
+                                {l:'Kota Jambi',v:'Jambi'},{l:'Kota Sungai Penuh',v:'Sungai Penuh'},
+                                {l:'Kabupaten Batanghari',v:'Batanghari'},{l:'Kabupaten Bungo',v:'Bungo'},{l:'Kabupaten Kerinci',v:'Kerinci'},{l:'Kabupaten Merangin',v:'Merangin'},{l:'Kabupaten Muaro Jambi',v:'Muaro Jambi'},{l:'Kabupaten Sarolangun',v:'Sarolangun'},{l:'Kabupaten Tanjung Jabung Barat',v:'Tanjung Jabung Barat'},{l:'Kabupaten Tanjung Jabung Timur',v:'Tanjung Jabung Timur'},{l:'Kabupaten Tebo',v:'Tebo'},
+                                {l:'Kota Palembang',v:'Palembang'},{l:'Kota Prabumulih',v:'Prabumulih'},{l:'Kota Pagaralam',v:'Pagaralam'},{l:'Kota Lubuklinggau',v:'Lubuklinggau'},
+                                {l:'Kabupaten Banyuasin',v:'Banyuasin'},{l:'Kabupaten Empat Lawang',v:'Empat Lawang'},{l:'Kabupaten Lahat',v:'Lahat'},{l:'Kabupaten Muara Enim',v:'Muara Enim'},{l:'Kabupaten Musi Banyuasin',v:'Musi Banyuasin'},{l:'Kabupaten Musi Rawas',v:'Musi Rawas'},{l:'Kabupaten Musi Rawas Utara',v:'Musi Rawas Utara'},{l:'Kabupaten Ogan Ilir',v:'Ogan Ilir'},{l:'Kabupaten Ogan Komering Ilir',v:'Ogan Komering Ilir'},{l:'Kabupaten Ogan Komering Ulu',v:'Ogan Komering Ulu'},{l:'Kabupaten Ogan Komering Ulu Selatan',v:'Ogan Komering Ulu Selatan'},{l:'Kabupaten Ogan Komering Ulu Timur',v:'Ogan Komering Ulu Timur'},{l:'Kabupaten Penukal Abab Lematang Ilir',v:'Penukal Abab Lematang Ilir'},
+                                {l:'Kota Bengkulu',v:'Bengkulu'},
+                                {l:'Kabupaten Bengkulu Selatan',v:'Bengkulu Selatan'},{l:'Kabupaten Bengkulu Tengah',v:'Bengkulu Tengah'},{l:'Kabupaten Bengkulu Utara',v:'Bengkulu Utara'},{l:'Kabupaten Kaur',v:'Kaur'},{l:'Kabupaten Kepahiang',v:'Kepahiang'},{l:'Kabupaten Lebong',v:'Lebong'},{l:'Kabupaten Mukomuko',v:'Mukomuko'},{l:'Kabupaten Rejang Lebong',v:'Rejang Lebong'},{l:'Kabupaten Seluma',v:'Seluma'},
+                                {l:'Kota Bandar Lampung',v:'Bandar Lampung'},{l:'Kota Metro',v:'Metro'},
+                                {l:'Kabupaten Lampung Barat',v:'Lampung Barat'},{l:'Kabupaten Lampung Selatan',v:'Lampung Selatan'},{l:'Kabupaten Lampung Tengah',v:'Lampung Tengah'},{l:'Kabupaten Lampung Timur',v:'Lampung Timur'},{l:'Kabupaten Lampung Utara',v:'Lampung Utara'},{l:'Kabupaten Mesuji',v:'Mesuji'},{l:'Kabupaten Pesawaran',v:'Pesawaran'},{l:'Kabupaten Pesisir Barat',v:'Pesisir Barat'},{l:'Kabupaten Pringsewu',v:'Pringsewu'},{l:'Kabupaten Tanggamus',v:'Tanggamus'},{l:'Kabupaten Tulang Bawang',v:'Tulang Bawang'},{l:'Kabupaten Tulang Bawang Barat',v:'Tulang Bawang Barat'},{l:'Kabupaten Way Kanan',v:'Way Kanan'},
+                                {l:'Kota Pangkalpinang',v:'Pangkalpinang'},
+                                {l:'Kabupaten Bangka',v:'Bangka'},{l:'Kabupaten Bangka Barat',v:'Bangka Barat'},{l:'Kabupaten Bangka Selatan',v:'Bangka Selatan'},{l:'Kabupaten Bangka Tengah',v:'Bangka Tengah'},{l:'Kabupaten Belitung',v:'Belitung'},{l:'Kabupaten Belitung Timur',v:'Belitung Timur'},
+                                {l:'Kota Tanjungpinang',v:'Tanjungpinang'},{l:'Kota Batam',v:'Batam'},
+                                {l:'Kabupaten Bintan',v:'Bintan'},{l:'Kabupaten Karimun',v:'Karimun'},{l:'Kabupaten Kepulauan Anambas',v:'Kepulauan Anambas'},{l:'Kabupaten Lingga',v:'Lingga'},{l:'Kabupaten Natuna',v:'Natuna'},
+                                {l:'Kota Jakarta Pusat',v:'Jakarta Pusat'},{l:'Kota Jakarta Utara',v:'Jakarta Utara'},{l:'Kota Jakarta Barat',v:'Jakarta Barat'},{l:'Kota Jakarta Selatan',v:'Jakarta Selatan'},{l:'Kota Jakarta Timur',v:'Jakarta Timur'},{l:'Kabupaten Kepulauan Seribu',v:'Kepulauan Seribu'},
+                                {l:'Kota Bogor',v:'Bogor'},{l:'Kota Sukabumi',v:'Sukabumi'},{l:'Kota Bandung',v:'Bandung'},{l:'Kota Cirebon',v:'Cirebon'},{l:'Kota Bekasi',v:'Bekasi'},{l:'Kota Depok',v:'Depok'},{l:'Kota Cimahi',v:'Cimahi'},{l:'Kota Tasikmalaya',v:'Tasikmalaya'},{l:'Kota Banjar',v:'Banjar'},
+                                {l:'Kabupaten Bandung',v:'Bandung'},{l:'Kabupaten Bandung Barat',v:'Bandung Barat'},{l:'Kabupaten Bekasi',v:'Bekasi'},{l:'Kabupaten Bogor',v:'Bogor'},{l:'Kabupaten Ciamis',v:'Ciamis'},{l:'Kabupaten Cianjur',v:'Cianjur'},{l:'Kabupaten Cirebon',v:'Cirebon'},{l:'Kabupaten Garut',v:'Garut'},{l:'Kabupaten Indramayu',v:'Indramayu'},{l:'Kabupaten Karawang',v:'Karawang'},{l:'Kabupaten Kuningan',v:'Kuningan'},{l:'Kabupaten Majalengka',v:'Majalengka'},{l:'Kabupaten Pangandaran',v:'Pangandaran'},{l:'Kabupaten Purwakarta',v:'Purwakarta'},{l:'Kabupaten Subang',v:'Subang'},{l:'Kabupaten Sukabumi',v:'Sukabumi'},{l:'Kabupaten Sumedang',v:'Sumedang'},{l:'Kabupaten Tasikmalaya',v:'Tasikmalaya'},
+                                {l:'Kota Serang',v:'Serang'},{l:'Kota Cilegon',v:'Cilegon'},{l:'Kota Tangerang',v:'Tangerang'},{l:'Kota Tangerang Selatan',v:'Tangerang Selatan'},
+                                {l:'Kabupaten Lebak',v:'Lebak'},{l:'Kabupaten Pandeglang',v:'Pandeglang'},{l:'Kabupaten Serang',v:'Serang'},{l:'Kabupaten Tangerang',v:'Tangerang'},
+                                {l:'Kota Semarang',v:'Semarang'},{l:'Kota Surakarta',v:'Surakarta'},{l:'Kota Salatiga',v:'Salatiga'},{l:'Kota Magelang',v:'Magelang'},{l:'Kota Pekalongan',v:'Pekalongan'},{l:'Kota Tegal',v:'Tegal'},
+                                {l:'Kabupaten Banjarnegara',v:'Banjarnegara'},{l:'Kabupaten Banyumas',v:'Banyumas'},{l:'Kabupaten Batang',v:'Batang'},{l:'Kabupaten Blora',v:'Blora'},{l:'Kabupaten Boyolali',v:'Boyolali'},{l:'Kabupaten Brebes',v:'Brebes'},{l:'Kabupaten Cilacap',v:'Cilacap'},{l:'Kabupaten Demak',v:'Demak'},{l:'Kabupaten Grobogan',v:'Grobogan'},{l:'Kabupaten Jepara',v:'Jepara'},{l:'Kabupaten Karanganyar',v:'Karanganyar'},{l:'Kabupaten Kebumen',v:'Kebumen'},{l:'Kabupaten Kendal',v:'Kendal'},{l:'Kabupaten Klaten',v:'Klaten'},{l:'Kabupaten Kudus',v:'Kudus'},{l:'Kabupaten Magelang',v:'Magelang'},{l:'Kabupaten Pati',v:'Pati'},{l:'Kabupaten Pekalongan',v:'Pekalongan'},{l:'Kabupaten Pemalang',v:'Pemalang'},{l:'Kabupaten Purbalingga',v:'Purbalingga'},{l:'Kabupaten Purworejo',v:'Purworejo'},{l:'Kabupaten Rembang',v:'Rembang'},{l:'Kabupaten Semarang',v:'Semarang'},{l:'Kabupaten Sragen',v:'Sragen'},{l:'Kabupaten Sukoharjo',v:'Sukoharjo'},{l:'Kabupaten Tegal',v:'Tegal'},{l:'Kabupaten Temanggung',v:'Temanggung'},{l:'Kabupaten Wonogiri',v:'Wonogiri'},{l:'Kabupaten Wonosobo',v:'Wonosobo'},
+                                {l:'Kota Yogyakarta',v:'Yogyakarta'},
+                                {l:'Kabupaten Bantul',v:'Bantul'},{l:'Kabupaten Gunungkidul',v:'Gunungkidul'},{l:'Kabupaten Kulon Progo',v:'Kulon Progo'},{l:'Kabupaten Sleman',v:'Sleman'},
+                                {l:'Kota Surabaya',v:'Surabaya'},{l:'Kota Malang',v:'Malang'},{l:'Kota Pasuruan',v:'Pasuruan'},{l:'Kota Probolinggo',v:'Probolinggo'},{l:'Kota Blitar',v:'Blitar'},{l:'Kota Kediri',v:'Kediri'},{l:'Kota Madiun',v:'Madiun'},{l:'Kota Mojokerto',v:'Mojokerto'},{l:'Kota Batu',v:'Batu'},
+                                {l:'Kabupaten Bangkalan',v:'Bangkalan'},{l:'Kabupaten Banyuwangi',v:'Banyuwangi'},{l:'Kabupaten Blitar',v:'Blitar'},{l:'Kabupaten Bojonegoro',v:'Bojonegoro'},{l:'Kabupaten Bondowoso',v:'Bondowoso'},{l:'Kabupaten Gresik',v:'Gresik'},{l:'Kabupaten Jember',v:'Jember'},{l:'Kabupaten Jombang',v:'Jombang'},{l:'Kabupaten Kediri',v:'Kediri'},{l:'Kabupaten Lamongan',v:'Lamongan'},{l:'Kabupaten Lumajang',v:'Lumajang'},{l:'Kabupaten Madiun',v:'Madiun'},{l:'Kabupaten Magetan',v:'Magetan'},{l:'Kabupaten Malang',v:'Malang'},{l:'Kabupaten Mojokerto',v:'Mojokerto'},{l:'Kabupaten Nganjuk',v:'Nganjuk'},{l:'Kabupaten Ngawi',v:'Ngawi'},{l:'Kabupaten Pacitan',v:'Pacitan'},{l:'Kabupaten Pamekasan',v:'Pamekasan'},{l:'Kabupaten Pasuruan',v:'Pasuruan'},{l:'Kabupaten Ponorogo',v:'Ponorogo'},{l:'Kabupaten Probolinggo',v:'Probolinggo'},{l:'Kabupaten Sampang',v:'Sampang'},{l:'Kabupaten Sidoarjo',v:'Sidoarjo'},{l:'Kabupaten Situbondo',v:'Situbondo'},{l:'Kabupaten Sumenep',v:'Sumenep'},{l:'Kabupaten Trenggalek',v:'Trenggalek'},{l:'Kabupaten Tuban',v:'Tuban'},{l:'Kabupaten Tulungagung',v:'Tulungagung'},
+                                {l:'Kota Denpasar',v:'Denpasar'},
+                                {l:'Kabupaten Badung',v:'Badung'},{l:'Kabupaten Bangli',v:'Bangli'},{l:'Kabupaten Buleleng',v:'Buleleng'},{l:'Kabupaten Gianyar',v:'Gianyar'},{l:'Kabupaten Jembrana',v:'Jembrana'},{l:'Kabupaten Karangasem',v:'Karangasem'},{l:'Kabupaten Klungkung',v:'Klungkung'},{l:'Kabupaten Tabanan',v:'Tabanan'},
+                                {l:'Kota Mataram',v:'Mataram'},{l:'Kota Bima',v:'Bima'},
+                                {l:'Kabupaten Bima',v:'Bima'},{l:'Kabupaten Dompu',v:'Dompu'},{l:'Kabupaten Lombok Barat',v:'Lombok Barat'},{l:'Kabupaten Lombok tengah',v:'Lombok Tengah'},{l:'Kabupaten Lombok Timur',v:'Lombok Timur'},{l:'Kabupaten Lombok Utara',v:'Lombok Utara'},{l:'Kabupaten Sumbawa',v:'Sumbawa'},{l:'Kabupaten Sumbawa Barat',v:'Sumbawa Barat'},
+                                {l:'Kota Kupang',v:'Kupang'},
+                                {l:'Kabupaten Alor',v:'Alor'},{l:'Kabupaten Belu',v:'Belu'},{l:'Kabupaten Ende',v:'Ende'},{l:'Kabupaten Flores Timur',v:'Flores Timur'},{l:'Kabupaten Kupang',v:'Kupang'},{l:'Kabupaten Lembata',v:'Lembata'},{l:'Kabupaten Malaka',v:'Malaka'},{l:'Kabupaten Manggarai',v:'Manggarai'},{l:'Kabupaten Manggarai Barat',v:'Manggarai Barat'},{l:'Kabupaten Manggarai Timur',v:'Manggarai Timur'},{l:'Kabupaten Nagekeo',v:'Nagekeo'},{l:'Kabupaten Ngada',v:'Ngada'},{l:'Kabupaten Rote Ndao',v:'Rote Ndao'},{l:'Kabupaten Sabu Raijua',v:'Sabu Raijua'},{l:'Kabupaten Sikka',v:'Sikka'},{l:'Kabupaten Sumba Barat',v:'Sumba Barat'},{l:'Kabupaten Sumba Barat Daya',v:'Sumba Barat Daya'},{l:'Kabupaten Sumba Tengah',v:'Sumba Tengah'},{l:'Kabupaten Sumba Timur',v:'Sumba Timur'},{l:'Kabupaten Timor Tengah Selatan',v:'Timor Tengah Selatan'},{l:'Kabupaten Timor Tengah Utara',v:'Timor Tengah Utara'},
+                                {l:'Kota Pontianak',v:'Pontianak'},{l:'Kota Singkawang',v:'Singkawang'},
+                                {l:'Kabupaten Bengkayang',v:'Bengkayang'},{l:'Kabupaten Kapuas Hulu',v:'Kapuas Hulu'},{l:'Kabupaten Kayong Utara',v:'Kayong Utara'},{l:'Kabupaten Ketapang',v:'Ketapang'},{l:'Kabupaten Kubu Raya',v:'Kubu Raya'},{l:'Kabupaten Landak',v:'Landak'},{l:'Kabupaten Melawi',v:'Melawi'},{l:'Kabupaten Mempawah',v:'Mempawah'},{l:'Kabupaten Sambas',v:'Sambas'},{l:'Kabupaten Sanggau',v:'Sanggau'},{l:'Kabupaten Sekadau',v:'Sekadau'},{l:'Kabupaten Sintang',v:'Sintang'},
+                                {l:'Kota Palangkaraya',v:'Palangkaraya'},
+                                {l:'Kabupaten Barito Selatan',v:'Barito Selatan'},{l:'Kabupaten Barito Timur',v:'Barito Timur'},{l:'Kabupaten Barito Utara',v:'Barito Utara'},{l:'Kabupaten Gunung Mas',v:'Gunung Mas'},{l:'Kabupaten Kapuas',v:'Kapuas'},{l:'Kabupaten Katingan',v:'Katingan'},{l:'Kabupaten Kotawaringin Barat',v:'Kotawaringin Barat'},{l:'Kabupaten Kotawaringin Timur',v:'Kotawaringin Timur'},{l:'Kabupaten Lamandau',v:'Lamandau'},{l:'Kabupaten Murung Raya',v:'Murung Raya'},{l:'Kabupaten Pulang Pisau',v:'Pulang Pisau'},{l:'Kabupaten Seruyan',v:'Seruyan'},{l:'Kabupaten Sukamara',v:'Sukamara'},
+                                {l:'Kota Banjarmasin',v:'Banjarmasin'},{l:'Kota Banjarbaru',v:'Banjarbaru'},
+                                {l:'Kabupaten Balangan',v:'Balangan'},{l:'Kabupaten Banjar',v:'Banjar'},{l:'Kabupaten Barito Kuala',v:'Barito Kuala'},{l:'Kabupaten Hulu Sungai Selatan',v:'Hulu Sungai Selatan'},{l:'Kabupaten Hulu Sungai Tengah',v:'Hulu Sungai Tengah'},{l:'Kabupaten Hulu Sungai Utara',v:'Hulu Sungai Utara'},{l:'Kabupaten Kotabaru',v:'Kotabaru'},{l:'Kabupaten Tabalong',v:'Tabalong'},{l:'Kabupaten Tanah Bumbu',v:'Tanah Bumbu'},{l:'Kabupaten Tanah Laut',v:'Tanah Laut'},{l:'Kabupaten Tapin',v:'Tapin'},
+                                {l:'Kota Samarinda',v:'Samarinda'},{l:'Kota Balikpapan',v:'Balikpapan'},{l:'Kota Bontang',v:'Bontang'},
+                                {l:'Kabupaten Berau',v:'Berau'},{l:'Kabupaten Kutai Barat',v:'Kutai Barat'},{l:'Kabupaten Kutai Kartanegara',v:'Kutai Kartanegara'},{l:'Kabupaten Kutai Timur',v:'Kutai Timur'},{l:'Kabupaten Mahakam Ulu',v:'Mahakam Ulu'},{l:'Kabupaten Paser',v:'Paser'},{l:'Kabupaten Penajam Paser Utara',v:'Penajam Paser Utara'},
+                                {l:'Kota Tarakan',v:'Tarakan'},
+                                {l:'Kabupaten Bulungan',v:'Bulungan'},{l:'Kabupaten Malinau',v:'Malinau'},{l:'Kabupaten Nunukan',v:'Nunukan'},{l:'Kabupaten Tana Tidung',v:'Tana Tidung'},
+                                {l:'Kota Manado',v:'Manado'},{l:'Kota Bitung',v:'Bitung'},{l:'Kota Tomohon',v:'Tomohon'},{l:'Kota Kotamobagu',v:'Kotamobagu'},
+                                {l:'Kabupaten Bolaang Mongondow',v:'Bolaang Mongondow'},{l:'Kabupaten Bolaang Mongondow Selatan',v:'Bolaang Mongondow Selatan'},{l:'Kabupaten Bolaang Mongondow Timur',v:'Bolaang Mongondow Timur'},{l:'Kabupaten Bolaang Mongondow Utara',v:'Bolaang Mongondow Utara'},{l:'Kabupaten Kepulauan Sangihe',v:'Kepulauan Sangihe'},{l:'Kabupaten Kepulauan Siau Tagulandang Biaro',v:'Kepulauan Siau Tagulandang Biaro'},{l:'Kabupaten Kepulauan Talaud',v:'Kepulauan Talaud'},{l:'Kabupaten Minahasa',v:'Minahasa'},{l:'Kabupaten Minahasa Selatan',v:'Minahasa Selatan'},{l:'Kabupaten Minahasa Tenggara',v:'Minahasa Tenggara'},{l:'Kabupaten Minahasa Utara',v:'Minahasa Utara'},
+                                {l:'Kota Gorontalo',v:'Gorontalo'},
+                                {l:'Kabupaten Bone Bolango',v:'Bone Bolango'},{l:'Kabupaten Gorontalo',v:'Gorontalo'},{l:'Kabupaten Gorontalo Utara',v:'Gorontalo Utara'},{l:'Kabupaten Pohuwato',v:'Pohuwato'},
+                                {l:'Kota Palu',v:'Palu'},
+                                {l:'Kabupaten Banggai',v:'Banggai'},{l:'Kabupaten Banggai Kepulauan',v:'Banggai Kepulauan'},{l:'Kabupaten Banggai Laut',v:'Banggai Laut'},{l:'Kabupaten Buol',v:'Buol'},{l:'Kabupaten Donggala',v:'Donggala'},{l:'Kabupaten Morowali',v:'Morowali'},{l:'Kabupaten Morowali Utara',v:'Morowali Utara'},{l:'Kabupaten Parigi Moutong',v:'Parigi Moutong'},{l:'Kabupaten Poso',v:'Poso'},{l:'Kabupaten Sigi',v:'Sigi'},{l:'Kabupaten Tojo Una-Una',v:'Tojo Una-Una'},{l:'Kabupaten Toli-Toli',v:'Toli-Toli'},
+                                {l:'Kota Makassar',v:'Makassar'},{l:'Kota Parepare',v:'Parepare'},{l:'Kota Palopo',v:'Palopo'},
+                                {l:'Kabupaten Bantaeng',v:'Bantaeng'},{l:'Kabupaten Barru',v:'Barru'},{l:'Kabupaten Bone',v:'Bone'},{l:'Kabupaten Bulukumba',v:'Bulukumba'},{l:'Kabupaten Enrekang',v:'Enrekang'},{l:'Kabupaten Gowa',v:'Gowa'},{l:'Kabupaten Jeneponto',v:'Jeneponto'},{l:'Kabupaten Kepulauan Selayar',v:'Kepulauan Selayar'},{l:'Kabupaten Luwu',v:'Luwu'},{l:'Kabupaten Luwu Timur',v:'Luwu Timur'},{l:'Kabupaten Luwu Utara',v:'Luwu Utara'},{l:'Kabupaten Maros',v:'Maros'},{l:'Kabupaten Pangkajene dan Kepulauan',v:'Pangkajene dan Kepulauan'},{l:'Kabupaten Pinrang',v:'Pinrang'},{l:'Kabupaten Sidenreng Rappang',v:'Sidenreng Rappang'},{l:'Kabupaten Sinjai',v:'Sinjai'},{l:'Kabupaten Soppeng',v:'Soppeng'},{l:'Kabupaten Takalar',v:'Takalar'},{l:'Kabupaten Tana Toraja',v:'Tana Toraja'},{l:'Kabupaten Toraja Utara',v:'Toraja Utara'},{l:'Kabupaten Wajo',v:'Wajo'},
+                                {l:'Kota Kendari',v:'Kendari'},{l:'Kota Baubau',v:'Baubau'},
+                                {l:'Kabupaten Bombana',v:'Bombana'},{l:'Kabupaten Buton',v:'Buton'},{l:'Kabupaten Buton Selatan',v:'Buton Selatan'},{l:'Kabupaten Buton Tengah',v:'Buton Tengah'},{l:'Kabupaten Buton Utara',v:'Buton Utara'},{l:'Kabupaten Kolaka',v:'Kolaka'},{l:'Kabupaten Kolaka Timur',v:'Kolaka Timur'},{l:'Kabupaten Kolaka Utara',v:'Kolaka Utara'},{l:'Kabupaten Konawe',v:'Konawe'},{l:'Kabupaten Konawe Kepulauan',v:'Konawe Kepulauan'},{l:'Kabupaten Konawe Selatan',v:'Konawe Selatan'},{l:'Kabupaten Konawe Utara',v:'Konawe Utara'},{l:'Kabupaten Muna',v:'Muna'},{l:'Kabupaten Muna Barat',v:'Muna Barat'},{l:'Kabupaten Wakatobi',v:'Wakatobi'},
+                                {l:'Kota Ambon',v:'Ambon'},{l:'Kota Tual',v:'Tual'},
+                                {l:'Kabupaten Buru',v:'Buru'},{l:'Kabupaten Buru Selatan',v:'Buru Selatan'},{l:'Kabupaten Kepulauan Aru',v:'Kepulauan Aru'},{l:'Kabupaten Maluku Barat Daya',v:'Maluku Barat Daya'},{l:'Kabupaten Maluku Tengah',v:'Maluku Tengah'},{l:'Kabupaten Maluku Tenggara',v:'Maluku Tenggara'},{l:'Kabupaten Maluku Tenggara Barat',v:'Maluku Tenggara Barat'},{l:'Kabupaten Seram Bagian Barat',v:'Seram Bagian Barat'},{l:'Kabupaten Seram Bagian Timur',v:'Seram Bagian Timur'},
+                                {l:'Kota Ternate',v:'Ternate'},{l:'Kota Tidore Kepulauan',v:'Tidore Kepulauan'},
+                                {l:'Kabupaten Halmahera Barat',v:'Halmahera Barat'},{l:'Kabupaten Halmahera Selatan',v:'Halmahera Selatan'},{l:'Kabupaten Halmahera Tengah',v:'Halmahera Tengah'},{l:'Kabupaten Halmahera Timur',v:'Halmahera Timur'},{l:'Kabupaten Halmahera Utara',v:'Halmahera Utara'},{l:'Kabupaten Kepulauan Sula',v:'Kepulauan Sula'},{l:'Kabupaten Pulau Morotai',v:'Pulau Morotai'},{l:'Kabupaten Pulau Taliabu',v:'Pulau Taliabu'},
+                                {l:'Kota Jayapura',v:'Jayapura'},
+                                {l:'Kabupaten Asmat',v:'Asmat'},{l:'Kabupaten Biak Numfor',v:'Biak Numfor'},{l:'Kabupaten Boven Digoel',v:'Boven Digoel'},{l:'Kabupaten Deiyai',v:'Deiyai'},{l:'Kabupaten Dogiyai',v:'Dogiyai'},{l:'Kabupaten Intan Jaya',v:'Intan Jaya'},{l:'Kabupaten Jayapura',v:'Jayapura'},{l:'Kabupaten Jayawijaya',v:'Jayawijaya'},{l:'Kabupaten Keerom',v:'Keerom'},{l:'Kabupaten Kepulauan Yapen',v:'Kepulauan Yapen'},{l:'Kabupaten Lanny Jaya',v:'Lanny Jaya'},{l:'Kabupaten Mamberamo Raya',v:'Mamberamo Raya'},{l:'Kabupaten Mamberamo Tengah',v:'Mamberamo Tengah'},{l:'Kabupaten Mappi',v:'Mappi'},{l:'Kabupaten Merauke',v:'Merauke'},{l:'Kabupaten Mimika',v:'Mimika'},{l:'Kabupaten Nabire',v:'Nabire'},{l:'Kabupaten Nduga',v:'Nduga'},{l:'Kabupaten Paniai',v:'Paniai'},{l:'Kabupaten Pegunungan Bintang',v:'Pegunungan Bintang'},{l:'Kabupaten Puncak',v:'Puncak'},{l:'Kabupaten Puncak Jaya',v:'Puncak Jaya'},{l:'Kabupaten Sarmi',v:'Sarmi'},{l:'Kabupaten Supiori',v:'Supiori'},{l:'Kabupaten Tolikara',v:'Tolikara'},{l:'Kabupaten Waropen',v:'Waropen'},{l:'Kabupaten Yahukimo',v:'Yahukimo'},{l:'Kabupaten Yalimo',v:'Yalimo'},
+                                {l:'Kota Sorong',v:'Sorong'},
+                                {l:'Kabupaten Fakfak',v:'Fakfak'},{l:'Kabupaten Kaimana',v:'Kaimana'},{l:'Kabupaten Manokwari',v:'Manokwari'},{l:'Kabupaten Manokwari Selatan',v:'Manokwari Selatan'},{l:'Kabupaten Maybrat',v:'Maybrat'},{l:'Kabupaten Pegunungan Arfak',v:'Pegunungan Arfak'},{l:'Kabupaten Raja Ampat',v:'Raja Ampat'},{l:'Kabupaten Sorong',v:'Sorong'},{l:'Kabupaten Sorong Selatan',v:'Sorong Selatan'},{l:'Kabupaten Tambrauw',v:'Tambrauw'},{l:'Kabupaten Teluk Bintuni',v:'Teluk Bintuni'},{l:'Kabupaten Teluk Wondama',v:'Teluk Wondama'}
+                            ],
+                            get filtered() {
+                                if (this.query.length < 1) return [];
+                                return this.places.filter(p => p.l.toLowerCase().includes(this.query.toLowerCase())).slice(0, 8);
+                            }
+                         }"
+                         @click.outside="open = false">
                         <label for="tempat_lahir" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Tempat Lahir <span class="text-red-600">*</span>
                         </label>
-                        <input type="text" id="tempat_lahir" name="tempat_lahir"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Kota tempat lahir" value="{{ old('tempat_lahir') }}">
+                        <div class="relative">
+                            <input type="text" id="tempat_lahir" name="tempat_lahir" autocomplete="off"
+                                class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
+                                placeholder="Ketik nama kota / kabupaten..."
+                                x-model="query"
+                                @focus="open = filtered.length > 0"
+                                @input="open = filtered.length > 0">
+                            <div x-show="open && filtered.length > 0" x-transition
+                                 class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
+                                 style="display:none;">
+                                <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <template x-for="place in filtered" :key="place.l">
+                                        <button type="button"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+                                            @click="query = place.v; open = false;">
+                                            <span class="font-medium" x-text="place.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="tanggal_lahir" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
@@ -266,45 +375,86 @@
                         <label for="no_telepon" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             No. Telepon <span class="text-red-600">*</span>
                         </label>
-                        <input type="tel" id="no_telepon" name="no_telepon"
+                        <input type="tel" id="no_telepon" name="no_telepon" maxlength="15"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="08xxxxxxxxxx" value="{{ old('no_telepon') }}">
+                            placeholder="08xxx (maks. 15 digit)" value="{{ old('no_telepon') }}"
+                            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="jenis_kelamin" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Jenis Kelamin <span class="text-red-600">*</span>
                         </label>
-                        <select id="jenis_kelamin" name="jenis_kelamin"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih —</option>
-                            <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                            <option value="P" {{ old('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('jenis_kelamin') }}', opts: [{v:'L',l:'Laki-laki'},{v:'P',l:'Perempuan'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" id="jenis_kelamin" name="jenis_kelamin" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {{-- Kewarganegaraan & Status Pernikahan --}}
                     <div class="flex flex-col gap-1.5">
-                        <label for="kewarganegaraan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Kewarganegaraan <span class="text-red-600">*</span>
                         </label>
-                        <select id="kewarganegaraan" name="kewarganegaraan"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih —</option>
-                            <option value="WNI" {{ old('kewarganegaraan') == 'WNI' ? 'selected' : '' }}>WNI</option>
-                            <option value="WNA" {{ old('kewarganegaraan') == 'WNA' ? 'selected' : '' }}>WNA</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('kewarganegaraan') }}', opts: [{v:'WNI',l:'WNI (Warga Negara Indonesia)'},{v:'WNA',l:'WNA (Warga Negara Asing)'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="kewarganegaraan" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
-                        <label for="status_pernikahan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Status Pernikahan <span class="text-red-600">*</span>
                         </label>
-                        <select id="status_pernikahan" name="status_pernikahan"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih —</option>
-                            <option value="Belum Kawin" {{ old('status_pernikahan') == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
-                            <option value="Kawin" {{ old('status_pernikahan') == 'Kawin' ? 'selected' : '' }}>Kawin</option>
-                            <option value="Cerai Hidup" {{ old('status_pernikahan') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                            <option value="Cerai Mati" {{ old('status_pernikahan') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('status_pernikahan') }}', opts: [{v:'Belum Kawin',l:'Belum Kawin'},{v:'Kawin',l:'Kawin'},{v:'Cerai Hidup',l:'Cerai Hidup'},{v:'Cerai Mati',l:'Cerai Mati'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="status_pernikahan" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? val : '— Pilih —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {{-- Alamat Domisili --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -313,7 +463,7 @@
                         </label>
                         <textarea id="alamat_domisili" name="alamat_domisili" rows="2"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
-                            placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos"></textarea>
+                            placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos">{{ old('alamat_domisili') }}</textarea>
                     </div>
                     {{-- Alamat KTP --}}
                     <div class="col-span-2 flex flex-col gap-1.5">
@@ -322,7 +472,7 @@
                         </label>
                         <textarea id="alamat_ktp" name="alamat_ktp" rows="2"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
-                            placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos"></textarea>
+                            placeholder="Jalan, RT/RW, Kelurahan, Kecamatan, Kota, Provinsi, Kode Pos">{{ old('alamat_ktp') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -353,16 +503,29 @@
 
                     {{-- Jenjang & IPK --}}
                     <div class="flex flex-col gap-1.5">
-                        <label for="jenjang" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Jenjang Pendidikan <span class="text-red-600">*</span>
                         </label>
-                        <select id="jenjang" name="jenjang"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih jenjang —</option>
-                            <option value="S1" {{ old('jenjang') == 'S1' ? 'selected' : '' }}>S1 (Sarjana)</option>
-                            <option value="S2" {{ old('jenjang') == 'S2' ? 'selected' : '' }}>S2 (Magister)</option>
-                            <option value="S3" {{ old('jenjang') == 'S3' ? 'selected' : '' }}>S3 (Doktor)</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('jenjang') }}', opts: [{v:'S1',l:'S1 (Sarjana)'},{v:'S2',l:'S2 (Magister)'},{v:'S3',l:'S3 (Doktor)'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="jenjang" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jenjang —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="ipk" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
@@ -370,48 +533,109 @@
                         </label>
                         <input type="number" id="ipk" name="ipk" min="0" max="4" step="0.01"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 3.75" value="{{ old('ipk') }}">
+                            placeholder="Contoh: 3.75" value="{{ old('ipk') }}"
+                            oninput="if(parseFloat(this.value)>4){this.value='4'}">
                     </div>
                     {{-- Institusi --}}
-                    <div class="col-span-2 flex flex-col gap-1.5">
+                    <div class="col-span-2 flex flex-col gap-1.5"
+                         x-data="{
+                            open: false,
+                            query: '{{ old('institusi') }}',
+                            suggestions: ['Universitas Indonesia','Universitas Gadjah Mada','Institut Teknologi Bandung','Institut Pertanian Bogor','Universitas Airlangga','Universitas Diponegoro','Universitas Brawijaya','Universitas Padjadjaran','Universitas Hasanuddin','Institut Teknologi Sepuluh Nopember','Universitas Andalas','Universitas Sumatera Utara','Universitas Sebelas Maret','Universitas Negeri Yogyakarta','Universitas Pendidikan Indonesia','Universitas Lampung','Universitas Sriwijaya','Universitas Mataram','Universitas Sam Ratulangi','Universitas Udayana','Universitas Telkom','Universitas Bina Nusantara','Universitas Trisakti','Universitas Tarumanagara','Universitas Mercu Buana','Universitas Gunadarma','Universitas Atma Jaya','Universitas Sanata Dharma','Universitas Islam Indonesia','Universitas Muhammadiyah Malang','Universitas Negeri Malang','Universitas Jember','Universitas Syiah Kuala','Universitas Tanjungpura','Institut Agama Islam Negeri'],
+                            get filtered() { return this.query.length < 1 ? [] : this.suggestions.filter(s => s.toLowerCase().includes(this.query.toLowerCase())).slice(0,8); }
+                         }"
+                         @click.outside="open = false">
                         <label for="institusi" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Institusi Pendidikan <span class="text-red-600">*</span>
                         </label>
-                        <input type="text" id="institusi" name="institusi"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nama universitas / institut / perguruan tinggi" value="{{ old('institusi') }}">
+                        <div class="relative">
+                            <input type="text" id="institusi" name="institusi" autocomplete="off"
+                                class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
+                                placeholder="Ketik nama universitas / perguruan tinggi..."
+                                x-model="query"
+                                @focus="open = filtered.length > 0"
+                                @input="open = filtered.length > 0">
+                            <div x-show="open && filtered.length > 0" x-transition
+                                 class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
+                                 style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="item in filtered" :key="item">
+                                        <button type="button"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+                                            @click="query = item; open = false; document.getElementById('institusi').value = item;">
+                                            <span x-text="item"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     {{-- Prodi --}}
-                    <div class="col-span-2 flex flex-col gap-1.5">
+                    <div class="col-span-2 flex flex-col gap-1.5"
+                         x-data="{
+                            open: false,
+                            query: '{{ old('prodi_pendidikan') }}',
+                            suggestions: ['Teknik Informatika','Sistem Informasi','Ilmu Komputer','Teknik Elektro','Teknik Mesin','Teknik Sipil','Teknik Kimia','Teknik Industri','Teknik Lingkungan','Matematika','Fisika','Kimia','Biologi','Statistika','Akuntansi','Manajemen','Ekonomi Pembangunan','Ilmu Komunikasi','Hubungan Internasional','Hukum','Kedokteran','Keperawatan','Farmasi','Psikologi','Pendidikan Matematika','Pendidikan Bahasa Inggris','Pendidikan Bahasa Indonesia','Arsitektur','Agribisnis','Agroteknologi','Peternakan','Kehutanan','Ilmu Administrasi Negara','Sosiologi','Antropologi','Pendidikan Dokter Gigi','Rekayasa Perangkat Lunak','Kecerdasan Buatan','Teknologi Informasi','Bisnis Digital','Desain Komunikasi Visual','Desain Produk Industri'],
+                            get filtered() { return this.query.length < 1 ? [] : this.suggestions.filter(s => s.toLowerCase().includes(this.query.toLowerCase())).slice(0,8); }
+                         }"
+                         @click.outside="open = false">
                         <label for="prodi_pendidikan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Program Studi <span class="text-red-600">*</span>
                         </label>
-                        <input type="text" id="prodi_pendidikan" name="prodi_pendidikan"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nama program studi" value="{{ old('prodi_pendidikan') }}">
+                        <div class="relative">
+                            <input type="text" id="prodi_pendidikan" name="prodi_pendidikan" autocomplete="off"
+                                class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
+                                placeholder="Ketik nama program studi..."
+                                x-model="query"
+                                @focus="open = filtered.length > 0"
+                                @input="open = filtered.length > 0">
+                            <div x-show="open && filtered.length > 0" x-transition
+                                 class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
+                                 style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="item in filtered" :key="item">
+                                        <button type="button"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
+                                            @click="query = item; open = false; document.getElementById('prodi_pendidikan').value = item;">
+                                            <span x-text="item"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                     {{-- Akreditas & No Ijazah --}}
                     <div class="flex flex-col gap-1.5">
-                        <label for="akreditas" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Akreditasi Prodi <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
                         </label>
-                        <select id="akreditas" name="akreditas"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih Akreditasi —</option>
-                            <option value="A" {{ old('akreditas') == 'A' ? 'selected' : '' }}>A</option>
-                            <option value="B" {{ old('akreditas') == 'B' ? 'selected' : '' }}>B</option>
-                            <option value="C" {{ old('akreditas') == 'C' ? 'selected' : '' }}>C</option>
-                            <option value="Unggul" {{ old('akreditas') == 'Unggul' ? 'selected' : '' }}>Unggul</option>
-                            <option value="Baik Sekali" {{ old('akreditas') == 'Baik Sekali' ? 'selected' : '' }}>Baik Sekali</option>
-                            <option value="Baik" {{ old('akreditas') == 'Baik' ? 'selected' : '' }}>Baik</option>
-                            <option value="Tidak Terakreditasi" {{ old('akreditas') == 'Tidak Terakreditasi' ? 'selected' : '' }}>Tidak Terakreditasi</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('akreditas') }}', opts: [{v:'A',l:'A'},{v:'B',l:'B'},{v:'C',l:'C'},{v:'Unggul',l:'Unggul'},{v:'Baik Sekali',l:'Baik Sekali'},{v:'Baik',l:'Baik'},{v:'Tidak Terakreditasi',l:'Tidak Terakreditasi'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="akreditas" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih Akreditasi —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex flex-col gap-1.5">
                         <label for="no_ijazah" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             No. Ijazah <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
                         </label>
-                        <input type="text" id="no_ijazah" name="no_ijazah"
+                        <input type="text" id="no_ijazah" name="no_ijazah" maxlength="15"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
                             placeholder="Nomor Ijazah Anda" value="{{ old('no_ijazah') }}">
                     </div>
@@ -553,11 +777,26 @@
                             Kategori Sertifikat
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
                         </label>
-                        <select name="kategori_sertifikat" class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih kategori —</option>
-                            <option value="kompetensi" {{ old('kategori_sertifikat') == 'kompetensi' ? 'selected' : '' }}>Kompetensi</option>
-                            <option value="keahlian_khusus" {{ old('kategori_sertifikat') == 'keahlian_khusus' ? 'selected' : '' }}>Keahlian Khusus</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('kategori_sertifikat') }}', opts: [{v:'kompetensi',l:'Kompetensi'},{v:'keahlian_khusus',l:'Keahlian Khusus'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="kategori_sertifikat" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih kategori —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -589,16 +828,26 @@
                             Jenis Tes Bahasa
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
                         </label>
-                        <select name="jenis_tes_bahasa" class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="" disabled selected>— Pilih jenis tes —</option>
-                            <option value="PBT" {{ old('jenis_tes_bahasa') == 'PBT' ? 'selected' : '' }}>PBT (Paper-Based TOEFL)</option>
-                            <option value="TOEFL_ITP" {{ old('jenis_tes_bahasa') == 'TOEFL_ITP' ? 'selected' : '' }}>TOEFL (ITP/Institutional)</option>
-                            <option value="EPrT" {{ old('jenis_tes_bahasa') == 'EPrT' ? 'selected' : '' }}>EPrT (English Proficiency Test)</option>
-                            <option value="CBT" {{ old('jenis_tes_bahasa') == 'CBT' ? 'selected' : '' }}>CBT (Computer-Based TOEFL)</option>
-                            <option value="IBT" {{ old('jenis_tes_bahasa') == 'IBT' ? 'selected' : '' }}>IBT (Internet-Based TOEFL)</option>
-                            <option value="IELTS" {{ old('jenis_tes_bahasa') == 'IELTS' ? 'selected' : '' }}>IELTS</option>
-                            <option value="AcEPT" {{ old('jenis_tes_bahasa') == 'AcEPT' ? 'selected' : '' }}>AcEPT (Academic English Proficiency Test)</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('jenis_tes_bahasa') }}', opts: [{v:'PBT',l:'PBT (Paper-Based TOEFL)'},{v:'TOEFL_ITP',l:'TOEFL (ITP/Institutional)'},{v:'EPrT',l:'EPrT (English Proficiency Test)'},{v:'CBT',l:'CBT (Computer-Based TOEFL)'},{v:'IBT',l:'IBT (Internet-Based TOEFL)'},{v:'IELTS',l:'IELTS'},{v:'AcEPT',l:'AcEPT (Academic English Proficiency Test)'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="jenis_tes_bahasa" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jenis tes —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -690,18 +939,30 @@
                     </div>
 
                     <div class="col-span-2 flex flex-col gap-1.5">
-                        <label for="jabatan_akademik" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
+                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Jabatan Fungsional Akademik
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
                         </label>
-                        <select id="jabatan_akademik" name="jabatan_akademik"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 cursor-pointer transition">
-                            <option value="non_jabatan" selected {{ old('jabatan_akademik') == 'non_jabatan' ? 'selected' : '' }}>Non Jabatan (NJAD)</option>
-                            <option value="guru_besar" {{ old('jabatan_akademik') == 'guru_besar' ? 'selected' : '' }}>Guru Besar (GB)</option>
-                            <option value="lektor_kepala" {{ old('jabatan_akademik') == 'lektor_kepala' ? 'selected' : '' }}>Lektor Kepala (LK)</option>
-                            <option value="lektor" {{ old('jabatan_akademik') == 'lektor' ? 'selected' : '' }}>Lektor (L)</option>
-                            <option value="asisten_ahli" {{ old('jabatan_akademik') == 'asisten_ahli' ? 'selected' : '' }}>Asisten Ahli (AA)</option>
-                        </select>
+                        <div x-data="{ open: false, val: '{{ old('jabatan_akademik', 'non_jabatan') }}', opts: [{v:'non_jabatan',l:'Non Jabatan (NJAD)'},{v:'asisten_ahli',l:'Asisten Ahli (AA)'},{v:'lektor',l:'Lektor (L)'},{v:'lektor_kepala',l:'Lektor Kepala (LK)'},{v:'guru_besar',l:'Guru Besar (GB)'}] }" @click.outside="open = false" class="relative">
+                            <input type="hidden" name="jabatan_akademik" :value="val">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
+                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
+                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jabatan —'"></span>
+                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1.5 space-y-0.5">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="val = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Section: Riset & Publikasi --}}
@@ -719,7 +980,7 @@
                         </label>
                         <textarea id="minat_riset" name="minat_riset" rows="3"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
-                            placeholder="Tuliskan bidang riset atau topik penelitian yang Anda minati..."></textarea>
+                            placeholder="Tuliskan bidang riset atau topik penelitian yang Anda minati...">{{ old('minat_riset') }}</textarea>
                     </div>
 
                     <div class="flex flex-col gap-1.5">
@@ -964,8 +1225,85 @@
         }
     }
 
-    function nextStep(from) {
+    async function nextStep(from) {
         if (!validateStep(from)) return;
+
+        if (from === 1) {
+            const email = document.getElementById('email').value;
+            const token = document.querySelector('input[name="_token"]').value;
+            const btn = document.querySelector('#step-1 button');
+            
+            try {
+                // Disable button & show loading state
+                btn.disabled = true;
+                btn.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memeriksa...</span>';
+
+                const response = await fetch("{{ route('register.check-email') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.valid) {
+                    document.getElementById('email').classList.add('error');
+                    showToast('Validasi Gagal', data.message || 'Email tidak valid atau sudah digunakan.', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+                    return;
+                }
+            } catch (error) {
+                showToast('Error', 'Terjadi kesalahan jaringan saat mengecek email.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+                return;
+            }
+
+            // Restore button
+            btn.disabled = false;
+            btn.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+        }
+
+        // ── Step 2: Cek NIK & No. Telepon sebelum lanjut ke Step 3 ──
+        if (from === 2) {
+            const nik        = document.getElementById('nik').value;
+            const noTelepon  = document.getElementById('no_telepon').value;
+            const token      = document.querySelector('input[name="_token"]').value;
+            const btn2       = document.querySelector('#step-2 button[onclick="nextStep(2)"]');
+
+            try {
+                btn2.disabled = true;
+                btn2.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memeriksa...</span>';
+
+                const response = await fetch("{{ route('register.check-identity') }}", {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                    body: JSON.stringify({ nik, no_telepon: noTelepon })
+                });
+                const data = await response.json();
+
+                btn2.disabled = false;
+                btn2.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+
+                if (!response.ok || !data.valid) {
+                    const fieldEl = document.getElementById(data.field === 'no_telepon' ? 'no_telepon' : 'nik');
+                    if (fieldEl) fieldEl.classList.add('error');
+                    showToast('Validasi Gagal', data.message || 'Data sudah terdaftar.', 'error');
+                    return;
+                }
+            } catch (err) {
+                btn2.disabled = false;
+                btn2.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+                showToast('Error', 'Terjadi kesalahan jaringan.', 'error');
+                return;
+            }
+        }
+
         if (from < TOTAL) showStep(from + 1);
     }
 

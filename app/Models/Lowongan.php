@@ -53,7 +53,7 @@ class Lowongan extends Model
      */
     public function getSisaKuotaAttribute(): int
     {
-        $aktif = $this->lamarans()->whereNotIn('status', ['ditolak'])->count();
+        $aktif = $this->lamarans()->whereNotIn('status', ['ditolak', 'mengundurkan_diri'])->count();
         return max(0, $this->kuota - $aktif);
     }
 

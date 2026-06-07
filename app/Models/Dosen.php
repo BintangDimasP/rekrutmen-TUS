@@ -27,8 +27,10 @@ class Dosen extends Model
     ];
 
     protected $casts = [
-        'is_penguji' => 'boolean',
-        'is_kaprodi' => 'boolean',
+        'is_penguji'  => 'boolean',
+        'is_kaprodi'  => 'boolean',
+        // Data PII — disimpan terenkripsi di database
+        'no_telepon'  => 'encrypted',
     ];
 
     // ── Relasi ────────────────────────────────────────────────────
@@ -89,15 +91,14 @@ class Dosen extends Model
         }
 
         return User::create([
-            'name'           => $this->nama,
-            'email'          => $this->generateUniqueEmail(),
-            'password'       => Hash::make(self::DEFAULT_PASSWORD),
-            'password_plain' => self::DEFAULT_PASSWORD,
-            'role'           => null,   // caller akan set role yang tepat
-            'is_penguji'     => false,
-            'is_kaprodi'     => false,
-            'prodi_id'       => $this->prodi_id,
-            'dosen_id'       => $this->id,
+            'name'       => $this->nama,
+            'email'      => $this->generateUniqueEmail(),
+            'password'   => Hash::make(self::DEFAULT_PASSWORD),
+            'role'       => null,   // caller akan set role yang tepat
+            'is_penguji' => false,
+            'is_kaprodi' => false,
+            'prodi_id'   => $this->prodi_id,
+            'dosen_id'   => $this->id,
         ]);
     }
 }

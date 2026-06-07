@@ -12,6 +12,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 class NotDosenInternalDomain implements ValidationRule
 {
     public const RESERVED_DOMAINS = [
+        'admin.telkomuniversity.ac.id',
         'pengajar.telkomuniversity.ac.id',
         'penguji.telkomuniversity.ac.id',
         'kaprodi.telkomuniversity.ac.id',

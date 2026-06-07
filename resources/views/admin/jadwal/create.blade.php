@@ -60,13 +60,36 @@
                     {{-- Prodi --}}
                     <div>
                         <label class="block text-xs font-medium text-gray-600 mb-1.5">Program Studi</label>
-                        <select name="prodi_id" x-model="prodiId" @change="onProdiChange()"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
+                        {{-- hidden select untuk form submit & x-model --}}
+                        <select name="prodi_id" x-model="prodiId" @change="onProdiChange()" class="hidden">
                             <option value="">— Pilih —</option>
                             @foreach($prodis as $prodi)
                                 <option value="{{ $prodi->id }}">{{ $prodi->nama }}</option>
                             @endforeach
                         </select>
+                        <div x-data="{
+                                open: false,
+                                opts: [{ v: '', l: '— Pilih —' }, @foreach($prodis as $prodi){ v: '{{ $prodi->id }}', l: '{{ addslashes($prodi->nama) }}' },@endforeach],
+                                get label() { return this.opts.find(o => o.v == prodiId)?.l ?? '— Pilih —'; }
+                             }" @click.outside="open = false" class="relative">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm transition-all"
+                                :class="prodiId ? 'text-gray-800' : 'text-gray-400'">
+                                <span x-text="label" class="truncate"></span>
+                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="prodiId = opt.v; onProdiChange(); open = false"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors"
+                                            :class="prodiId == opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Lowongan --}}
@@ -80,14 +103,33 @@
                             </svg>
                             Memuat...
                         </div>
-                        <select name="lowongan_id" x-model="lowonganId" :disabled="!prodiId" x-show="!loadingLowongan"
-                            @change="onLowonganChange()"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white disabled:opacity-50 disabled:cursor-not-allowed">
+                        {{-- hidden select untuk form submit --}}
+                        <select name="lowongan_id" x-model="lowonganId" @change="onLowonganChange()" class="hidden">
                             <option value="">— Pilih —</option>
                             <template x-for="l in lowongans" :key="l.id">
                                 <option :value="l.id" x-text="l.nama_posisi"></option>
                             </template>
                         </select>
+                        <div x-show="!loadingLowongan"
+                             x-data="{ open: false }" @click.outside="open = false" class="relative">
+                            <button type="button" @click="if(prodiId) open = !open" :disabled="!prodiId"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                :class="lowonganId ? 'text-gray-800' : 'text-gray-400'">
+                                <span x-text="lowonganId ? (lowongans.find(l => l.id == lowonganId)?.nama_posisi ?? '— Pilih —') : '— Pilih —'" class="truncate"></span>
+                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <template x-for="l in lowongans" :key="l.id">
+                                        <button type="button" @click="lowonganId = l.id; onLowonganChange(); open = false"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors"
+                                            :class="lowonganId == l.id ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="l.nama_posisi"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Search Pelamar --}}
@@ -114,25 +156,8 @@
                 </div>
             </div>
 
-            {{-- State: belum pilih lowongan --}}
-            <div x-show="!lowonganId"
-                class="flex items-center justify-center h-36 rounded-xl border border-dashed border-gray-200 bg-gray-50 mb-5">
-                <p class="text-xs text-gray-400">Isi informasi dasar di atas terlebih dahulu.</p>
-            </div>
-
-            {{-- State: loading --}}
-            <div x-show="loadingPelamar" class="flex items-center justify-center h-36 mb-5">
-                <svg class="w-6 h-6 text-red-800 animate-spin" fill="none" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25" />
-                    <path fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-            </div>
-
-
-
             {{-- TABEL UTAMA --}}
-            <div x-show="!loadingPelamar && pelamars.length > 0"
-                class="rounded-xl border border-gray-200 overflow-hidden mb-5">
+            <div class="rounded-xl border border-gray-200 overflow-hidden mb-5">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse" style="min-width: 900px;">
                         <thead>
@@ -151,6 +176,31 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {{-- State: belum pilih lowongan --}}
+                            <tr x-show="!lowonganId">
+                                <td colspan="7" class="py-12 text-center bg-gray-50 border-b border-gray-100">
+                                    <p class="text-xs text-gray-400">Isi informasi dasar di atas terlebih dahulu.</p>
+                                </td>
+                            </tr>
+
+                            {{-- State: loading --}}
+                            <tr x-show="loadingPelamar">
+                                <td colspan="7" class="py-12 text-center bg-white border-b border-gray-100">
+                                    <div class="flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-red-800 animate-spin" fill="none" viewBox="0 0 24 24">
+                                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" class="opacity-25" />
+                                            <path fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                                        </svg>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            {{-- State: tidak ada pelamar --}}
+                            <tr x-show="!loadingPelamar && lowonganId && pelamars.length === 0">
+                                <td colspan="7" class="py-12 text-center bg-white border-b border-gray-100">
+                                    <p class="text-xs text-gray-400">Tidak ada pelamar siap dijadwalkan di lowongan ini.</p>
+                                </td>
+                            </tr>
                             <template x-for="(p, idx) in filteredPelamars" :key="p.id">
                                 <tr class="border-t border-gray-100 align-top transition-colors" :class="{
                                         'bg-red-50':   getConflictWarning(p.id),
@@ -161,13 +211,13 @@
                                     <td class="py-3 px-3 text-xs text-gray-400 font-medium" x-text="idx + 1"></td>
 
                                     {{-- Pelamar --}}
-                                    <td class="py-3 px-3">
+                                    <td class="py-3 px-3 max-w-0">
                                         <div class="flex items-start gap-2">
                                             <span class="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full"
                                                 :class="getConflictWarning(p.id) ? 'bg-red-500' : isRowComplete(p.id) ? 'bg-green-500' : 'bg-gray-300'"></span>
-                                            <div>
-                                                <p class="text-xs font-semibold text-gray-800" x-text="p.nama"></p>
-                                                <p class="text-[0.65rem] text-gray-400 font-medium" x-text="p.email"></p>
+                                            <div class="min-w-0 flex-1">
+                                                <p class="text-xs font-semibold text-gray-800 truncate" :title="p.nama" x-text="p.nama"></p>
+                                                <p class="text-[0.65rem] text-gray-400 font-medium truncate" :title="p.email" x-text="p.email"></p>
                                                 <p x-show="getConflictWarning(p.id)" x-text="getConflictWarning(p.id)"
                                                     class="text-[0.62rem] text-red-600 mt-1 leading-snug"></p>
                                             </div>
@@ -275,9 +325,8 @@
 
                                 </tr>
                             </template>
-                            <tr x-show="filteredPelamars.length === 0 && pelamars.length > 0">
-                                <td colspan="8" class="py-8 text-center text-xs text-gray-400">Tidak ada hasil pencarian.
-                                </td>
+                            <tr x-show="!loadingPelamar && pelamars.length > 0 && filteredPelamars.length === 0">
+                                <td colspan="7" class="py-8 text-center text-xs text-gray-400">Tidak ada hasil pencarian.</td>
                             </tr>
                         </tbody>
                     </table>

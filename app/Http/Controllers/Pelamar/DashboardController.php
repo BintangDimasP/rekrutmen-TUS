@@ -40,8 +40,16 @@ class DashboardController extends Controller
             if ($request->session()->pull('show_profile_reminder', false)) {
                 $showProfileModal = true;
 
-                // 1. Data Diri
-                $dataDiriFields = ['nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'alamat'];
+                // 1. Verifikasi Email & No. Telepon
+                if (empty(auth()->user()->email_verified_at)) {
+                    $incompleteSections[] = 'Verifikasi Email';
+                }
+                if (empty($pelamar->phone_verified_at)) {
+                    $incompleteSections[] = 'Verifikasi No. Telepon';
+                }
+
+                // 2. Data Diri
+                $dataDiriFields = ['nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'alamat_domisili'];
                 foreach ($dataDiriFields as $field) {
                     if (empty($pelamar->$field)) {
                         $incompleteSections[] = 'Data Diri';
@@ -49,7 +57,7 @@ class DashboardController extends Controller
                     }
                 }
 
-                // 2. Riwayat Pendidikan
+                // 3. Riwayat Pendidikan
                 $pendidikanFields = ['jenjang', 'institusi', 'file_ijazah', 'file_transkrip'];
                 foreach ($pendidikanFields as $field) {
                     if (empty($pelamar->$field)) {
@@ -58,7 +66,7 @@ class DashboardController extends Controller
                     }
                 }
 
-                // 3. Dokumen & Sertifikat
+                // 4. Dokumen & Sertifikat
                 $dokumenFields = ['file_cv', 'file_pas_foto', 'file_ktp'];
                 foreach ($dokumenFields as $field) {
                     if (empty($pelamar->$field)) {
@@ -67,27 +75,12 @@ class DashboardController extends Controller
                     }
                 }
 
-                // 4. Data Akademik
+                // 5. Data Akademik
                 $akademikFields = ['nidn', 'homebase', 'jabatan_akademik'];
                 foreach ($akademikFields as $field) {
                     if (empty($pelamar->$field)) {
                         $incompleteSections[] = 'Data Akademik';
                         break;
-                    }
-                }
-
-                // 5. Dokumen Pelamar Ber-Homebase (hanya jika NIDN terisi)
-                if (!empty($pelamar->nidn)) {
-                    $homebaseFields = [
-                        'file_kartu_dosen', 'file_jad', 'file_pak',
-                        'file_registrasi_dosen', 'file_inpassing',
-                        'file_serdik', 'file_skpp_serdos', 'file_pernyataan_lolos_butuh',
-                    ];
-                    foreach ($homebaseFields as $field) {
-                        if (empty($pelamar->$field)) {
-                            $incompleteSections[] = 'Dokumen Pelamar Ber-Homebase';
-                            break;
-                        }
                     }
                 }
 

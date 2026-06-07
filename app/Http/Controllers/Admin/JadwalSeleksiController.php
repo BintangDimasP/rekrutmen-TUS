@@ -60,6 +60,9 @@ class JadwalSeleksiController extends Controller
                     'wawancara' => $wawancara,
                     'micro'     => $micro,
                     'pengujis'  => $allPengujis,
+                    'lamaran'   => Lamaran::where('pelamar_id', $first->pelamar_id)
+                                      ->where('lowongan_id', $first->lowongan_id)
+                                      ->first(),
                 ];
             })
             ->values();
@@ -204,32 +207,57 @@ class JadwalSeleksiController extends Controller
         $lowongan = Lowongan::find($lowonganId);
         $posisi   = $lowongan?->nama_posisi ?? 'Lowongan';
 
+        // Notify ALL admins - sistem log
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $posisi, $tanggal, $waktu) {
+            \App\Models\Notifikasi::kirimSistem(
+                $u->id,
+                'Penjadwalan Dibuat',
+                "Admin {$adminNama} melakukan penjadwalan seleksi untuk lowongan {$posisi} pada tanggal {$tanggal} pukul {$waktu}."
+            );
+        });
+
+        // Kumpulkan sesi per pelamar untuk pesan notifikasi
+        $pelamarSesiMap = [];
         foreach ($schedule as $pelamarIdRaw => $timedSlots) {
-            $pelamarId = (int) $pelamarIdRaw;
-            $pelamar   = Pelamar::with('user')->find($pelamarId);
-            if ($pelamar?->user) {
-                Notifikasi::kirim(
-                    $pelamar->user->id,
-                    'Jadwal Seleksi Ditetapkan',
-                    "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah ditetapkan pada {$tanggal}. Silakan cek detail jadwal di portal.",
-                    'jadwal'
-                );
-            }
+            $pelamarSesiMap[(int)$pelamarIdRaw] = $timedSlots;
+        }
+
+        // Ambil seluruh jadwal yang baru saja disimpan untuk mendapat label sesi
+        $newJadwals = JadwalSeleksi::where('lowongan_id', $lowonganId)
+            ->where('tanggal', $tanggal)
+            ->get();
+
+        // Notifikasi pelamar — ambil block_label dari sesi pertama yang tersimpan
+        foreach ($pelamarSesiMap as $pelamarIdKey => $timedSlots) {
+            $pelamar = Pelamar::with('user')->find($pelamarIdKey);
+            if (!$pelamar?->user) continue;
+
+            $firstSesiKey = array_key_first($timedSlots);
+            // $firstSesiKey bisa berupa integer sesi
+            $firstJadwal = $newJadwals->where('pelamar_id', $pelamarIdKey)->first();
+            $sesiLabel   = $firstJadwal ? (JadwalSeleksi::SESSIONS[$firstJadwal->tipe_seleksi][$firstJadwal->sesi]['block_label'] ?? "Sesi {$firstJadwal->sesi}") : '-';
+
+            Notifikasi::kirim(
+                $pelamar->user->id,
+                'Jadwal Seleksi Ditetapkan',
+                "Anda dijadwalkan mengikuti seleksi untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk melihat detail kedua tahapan pengujian pada sesi ini.",
+                'jadwal'
+            );
         }
 
         // Notifikasi ke penguji yang dijadwalkan
-        $pengujiIds = JadwalSeleksi::where('lowongan_id', $lowonganId)
-            ->where('tanggal', $tanggal)
-            ->pluck('penguji_id')
-            ->unique();
+        $pengujiIds = $newJadwals->pluck('penguji_id')->unique();
         foreach ($pengujiIds as $pengujiId) {
-            // Kirim notifikasi ke semua akun user penguji (via dosen_id)
+            $firstJadwal  = $newJadwals->where('penguji_id', $pengujiId)->first();
+            $sesiLabel    = $firstJadwal ? (JadwalSeleksi::SESSIONS[$firstJadwal->tipe_seleksi][$firstJadwal->sesi]['block_label'] ?? "Sesi {$firstJadwal->sesi}") : '-';
             $userPengujis = User::where('dosen_id', $pengujiId)->get();
             foreach ($userPengujis as $userPenguji) {
                 Notifikasi::kirim(
                     $userPenguji->id,
                     'Jadwal Pengujian Ditetapkan',
-                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}. Silakan cek jadwal di portal.",
+                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa daftar jadwal pengujian Anda untuk melihat detail pelamar dan urutan pengujiannya.",
                     'jadwal'
                 );
             }
@@ -248,6 +276,13 @@ class JadwalSeleksiController extends Controller
     public function destroy(JadwalSeleksi $jadwal)
     {
         $jadwal->delete();
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Jadwal Dihapus', "Admin {$adminNama} menghapus jadwal seleksi pada {$waktu}.");
+        });
+
         return back()->with('success', 'Jadwal seleksi berhasil dihapus.');
     }
 
@@ -308,12 +343,12 @@ class JadwalSeleksiController extends Controller
         // Kirim notifikasi perubahan jadwal
         $jadwal->load(['pelamar.user', 'penguji', 'lowongan']);
         $posisi    = $jadwal->lowongan?->nama_posisi ?? 'Lowongan';
-        $tipeLabel = $jadwal->tipe_seleksi === 'wawancara' ? 'Wawancara' : 'Micro Teaching';
+        $sesiLabel = JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$sesi]['block_label'] ?? "Sesi {$sesi}";
         if ($jadwal->pelamar?->user) {
             Notifikasi::kirim(
                 $jadwal->pelamar->user->id,
-                'Jadwal Seleksi Diubah',
-                "Jadwal {$tipeLabel} Anda untuk posisi \"{$posisi}\" telah diubah menjadi tanggal {$tanggal}.",
+                'Jadwal Seleksi Diperbarui',
+                "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk menyesuaikan persiapan pengujian.",
                 'jadwal'
             );
         }
@@ -322,8 +357,8 @@ class JadwalSeleksiController extends Controller
             foreach ($userPengujis as $userPenguji) {
                 Notifikasi::kirim(
                     $userPenguji->id,
-                    'Jadwal Pengujian Diubah',
-                    "Jadwal {$tipeLabel} untuk posisi \"{$posisi}\" telah diubah menjadi tanggal {$tanggal}.",
+                    'Jadwal Pengujian Diperbarui',
+                    "Jadwal Anda sebagai penguji untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali daftar jadwal pengujian untuk penyesuaian agenda Anda.",
                     'jadwal'
                 );
             }
@@ -490,12 +525,17 @@ class JadwalSeleksiController extends Controller
         $lowongan = Lowongan::find($lowonganId);
         $posisi   = $lowongan?->nama_posisi ?? 'Lowongan';
 
+        // Tentukan sesi label dari wawancara (basis sesi group update)
+        $sesiNum      = $sesi ?? 1;
+        $sesiLabel    = JadwalSeleksi::SESSIONS['wawancara'][$sesiNum]['block_label']
+                        ?? "Sesi {$sesiNum}";
+
         // Notifikasi ke pelamar
         if ($pelamar?->user) {
             Notifikasi::kirim(
                 $pelamar->user->id,
                 'Jadwal Seleksi Diperbarui',
-                "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi tanggal {$tanggal}.",
+                "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk menyesuaikan persiapan pengujian.",
                 'jadwal'
             );
         }
@@ -514,7 +554,7 @@ class JadwalSeleksiController extends Controller
                 Notifikasi::kirim(
                     $userPenguji->id,
                     'Jadwal Pengujian Dibatalkan',
-                    "Anda tidak lagi dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}.",
+                    "Anda tidak lagi dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}.",
                     'jadwal'
                 );
             }
@@ -528,7 +568,7 @@ class JadwalSeleksiController extends Controller
                 Notifikasi::kirim(
                     $userPenguji->id,
                     'Jadwal Pengujian Ditetapkan',
-                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal}. Silakan cek jadwal di portal.",
+                    "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa daftar jadwal pengujian Anda untuk melihat detail pelamar dan urutan pengujiannya.",
                     'jadwal'
                 );
             }
@@ -542,11 +582,21 @@ class JadwalSeleksiController extends Controller
                 Notifikasi::kirim(
                     $userPenguji->id,
                     'Jadwal Pengujian Diperbarui',
-                    "Jadwal pengujian untuk posisi \"{$posisi}\" telah diperbarui menjadi tanggal {$tanggal}.",
+                    "Jadwal Anda sebagai penguji untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali daftar jadwal pengujian untuk penyesuaian agenda Anda.",
                     'jadwal'
                 );
             }
         }
+
+        $adminNamaLog = auth()->user()->name ?? 'Admin';
+        $waktuLog = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $lowonganLog = \App\Models\Lowongan::find($lowonganId);
+        $posisiLog = $lowonganLog?->nama_posisi ?? '-';
+        $pelamarLog = \App\Models\Pelamar::find($pelamarId);
+        $namaLog = $pelamarLog?->nama ?? '-';
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNamaLog, $namaLog, $posisiLog, $tanggal, $waktuLog) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Jadwal Diperbarui', "Admin {$adminNamaLog} memperbarui jadwal seleksi {$namaLog} untuk lowongan {$posisiLog} pada tanggal {$tanggal} pukul {$waktuLog}.");
+        });
 
         return back()->with('success', 'Jadwal berhasil diperbarui.');
     }

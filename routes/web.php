@@ -42,6 +42,7 @@ Route::middleware(['auth'])->group(function () {
 
         // User Management
         Route::get('admin/user', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('admin.user.index');
+        Route::post('admin/user', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('admin.user.store');
         Route::put('admin/user/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('admin.user.update');
         Route::delete('admin/user/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('admin.user.destroy');
 
@@ -65,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/lamaran/{lamaran}/cetak', [\App\Http\Controllers\Admin\LamaranController::class, 'cetak'])->name('admin.lamaran.cetak');
         Route::put('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'update'])->name('admin.lamaran.update');
         Route::delete('admin/lamaran/{lamaran}', [\App\Http\Controllers\Admin\LamaranController::class, 'destroy'])->name('admin.lamaran.destroy');
+        Route::delete('admin/lowongan/{lowongan}/lamaran/withdrawn', [\App\Http\Controllers\Admin\LamaranController::class, 'destroyWithdrawn'])->name('admin.lamaran.destroyWithdrawn');
         Route::get('admin/lowongan/{lowongan}/lamaran/filter', [\App\Http\Controllers\Admin\LamaranController::class, 'filter'])->name('admin.lamaran.filter');
 
         // Pelamar Management (Global)
@@ -104,6 +106,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/pelamar/history', [\App\Http\Controllers\Pelamar\HistoryController::class, 'index'])->name('pelamar.history.index');
         Route::get('/pelamar/history/{lamaran}', [\App\Http\Controllers\Pelamar\HistoryController::class, 'show'])->name('pelamar.history.show');
+        Route::put('/pelamar/history/{lamaran}/withdraw', [\App\Http\Controllers\Pelamar\HistoryController::class, 'withdraw'])->name('pelamar.history.withdraw');
     });
 
     // Penguji
@@ -131,11 +134,11 @@ Route::middleware(['auth'])->group(function () {
     // Switch role (untuk dosen rangkap penguji + kaprodi)
     Route::post('/role/switch', [\App\Http\Controllers\RoleSwitchController::class, 'switch'])->name('role.switch');
 
-    // Pengaturan password (pelamar, penguji, kaprodi)
-    Route::middleware('role:pelamar,penguji,kaprodi')->group(function () {
-        Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
-        Route::put('/settings/password', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.password.update');
-    });
+    // Pengaturan akun (semua role: admin, pelamar, penguji, kaprodi)
+    Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+    Route::put('/settings/password', [\App\Http\Controllers\SettingController::class, 'update'])->name('settings.password.update');
+    Route::post('/settings/foto', [\App\Http\Controllers\SettingController::class, 'updateFoto'])->name('settings.foto.update');
+    Route::delete('/settings/foto', [\App\Http\Controllers\SettingController::class, 'deleteFoto'])->name('settings.foto.delete');
 });
 
 // Profile Management (Breeze default)

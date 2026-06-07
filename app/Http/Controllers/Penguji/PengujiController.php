@@ -36,9 +36,18 @@ class PengujiController extends Controller
         $upcomingJadwals = JadwalSeleksi::where('penguji_id', $dosen->id)
             ->whereBetween('tanggal', [now()->startOfDay(), now()->addDays(7)->endOfDay()])
             ->with(['pelamar', 'lowongan.prodi', 'penilaian'])
-            ->orderBy('tanggal', 'asc')
-            ->orderBy('sesi', 'asc')
-            ->get();
+            ->get()
+            ->sortBy([
+                // 1. Pending (belum dinilai) diutamakan
+                fn ($a, $b) => ($a->penilaian ? 1 : 0) <=> ($b->penilaian ? 1 : 0),
+                // 2. Micro teaching diutamakan
+                fn ($a, $b) => ($a->tipe_seleksi === 'micro_teaching' ? 0 : 1) <=> ($b->tipe_seleksi === 'micro_teaching' ? 0 : 1),
+                // 3. Tanggal terdekat (ASC)
+                fn ($a, $b) => $a->tanggal <=> $b->tanggal,
+                // 4. Sesi terdekat (ASC)
+                fn ($a, $b) => $a->sesi <=> $b->sesi,
+            ])
+            ->values();
 
         return view('penguji.dashboard', compact('totalDiuji', 'totalDinilai', 'totalBelumDinilai', 'upcomingJadwals'));
     }

@@ -9,110 +9,8 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
             <div class="flex items-center gap-3 flex-wrap">
 
-                {{-- Prodi Chip --}}
-                <div class="relative" @click.outside="prodiOpen = false">
-                    <button type="button" @click="prodiOpen = !prodiOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="prodiFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-                        Prodi
-                        <span x-show="prodiFilter.length > 0" x-text="prodiFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-
-                    <div x-show="prodiOpen" x-transition
-                         class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p>
-                        </div>
-                        <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
-                            @foreach($prodis as $prodi)
-                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                                <input type="checkbox" value="{{ $prodi->nama }}" x-model="prodiFilter"
-                                       class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
-                                <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
-                            </label>
-                            @endforeach
-                        </div>
-                        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex justify-end">
-                            <button type="button" @click="prodiOpen = false" class="text-xs font-bold text-[#8b1515] hover:underline">Tutup</button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Jenjang Chip --}}
-                <div class="relative" @click.outside="jenjangOpen = false">
-                    <button type="button" @click="jenjangOpen = !jenjangOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="jenjangFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
-                        Jenjang
-                        <span x-show="jenjangFilter.length > 0" x-text="jenjangFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="jenjangOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-
-                    <div x-show="jenjangOpen" x-transition
-                         class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Jenjang</p>
-                        </div>
-                        <div class="p-3 space-y-1">
-                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" value="S1" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
-                                <span class="text-sm font-medium text-gray-700">S1</span>
-                            </label>
-                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" value="S2" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
-                                <span class="text-sm font-medium text-gray-700">S2</span>
-                            </label>
-                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
-                                <input type="checkbox" value="S3" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515]/20">
-                                <span class="text-sm font-medium text-gray-700">S3</span>
-                            </label>
-                        </div>
-                        <div class="px-4 py-3 border-t border-gray-100 bg-gray-50 flex justify-end">
-                            <button type="button" @click="jenjangOpen = false" class="text-xs font-bold text-[#8b1515] hover:underline">Tutup</button>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Saved Toggle Chip --}}
-                <button type="button" @click="showOnlySaved = !showOnlySaved"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                        :class="showOnlySaved ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" :fill="showOnlySaved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
-                    </svg>
-                    Tersimpan
-                </button>
-
-                {{-- Active filter tags --}}
-                <template x-for="p in prodiFilter" :key="'p-'+p">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
-                        <span x-text="p"></span>
-                        <button type="button" @click="prodiFilter = prodiFilter.filter(v => v !== p)" class="ml-0.5 hover:text-blue-900">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </span>
-                </template>
-                <template x-for="j in jenjangFilter" :key="'j-'+j">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-xs font-semibold text-indigo-700">
-                        <span x-text="j"></span>
-                        <button type="button" @click="jenjangFilter = jenjangFilter.filter(v => v !== j)" class="ml-0.5 hover:text-indigo-900">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </span>
-                </template>
-
-                {{-- Clear All --}}
-                <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    Clear Filters
-                </button>
-
                 {{-- Search (animated) --}}
-                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
                     <div class="relative flex items-center">
                         {{-- Magnify button --}}
                         <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
@@ -136,7 +34,103 @@
                     </div>
                 </div>
 
-              
+                {{-- Prodi Chip --}}
+                <div class="relative" @click.outside="prodiOpen = false">
+                    <button type="button" @click="prodiOpen = !prodiOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="prodiFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                        Prodi
+                        <span x-show="prodiFilter.length > 0" x-text="prodiFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <div x-show="prodiOpen" x-transition
+                         class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p>
+                        </div>
+                        <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
+                            @foreach($prodis as $prodi)
+                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <input type="checkbox" value="{{ $prodi->nama }}" x-model="prodiFilter"
+                                       class="w-4 h-4 rounded border-gray-300 text-gray-600 focus:ring-gray-300/30">
+                                <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Jenjang Chip --}}
+                <div class="relative" @click.outside="jenjangOpen = false">
+                    <button type="button" @click="jenjangOpen = !jenjangOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="jenjangFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5"/></svg>
+                        Jenjang
+                        <span x-show="jenjangFilter.length > 0" x-text="jenjangFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="jenjangOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <div x-show="jenjangOpen" x-transition
+                         class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Jenjang</p>
+                        </div>
+                        <div class="p-3 space-y-1">
+                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" value="S1" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-gray-600 focus:ring-gray-300/30">
+                                <span class="text-sm font-medium text-gray-700">S1</span>
+                            </label>
+                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" value="S2" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-gray-600 focus:ring-gray-300/30">
+                                <span class="text-sm font-medium text-gray-700">S2</span>
+                            </label>
+                            <label class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" value="S3" x-model="jenjangFilter" class="w-4 h-4 rounded border-gray-300 text-gray-600 focus:ring-gray-300/30">
+                                <span class="text-sm font-medium text-gray-700">S3</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Saved Toggle Chip --}}
+                <button type="button" @click="showOnlySaved = !showOnlySaved"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="showOnlySaved ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" :fill="showOnlySaved ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
+                    </svg>
+                    Tersimpan
+                </button>
+
+                {{-- Active filter tags --}}
+                <template x-for="p in prodiFilter" :key="'p-'+p">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                        <span x-text="p"></span>
+                        <button type="button" @click="prodiFilter = prodiFilter.filter(v => v !== p)" class="ml-0.5 hover:text-gray-900">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </span>
+                </template>
+                <template x-for="j in jenjangFilter" :key="'j-'+j">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                        <span x-text="j"></span>
+                        <button type="button" @click="jenjangFilter = jenjangFilter.filter(v => v !== j)" class="ml-0.5 hover:text-gray-900">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </span>
+                </template>
+
+                {{-- Clear All --}}
+                <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear Filters
+                </button>
+
+                {{-- Search has been moved to the left --}}
             </div>
         </div>
 

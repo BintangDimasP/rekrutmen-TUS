@@ -20,7 +20,7 @@ class User extends Authenticatable
         'is_kaprodi',
         'prodi_id',
         'dosen_id',
-        'password_plain',
+        'foto_profil',
     ];
 
     protected $hidden = [
@@ -93,5 +93,17 @@ class User extends Authenticatable
     public function isKaprodiOf(int $prodiId): bool
     {
         return $this->role === 'kaprodi' && $this->prodi_id === $prodiId;
+    }
+
+    /**
+     * URL foto profil user. Jika tidak ada, return null
+     * sehingga view bisa fallback ke inisial nama.
+     */
+    public function getFotoProfilUrlAttribute(): ?string
+    {
+        if (!$this->foto_profil) {
+            return null;
+        }
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($this->foto_profil);
     }
 }

@@ -48,58 +48,8 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
             <div class="flex items-center gap-3 flex-wrap">
 
-            {{-- Prodi Chip --}}
-            <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
-                <button type="button" @click="prodiOpen = !prodiOpen"
-                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                        :class="filterProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
-                    Prodi
-                    <span x-show="filterProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-
-                <div x-show="prodiOpen" x-transition
-                     class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                    <div class="px-4 py-3 border-b border-gray-100">
-                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p>
-                    </div>
-                    <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
-                        @foreach($prodis as $prodi)
-                        <button type="button" @click="filterProdi = filterProdi === '{{ $prodi->id }}' ? '' : '{{ $prodi->id }}'; prodiOpen = false"
-                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
-                                :class="filterProdi === '{{ $prodi->id }}' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
-                                  :class="filterProdi === '{{ $prodi->id }}' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
-                                <svg x-show="filterProdi === '{{ $prodi->id }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                            </span>
-                            <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
-                        </button>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-
-            {{-- Active filter tag --}}
-            @foreach($prodis as $prodi)
-            <span x-show="filterProdi === '{{ $prodi->id }}'" x-transition
-                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
-                {{ $prodi->nama }}
-                <button type="button" @click="filterProdi = ''" class="ml-0.5 hover:text-blue-900">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </span>
-            @endforeach
-
-            {{-- Clear All --}}
-            <button x-show="filterProdi !== '' || search !== ''" x-transition type="button" @click="filterProdi = ''; search = ''"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                Clear Filters
-            </button>
-
             {{-- Search (animated) --}}
-            <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+            <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
                 <div class="relative flex items-center">
                     {{-- Magnify button --}}
                     <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
@@ -123,6 +73,55 @@
                 </div>
             </div>
 
+            {{-- Prodi Chip --}}
+            <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
+                <button type="button" @click="prodiOpen = !prodiOpen"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="filterProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                    Prodi
+                    <span x-show="filterProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+
+                <div x-show="prodiOpen" x-transition
+                     class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div class="px-4 py-3 border-b border-gray-100">
+                        <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p>
+                    </div>
+                    <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
+                        @foreach($prodis as $prodi)
+                        <button type="button" @click="filterProdi = filterProdi === '{{ $prodi->id }}' ? '' : '{{ $prodi->id }}'; prodiOpen = false"
+                                class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                                :class="filterProdi === '{{ $prodi->id }}' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
+                                  :class="filterProdi === '{{ $prodi->id }}' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                <svg x-show="filterProdi === '{{ $prodi->id }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            </span>
+                            <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
+                        </button>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Active filter tag --}}
+            @foreach($prodis as $prodi)
+            <span x-show="filterProdi === '{{ $prodi->id }}'" x-transition
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                {{ $prodi->nama }}
+                <button type="button" @click="filterProdi = ''" class="ml-0.5 hover:text-gray-900">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </span>
+            @endforeach
+
+            {{-- Clear All --}}
+            <button x-show="filterProdi !== '' || search !== ''" x-transition type="button" @click="filterProdi = ''; search = ''"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                Clear Filters
+            </button>
             </div>
         </div>
 
@@ -153,22 +152,21 @@
                         data-name="{{ strtolower(addslashes($pelamar->nama)) }}"
                         data-phone="{{ strtolower(addslashes($pelamar->no_telepon)) }}"
                         data-prodis="{{ $pelamar->lamarans->pluck('lowongan.prodi_id')->filter()->unique()->implode(',') }}">
-                        <td class="py-4 px-5">
-                            <div class="text-sm font-semibold text-gray-800 truncate">{{ $pelamar->nama }}</div>
+                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->nama }}">
+                            <div class="text-sm font-medium text-gray-800 truncate">{{ $pelamar->nama }}</div>
                         </td>
-                        <td class="py-3 px-5">
-                            <div class="text-sm text-gray-700 font-medium truncate">{{ $pelamar->jenjang ?? '-' }}</div>
+                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
+                            <div class="text-sm text-gray-600 font-medium truncate">{{ $pelamar->jenjang ?? '-' }}</div>
                             <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5 truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-5">
-                            <span class="text-sm text-gray-600 font-mono">{{ $pelamar->no_telepon ?? '-' }}</span>
+                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
+                            <span class="text-sm text-gray-600 font-medium truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
                         </td>
-                        <td class="py-3 px-5">
+                        <td class="py-3 px-5 max-w-0">
                             @if($pelamar->lamarans->count() > 0)
                                 <div class="flex flex-col gap-1">
                                     @foreach($pelamar->lamarans->take(2) as $lamaran)
-                                        <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold">
-                                            
+                                        <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold" title="{{ $lamaran->lowongan->nama_posisi ?? '-' }}">
                                             <span class="truncate">{{ $lamaran->lowongan->nama_posisi ?? '-' }}</span>
                                         </span>
                                     @endforeach

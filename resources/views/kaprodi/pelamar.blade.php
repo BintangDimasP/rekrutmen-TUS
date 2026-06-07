@@ -9,6 +9,28 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
         <div class="flex items-center gap-3 flex-wrap">
 
+            {{-- Search (animated) --}}
+            <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                <div class="relative flex items-center">
+                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
+                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                        <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama atau no hp..."
+                               @keydown.escape="search = ''; searchOpen = false"
+                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                    </div>
+                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                            @click="search = ''; searchOpen = false"
+                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
             {{-- Lowongan Chip --}}
             <div class="relative" @click.outside="lowonganOpen = false">
                 <button type="button" @click="lowonganOpen = !lowonganOpen"
@@ -27,7 +49,7 @@
                                     class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
                                     :class="String(lowongan_id) === String(low.id) ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
-                                      :class="String(lowongan_id) === String(low.id) ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
+                                      :class="String(lowongan_id) === String(low.id) ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
                                     <svg x-show="String(lowongan_id) === String(low.id)" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </span>
                                 <span class="text-sm font-medium text-gray-700" x-text="low.nama_posisi"></span>
@@ -50,68 +72,50 @@
                 <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
                     <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
                     <div class="p-3 space-y-1">
-                        <button type="button" @click="status = status === 'menunggu' ? '' : 'menunggu'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="status === 'menunggu' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'menunggu' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="status === 'menunggu'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-gray-600">Menunggu</span>
+                        <button type="button" @click="status = status === 'menunggu' ? '' : 'menunggu'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'menunggu' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'menunggu' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'menunggu'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Menunggu</span>
                         </button>
-                        <button type="button" @click="status = status === 'seleksi_tahap1' ? '' : 'seleksi_tahap1'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="status === 'seleksi_tahap1' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'seleksi_tahap1' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="status === 'seleksi_tahap1'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-blue-600">Seleksi Tahap 1</span>
+                        <button type="button" @click="status = status === 'seleksi_tahap1' ? '' : 'seleksi_tahap1'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'seleksi_tahap1' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'seleksi_tahap1' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'seleksi_tahap1'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Seleksi Tahap 1</span>
                         </button>
-                        <button type="button" @click="status = status === 'seleksi_tahap2' ? '' : 'seleksi_tahap2'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="status === 'seleksi_tahap2' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'seleksi_tahap2' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="status === 'seleksi_tahap2'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-indigo-600">Seleksi Tahap 2</span>
+                        <button type="button" @click="status = status === 'seleksi_tahap2' ? '' : 'seleksi_tahap2'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'seleksi_tahap2' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'seleksi_tahap2' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'seleksi_tahap2'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Seleksi Tahap 2</span>
                         </button>
-                        <button type="button" @click="status = status === 'diterima' ? '' : 'diterima'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="status === 'diterima' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'diterima' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="status === 'diterima'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-green-600">Diterima</span>
+                        <button type="button" @click="status = status === 'diterima' ? '' : 'diterima'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'diterima' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'diterima' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'diterima'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Diterima</span>
                         </button>
-                        <button type="button" @click="status = status === 'ditolak' ? '' : 'ditolak'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="status === 'ditolak' ? 'bg-gray-50' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'ditolak' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="status === 'ditolak'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-red-600">Ditolak</span>
+                        <button type="button" @click="status = status === 'ditolak' ? '' : 'ditolak'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'ditolak' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'ditolak' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'ditolak'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Ditolak</span>
+                        </button>
+                        <button type="button" @click="status = status === 'mengundurkan_diri' ? '' : 'mengundurkan_diri'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="status === 'mengundurkan_diri' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="status === 'mengundurkan_diri' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="status === 'mengundurkan_diri'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Mengundurkan Diri</span>
                         </button>
                     </div>
                 </div>
             </div>
 
             {{-- Active filter tags --}}
-            <span x-show="lowongan_id !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
+            <span x-show="lowongan_id !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
                 <span x-text="selectedLowonganName"></span>
-                <button type="button" @click="lowongan_id = ''" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <button type="button" @click="lowongan_id = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </span>
-            <span x-show="status !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
+            <span x-show="status !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
                 <span x-text="selectedStatusLabel"></span>
-                <button type="button" @click="status = ''" class="ml-0.5 hover:text-red-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <button type="button" @click="status = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </span>
 
             {{-- Clear All --}}
             <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 Clear Filters
             </button>
-
-            {{-- Search (animated) --}}
-            <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
-                <div class="relative flex items-center">
-                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
-                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </button>
-                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
-                        <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama atau no hp..."
-                               @keydown.escape="search = ''; searchOpen = false"
-                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
-                    </div>
-                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
-                            @click="search = ''; searchOpen = false"
-                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-            </div>
 
         </div>
     </div>
@@ -146,21 +150,21 @@
                     </template>
                     <template x-for="lamaran in paginatedRows" :key="lamaran.id">
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-4 px-5">
-                                <div class="text-sm font-semibold text-gray-800" x-text="lamaran.nama"></div>
-                                <div class="text-xs text-gray-400 font-mono mt-0.5" x-text="lamaran.email"></div>
+                            <td class="py-3 px-5 max-w-0" :title="lamaran.nama">
+                                <div class="text-sm font-medium text-gray-800 truncate" x-text="lamaran.nama"></div>
+                                <div class="text-xs text-gray-400 font-medium mt-0.5 truncate" x-text="lamaran.email"></div>
                             </td>
-                            <td class="py-3 px-5">
-                                <div class="text-sm text-gray-700 font-medium" x-text="lamaran.jenjang || '-'"></div>
-                                <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5" x-text="lamaran.prodi_pendidikan || '-'"></div>
+                            <td class="py-3 px-5 max-w-0" :title="(lamaran.jenjang || '-') + ' (' + (lamaran.prodi_pendidikan || '-') + ')'">
+                                <div class="text-sm text-gray-600 font-medium truncate" x-text="lamaran.jenjang || '-'"></div>
+                                <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5 truncate" x-text="lamaran.prodi_pendidikan || '-'"></div>
                             </td>
-                            <td class="py-3 px-5">
-                                <span class="text-sm text-gray-600 font-mono" x-text="lamaran.no_telepon || '-'"></span>
+                            <td class="py-3 px-5 max-w-0" :title="lamaran.no_telepon || '-'">
+                                <span class="text-sm text-gray-600 font-medium block truncate" x-text="lamaran.no_telepon || '-'"></span>
                             </td>
-                            <td class="py-3 px-5">
-                                <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold">
-                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <span x-text="lamaran.lowongan_nama"></span>
+                            <td class="py-3 px-5 max-w-0">
+                                <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold" :title="lamaran.lowongan_nama">
+                            
+                                    <span class="truncate" x-text="lamaran.lowongan_nama"></span>
                                 </span>
                             </td>
                             <td class="py-3 px-5 text-center">
@@ -169,6 +173,7 @@
                                 <template x-if="lamaran.status === 'seleksi_tahap2'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">Seleksi Tahap 2</span></template>
                                 <template x-if="lamaran.status === 'diterima'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-green-50 text-green-700 border-green-200">Diterima</span></template>
                                 <template x-if="lamaran.status === 'ditolak'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-red-50 text-red-700 border-red-200">Ditolak</span></template>
+                                <template x-if="lamaran.status === 'mengundurkan_diri'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-slate-50 text-slate-700 border-slate-200">Mengundurkan Diri</span></template>
                             </td>
                             <td class="py-3 px-5 text-center">
                                 <a :href="'/kaprodi/pelamar/' + lamaran.pelamar_id + '?lamaran_id=' + lamaran.id" class="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail">
@@ -263,7 +268,7 @@
             },
 
             get selectedStatusLabel() {
-                var labels = { menunggu: 'Menunggu', seleksi_tahap1: 'Seleksi Tahap 1', seleksi_tahap2: 'Seleksi Tahap 2', diterima: 'Diterima', ditolak: 'Ditolak' };
+                var labels = { menunggu: 'Menunggu', seleksi_tahap1: 'Seleksi Tahap 1', seleksi_tahap2: 'Seleksi Tahap 2', diterima: 'Diterima', ditolak: 'Ditolak', mengundurkan_diri: 'Mengundurkan Diri' };
                 return labels[this.status] || '';
             },
 

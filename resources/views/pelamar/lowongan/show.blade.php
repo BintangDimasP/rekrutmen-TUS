@@ -130,11 +130,27 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
                         <div class="text-[10.5px] font-bold text-gray-300 uppercase tracking-wider mb-2">Prodi Linear / Prioritas</div>
-                        <div class="text-[13px] text-gray-500 leading-relaxed">{{ $lowongan->prodi_prioritas ?? '-' }}</div>
+                        @if($lowongan->prodi_prioritas)
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach(array_filter(array_map('trim', explode(',', $lowongan->prodi_prioritas))) as $pp)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-white border border-gray-200 text-[12px] font-medium text-gray-600">{{ $pp }}</span>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-[13px] text-gray-500 leading-relaxed">-</div>
+                        @endif
                     </div>
                     <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
                         <div class="text-[10.5px] font-bold text-gray-300 uppercase tracking-wider mb-2">Skill Utama</div>
-                        <div class="text-[13px] text-gray-500 leading-relaxed">{{ $lowongan->skill_dibutuhkan ?? '-' }}</div>
+                        @if($lowongan->skill_dibutuhkan)
+                            <div class="flex flex-wrap gap-1.5">
+                                @foreach(array_filter(array_map('trim', explode(',', $lowongan->skill_dibutuhkan))) as $sk)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md bg-white border border-gray-200 text-[12px] font-medium text-gray-600">{{ $sk }}</span>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-[13px] text-gray-500 leading-relaxed">-</div>
+                        @endif
                     </div>
                 </div>
             </div>

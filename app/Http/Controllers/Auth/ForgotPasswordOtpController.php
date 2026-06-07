@@ -268,8 +268,7 @@ class ForgotPasswordOtpController extends Controller
 
         // Update password
         $user->update([
-            'password'       => Hash::make($request->password),
-            'password_plain' => $request->password,
+            'password' => Hash::make($request->password),
         ]);
 
         // Bersih-bersih

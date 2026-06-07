@@ -28,21 +28,58 @@ class UserController extends Controller
     }
 
     /**
+     * Tambah admin baru.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:100', 'regex:/^[a-z0-9._]+$/',
+                'unique:users,email', // cek unik sebelum append domain
+            ],
+            'password' => ['required', \Illuminate\Validation\Rules\Password::defaults()],
+        ], [
+            'username.regex' => 'Username hanya boleh huruf kecil, angka, titik, dan underscore.',
+            'username.unique' => 'Username sudah digunakan.',
+        ]);
+
+        $email = strtolower($request->username) . '@admin.telkomuniversity.ac.id';
+
+        // Cek unik email lengkap
+        if (User::where('email', $email)->exists()) {
+            return back()->withErrors(['username' => 'Username sudah digunakan.'])->withInput();
+        }
+
+        User::create([
+            'name'     => $request->name,
+            'email'    => $email,
+            'password' => Hash::make($request->password),
+            'role'     => 'admin',
+        ]);
+
+        return back()->with('success', "Admin {$request->name} berhasil ditambahkan dengan email {$email}.");
+    }
+
+    /**
      * Hapus/cabut akses user.
      * - Pelamar: hapus user + data pelamar sepenuhnya.
      * - Penguji/Kaprodi/Rangkap (dosen): cabut role saja, data dosen tetap ada.
      */
     public function destroy(User $user)
     {
-        // Jangan izinkan hapus admin
-        if ($user->role === 'admin') {
-            return back()->withErrors(['delete' => 'Akun admin tidak dapat dihapus.']);
+        // Jangan izinkan hapus diri sendiri
+        if ($user->id === auth()->id()) {
+            return back()->withErrors(['delete' => 'Anda tidak dapat menghapus akun sendiri.']);
         }
 
         $isPelamarRole = $user->role === 'pelamar';
+        $isAdminRole = $user->role === 'admin';
 
-        DB::transaction(function () use ($user, $isPelamarRole) {
-            if ($isPelamarRole) {
+        DB::transaction(function () use ($user, $isPelamarRole, $isAdminRole) {
+            if ($isAdminRole) {
+                // Hapus akun admin sepenuhnya
+                $user->delete();
+            } elseif ($isPelamarRole) {
                 // Hapus data pelamar dan user sepenuhnya
                 if ($user->pelamar) {
                     $user->pelamar->delete();
@@ -62,9 +99,13 @@ class UserController extends Controller
             }
         });
 
-        $message = $isPelamarRole
-            ? 'Akun pelamar berhasil dihapus.'
-            : 'Akun & role dosen berhasil dihapus. Dosen kembali tanpa akses sistem.';
+        if ($isAdminRole) {
+            $message = 'Akun admin berhasil dihapus.';
+        } elseif ($isPelamarRole) {
+            $message = 'Akun pelamar berhasil dihapus.';
+        } else {
+            $message = 'Akun & role dosen berhasil dihapus. Dosen kembali tanpa akses sistem.';
+        }
 
         return back()->with('success', $message);
     }
@@ -102,7 +143,6 @@ class UserController extends Controller
 
             if ($request->filled('password')) {
                 $updateData['password'] = Hash::make($request->password);
-                $updateData['password_plain'] = $request->password;
             }
 
             if (!empty($updateData)) {

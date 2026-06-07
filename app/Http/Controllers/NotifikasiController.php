@@ -14,7 +14,7 @@ class NotifikasiController extends Controller
     {
         $notifikasis = Notifikasi::where('user_id', auth()->id())
             ->orderByDesc('created_at')
-            ->limit(30)
+            ->limit(50)
             ->get(['id', 'judul', 'pesan', 'tipe', 'dibaca', 'created_at']);
 
         $belumDibaca = $notifikasis->where('dibaca', false)->count();

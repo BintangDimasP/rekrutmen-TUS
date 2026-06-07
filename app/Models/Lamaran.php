@@ -11,10 +11,11 @@ class Lamaran extends Model
 
     const STATUS_LABELS = [
         'menunggu'       => 'Menunggu',
-        'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)',
-        'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)',
+        'seleksi_tahap1' => 'Seleksi Tahap 1',
+        'seleksi_tahap2' => 'Seleksi Tahap 2',
         'diterima'       => 'Diterima',
         'ditolak'        => 'Ditolak',
+        'mengundurkan_diri' => 'Mengundurkan Diri',
     ];
 
     protected $fillable = [

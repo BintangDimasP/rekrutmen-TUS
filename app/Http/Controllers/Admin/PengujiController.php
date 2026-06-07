@@ -51,9 +51,8 @@ class PengujiController extends Controller
                 $user = $dosen->getOrCreateUser();
 
                 $update = [
-                    'is_penguji'     => true,
-                    'password'       => Hash::make(Dosen::DEFAULT_PASSWORD),
-                    'password_plain' => Dosen::DEFAULT_PASSWORD,
+                    'is_penguji' => true,
+                    'password'   => Hash::make(Dosen::DEFAULT_PASSWORD),
                 ];
 
                 // Jika user belum punya role aktif → set penguji
@@ -66,6 +65,13 @@ class PengujiController extends Controller
             }
         });
 
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $count = count($request->dosen_ids);
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $count, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Penguji Ditunjuk', "Admin {$adminNama} menunjuk {$count} dosen sebagai penguji pada {$waktu}.");
+        });
+
         return back()->with('success', count($request->dosen_ids) . ' dosen berhasil ditunjuk sebagai penguji.');
     }
 
@@ -76,6 +82,8 @@ class PengujiController extends Controller
      */
     public function destroy(Dosen $penguji)
     {
+        $pengujiNama = $penguji->nama;
+
         DB::transaction(function () use ($penguji) {
             $penguji->update(['is_penguji' => false]);
 
@@ -91,6 +99,12 @@ class PengujiController extends Controller
                 // Tidak ada role tersisa → hapus akun
                 $user->delete();
             }
+        });
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $pengujiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Penguji Dicabut', "Admin {$adminNama} mencabut status penguji dari {$pengujiNama} pada {$waktu}.");
         });
 
         return redirect()->route('admin.penguji.index')

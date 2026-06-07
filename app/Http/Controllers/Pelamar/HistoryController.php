@@ -56,4 +56,43 @@ class HistoryController extends Controller
 
         return view('pelamar.history.show', compact('lamaran', 'pelamar', 'wawancara', 'micro'));
     }
+
+    /**
+     * Memproses pengunduran diri pelamar.
+     */
+    public function withdraw(Lamaran $lamaran)
+    {
+        $pelamar = auth()->user()->pelamar;
+        
+        if ($lamaran->pelamar_id !== $pelamar->id) {
+            abort(403, 'Anda tidak memiliki akses ke data lamaran ini.');
+        }
+
+        if (in_array($lamaran->status, ['diterima', 'ditolak', 'mengundurkan_diri'])) {
+            return back()->with('error', 'Status lamaran saat ini tidak dapat dibatalkan atau ditarik kembali.');
+        }
+
+        $lamaran->update(['status' => 'mengundurkan_diri']);
+
+        $lamaran->load(['pelamar', 'lowongan.prodi']);
+        $namaP = $lamaran->pelamar->nama ?? '-';
+        $posisi = $lamaran->lowongan->nama_posisi ?? '-';
+        $prodi  = $lamaran->lowongan->prodi->nama ?? '-';
+        $waktu  = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $msg    = "Pelamar {$namaP} mengundurkan diri dari lowongan {$posisi} ({$prodi}) pada {$waktu}.";
+
+        // Notify admins
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($msg) {
+            \App\Models\Notifikasi::kirimAktivitasPelamar($u->id, 'Pelamar Mengundurkan Diri', $msg);
+        });
+        // Notify kaprodi of that prodi
+        $prodiId = $lamaran->lowongan->prodi_id ?? null;
+        if ($prodiId) {
+            \App\Models\User::where('is_kaprodi', true)->where('prodi_id', $prodiId)->each(function($u) use ($msg) {
+                \App\Models\Notifikasi::kirimAktivitasPelamar($u->id, 'Pelamar Mengundurkan Diri', $msg);
+            });
+        }
+
+        return back()->with('success', 'Anda telah berhasil mengundurkan diri dari lowongan ini. Anda tidak dapat melamar kembali pada posisi yang sama.');
+    }
 }

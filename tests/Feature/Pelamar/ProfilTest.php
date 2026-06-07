@@ -61,7 +61,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [])
-            ->assertSessionHasErrors(['nik', 'nama', 'tempat_lahir', 'tanggal_lahir',
+            ->assertSessionHasErrors(['email', 'nik', 'nama', 'tempat_lahir', 'tanggal_lahir',
                 'no_telepon', 'jenis_kelamin', 'kewarganegaraan',
                 'status_pernikahan', 'alamat_domisili', 'alamat_ktp']);
     }
@@ -72,6 +72,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user->email,
                 'nik'               => '3201010101010001',
                 'nama'              => 'Budi Santoso',
                 'tempat_lahir'      => 'Jakarta',
@@ -97,6 +98,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user->email,
                 'nik'               => '123', // terlalu pendek
                 'nama'              => 'Test',
                 'tempat_lahir'      => 'Jakarta',
@@ -122,6 +124,7 @@ class ProfilTest extends TestCase
         // Pelamar2 coba pakai NIK yang sama
         $this->actingAs($user2)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user2->email,
                 'nik'               => '3201010101010001',
                 'nama'              => 'Lain',
                 'tempat_lahir'      => 'Bandung',
@@ -142,6 +145,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user->email,
                 'nik'               => '3201010101010001',
                 'nama'              => 'Test',
                 'tempat_lahir'      => 'Jakarta',
@@ -165,6 +169,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user->email,
                 'nik'               => '3201010101010001',
                 'nama'              => 'Budi',
                 'tempat_lahir'      => 'Jakarta',
@@ -190,6 +195,7 @@ class ProfilTest extends TestCase
 
         $this->actingAs($user)
             ->put(route('pelamar.profil.update'), [
+                'email'             => $user->email,
                 'nik'               => '3201010101010001',
                 'nama'              => 'Nama Baru Sync',
                 'tempat_lahir'      => 'Jakarta',

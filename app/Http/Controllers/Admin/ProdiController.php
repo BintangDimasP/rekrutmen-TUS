@@ -42,6 +42,13 @@ class ProdiController extends Controller
             'logo' => $logoPath,
         ]);
 
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $prodiNama = $request->nama;
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $prodiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Prodi Ditambahkan', "Admin {$adminNama} menambahkan prodi {$prodiNama} pada {$waktu}.");
+        });
+
         return redirect()->route('admin.prodi.index')->with('success', 'Prodi berhasil ditambahkan.');
     }
 
@@ -81,6 +88,12 @@ class ProdiController extends Controller
             'logo'       => $logoPath,
         ]);
 
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $prodi, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Prodi Diperbarui', "Admin {$adminNama} memperbarui prodi {$prodi->nama} pada {$waktu}.");
+        });
+
         return redirect()->route('admin.prodi.index')->with('success', 'Prodi berhasil diperbarui.');
     }
 
@@ -93,8 +106,15 @@ class ProdiController extends Controller
         if ($prodi->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($prodi->logo)) {
             \Illuminate\Support\Facades\Storage::disk('public')->delete($prodi->logo);
         }
-        
+
+        $nama = $prodi->nama;
         $prodi->delete();
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $nama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Prodi Dihapus', "Admin {$adminNama} menghapus prodi {$nama} pada {$waktu}.");
+        });
 
         return redirect()->route('admin.prodi.index')->with('success', 'Prodi berhasil dihapus.');
     }

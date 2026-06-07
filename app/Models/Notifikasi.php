@@ -51,6 +51,34 @@ class Notifikasi extends Model
     }
 
     /**
+     * Kirim notifikasi sistem (log aktivitas) - tanpa WhatsApp
+     */
+    public static function kirimSistem(int $userId, string $judul, string $pesan): void
+    {
+        static::create([
+            'user_id' => $userId,
+            'judul'   => $judul,
+            'pesan'   => $pesan,
+            'tipe'    => 'sistem',
+            'dibaca'  => false,
+        ]);
+    }
+
+    /**
+     * Kirim notifikasi aktivitas pelamar - tanpa WhatsApp
+     */
+    public static function kirimAktivitasPelamar(int $userId, string $judul, string $pesan): void
+    {
+        static::create([
+            'user_id' => $userId,
+            'judul'   => $judul,
+            'pesan'   => $pesan,
+            'tipe'    => 'pelamar',
+            'dibaca'  => false,
+        ]);
+    }
+
+    /**
      * Kirim pesan WhatsApp ke user berdasarkan nomor telepon yang tersedia.
      */
     private static function kirimWhatsApp(int $userId, string $judul, string $pesan): void

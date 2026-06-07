@@ -76,6 +76,13 @@ class PelamarController extends Controller
 
         try {
             Excel::import(new PelamarImport(), $request->file('file'));
+
+            $adminNama = auth()->user()->name ?? 'Admin';
+            $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+            \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $waktu) {
+                \App\Models\Notifikasi::kirimSistem($u->id, 'Import Pelamar', "Admin {$adminNama} mengimpor data pelamar pada {$waktu}.");
+            });
+
             return back()->with('success', 'Data pelamar berhasil diimpor dari Excel.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();

@@ -11,6 +11,7 @@
             roleFilter: '{{ request('role') }}',
             currentPage: 1,
             perPage: 10,
+            openAddAdminModal: {{ $errors->has('name') || $errors->has('username') || $errors->has('password') ? 'true' : 'false' }},
             get filteredRows() {
                 return Array.from(this.$refs.tableBody.querySelectorAll('tr[data-row]')).filter(row => {
                     const name = row.dataset.name || '';
@@ -49,61 +50,12 @@
          ">
 
         {{-- Filter Chips Bar --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4">
+        <div class="relative">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
             <div class="flex items-center gap-3 flex-wrap">
 
-                {{-- Role Chip --}}
-                <div class="relative" x-data="{ roleOpen: false }" @click.outside="roleOpen = false">
-                    <button type="button" @click="roleOpen = !roleOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="roleFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        Role
-                        <span x-show="roleFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="roleOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-
-                    <div x-show="roleOpen" x-transition
-                         class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100">
-                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Role</p>
-                        </div>
-                        <div class="p-3 space-y-1">
-                            @php $roles = ['admin' => ['Admin', 'text-purple-600'], 'pelamar' => ['Pelamar', 'text-green-600'], 'penguji' => ['Penguji', 'text-blue-600'], 'kaprodi' => ['Kaprodi', 'text-amber-600']]; @endphp
-                            @foreach($roles as $key => [$label, $color])
-                            <button type="button" @click="roleFilter = roleFilter === '{{ $key }}' ? '' : '{{ $key }}'; roleOpen = false"
-                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
-                                    :class="roleFilter === '{{ $key }}' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
-                                      :class="roleFilter === '{{ $key }}' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
-                                    <svg x-show="roleFilter === '{{ $key }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                </span>
-                                <span class="text-sm font-medium {{ $color }}">{{ $label }}</span>
-                            </button>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Active filter tag --}}
-                <template x-if="roleFilter !== ''">
-                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
-                        <span x-text="roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)"></span>
-                        <button type="button" @click="roleFilter = ''" class="ml-0.5 hover:text-red-800">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </span>
-                </template>
-
-                {{-- Clear All --}}
-                <button x-show="roleFilter !== '' || search !== ''" x-transition type="button" @click="roleFilter = ''; search = ''"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    Clear Filters
-                </button>
-
                 {{-- Search (animated) --}}
-                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
                     <div class="relative flex items-center">
                         {{-- Magnify button --}}
                         <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
@@ -131,11 +83,64 @@
                     </div>
                 </div>
 
-                
-            </div>
-        </div>
+                {{-- Role Chip --}}
+                <div class="relative" x-data="{ roleOpen: false }" @click.outside="roleOpen = false">
+                    <button type="button" @click="roleOpen = !roleOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="roleFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Role
+                        <span x-show="roleFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="roleOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
 
-        {{-- Table Container --}}
+                    <div x-show="roleOpen" x-transition
+                         class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Role</p>
+                        </div>
+                        <div class="p-3 space-y-1">
+                            @php $roles = ['admin' => 'Admin', 'pelamar' => 'Pelamar', 'penguji' => 'Penguji', 'kaprodi' => 'Kaprodi']; @endphp
+                            @foreach($roles as $key => $label)
+                            <button type="button" @click="roleFilter = roleFilter === '{{ $key }}' ? '' : '{{ $key }}'; roleOpen = false"
+                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                                    :class="roleFilter === '{{ $key }}' ? 'bg-gray-100' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0"
+                                      :class="roleFilter === '{{ $key }}' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                    <svg x-show="roleFilter === '{{ $key }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
+                            </button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Active filter tag --}}
+                <template x-if="roleFilter !== ''">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                        <span x-text="roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)"></span>
+                        <button type="button" @click="roleFilter = ''" class="ml-0.5 hover:text-gray-900">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </span>
+                </template>
+
+                {{-- Clear All --}}
+                <button x-show="roleFilter !== '' || search !== ''" x-transition type="button" @click="roleFilter = ''; search = ''"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    Clear Filters
+                </button>
+            </div>
+
+            {{-- Tombol + Tambah Admin (inside the filter bar) --}}
+            <button type="button" @click="openAddAdminModal = true"
+                    class="absolute top-0 right-0 h-full w-14 z-20 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors cursor-pointer" title="Tambah Admin">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+            </button>
+        </div>
+        </div>{{-- end .relative --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {{-- Table --}}
             <div class="overflow-x-auto">
@@ -162,13 +167,11 @@
                             data-email="{{ strtolower(addslashes($user->email)) }}"
                             data-role="{{ $user->role }}"
                             data-is-penguji="{{ $matchPenguji }}">
-                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate">{{ $user->name }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium">
-                                <div class="font-medium text-[0.8rem] truncate">{{ $user->email }}</div>
-                            </td>
-                            <td class="py-3 px-5 text-sm">
+                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->name }}">{{ $user->name }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $user->email }}">{{ $user->email }}</td>
+                            <td class="py-3 px-5 text-sm font-medium">
                                 @if($isMulti)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-bold bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
                                 @elseif($user->role === 'admin')
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>
                                 @elseif($user->role === 'pelamar')
@@ -184,8 +187,8 @@
                                     <button type="button" @click="openEditModal = true" class="text-gray-400 hover:text-amber-600 transition-colors flex items-center justify-center p-1.5 rounded" title="Edit Kredensial">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </button>
-                                    @if($user->role !== 'admin')
-                                    <button type="button" @click="openDeleteModal = true" class="text-gray-400 hover:text-red-600 transition-colors flex items-center justify-center p-1.5 rounded" title="Hapus / Cabut Role">
+                                    @if($user->id !== auth()->id())
+                                    <button type="button" @click="openDeleteModal = true" class="text-gray-400 hover:text-gray-700 transition-colors flex items-center justify-center p-1.5 rounded" title="Hapus / Cabut Role">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                     </button>
                                     @endif
@@ -228,8 +231,8 @@
                                                 @endif
 
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi - <span class="text-blue-600">Lama: {{ $user->password_plain ?? '-' }}</span></label>
-                                                    <input type="password" name="password" placeholder="Kosongkan jika tidak ingin diubah" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi <span class="text-xs text-gray-400 font-normal">(kosongkan jika tidak ingin diubah)</span></label>
+                                                    <input type="password" name="password" placeholder="Masukkan password baru..." class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
                                                     @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
                                                 </div>
                                             </div>
@@ -242,7 +245,7 @@
                                 </div>
 
                                 {{-- ── Delete / Cabut Role Modal ── --}}
-                                @if($user->role !== 'admin')
+                                @if($user->id !== auth()->id())
                                 <div x-show="openDeleteModal" x-transition.opacity
                                      class="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
                                      @click.self="openDeleteModal = false" style="display: none;">
@@ -268,7 +271,10 @@
                                             </svg>
                                         </div>
                                         
-                                        @if($user->role === 'pelamar')
+                                        @if($user->role === 'admin')
+                                            <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus admin ini?</h2>
+                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Akun admin akan dihapus<br>secara permanen!</p>
+                                        @elseif($user->role === 'pelamar')
                                             <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus akun ini?</h2>
                                             <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Seluruh data pelamar akan<br>dihapus permanen!</p>
                                         @else
@@ -329,6 +335,64 @@
                 </div>
             </div>
         </div>
+
+        {{-- Modal Tambah Admin (inside x-data scope) --}}
+        <template x-teleport="body">
+            <div x-show="openAddAdminModal" style="display:none;"
+                 class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                 @click.self="openAddAdminModal = false">
+                <div x-show="openAddAdminModal"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+                    <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
+                        <h2 class="text-base font-bold text-white">Tambah Admin Baru</h2>
+                        <button type="button" @click="openAddAdminModal = false" class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/40 text-white hover:bg-white/10 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <form method="POST" action="{{ route('admin.user.store') }}" class="p-6 space-y-4">
+                        @csrf
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <input type="text" name="name" value="{{ old('name') }}" required
+                                   placeholder="Nama admin"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                            @if($errors->has('name'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('name') }}</p>@endif
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Username <span class="text-red-500">*</span></label>
+                            <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 overflow-hidden focus-within:border-[#8b1515] focus-within:ring-2 focus-within:ring-[#8b1515]/15 transition-all">
+                                <input type="text" name="username" value="{{ old('username') }}" required
+                                       placeholder="username"
+                                       class="flex-1 px-4 py-2.5 bg-transparent text-sm focus:outline-none">
+                                <span class="px-3 py-2.5 text-xs text-gray-400 bg-gray-100 border-l border-gray-200 whitespace-nowrap font-medium">@admin.telkomuniversity.ac.id</span>
+                            </div>
+                            @if($errors->has('username'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('username') }}</p>@endif
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="password" required
+                                   placeholder="Min. 8 karakter"
+                                   class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                            @if($errors->has('password'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p>@endif
+                        </div>
+
+                        <div class="pt-2 flex justify-center">
+                            <button type="submit" class="px-8 py-2.5 bg-[#8b1515] hover:bg-red-900 text-white text-sm font-bold rounded-xl shadow-md transition-all">
+                                Tambah Admin
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </template>
     </div>
 
 @endsection

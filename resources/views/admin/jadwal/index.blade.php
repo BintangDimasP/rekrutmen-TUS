@@ -7,137 +7,132 @@
 
     {{-- Filter Chips Bar (with attached + button) --}}
     <div class="relative">
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20"
+             x-data="{
+                fTanggal: '{{ request('tanggal') }}',
+                fProdi: '{{ request('prodi_id') }}',
+                fStatus: '{{ request('status') }}',
+                prodiOpen: false,
+                statusOpen: false,
+                get hasFilters() { return this.fTanggal !== '' || this.fProdi !== '' || this.fStatus !== ''; },
+                prodiName(id) {
+                    const m = { @foreach($prodis as $p)'{{ $p->id }}': '{{ addslashes($p->nama) }}',@endforeach };
+                    return m[id] ?? '';
+                },
+                statusName(s) {
+                    return {'belum':'Belum Dinilai','sebagian':'Sebagian Dinilai','selesai':'Selesai'}[s] ?? s;
+                },
+                applyFilters() {
+                    document.querySelectorAll('tr[data-jadwal-row]').forEach(row => {
+                        const matchT = this.fTanggal === '' || row.dataset.tanggal === this.fTanggal;
+                        const matchP = this.fProdi === '' || row.dataset.prodi === this.fProdi;
+                        const matchS = this.fStatus === '' || row.dataset.status === this.fStatus;
+                        row.style.display = (matchT && matchP && matchS) ? '' : 'none';
+                    });
+                }
+             }"
+             x-init="$watch('fTanggal', () => applyFilters()); $watch('fProdi', () => applyFilters()); $watch('fStatus', () => applyFilters());"
+             @click.outside.window="prodiOpen = false; statusOpen = false">
             <div class="flex items-center gap-3 flex-wrap">
 
-                {{-- Tanggal Chip --}}
-                <div class="relative" x-data="{ tanggalOpen: false }" @click.outside="tanggalOpen = false">
-                    <button type="button" @click="tanggalOpen = !tanggalOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="'{{ request('tanggal') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Tanggal
-                        @if(request('tanggal'))
-                        <span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                        @endif
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="tanggalOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                {{-- Search (animated) --}}
+                <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </button>
-                    <div x-show="tanggalOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Pilih Tanggal</p></div>
-                        <form method="GET" action="{{ route('admin.jadwal.index') }}" class="p-4">
-                            <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
-                            <button type="submit" class="w-full mt-3 px-4 py-2 bg-[#8b1515] text-white text-sm font-bold rounded-lg hover:bg-red-900 transition-colors">Apply</button>
-                        </form>
+                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                        <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama pelamar..."
+                               @keydown.escape="search = ''; searchOpen = false"
+                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
                     </div>
+                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                            @click="search = ''; searchOpen = false"
+                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                {{-- Tanggal — input date langsung (tanpa dropdown) --}}
+                <div class="flex items-center gap-1.5">
+                    <input type="date" x-model="fTanggal"
+                           class="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]/20 transition cursor-pointer"
+                           :class="fTanggal !== '' ? 'border-[#8b1515] text-[#8b1515] font-medium' : ''">
                 </div>
 
                 {{-- Prodi Chip --}}
-                <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
+                <div class="relative" @click.outside="prodiOpen = false">
                     <button type="button" @click="prodiOpen = !prodiOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="'{{ request('prodi_id') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                            :class="fProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                         Prodi
-                        @if(request('prodi_id'))<span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>@endif
+                        <span x-show="fProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="prodiOpen" x-transition class="absolute top-full left-0 mt-2 w-72 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
                         <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Prodi</p></div>
                         <div class="p-3 space-y-1 max-h-64 overflow-y-auto">
                             @foreach($prodis as $prodi)
-                            <a href="{{ route('admin.jadwal.index', array_merge(request()->query(), ['prodi_id' => $prodi->id])) }}"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors {{ request('prodi_id') == $prodi->id ? 'bg-gray-50' : '' }}">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center {{ request('prodi_id') == $prodi->id ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300' }}">
-                                    @if(request('prodi_id') == $prodi->id)<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>@endif
+                            <button type="button" @click="fProdi = fProdi === '{{ $prodi->id }}' ? '' : '{{ $prodi->id }}'; prodiOpen = false"
+                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 transition-colors text-left"
+                                    :class="fProdi === '{{ $prodi->id }}' ? 'bg-gray-100' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center transition-colors"
+                                      :class="fProdi === '{{ $prodi->id }}' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                    <svg x-show="fProdi === '{{ $prodi->id }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </span>
                                 <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
-                            </a>
+                            </button>
                             @endforeach
                         </div>
                     </div>
                 </div>
 
                 {{-- Status Chip --}}
-                <div class="relative" x-data="{ statusOpen: false }" @click.outside="statusOpen = false">
+                <div class="relative" @click.outside="statusOpen = false">
                     <button type="button" @click="statusOpen = !statusOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="'{{ request('status') }}' !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                            :class="fStatus !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Status
-                        @if(request('status'))<span class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>@endif
+                        <span x-show="fStatus !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
                         <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
                         <div class="p-3 space-y-1">
-                            @php $statuses = ['belum' => ['Belum Dinilai', 'text-yellow-600'], 'sebagian' => ['Sebagian Dinilai', 'text-blue-600'], 'selesai' => ['Selesai', 'text-green-600']]; @endphp
-                            @foreach($statuses as $key => [$label, $color])
-                            <a href="{{ route('admin.jadwal.index', array_merge(request()->query(), ['status' => $key])) }}"
-                               class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 {{ request('status') == $key ? 'bg-gray-50' : '' }}">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center {{ request('status') == $key ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300' }}">
-                                    @if(request('status') == $key)<svg class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>@endif
+                            @foreach(['belum' => 'Belum Dinilai', 'sebagian' => 'Sebagian Dinilai', 'selesai' => 'Selesai'] as $key => $label)
+                            <button type="button" @click="fStatus = fStatus === '{{ $key }}' ? '' : '{{ $key }}'; statusOpen = false"
+                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left transition-colors"
+                                    :class="fStatus === '{{ $key }}' ? 'bg-gray-100' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center"
+                                      :class="fStatus === '{{ $key }}' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                    <svg x-show="fStatus === '{{ $key }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </span>
-                                <span class="text-sm font-medium {{ $color }}">{{ $label }}</span>
-                            </a>
+                                <span class="text-sm font-medium text-gray-700">{{ $label }}</span>
+                            </button>
                             @endforeach
                         </div>
                     </div>
                 </div>
 
                 {{-- Active filter tags --}}
-                @if(request('tanggal'))
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
-                    {{ \Carbon\Carbon::parse(request('tanggal'))->format('d M Y') }}
-                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['tanggal' => '']))) }}" class="ml-0.5 hover:text-red-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
+                <span x-show="fProdi !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                    <span x-text="prodiName(fProdi)"></span>
+                    <button type="button" @click="fProdi = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </span>
-                @endif
-                @if(request('prodi_id'))
-                @foreach($prodis as $p) @if($p->id == request('prodi_id'))
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
-                    {{ $p->nama }}
-                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['prodi_id' => '']))) }}" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
+                <span x-show="fStatus !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                    <span x-text="statusName(fStatus)"></span>
+                    <button type="button" @click="fStatus = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </span>
-                @endif @endforeach
-                @endif
-                @if(request('status'))
-                @php $statusLabels = ['belum' => 'Belum Dinilai', 'sebagian' => 'Sebagian Dinilai', 'selesai' => 'Selesai']; @endphp
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-50 border border-green-200 text-xs font-semibold text-green-700">
-                    {{ $statusLabels[request('status')] ?? request('status') }}
-                    <a href="{{ route('admin.jadwal.index', array_merge(array_diff_key(request()->query(), ['status' => '']))) }}" class="ml-0.5 hover:text-green-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></a>
-                </span>
-                @endif
 
-                @if(request('tanggal') || request('prodi_id') || request('status'))
-                <a href="{{ route('admin.jadwal.index') }}" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                {{-- Clear All --}}
+                <button x-show="hasFilters" x-transition type="button" @click="fTanggal = ''; fProdi = ''; fStatus = ''"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Clear Filters
-                </a>
-                @endif
-
-                {{-- Search (animated) --}}
-                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
-                    <div class="relative flex items-center">
-                        {{-- Magnify button --}}
-                        <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
-                                class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                                :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </button>
-                        {{-- Expanding input --}}
-                        <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                             :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
-                            <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama pelamar..."
-                                   @keydown.escape="search = ''; searchOpen = false"
-                                   class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
-                        </div>
-                        {{-- Close button --}}
-                        <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
-                                @click="search = ''; searchOpen = false"
-                                class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                </div>
-                
+                </button>
             </div>
         </div>
 
@@ -153,14 +148,14 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px; width:100%">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[12%]">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[14%]">Lowongan</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[14%]">Pelamar</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[16%]">Micro Teaching</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[16%]">Wawancara</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[12%]">Aksi</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[9%]">Tanggal</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[13%]">Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[12%]">Pelamar</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[20%]">Micro Teaching</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[9%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[20%]">Wawancara</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[9%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -184,7 +179,19 @@
                         $pengujiDataJson = json_encode($pengujiData);
                         $allPgIds = json_encode($allPgIds);
                     @endphp
-                    <tr class="hover:bg-gray-50/60 transition-colors align-middle" data-row data-pelamar="{{ strtolower($row->pelamar->nama) }}">
+                    <tr class="hover:bg-gray-50/60 transition-colors align-middle" data-jadwal-row
+                        data-tanggal="{{ $row->tanggal->format('Y-m-d') }}"
+                        data-prodi="{{ $row->lowongan->prodi_id ?? '' }}"
+                        data-status="@php
+                            $mDone = $row->micro->whereNotNull('penilaian')->count();
+                            $wDone = $row->wawancara->whereNotNull('penilaian')->count();
+                            $mTotal = $row->micro->count();
+                            $wTotal = $row->wawancara->count();
+                            if ($mTotal > 0 && $wTotal > 0 && $mDone === $mTotal && $wDone === $wTotal) echo 'selesai';
+                            elseif ($mDone > 0 || $wDone > 0) echo 'sebagian';
+                            else echo 'belum';
+                        @endphp"
+                        data-pelamar="{{ strtolower($row->pelamar->nama) }}">
 
                         {{-- Tanggal --}}
                         <td class="py-4 px-4 align-top">
@@ -198,8 +205,8 @@
                         </td>
 
                         {{-- Pelamar --}}
-                        <td class="py-4 px-4 align-top">
-                            <div class="text-sm font-bold text-gray-800">{{ $row->pelamar->nama }}</div>
+                        <td class="py-4 px-4 align-top max-w-0">
+                            <div class="text-sm font-bold text-gray-800 truncate" title="{{ $row->pelamar->nama }}">{{ $row->pelamar->nama }}</div>
                             <div class="text-[0.75rem] text-gray-500 font-medium mt-1 truncate" title="{{ $row->pelamar->user?->email ?? '' }}">{{ $row->pelamar->user?->email ?? '-' }}</div>
                         </td>
 
@@ -207,18 +214,18 @@
                         <td class="py-4 px-4 align-top">
                             @if($mFirst && $mInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
-                                    <div><strong>Sesi {{ $mFirst->sesi }} :</strong>  ({{ $mInfo['start'] }} – {{ $mInfo['end'] }})</div>
-                                    <div>
+                                    <div><strong>Sesi {{ $mFirst->sesi }}:</strong> {{ $mInfo['start'] }} – {{ $mInfo['end'] }}</div>
+                                    <div class="leading-snug">
                                         <strong>Penguji:</strong>
-                                        
-                                            @foreach($row->micro as $mj)
-                                                {{ $mj->penguji->nama }}
-                                            @endforeach
-                                        
+                                        @foreach($row->micro as $mj)
+                                            <span class="block truncate" title="{{ $mj->penguji->nama }}">{{ $mj->penguji->nama }}</span>
+                                        @endforeach
                                     </div>
                                     @if($mFirst->link_meeting)
-                                        <div class="mt-1">
-                                            <strong>Link:</strong> <a href="{{ $mFirst->link_meeting }}" target="_blank" class="text-blue-600 hover:underline break-all">{{ $mFirst->link_meeting }}</a>
+                                        <div class="mt-1 flex items-center gap-1 min-w-0">
+                                            <strong class="flex-shrink-0">Link:</strong>
+                                            <a href="{{ $mFirst->link_meeting }}" target="_blank" title="{{ $mFirst->link_meeting }}"
+                                               class="text-blue-600 hover:underline truncate block min-w-0">{{ $mFirst->link_meeting }}</a>
                                         </div>
                                     @endif
                                 </div>
@@ -229,7 +236,9 @@
 
                         {{-- Status Micro --}}
                         <td class="py-4 px-4 text-center align-top">
-                            @if($row->micro->isNotEmpty())
+                            @if($row->lamaran?->status === 'mengundurkan_diri')
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-[0.65rem] font-bold inline-block mt-1 leading-tight">Undur<br>Diri</span>
+                            @elseif($row->micro->isNotEmpty())
                                 @php
                                     $mTotal = $row->micro->count();
                                     $mDone = $row->micro->whereNotNull('penilaian')->count();
@@ -249,18 +258,18 @@
                         <td class="py-4 px-4 align-top">
                             @if($wFirst && $wInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
-                                    <div><strong>Sesi {{ $wFirst->sesi }} :</strong>  ({{ $wInfo['start'] }} – {{ $wInfo['end'] }})</div>
-                                    <div>
+                                    <div><strong>Sesi {{ $wFirst->sesi }}:</strong> {{ $wInfo['start'] }} – {{ $wInfo['end'] }}</div>
+                                    <div class="leading-snug">
                                         <strong>Penguji:</strong>
-                                        
-                                            @foreach($row->wawancara as $wj)
-                                                {{ $wj->penguji->nama }}
-                                            @endforeach
-                                        
+                                        @foreach($row->wawancara as $wj)
+                                            <span class="block truncate" title="{{ $wj->penguji->nama }}">{{ $wj->penguji->nama }}</span>
+                                        @endforeach
                                     </div>
                                     @if($wFirst->link_meeting)
-                                        <div class="mt-1">
-                                            <strong>Link:</strong> <a href="{{ $wFirst->link_meeting }}" target="_blank" class="text-blue-600 hover:underline break-all">{{ $wFirst->link_meeting }}</a>
+                                        <div class="mt-1 flex items-center gap-1 min-w-0">
+                                            <strong class="flex-shrink-0">Link:</strong>
+                                            <a href="{{ $wFirst->link_meeting }}" target="_blank" title="{{ $wFirst->link_meeting }}"
+                                               class="text-blue-600 hover:underline truncate block min-w-0">{{ $wFirst->link_meeting }}</a>
                                         </div>
                                     @endif
                                 </div>
@@ -271,7 +280,9 @@
 
                         {{-- Status Wawancara --}}
                         <td class="py-4 px-4 text-center align-top">
-                            @if($row->wawancara->isNotEmpty())
+                            @if($row->lamaran?->status === 'mengundurkan_diri')
+                                <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-lg text-[0.65rem] font-bold inline-block mt-1 leading-tight">Undur<br>Diri</span>
+                            @elseif($row->wawancara->isNotEmpty())
                                 @php
                                     $wTotal = $row->wawancara->count();
                                     $wDone = $row->wawancara->whereNotNull('penilaian')->count();
@@ -310,10 +321,10 @@
                                     pengujiM: {{ $pengujiM }},
                                     allPgIds: {{ $allPgIds }},
                                     pengujiData: {{ $pengujiDataJson }},
-                                    readOnly: {{ $anyDone ? 'true' : 'false' }},
+                                    readOnly: {{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'true' : 'false' }},
                                 })"
                                 class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                title="{{ $anyDone ? 'Lihat jadwal (read only)' : 'Edit jadwal' }}">
+                                title="{{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'Lihat jadwal (read only)' : 'Edit jadwal' }}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
@@ -441,21 +452,34 @@
                             <div>
                                 <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedMPenguji.length > 0">
                                     <template x-for="pgId in modal.selectedMPenguji" :key="pgId">
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.65rem] text-red-800">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200 text-[0.65rem] text-gray-700">
                                             <span x-text="getPengujiNama(pgId)"></span>
-                                            <button type="button" @click="toggleMPenguji(pgId)" class="text-red-300 hover:text-red-600 ml-0.5">&times;</button>
+                                            <button type="button" @click="toggleMPenguji(pgId)" class="text-gray-400 hover:text-gray-700 ml-0.5">&times;</button>
                                             <input type="hidden" name="micro_penguji_ids[]" :value="pgId">
                                         </span>
                                     </template>
                                 </div>
-                                <select @change="toggleMPenguji($event.target.value); $event.target.value = ''"
-                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                                    <option value="">+ Tambah penguji micro</option>
-                                    <template x-for="pg in modal.availablePengujis" :key="pg.id">
-                                        <option :value="pg.id" :disabled="modal.selectedMPenguji.includes(parseInt(pg.id))"
-                                            x-text="`${pg.nama} (${pg.kode})`"></option>
-                                    </template>
-                                </select>
+                                {{-- Alpine dropdown penguji micro --}}
+                                <div x-data="{ openMP: false }" @click.outside="openMP = false" class="relative">
+                                    <button type="button" @click="openMP = !openMP"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-400 transition hover:border-gray-300">
+                                        <span>+ Tambah penguji micro</span>
+                                        <svg class="w-3.5 h-3.5 text-gray-400 transition-transform" :class="openMP ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div x-show="openMP" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                        <div class="p-1 space-y-0.5 max-h-44 overflow-y-auto">
+                                            <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                                <button type="button"
+                                                    :disabled="modal.selectedMPenguji.includes(parseInt(pg.id))"
+                                                    @click="if(!modal.selectedMPenguji.includes(parseInt(pg.id))){ toggleMPenguji(pg.id); openMP = false; }"
+                                                    class="w-full text-left px-3 py-2 text-xs rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    :class="modal.selectedMPenguji.includes(parseInt(pg.id)) ? 'bg-gray-100 text-gray-400' : 'hover:bg-gray-100 text-gray-700'">
+                                                    <span x-text="`${pg.nama} (${pg.kode})`"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>
@@ -482,21 +506,34 @@
                             <div>
                                 <div class="flex flex-wrap gap-1 mb-2" x-show="modal.selectedWPenguji.length > 0">
                                     <template x-for="pgId in modal.selectedWPenguji" :key="pgId">
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 border border-blue-100 text-[0.65rem] text-blue-800">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-100 border border-gray-200 text-[0.65rem] text-gray-700">
                                             <span x-text="getPengujiNama(pgId)"></span>
-                                            <button type="button" @click="toggleWPenguji(pgId)" class="text-blue-300 hover:text-blue-600 ml-0.5">&times;</button>
+                                            <button type="button" @click="toggleWPenguji(pgId)" class="text-gray-400 hover:text-gray-700 ml-0.5">&times;</button>
                                             <input type="hidden" name="wawancara_penguji_ids[]" :value="pgId">
                                         </span>
                                     </template>
                                 </div>
-                                <select @change="toggleWPenguji($event.target.value); $event.target.value = ''"
-                                    class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white">
-                                    <option value="">+ Tambah penguji wawancara</option>
-                                    <template x-for="pg in modal.availablePengujis" :key="pg.id">
-                                        <option :value="pg.id" :disabled="modal.selectedWPenguji.includes(parseInt(pg.id))"
-                                            x-text="`${pg.nama} (${pg.kode})`"></option>
-                                    </template>
-                                </select>
+                                {{-- Alpine dropdown penguji wawancara --}}
+                                <div x-data="{ openWP: false }" @click.outside="openWP = false" class="relative">
+                                    <button type="button" @click="openWP = !openWP"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-400 transition hover:border-gray-300">
+                                        <span>+ Tambah penguji wawancara</span>
+                                        <svg class="w-3.5 h-3.5 text-gray-400 transition-transform" :class="openWP ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div x-show="openWP" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                        <div class="p-1 space-y-0.5 max-h-44 overflow-y-auto">
+                                            <template x-for="pg in modal.availablePengujis" :key="pg.id">
+                                                <button type="button"
+                                                    :disabled="modal.selectedWPenguji.includes(parseInt(pg.id))"
+                                                    @click="if(!modal.selectedWPenguji.includes(parseInt(pg.id))){ toggleWPenguji(pg.id); openWP = false; }"
+                                                    class="w-full text-left px-3 py-2 text-xs rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                                    :class="modal.selectedWPenguji.includes(parseInt(pg.id)) ? 'bg-gray-100 text-gray-400' : 'hover:bg-gray-100 text-gray-700'">
+                                                    <span x-text="`${pg.nama} (${pg.kode})`"></span>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </template>
                     </div>
@@ -511,17 +548,33 @@
                 </template>
                 <template x-if="!modal.readOnly">
                     <div>
-                        <select name="sesi" x-model="modal.wSesi"
-                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white"
-                                :class="{ 'border-red-400 bg-red-50': modal.wSesi && isSesiBlocked(parseInt(modal.wSesi)) }">
-                            <option value="">— Pilih Sesi —</option>
-                            <template x-for="(info, key) in mSessions" :key="key">
-                                <option :value="key"
-                                        :disabled="isSesiBlocked(parseInt(key))"
-                                        x-text="sesiLabel(key, info, isSesiBlocked(parseInt(key)))">
-                                </option>
-                            </template>
-                        </select>
+                        {{-- Alpine dropdown sesi --}}
+                        <div x-data="{ openSesi: false }" @click.outside="openSesi = false" class="relative">
+                            <input type="hidden" name="sesi" :value="modal.wSesi">
+                            <button type="button" @click="openSesi = !openSesi"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border text-sm transition-all"
+                                :class="{
+                                    'border-red-400 bg-red-50 text-gray-800': modal.wSesi && isSesiBlocked(parseInt(modal.wSesi)),
+                                    'border-gray-200 bg-white text-gray-800': modal.wSesi && !isSesiBlocked(parseInt(modal.wSesi)),
+                                    'border-gray-200 bg-white text-gray-400': !modal.wSesi
+                                }">
+                                <span x-text="modal.wSesi ? (mSessions[modal.wSesi]?.label ?? 'Sesi ' + modal.wSesi) : '— Pilih Sesi —'"></span>
+                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="openSesi ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="openSesi" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <template x-for="(info, key) in mSessions" :key="key">
+                                        <button type="button"
+                                            :disabled="isSesiBlocked(parseInt(key))"
+                                            @click="if(!isSesiBlocked(parseInt(key))){ modal.wSesi = key; openSesi = false; }"
+                                            class="w-full text-left px-3 py-2 text-xs rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                                            :class="modal.wSesi == key ? 'bg-gray-100 text-gray-900 font-semibold' : (isSesiBlocked(parseInt(key)) ? 'text-gray-400' : 'hover:bg-gray-100 text-gray-700')">
+                                            <span x-text="sesiLabel(key, info, isSesiBlocked(parseInt(key)))"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                         <p x-show="modal.wSesi && isSesiBlocked(parseInt(modal.wSesi))"
                            class="text-[0.7rem] text-red-600 mt-1">Sesi ini bentrok — pilih sesi lain.</p>
                     </div>

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar')
 
@@ -35,17 +35,27 @@
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Data Diri</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Nama Lengkap</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $data->nama ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIK (KTP)</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $data->nik ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Telepon / WA</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_telepon ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Kelamin</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_kelamin == 'L' ? 'Laki-laki' : ($data->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tempat Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tempat_lahir ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_lahir ? \Carbon\Carbon::parse($data->tanggal_lahir)->format('d M Y') : '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Kewarganegaraan</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->kewarganegaraan ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Status Pernikahan</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->status_pernikahan ?: '-' }}</p></div>
-                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Domisili</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->alamat_domisili ?: '-' }}</p></div>
-                    <div class="col-span-2 md:col-span-4"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Alamat Sesuai KTP</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->alamat_ktp ?: '-' }}</p></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-5">
+
+                    {{-- Baris 1: Nama | NIK | Jenis Kelamin --}}
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Nama Lengkap</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->nama ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">NIK (KTP)</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->nik ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Kelamin</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_kelamin == 'L' ? 'Laki-laki' : ($data->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</p></div>
+
+                    {{-- Baris 2: Tempat Lahir | Tanggal Lahir | Kewarganegaraan --}}
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tempat Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tempat_lahir ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Lahir</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_lahir ? \Carbon\Carbon::parse($data->tanggal_lahir)->format('d M Y') : '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Kewarganegaraan</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->kewarganegaraan ?: '-' }}</p></div>
+
+                    {{-- Baris 3: Status Pernikahan | No. Telepon | Email --}}
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Status Pernikahan</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->status_pernikahan ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Telepon / WA</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_telepon ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Alamat Email</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->user?->email ?: '-' }}</p></div>
+
+                    {{-- Baris 4: Alamat Domisili & KTP --}}
+                    <div class="col-span-1 md:col-span-2"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Alamat Domisili</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->alamat_domisili ?: '-' }}</p></div>
+                    <div class="col-span-1 md:col-span-2"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Alamat Sesuai KTP</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->alamat_ktp ?: '-' }}</p></div>
+
                 </div>
             </div>
 
@@ -55,42 +65,42 @@
                     @if($data->jenjang)
                     <div class="pl-4 border-l-[3px] border-[#8b1515]/40 py-1">
                         <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $data->institusi ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah)<a href="{{ asset('storage/' . $data->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip)<a href="{{ asset('storage/' . $data->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah)<a href="{{ asset('storage/' . $data->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip)<a href="{{ asset('storage/' . $data->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                         </div>
                     </div>
                     @endif
                     @if($data->jenjang_2)
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                         <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_2 }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $data->institusi_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah_2)<a href="{{ asset('storage/' . $data->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip_2)<a href="{{ asset('storage/' . $data->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_2 }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah_2)<a href="{{ asset('storage/' . $data->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip_2)<a href="{{ asset('storage/' . $data->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                         </div>
                     </div>
                     @endif
                     @if($data->jenjang_3)
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                         <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_3 }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $data->institusi_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah_3)<a href="{{ asset('storage/' . $data->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                            <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip_3)<a href="{{ asset('storage/' . $data->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_3 }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>@if($data->file_ijazah_3)<a href="{{ asset('storage/' . $data->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>@if($data->file_transkrip_3)<a href="{{ asset('storage/' . $data->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                         </div>
                     </div>
                     @endif
@@ -103,32 +113,32 @@
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Dokumen Pendukung</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">CV (Resume)</p>@if($data->file_cv)<a href="{{ asset('storage/' . $data->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Pas Foto</p>@if($data->file_pas_foto)<a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">KTP</p>@if($data->file_ktp)<a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">{{ $data->kategori_sertifikat ?: 'Sertifikat' }}</p>@if($data->file_sertifikat)<a href="{{ asset('storage/' . $data->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>@if($data->file_cv)<a href="{{ asset('storage/' . $data->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto</p>@if($data->file_pas_foto)<a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">KTP</p>@if($data->file_ktp)<a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $data->kategori_sertifikat ?: 'Sertifikat' }}</p>@if($data->file_sertifikat)<a href="{{ asset('storage/' . $data->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                 </div>
             </div>
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Sertifikat Bahasa Inggris</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jenis Tes</p><p class="text-sm font-medium text-gray-800 mt-0.5">{{ $data->jenis_tes_bahasa ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->skor_bahasa ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_tes_bahasa ? \Carbon\Carbon::parse($data->tanggal_tes_bahasa)->format('d M Y') : '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>@if($data->file_sertifikat_bahasa)<a href="{{ asset('storage/' . $data->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-xs text-gray-400 mt-1">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_tes_bahasa ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->skor_bahasa ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_tes_bahasa ? \Carbon\Carbon::parse($data->tanggal_tes_bahasa)->format('d M Y') : '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>@if($data->file_sertifikat_bahasa)<a href="{{ asset('storage/' . $data->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                 </div>
             </div>
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Data Akademik (Dosen)</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm font-mono text-gray-700 mt-0.5">{{ $data->nidn ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->homebase ?: '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jabatan_akademik ? ucwords(str_replace('_', ' ', $data->jabatan_akademik)) : '-' }}</p></div>
-                    <div><p class="text-[0.6rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->h_index ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->nidn ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->homebase ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jabatan_akademik ? ucwords(str_replace('_', ' ', $data->jabatan_akademik)) : '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->h_index ?: '-' }}</p></div>
                 </div>
-                <div class="mt-3"><p class="text-[0.6rem] font-black text-gray-400 uppercase">Minat Riset</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->minat_riset ?: '-' }}</p></div>
+                <div class="mt-3"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Minat Riset</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->minat_riset ?: '-' }}</p></div>
             </div>
 
             @if($data->nidn || $data->homebase)
@@ -244,7 +254,7 @@
                                     @foreach($microDinilai->values() as $jadwalMicro)
                                     @php $p = $jadwalMicro->penilaian; $rek = $p->rekomendasi ? ($rekLabels[$p->rekomendasi] ?? ['label'=>$p->rekomendasi,'color'=>'bg-gray-50 text-gray-700']) : null; @endphp
                                     <tr class="hover:bg-gray-50/50">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalMicro->penguji->nama ?? '' }}">{{ $jadwalMicro->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalMicro->penguji->nama ?? '' }}">{{ $jadwalMicro->penguji->kode ?? '-' }}</td>
                                         @foreach($microKategoriLabels as $kNum => $kShort)
                                         <td class="px-3 py-2.5 text-center font-bold text-gray-800 border border-gray-200">{{ $p->{'kategori_'.$kNum} ?? '-' }}</td>
                                         @endforeach
@@ -258,7 +268,7 @@
                                     @endforeach
                                     @foreach($micro->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
                                     <tr class="bg-yellow-50/40">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
                                         <td colspan="{{ count($microKategoriLabels) + 7 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
                                     </tr>
                                     @endforeach
@@ -311,7 +321,7 @@
                                     @foreach($wawancaraDinilai->values() as $jadwalWaw)
                                     @php $p = $jadwalWaw->penilaian; $detail = $p->detail_nilai ?? []; $rek = $p->rekomendasi ? ($rekLabels[$p->rekomendasi] ?? ['label'=>$p->rekomendasi,'color'=>'bg-gray-50 text-gray-700']) : null; @endphp
                                     <tr class="hover:bg-gray-50/50">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalWaw->penguji->nama ?? '' }}">{{ $jadwalWaw->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs text-gray-600 whitespace-nowrap border border-gray-200" title="{{ $jadwalWaw->penguji->nama ?? '' }}">{{ $jadwalWaw->penguji->kode ?? '-' }}</td>
                                         @foreach($wawancaraIndikatorLabels as $iNum => $iShort)
                                         <td class="px-3 py-2.5 text-center font-bold text-gray-800 border border-gray-200">{{ $detail['k1_item_'.$iNum] ?? '-' }}</td>
                                         @endforeach
@@ -323,7 +333,7 @@
                                     @endforeach
                                     @foreach($wawancara->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
                                     <tr class="bg-yellow-50/40">
-                                        <td class="px-4 py-2.5 text-xs font-mono text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
+                                        <td class="px-4 py-2.5 text-xs text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
                                         <td colspan="{{ count($wawancaraIndikatorLabels) + 4 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
                                     </tr>
                                     @endforeach

@@ -39,8 +39,9 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi (Prodi Pembuka) <span class="text-red-500">*</span></label>
+                            {{-- hidden select tetap ada untuk JS listener & submit --}}
                             <select name="prodi_id" id="prodi_id"
-                                    class="w-full px-4 py-2.5 rounded-lg border @error('prodi_id') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
+                                    class="hidden">
                                 <option value="" data-nama="">— Pilih Prodi —</option>
                                 @foreach($prodis as $prodi)
                                     <option value="{{ $prodi->id }}" data-nama="{{ $prodi->nama }}" {{ old('prodi_id') == $prodi->id ? 'selected' : '' }}>
@@ -48,6 +49,37 @@
                                     </option>
                                 @endforeach
                             </select>
+                            <div x-data="{
+                                    open: false,
+                                    val: '{{ old('prodi_id') }}',
+                                    opts: [{ v: '', l: '— Pilih Prodi —', k: '' }, @foreach($prodis as $prodi){ v: '{{ $prodi->id }}', l: '{{ addslashes($prodi->nama) }} ({{ $prodi->kode }})', k: '{{ addslashes($prodi->kode) }}' },@endforeach],
+                                    get label() { return this.opts.find(o => o.v == this.val)?.l ?? '— Pilih Prodi —'; },
+                                    pick(opt) {
+                                        this.val = opt.v;
+                                        this.open = false;
+                                        var sel = document.getElementById('prodi_id');
+                                        sel.value = opt.v;
+                                        sel.dispatchEvent(new Event('change'));
+                                    }
+                                 }" @click.outside="open = false" class="relative">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border @error('prodi_id') border-red-400 @else border-gray-200 @enderror bg-white text-sm transition-all"
+                                    :class="val ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate"></span>
+                                    <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <template x-for="opt in opts" :key="opt.v">
+                                            <button type="button" @click="pick(opt)"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                                :class="val == opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                                <span x-text="opt.l"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
                             @error('prodi_id') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
@@ -83,13 +115,31 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Jenjang Pendidikan Minimal <span class="text-red-500">*</span></label>
-                            <select name="jenjang_minimal"
-                                    class="w-full px-4 py-2.5 rounded-lg border @error('jenjang_minimal') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="">— Pilih Jenjang —</option>
-                                @foreach(['D3', 'S1', 'S2', 'S3'] as $j)
-                                    <option value="{{ $j }}" {{ old('jenjang_minimal') === $j ? 'selected' : '' }}>{{ $j }}</option>
-                                @endforeach
-                            </select>
+                            <div x-data="{
+                                    open: false,
+                                    val: '{{ old('jenjang_minimal') }}',
+                                    opts: [{ v: '', l: '— Pilih Jenjang —' }, { v: 'D3', l: 'D3' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
+                                    get label() { return this.opts.find(o => o.v === this.val)?.l ?? '— Pilih Jenjang —'; }
+                                 }" @click.outside="open = false" class="relative">
+                                <input type="hidden" name="jenjang_minimal" :value="val">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border @error('jenjang_minimal') border-red-400 @else border-gray-200 @enderror bg-white text-sm transition-all"
+                                    :class="val ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label"></span>
+                                    <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5">
+                                        <template x-for="opt in opts" :key="opt.v">
+                                            <button type="button" @click="val = opt.v; open = false"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                                :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                                <span x-text="opt.l"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
                             @error('jenjang_minimal') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
@@ -97,30 +147,119 @@
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Minimal IPK <span class="text-red-500">*</span></label>
                             <input type="number" name="minimal_ipk" value="{{ old('minimal_ipk', '3.00') }}"
                                    step="0.01" min="0" max="4" placeholder="cth: 3.00"
+                                   oninput="if(parseFloat(this.value)>4){this.value='4'}"
                                    class="w-full px-4 py-2.5 rounded-lg border @error('minimal_ipk') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                             @error('minimal_ipk') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Prodi yang Diprioritaskan</label>
-                            <select name="prodi_prioritas"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="">— Tidak ada prioritas khusus —</option>
-                                @foreach($prodiPrioritasOptions as $opt)
-                                    <option value="{{ $opt }}" {{ old('prodi_prioritas') === $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                                @endforeach
-                            </select>
+                            <div x-data="{
+                                    open: false,
+                                    selected: {{ \Illuminate\Support\Js::from(array_values(array_filter((array) old('prodi_prioritas', [])))) }},
+                                    allOpts: {{ \Illuminate\Support\Js::from($prodiPrioritasOptions) }},
+                                    get label() {
+                                        return this.selected.length === 0 ? '— Tidak ada prioritas khusus —' : this.selected.join(', ');
+                                    },
+                                    get joined() { return this.selected.join('||'); },
+                                    toggle(v) {
+                                        const idx = this.selected.indexOf(v);
+                                        if (idx === -1) this.selected.push(v);
+                                        else this.selected.splice(idx, 1);
+                                    },
+                                    isChecked(v) { return this.selected.includes(v); },
+                                    setFirst(v) {
+                                        if (!v || !this.allOpts.includes(v)) return;
+                                        if (!this.selected.includes(v)) this.selected.unshift(v);
+                                    }
+                                 }"
+                                 @click.outside="open = false"
+                                 @set-prodi-pembuka.window="setFirst($event.detail)"
+                                 class="relative">
+
+                                {{-- Satu hidden input, nilai dipisah '||', di-split di server --}}
+                                <input type="hidden" name="prodi_prioritas" :value="joined">
+
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm transition-all"
+                                    :class="selected.length > 0 ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate mr-2 text-left"></span>
+                                    <div class="flex items-center gap-1 flex-shrink-0">
+                                        <span x-show="selected.length > 0" x-text="selected.length"
+                                              class="w-5 h-5 rounded-full bg-[#8b1515] text-white text-[0.6rem] font-bold flex items-center justify-center"></span>
+                                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                </button>
+
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <button type="button" @click="selected = []"
+                                            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100"
+                                            :class="selected.length === 0 ? 'text-gray-900 font-semibold bg-gray-100' : 'text-gray-500'">
+                                            — Tidak ada prioritas khusus —
+                                        </button>
+                                        @foreach($prodiPrioritasOptions as $opt)
+                                        <button type="button" @click="toggle({{ \Illuminate\Support\Js::from($opt) }})"
+                                            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100 text-gray-700">
+                                            <span class="w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors"
+                                                  :class="isChecked({{ \Illuminate\Support\Js::from($opt) }}) ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                                <svg x-show="isChecked({{ \Illuminate\Support\Js::from($opt) }})" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                            </span>
+                                            <span>{{ $opt }}</span>
+                                        </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Keahlian / Skill yang Dibutuhkan</label>
-                            <select name="skill_dibutuhkan"
-                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <option value="">— Tidak ada skill spesifik —</option>
-                                @foreach($skillOptions as $opt)
-                                    <option value="{{ $opt }}" {{ old('skill_dibutuhkan') === $opt ? 'selected' : '' }}>{{ $opt }}</option>
-                                @endforeach
-                            </select>
+                            <div x-data="{
+                                    open: false,
+                                    selected: {{ \Illuminate\Support\Js::from(array_values(array_filter((array) old('skill_dibutuhkan', [])))) }},
+                                    get label() {
+                                        return this.selected.length === 0 ? '— Tidak ada skill spesifik —' : this.selected.join(', ');
+                                    },
+                                    get joined() { return this.selected.join('||'); },
+                                    toggle(v) {
+                                        const idx = this.selected.indexOf(v);
+                                        if (idx === -1) this.selected.push(v);
+                                        else this.selected.splice(idx, 1);
+                                    },
+                                    isChecked(v) { return this.selected.includes(v); }
+                                 }" @click.outside="open = false" class="relative">
+                                <input type="hidden" name="skill_dibutuhkan" :value="joined">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm transition-all"
+                                    :class="selected.length > 0 ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate mr-2 text-left"></span>
+                                    <div class="flex items-center gap-1 flex-shrink-0">
+                                        <span x-show="selected.length > 0" x-text="selected.length"
+                                              class="w-5 h-5 rounded-full bg-[#8b1515] text-white text-[0.6rem] font-bold flex items-center justify-center"></span>
+                                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                    </div>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <button type="button" @click="selected = []"
+                                            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100"
+                                            :class="selected.length === 0 ? 'text-gray-900 font-semibold bg-gray-100' : 'text-gray-500'">
+                                            — Tidak ada skill spesifik —
+                                        </button>
+                                        @foreach($skillOptions as $opt)
+                                        <button type="button" @click="toggle({{ \Illuminate\Support\Js::from($opt) }})"
+                                            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100 text-gray-700">
+                                            <span class="w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors"
+                                                  :class="isChecked({{ \Illuminate\Support\Js::from($opt) }}) ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                                <svg x-show="isChecked({{ \Illuminate\Support\Js::from($opt) }})" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                            </span>
+                                            <span>{{ $opt }}</span>
+                                        </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         
@@ -155,16 +294,31 @@
         const prodiSelect = document.getElementById('prodi_id');
         const namaPosisiInput = document.getElementById('nama_posisi');
 
+        function setProdiPembuka(prodiNama) {
+            if (!prodiNama) return;
+            window.dispatchEvent(new CustomEvent('set-prodi-pembuka', { detail: prodiNama }));
+        }
+
         prodiSelect.addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const prodiNama = selectedOption.getAttribute('data-nama');
-            
+            const opt = this.options[this.selectedIndex];
+            const prodiNama = opt.getAttribute('data-nama');
             if (prodiNama) {
                 namaPosisiInput.value = 'Dosen Tetap S1 ' + prodiNama;
+                setProdiPembuka(prodiNama);
             } else {
                 namaPosisiInput.value = '';
             }
         });
+
+        // Jika prodi sudah dipilih saat load (old value)
+        if (prodiSelect.value) {
+            const opt = prodiSelect.options[prodiSelect.selectedIndex];
+            const nama = opt?.getAttribute('data-nama');
+            if (nama) {
+                // Tunggu Alpine init
+                setTimeout(() => setProdiPembuka(nama), 50);
+            }
+        }
     });
 </script>
 

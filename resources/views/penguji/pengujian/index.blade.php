@@ -52,116 +52,105 @@
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 mb-6">
             <div class="flex items-center gap-3 flex-wrap">
 
-                {{-- Tanggal Chip --}}
-                <div class="relative" @click.outside="tanggalOpen = false">
-                    <button type="button" @click="tanggalOpen = !tanggalOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="tanggalFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Tanggal
-                        <span x-show="tanggalFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="tanggalOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            {{-- Search (animated) --}}
+            <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
+                <div class="relative flex items-center">
+                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </button>
-                    <div x-show="tanggalOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Pilih Tanggal</p></div>
-                        <div class="p-4">
-                            <input type="date" x-model="tanggalFilter" @change="tanggalOpen = false" class="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition cursor-pointer">
-                        </div>
+                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                        <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama pelamar..."
+                               @keydown.escape="search = ''; searchOpen = false"
+                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
                     </div>
-                </div>
-
-                {{-- Seleksi Chip --}}
-                <div class="relative" @click.outside="seleksiOpen = false">
-                    <button type="button" @click="seleksiOpen = !seleksiOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="seleksiFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
-                        Seleksi
-                        <span x-show="seleksiFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="seleksiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                            @click="search = ''; searchOpen = false"
+                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                     </button>
-                    <div x-show="seleksiOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Seleksi</p></div>
-                        <div class="p-3 space-y-1">
-                            <button type="button" @click="seleksiFilter = seleksiFilter === 'wawancara' ? '' : 'wawancara'; seleksiOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="seleksiFilter === 'wawancara' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="seleksiFilter === 'wawancara' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="seleksiFilter === 'wawancara'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-gray-700">Wawancara</span>
-                            </button>
-                            <button type="button" @click="seleksiFilter = seleksiFilter === 'micro' ? '' : 'micro'; seleksiOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="seleksiFilter === 'micro' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="seleksiFilter === 'micro' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="seleksiFilter === 'micro'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-gray-700">Micro Teaching</span>
-                            </button>
-                        </div>
-                    </div>
                 </div>
+            </div>
 
-                {{-- Status Chip --}}
-                <div class="relative" @click.outside="statusOpen = false">
-                    <button type="button" @click="statusOpen = !statusOpen"
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
-                            :class="statusFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        Status
-                        <span x-show="statusFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
-                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </button>
-                    <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
-                        <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
-                        <div class="p-3 space-y-1">
-                            <button type="button" @click="statusFilter = statusFilter === 'dinilai' ? '' : 'dinilai'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'dinilai' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'dinilai' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="statusFilter === 'dinilai'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-green-600">Dinilai</span>
-                            </button>
-                            <button type="button" @click="statusFilter = statusFilter === 'pending' ? '' : 'pending'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'pending' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'pending' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="statusFilter === 'pending'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-yellow-600">Pending</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {{-- Tanggal — input date langsung --}}
+            <div class="flex items-center">
+                <input type="date" x-model="tanggalFilter"
+                       class="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]/20 transition cursor-pointer"
+                       :class="tanggalFilter !== '' ? 'border-[#8b1515] text-[#8b1515] font-medium' : ''">
+            </div>
 
-                {{-- Active filter tags --}}
-                <span x-show="tanggalFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">
-                    <span x-text="tanggalFilter"></span>
-                    <button type="button" @click="tanggalFilter = ''" class="ml-0.5 hover:text-red-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                </span>
-                <span x-show="seleksiFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
-                    <span x-text="seleksiFilter === 'wawancara' ? 'Wawancara' : 'Micro Teaching'"></span>
-                    <button type="button" @click="seleksiFilter = ''" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                </span>
-                <span x-show="statusFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-green-50 border border-green-200 text-xs font-semibold text-green-700">
-                    <span x-text="statusFilter === 'dinilai' ? 'Dinilai' : 'Pending'"></span>
-                    <button type="button" @click="statusFilter = ''" class="ml-0.5 hover:text-green-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
-                </span>
-
-                {{-- Clear All --}}
-                <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    Clear Filters
+            {{-- Seleksi Chip --}}
+            <div class="relative" @click.outside="seleksiOpen = false">
+                <button type="button" @click="seleksiOpen = !seleksiOpen"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="seleksiFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    Seleksi
+                    <span x-show="seleksiFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="seleksiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </button>
-
-                {{-- Search (animated) --}}
-                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!search) searchOpen = false">
-                    <div class="relative flex items-center">
-                        <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
-                                class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                                :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <div x-show="seleksiOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Seleksi</p></div>
+                    <div class="p-3 space-y-1">
+                        <button type="button" @click="seleksiFilter = seleksiFilter === 'wawancara' ? '' : 'wawancara'; seleksiOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="seleksiFilter === 'wawancara' ? 'bg-gray-50' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="seleksiFilter === 'wawancara' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="seleksiFilter === 'wawancara'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Wawancara</span>
                         </button>
-                        <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                             :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
-                            <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama pelamar..."
-                                   @keydown.escape="search = ''; searchOpen = false"
-                                   class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
-                        </div>
-                        <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
-                                @click="search = ''; searchOpen = false"
-                                class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <button type="button" @click="seleksiFilter = seleksiFilter === 'micro' ? '' : 'micro'; seleksiOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="seleksiFilter === 'micro' ? 'bg-gray-50' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="seleksiFilter === 'micro' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="seleksiFilter === 'micro'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Micro Teaching</span>
                         </button>
                     </div>
                 </div>
+            </div>
+
+            {{-- Status Chip --}}
+            <div class="relative" @click.outside="statusOpen = false">
+                <button type="button" @click="statusOpen = !statusOpen"
+                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                        :class="statusFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Status
+                    <span x-show="statusFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
+                    <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                </button>
+                <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                    <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
+                    <div class="p-3 space-y-1">
+                        <button type="button" @click="statusFilter = statusFilter === 'dinilai' ? '' : 'dinilai'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="statusFilter === 'dinilai' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'dinilai' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'dinilai'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Dinilai</span>
+                        </button>
+                        <button type="button" @click="statusFilter = statusFilter === 'pending' ? '' : 'pending'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="statusFilter === 'pending' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'pending' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'pending'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Pending</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Active filter tags --}}
+            <span x-show="tanggalFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                <span x-text="tanggalFilter"></span>
+                <button type="button" @click="tanggalFilter = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span x-show="seleksiFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                <span x-text="seleksiFilter === 'wawancara' ? 'Wawancara' : 'Micro Teaching'"></span>
+                <button type="button" @click="seleksiFilter = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </span>
+            <span x-show="statusFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                <span x-text="statusFilter === 'dinilai' ? 'Dinilai' : 'Pending'"></span>
+                <button type="button" @click="statusFilter = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+            </span>
+
+            {{-- Clear All --}}
+            <button x-show="hasFilters" x-transition type="button" @click="clearAll()"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                Clear Filters
+            </button>
 
             </div>
         </div>
@@ -193,18 +182,22 @@
                                 data-tanggal="{{ $jadwal->tanggal->format('Y-m-d') }}"
                                 data-nama="{{ strtolower($jadwal->pelamar->nama) }}"
                                 class="hover:bg-gray-50/50 transition-colors h-[52px]">
-                                <td class="py-3 px-5 text-sm font-semibold text-gray-800">{{ $jadwal->tanggal->format('d/m/Y') }}</td>
-                                <td class="py-3 px-5">
-                                    <div class="text-sm font-semibold text-gray-800">Sesi {{ $jadwal->sesi }}</div>
-                                    <div class="text-xs text-gray-500 mt-0.5">{{ $sesiInfo ? $sesiInfo['start'] . ' - ' . $sesiInfo['end'] : '-' }}</div>
+                                <td class="py-3 px-5 max-w-0" title="{{ $jadwal->tanggal->format('d/m/Y') }}">
+                                    <span class="text-sm font-medium text-gray-800 truncate block">{{ $jadwal->tanggal->format('d/m/Y') }}</span>
                                 </td>
-                                <td class="py-3 px-5 text-sm font-semibold text-gray-700">
-                                    {{ $jadwal->tipe_seleksi == 'wawancara' ? 'Wawancara' : 'Micro Teaching' }}
+                                <td class="py-3 px-5 max-w-0" title="Sesi {{ $jadwal->sesi }} ({{ $sesiInfo ? $sesiInfo['start'] . ' - ' . $sesiInfo['end'] : '-' }})">
+                                    <div class="text-sm font-medium text-gray-800 truncate">Sesi {{ $jadwal->sesi }}</div>
+                                    <div class="text-xs text-gray-500 mt-0.5 truncate">{{ $sesiInfo ? $sesiInfo['start'] . ' - ' . $sesiInfo['end'] : '-' }}</div>
                                 </td>
-                                <td class="py-3 px-5 text-sm font-semibold text-gray-800">{{ $jadwal->pelamar->nama }}</td>
-                                <td class="py-3 px-5">
-                                    <div class="text-sm font-semibold text-gray-800">{{ $jadwal->lowongan->nama_posisi }}</div>
-                                    <div class="text-[0.65rem] text-gray-500 uppercase tracking-widest mt-0.5">{{ $jadwal->lowongan->prodi->nama ?? '-' }}</div>
+                                <td class="py-3 px-5 max-w-0" title="{{ $jadwal->tipe_seleksi == 'wawancara' ? 'Wawancara' : 'Micro Teaching' }}">
+                                    <span class="text-sm font-medium text-gray-700 truncate block">{{ $jadwal->tipe_seleksi == 'wawancara' ? 'Wawancara' : 'Micro Teaching' }}</span>
+                                </td>
+                                <td class="py-3 px-5 max-w-0" title="{{ $jadwal->pelamar->nama }}">
+                                    <span class="text-sm font-medium text-gray-800 truncate block">{{ $jadwal->pelamar->nama }}</span>
+                                </td>
+                                <td class="py-3 px-5 max-w-0" title="{{ $jadwal->lowongan->nama_posisi }} ({{ $jadwal->lowongan->prodi->nama ?? '-' }})">
+                                    <div class="text-sm font-medium text-gray-800 truncate">{{ $jadwal->lowongan->nama_posisi }}</div>
+                                    <div class="text-[0.65rem] text-gray-500 uppercase tracking-widest mt-0.5 truncate">{{ $jadwal->lowongan->prodi->nama ?? '-' }}</div>
                                 </td>
                                 <td class="py-3 px-5 text-center">
                                     @if($sudahDinilai)

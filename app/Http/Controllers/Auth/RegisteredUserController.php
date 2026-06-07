@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pelamar;
 use App\Models\User;
 use App\Rules\NotDosenInternalDomain;
 use Illuminate\Auth\Events\Registered;
@@ -39,18 +40,31 @@ class RegisteredUserController extends Controller
                 new NotDosenInternalDomain(),
             ],
             'password' => ['required', Rules\Password::defaults()],
-            
+
             // Step 2
-            'nik' => ['required', 'string', 'size:16', 'unique:pelamars,nik'],
-            'nama' => ['required', 'string', 'max:255'],
-            'tempat_lahir' => ['required', 'string', 'max:255'],
-            'tanggal_lahir' => ['required', 'date'],
-            'no_telepon' => ['required', 'string', 'regex:/^08[0-9]{8,13}$/'],
-            'jenis_kelamin' => ['required', 'in:L,P'],
-            'kewarganegaraan' => ['required', 'string', 'max:255'],
+            'nik'               => [
+                'required', 'string', 'digits:16',
+                // Validasi unique via PHP karena kolom dienkripsi di DB
+                function ($attr, $value, $fail) {
+                    $exists = \App\Models\Pelamar::all()->first(fn($p) => $p->nik === $value);
+                    if ($exists) $fail('NIK sudah terdaftar. Pastikan Anda belum pernah mendaftar sebelumnya.');
+                },
+            ],
+            'nama'              => ['required', 'string', 'max:255'],
+            'tempat_lahir'      => ['required', 'string', 'max:255'],
+            'tanggal_lahir'     => ['required', 'date'],
+            'no_telepon'        => [
+                'required', 'string', 'regex:/^08[0-9]{6,13}$/', 'max:15',
+                function ($attr, $value, $fail) {
+                    $exists = \App\Models\Pelamar::all()->first(fn($p) => $p->no_telepon === $value);
+                    if ($exists) $fail('No. telepon sudah terdaftar. Gunakan nomor telepon yang berbeda.');
+                },
+            ],
+            'jenis_kelamin'     => ['required', 'in:L,P'],
+            'kewarganegaraan'   => ['required', 'string', 'max:255'],
             'status_pernikahan' => ['required', 'string', 'max:255'],
-            'alamat_domisili' => ['required', 'string'],
-            'alamat_ktp' => ['required', 'string'],
+            'alamat_domisili'   => ['required', 'string'],
+            'alamat_ktp'        => ['required', 'string'],
             
             // Step 3
             'jenjang' => ['nullable', 'in:S1,S2,S3'],
@@ -74,7 +88,7 @@ class RegisteredUserController extends Controller
             'sertifikat_bahasa' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
 
             // Step 5
-            'nidn' => ['nullable', 'string', 'max:255'],
+            'nidn' => ['nullable', 'string', 'max:10', 'digits_max:10'],
             'homebase' => ['nullable', 'string', 'max:255'],
             'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan'],
             'minat_riset' => ['nullable', 'string'],
@@ -83,11 +97,10 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->nama,
-            'email' => $request->email,
+            'name'     => $request->nama,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'password_plain' => $request->password,
-            'role' => 'pelamar',
+            'role'     => 'pelamar',
         ]);
 
         $pelamarData = $request->only([
@@ -125,5 +138,61 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Check if email is already registered (AJAX) — Step 1.
+     */
+    public function checkEmail(Request $request)
+    {
+        try {
+            $request->validate([
+                'email' => [
+                    'required', 'string', 'lowercase', 'email', 'max:255',
+                    'unique:'.User::class,
+                    new NotDosenInternalDomain(),
+                ],
+            ]);
+
+            return response()->json(['valid' => true]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'valid' => false,
+                'message' => $e->validator->errors()->first('email'),
+            ], 422);
+        }
+    }
+
+    /**
+     * Check if NIK / No. Telepon sudah terdaftar (AJAX) — Step 2.
+     * Data dienkripsi, jadi pengecekan dilakukan via PHP bukan SQL.
+     */
+    public function checkIdentity(Request $request)
+    {
+        $nik       = $request->input('nik');
+        $noTelepon = $request->input('no_telepon');
+
+        if ($nik) {
+            // Validasi format dulu
+            if (!preg_match('/^\d{16}$/', $nik)) {
+                return response()->json(['valid' => false, 'field' => 'nik', 'message' => 'NIK harus terdiri dari 16 digit angka.'], 422);
+            }
+            $exists = \App\Models\Pelamar::all()->first(fn($p) => $p->nik === $nik);
+            if ($exists) {
+                return response()->json(['valid' => false, 'field' => 'nik', 'message' => 'NIK sudah terdaftar. Pastikan Anda belum pernah mendaftar sebelumnya.'], 422);
+            }
+        }
+
+        if ($noTelepon) {
+            if (!preg_match('/^08[0-9]{6,13}$/', $noTelepon)) {
+                return response()->json(['valid' => false, 'field' => 'no_telepon', 'message' => 'Format No. Telepon harus diawali "08" dan berisi 8–15 digit.'], 422);
+            }
+            $exists = \App\Models\Pelamar::all()->first(fn($p) => $p->no_telepon === $noTelepon);
+            if ($exists) {
+                return response()->json(['valid' => false, 'field' => 'no_telepon', 'message' => 'No. telepon sudah terdaftar. Gunakan nomor telepon yang berbeda.'], 422);
+            }
+        }
+
+        return response()->json(['valid' => true]);
     }
 }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lowongan;
+use App\Models\Notifikasi;
 use App\Models\Prodi;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -73,15 +75,45 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'prodi_id'         => 'required|exists:prodis,id',
             'jenjang_minimal'  => 'required|in:D3,S1,S2,S3',
             'minimal_ipk'      => 'required|numeric|min:0|max:4',
-            'prodi_prioritas'  => 'nullable|string|max:255',
-            'skill_dibutuhkan' => 'nullable|string|max:255',
+            'prodi_prioritas'  => 'nullable',
+            'skill_dibutuhkan' => 'nullable',
             'kuota'            => 'required|integer|min:1',
             'tanggal_tutup'    => 'required|date|after:today',
             'deskripsi'        => 'nullable|string',
             'status'           => 'required|in:aktif,ditutup,draft',
         ]);
 
-        Lowongan::create($validated);
+        // Prodi prioritas: nilai dipisah '||' dari multi-select → simpan dengan ', '
+        $prodiPrioritasRaw = $request->input('prodi_prioritas');
+        if (is_string($prodiPrioritasRaw) && $prodiPrioritasRaw !== '') {
+            $arr = array_filter(array_map('trim', explode('||', $prodiPrioritasRaw)));
+            $validated['prodi_prioritas'] = !empty($arr) ? implode(', ', $arr) : null;
+        } else {
+            $validated['prodi_prioritas'] = null;
+        }
+
+        // Skill dibutuhkan: sama, multi-select dipisah '||'
+        $skillRaw = $request->input('skill_dibutuhkan');
+        if (is_string($skillRaw) && $skillRaw !== '') {
+            $arr = array_filter(array_map('trim', explode('||', $skillRaw)));
+            $validated['skill_dibutuhkan'] = !empty($arr) ? implode(', ', $arr) : null;
+        } else {
+            $validated['skill_dibutuhkan'] = null;
+        }
+
+        $lowongan = Lowongan::create($validated);
+        $lowongan->load('prodi');
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $prodiNama = $lowongan->prodi->nama ?? '-';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $prodiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem(
+                $u->id,
+                'Lowongan Dibuat',
+                "Admin {$adminNama} membuat lowongan {$lowongan->nama_posisi} pada prodi {$prodiNama} pada {$waktu}."
+            );
+        });
 
         return redirect()->route('admin.lowongan.index')
                          ->with('success', 'Lowongan "' . $validated['nama_posisi'] . '" berhasil dibuat.');
@@ -123,15 +155,34 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'prodi_id'         => 'required|exists:prodis,id',
             'jenjang_minimal'  => 'required|in:D3,S1,S2,S3',
             'minimal_ipk'      => 'required|numeric|min:0|max:4',
-            'prodi_prioritas'  => 'nullable|string|max:255',
-            'skill_dibutuhkan' => 'nullable|string|max:255',
+            'prodi_prioritas'  => 'nullable',
+            'skill_dibutuhkan' => 'nullable',
             'kuota'            => 'required|integer|min:1',
             'tanggal_tutup'    => 'required|date',
             'deskripsi'        => 'nullable|string',
             'status'           => 'required|in:aktif,ditutup,draft',
         ]);
 
+        // Normalisasi multi-select (dipisah '||') → simpan dengan ', '
+        foreach (['prodi_prioritas', 'skill_dibutuhkan'] as $field) {
+            $raw = $request->input($field);
+            if (is_string($raw) && $raw !== '') {
+                $arr = array_filter(array_map('trim', explode('||', $raw)));
+                $validated[$field] = !empty($arr) ? implode(', ', $arr) : null;
+            } else {
+                $validated[$field] = null;
+            }
+        }
+
         $lowongan->update($validated);
+
+        $lowongan->load('prodi');
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $prodiNama = $lowongan->prodi->nama ?? '-';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $prodiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Lowongan Diperbarui', "Admin {$adminNama} memperbarui lowongan {$lowongan->nama_posisi} pada prodi {$prodiNama} pada {$waktu}.");
+        });
 
         return redirect()->route('admin.lowongan.index')
                          ->with('success', 'Lowongan "' . $lowongan->nama_posisi . '" berhasil diperbarui.');
@@ -154,6 +205,13 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
 
         $lowongan->update(['status' => $newStatus]);
 
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $statusLabel = $newStatus === 'aktif' ? 'dipublish (Aktif)' : 'ditutup';
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $statusLabel, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Status Lowongan Diubah', "Admin {$adminNama} mengubah status lowongan {$lowongan->nama_posisi} menjadi {$statusLabel} pada {$waktu}.");
+        });
+
         $message = $newStatus === 'aktif' ? 'Lowongan berhasil dipublish (Aktif).' : 'Lowongan berhasil di-unpublish (Ditutup).';
         return redirect()->route('admin.lowongan.index')->with('success', $message);
     }
@@ -163,6 +221,12 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $nama = $lowongan->nama_posisi;
         $lowongan->delete();
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $nama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Lowongan Dihapus', "Admin {$adminNama} menghapus lowongan {$nama} pada {$waktu}.");
+        });
 
         return redirect()->route('admin.lowongan.index')
                          ->with('success', 'Lowongan "' . $nama . '" berhasil dihapus.');
@@ -302,6 +366,14 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                 'jenjangDisplay' => $jenjangDisplay,
                 'kelompokKeahlian' => $kelompokDisplay ?: '-',
             ];
+        });
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        $posisiLog = $lowongan->nama_posisi;
+        $prodiLog = $lowongan->prodi->nama ?? '-';
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $posisiLog, $prodiLog, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Cetak Berita Acara', "Admin {$adminNama} mencetak berita acara lowongan {$posisiLog} ({$prodiLog}) pada {$waktu}.");
         });
 
         return view('admin.lowongan.berita_acara', compact(

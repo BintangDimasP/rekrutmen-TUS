@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 
 class SettingController extends Controller
@@ -32,10 +33,53 @@ class SettingController extends Controller
         }
 
         $user->update([
-            'password'       => Hash::make($request->password),
-            'password_plain' => $request->password,
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Password berhasil diperbarui.');
+    }
+
+    /**
+     * Update foto profil user.
+     */
+    public function updateFoto(Request $request)
+    {
+        $request->validate([
+            'foto_profil' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+        ], [
+            'foto_profil.required' => 'Pilih foto profil terlebih dahulu.',
+            'foto_profil.image'    => 'File harus berupa gambar.',
+            'foto_profil.mimes'    => 'Format yang diizinkan: jpg, jpeg, png, webp.',
+            'foto_profil.max'      => 'Ukuran foto maksimal 2 MB.',
+        ]);
+
+        $user = $request->user();
+
+        // Hapus foto lama jika ada
+        if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
+            Storage::disk('public')->delete($user->foto_profil);
+        }
+
+        $path = $request->file('foto_profil')->store('foto_profil/'.$user->id, 'public');
+
+        $user->update(['foto_profil' => $path]);
+
+        return back()->with('success', 'Foto profil berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus foto profil user.
+     */
+    public function deleteFoto(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
+            Storage::disk('public')->delete($user->foto_profil);
+        }
+
+        $user->update(['foto_profil' => null]);
+
+        return back()->with('success', 'Foto profil berhasil dihapus.');
     }
 }

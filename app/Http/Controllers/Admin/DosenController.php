@@ -23,14 +23,15 @@ class DosenController extends Controller
         $request->validate([
             'nama'       => ['required', 'string', 'max:255'],
             'kode'       => ['required', 'string', 'max:50', 'unique:dosens,kode'],
-            'nip'        => ['nullable', 'string', 'max:50'],
-            'nidn'       => ['nullable', 'string', 'max:50'],
-            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{8,13}$/'],
+            'nip'        => ['nullable', 'string', 'max:18'],
+            'nidn'       => ['nullable', 'string', 'max:10'],
+            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{6,13}$/', 'max:15'],
         ]);
 
         $isKaprodi = $request->boolean('is_kaprodi');
 
-        DB::transaction(function () use ($request, $prodi, $isKaprodi) {
+        $dosen = null;
+        DB::transaction(function () use ($request, $prodi, $isKaprodi, &$dosen) {
             if ($isKaprodi) {
                 $this->demoteCurrentKaprodi($prodi->id);
             }
@@ -55,6 +56,20 @@ class DosenController extends Controller
             // Dosen biasa: tidak ada akun dibuat
         });
 
+        // Notify admins - sistem log
+        if ($dosen) {
+            $adminNama = auth()->user()->name ?? 'Admin';
+            $prodiNama = $prodi->nama ?? '-';
+            $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+            User::where('role', 'admin')->each(function($u) use ($adminNama, $dosen, $prodiNama, $waktu) {
+                \App\Models\Notifikasi::kirimSistem(
+                    $u->id,
+                    'Dosen Ditambahkan',
+                    "Admin {$adminNama} menambahkan dosen {$dosen->nama} pada prodi {$prodiNama} pada {$waktu}."
+                );
+            });
+        }
+
         return back()->with('success', 'Data dosen berhasil ditambahkan.');
     }
 
@@ -66,9 +81,9 @@ class DosenController extends Controller
         $request->validate([
             'nama'       => ['required', 'string', 'max:255'],
             'kode'       => ['required', 'string', 'max:50', 'unique:dosens,kode,' . $dosen->id],
-            'nip'        => ['nullable', 'string', 'max:50'],
-            'nidn'       => ['nullable', 'string', 'max:50'],
-            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{8,13}$/'],
+            'nip'        => ['nullable', 'string', 'max:18'],
+            'nidn'       => ['nullable', 'string', 'max:10'],
+            'no_telepon' => ['nullable', 'string', 'regex:/^08[0-9]{6,13}$/', 'max:15'],
         ]);
 
         $isKaprodi  = $request->boolean('is_kaprodi');
@@ -116,6 +131,13 @@ class DosenController extends Controller
             // Kalau dosen biasa (bukan kaprodi, bukan penguji) → tidak ada user, tidak ada update
         });
 
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $prodiNama = $dosen->fresh()->prodi->nama ?? '-';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $dosen, $prodiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Dosen Diperbarui', "Admin {$adminNama} memperbarui data dosen {$dosen->nama} pada prodi {$prodiNama} pada {$waktu}.");
+        });
+
         return back()->with('success', 'Data dosen berhasil diperbarui.');
     }
 
@@ -125,9 +147,18 @@ class DosenController extends Controller
      */
     public function destroy(Dosen $dosen)
     {
+        $dosenNama = $dosen->nama;
+        $prodiNama = $dosen->prodi->nama ?? '-';
+
         DB::transaction(function () use ($dosen) {
             User::where('dosen_id', $dosen->id)->delete();
             $dosen->delete();
+        });
+
+        $adminNama = auth()->user()->name ?? 'Admin';
+        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $dosenNama, $prodiNama, $waktu) {
+            \App\Models\Notifikasi::kirimSistem($u->id, 'Dosen Dihapus', "Admin {$adminNama} menghapus dosen {$dosenNama} dari prodi {$prodiNama} pada {$waktu}.");
         });
 
         return back()->with('success', 'Data dosen berhasil dihapus.');
@@ -157,12 +188,15 @@ class DosenController extends Controller
      */
     private function activateKaprodiRole(User $user, int $prodiId): void
     {
+        // Load dosen to sync is_penguji flag
+        $dosen = \App\Models\Dosen::find($user->dosen_id);
+
         $user->update([
-            'is_kaprodi'     => true,
-            'role'           => 'kaprodi',
-            'prodi_id'       => $prodiId,
-            'password'       => Hash::make(Dosen::DEFAULT_PASSWORD),
-            'password_plain' => Dosen::DEFAULT_PASSWORD,
+            'is_kaprodi' => true,
+            'is_penguji' => $dosen ? (bool) $dosen->is_penguji : $user->is_penguji,
+            'role'       => 'kaprodi',
+            'prodi_id'   => $prodiId,
+            'password'   => Hash::make(Dosen::DEFAULT_PASSWORD),
         ]);
     }
 
@@ -196,6 +230,14 @@ class DosenController extends Controller
 
         try {
             Excel::import(new DosenImport($prodi->id), $request->file('file'));
+
+            $adminNama = auth()->user()->name ?? 'Admin';
+            $prodiNama = $prodi->nama ?? '-';
+            $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
+            \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $prodiNama, $waktu) {
+                \App\Models\Notifikasi::kirimSistem($u->id, 'Import Dosen', "Admin {$adminNama} mengimpor data dosen pada prodi {$prodiNama} pada {$waktu}.");
+            });
+
             return back()->with('success', 'Data dosen berhasil diimport.');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();

@@ -2,7 +2,7 @@
 @section('title', 'Detail Lamaran')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6" x-data="{ showWithdrawModal: false }">
 
     {{-- Breadcrumb --}}
     <div class="flex items-center gap-2 text-sm text-gray-500">
@@ -235,6 +235,17 @@
                 @endif
             </div>
 
+            {{-- Tombol Mengundurkan Diri --}}
+            @if(!in_array($lamaran->status, ['diterima', 'ditolak', 'mengundurkan_diri']))
+            <div class="flex justify-center pt-2">
+                <button type="button" @click="showWithdrawModal = true"
+                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-semibold transition-all shadow-md shadow-[#8b1515]/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Mengundurkan Diri
+                </button>
+            </div>
+            @endif
+
             {{-- Catatan Admin --}}
             @if($lamaran->catatan_admin)
             <div>
@@ -247,5 +258,51 @@
 
         </div>
     </div>
+
+    @if(!in_array($lamaran->status, ['diterima', 'ditolak', 'mengundurkan_diri']))
+    {{-- Withdraw Confirm Modal — teleport ke body agar blur & stacking benar --}}
+    <template x-teleport="body">
+        <div x-show="showWithdrawModal" style="display:none;"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="showWithdrawModal = false">
+
+            <div x-show="showWithdrawModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+
+                {{-- Close --}}
+                <button type="button" @click="showWithdrawModal = false"
+                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+
+                {{-- Warning Icon --}}
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Yakin mengundurkan diri?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Anda tidak akan bisa melamar kembali pada posisi ini.</p>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <form method="POST" action="{{ route('pelamar.history.withdraw', $lamaran->id) }}" class="contents">
+                        @csrf
+                        @method('PUT')
+                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Ya</button>
+                    </form>
+                    <button type="button" @click="showWithdrawModal = false"
+                        class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Batal</button>
+                </div>
+            </div>
+        </div>
+    </template>
+    @endif
+
 </div>
 @endsection

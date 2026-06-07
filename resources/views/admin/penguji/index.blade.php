@@ -56,6 +56,26 @@
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20">
                 <div class="flex items-center gap-3 flex-wrap">
 
+                {{-- Search (animated) --}}
+                <div class="relative flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!searchMain) searchOpen = false">
+                    <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
+                            class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
+                            :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
+                    <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                        <input type="text" x-model="searchMain" x-ref="searchInput" placeholder="Cari penguji..."
+                               @keydown.escape="searchMain = ''; searchOpen = false"
+                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                    </div>
+                    <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
+                            @click="searchMain = ''; searchOpen = false"
+                            class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
                 {{-- Prodi Chip --}}
                 <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
                     <button type="button" @click="prodiOpen = !prodiOpen"
@@ -72,7 +92,7 @@
                             @foreach($prodis as $prodi)
                             <button type="button" @click="filterProdiMain = filterProdiMain === '{{ $prodi->id }}' ? '' : '{{ $prodi->id }}'; prodiOpen = false"
                                     class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left" :class="filterProdiMain === '{{ $prodi->id }}' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterProdiMain === '{{ $prodi->id }}' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterProdiMain === '{{ $prodi->id }}' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
                                     <svg x-show="filterProdiMain === '{{ $prodi->id }}'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                 </span>
                                 <span class="text-sm font-medium text-gray-700">{{ $prodi->nama }}</span>
@@ -95,13 +115,13 @@
                     <div x-show="statusOpen" x-transition class="absolute top-full left-0 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
                         <div class="px-4 py-3 border-b border-gray-100"><p class="text-xs font-black text-gray-500 uppercase tracking-widest">Filter by Status</p></div>
                         <div class="p-3 space-y-1">
-                            <button type="button" @click="filterStatus = filterStatus === 'penguji' ? '' : 'penguji'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="filterStatus === 'penguji' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterStatus === 'penguji' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="filterStatus === 'penguji'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-blue-600">Penguji saja</span>
+                            <button type="button" @click="filterStatus = filterStatus === 'penguji' ? '' : 'penguji'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="filterStatus === 'penguji' ? 'bg-gray-100' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterStatus === 'penguji' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="filterStatus === 'penguji'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                                <span class="text-sm font-medium text-gray-700">Penguji saja</span>
                             </button>
-                            <button type="button" @click="filterStatus = filterStatus === 'rangkap' ? '' : 'rangkap'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="filterStatus === 'rangkap' ? 'bg-gray-50' : ''">
-                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterStatus === 'rangkap' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'"><svg x-show="filterStatus === 'rangkap'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-indigo-600">Penguji & Kaprodi</span>
+                            <button type="button" @click="filterStatus = filterStatus === 'rangkap' ? '' : 'rangkap'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="filterStatus === 'rangkap' ? 'bg-gray-100' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterStatus === 'rangkap' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="filterStatus === 'rangkap'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                                <span class="text-sm font-medium text-gray-700">Penguji & Kaprodi</span>
                             </button>
                         </div>
                     </div>
@@ -109,45 +129,18 @@
 
                 {{-- Active tags --}}
                 @foreach($prodis as $prodi)
-                <span x-show="filterProdiMain === '{{ $prodi->id }}'" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-700">
+                <span x-show="filterProdiMain === '{{ $prodi->id }}'" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
                     {{ $prodi->nama }}
-                    <button type="button" @click="filterProdiMain = ''" class="ml-0.5 hover:text-blue-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                    <button type="button" @click="filterProdiMain = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                 </span>
                 @endforeach
-                <template x-if="filterStatus === 'penguji'"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-red-50 border border-red-200 text-xs font-semibold text-[#8b1515]">Penguji saja <button type="button" @click="filterStatus = ''" class="ml-0.5 hover:text-red-800"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></span></template>
-                <template x-if="filterStatus === 'rangkap'"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-indigo-50 border border-indigo-200 text-xs font-semibold text-indigo-700">Penguji & Kaprodi <button type="button" @click="filterStatus = ''" class="ml-0.5 hover:text-indigo-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></span></template>
+                <template x-if="filterStatus === 'penguji'"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">Penguji saja <button type="button" @click="filterStatus = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></span></template>
+                <template x-if="filterStatus === 'rangkap'"><span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">Penguji & Kaprodi <button type="button" @click="filterStatus = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button></span></template>
 
                 {{-- Clear All --}}
-                <button x-show="filterProdiMain !== '' || filterStatus !== '' || searchMain !== ''" x-transition type="button" @click="filterProdiMain = ''; filterStatus = ''; searchMain = ''" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-red-600 transition-colors">
+                <button x-show="filterProdiMain !== '' || filterStatus !== '' || searchMain !== ''" x-transition type="button" @click="filterProdiMain = ''; filterStatus = ''; searchMain = ''" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Clear Filters
                 </button>
-
-                {{-- Search (animated, inside card) --}}
-                <div class="relative ml-auto flex items-center" x-data="{ searchOpen: false }" @click.outside="if(!searchMain) searchOpen = false">
-                    <div class="relative flex items-center">
-                        {{-- Magnify button --}}
-                        <button type="button" @click="searchOpen = true; $nextTick(() => $refs.searchInput.focus())"
-                                class="absolute left-0 z-10 w-9 h-9 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 transition-colors"
-                                :class="searchOpen ? 'pointer-events-none' : 'border border-gray-200'">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </button>
-                        {{-- Expanding input --}}
-                        <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                             :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
-                            <input type="text" x-model="searchMain" x-ref="searchInput" placeholder="Cari penguji..."
-                                   @keydown.escape="searchMain = ''; searchOpen = false"
-                                   class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
-                        </div>
-                        {{-- Close button --}}
-                        <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
-                                @click="searchMain = ''; searchOpen = false"
-                                class="absolute right-2.5 text-gray-400 hover:text-gray-600 transition-colors">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-               
                 </div>
             </div>
 
@@ -181,13 +174,13 @@
                             data-kode="{{ strtolower(addslashes($penguji->kode)) }}"
                             data-prodi="{{ $penguji->prodi_id }}"
                             data-status="{{ $penguji->is_kaprodi ? 'rangkap' : 'penguji' }}">
-                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate">
-                                {{ $penguji->nama }}
-                                <div class="text-xs font-medium text-gray-500">{{ $penguji->kode }}</div>
+                            <td class="py-3 px-5 max-w-0" title="{{ $penguji->nama }} ({{ $penguji->kode }})">
+                                <div class="text-sm text-gray-800 font-medium truncate">{{ $penguji->nama }}</div>
+                                <div class="text-xs font-medium text-gray-500 truncate">{{ $penguji->kode }}</div>
                             </td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">{{ $penguji->prodi?->nama ?? '-' }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 truncate">{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $penguji->prodi?->nama ?? '-' }}">{{ $penguji->prodi?->nama ?? '-' }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}">{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $pengujiEmails[$penguji->id] ?? '-' }}">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
                             <td class="py-3 px-5 text-sm">
                                 <div class="flex flex-wrap gap-1.5">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800">Penguji</span>
@@ -271,12 +264,36 @@
                             </div>
                             <input type="text" x-model="searchDosen" placeholder="Cari nama dosen..." class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]/20 transition shadow-sm">
                         </div>
-                        <select x-model="filterProdi" class="pl-3 pr-8 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]/20 transition min-w-[150px] shadow-sm">
+                        <select x-model="filterProdi"
+                            class="hidden"
+                            id="filterProdiSelect">
                             <option value="">Semua Prodi</option>
                             @foreach($prodis as $prodi)
                                 <option value="{{ $prodi->id }}">{{ $prodi->nama }}</option>
                             @endforeach
                         </select>
+                        <div x-data="{
+                                open: false,
+                                opts: [{ v: '', l: 'Semua Prodi' }, @foreach($prodis as $prodi){ v: '{{ $prodi->id }}', l: '{{ addslashes($prodi->nama) }}' },@endforeach],
+                                get label() { return this.opts.find(o => o.v == filterProdi)?.l ?? 'Semua Prodi'; }
+                             }" @click.outside="open = false" class="relative min-w-[150px]">
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between pl-3 pr-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 shadow-sm transition hover:border-gray-300">
+                                <span x-text="label" class="truncate"></span>
+                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                    <template x-for="opt in opts" :key="opt.v">
+                                        <button type="button" @click="filterProdi = opt.v; open = false"
+                                            class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors"
+                                            :class="filterProdi == opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                            <span x-text="opt.l"></span>
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">Akun login dibuat otomatis &mdash; kata sandi bawaan <code class="bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-medium">penguji123</code>.</p>
                 </div>

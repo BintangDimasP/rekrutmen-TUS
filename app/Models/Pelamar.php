@@ -84,11 +84,14 @@ class Pelamar extends Model
     ];
 
     protected $casts = [
-        'tanggal_lahir'      => 'date',
-        'tanggal_tes_bahasa' => 'date',
-        'phone_verified_at'  => 'datetime',
-        'ipk'                => 'decimal:2',
-        'skor_bahasa'        => 'decimal:2',
+        'tanggal_lahir'       => 'date',
+        'tanggal_tes_bahasa'  => 'date',
+        'phone_verified_at'   => 'datetime',
+        'ipk'                 => 'decimal:2',
+        'skor_bahasa'         => 'decimal:2',
+        // Data PII — disimpan terenkripsi di database
+        'nik'                 => 'encrypted',
+        'no_telepon'          => 'encrypted',
     ];
 
     // ── Relasi ──────────────────────────────────────────────────
@@ -104,8 +107,8 @@ class Pelamar extends Model
     public function lowongans()
     {
         return $this->belongsToMany(Lowongan::class, 'lamarans')
-                    ->withPivot(['status'])
-                    ->withTimestamps();
+            ->withPivot(['status'])
+            ->withTimestamps();
     }
 
     public function lamarans()
@@ -119,6 +122,6 @@ class Pelamar extends Model
     public function savedLowongans()
     {
         return $this->belongsToMany(Lowongan::class, 'saved_lowongans')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 }

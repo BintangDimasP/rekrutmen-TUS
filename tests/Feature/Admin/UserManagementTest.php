@@ -94,7 +94,7 @@ class UserManagementTest extends TestCase
         $this->assertDatabaseHas('dosens', ['id' => $dosen->id, 'is_penguji' => false]);
     }
 
-    public function test_admin_cannot_delete_admin_account(): void
+    public function test_admin_can_delete_other_admin_account(): void
     {
         $admin  = $this->adminUser();
         $admin2 = User::factory()->create(['role' => 'admin']);
@@ -103,7 +103,19 @@ class UserManagementTest extends TestCase
              ->delete(route('admin.user.destroy', $admin2))
              ->assertRedirect();
 
-        // Admin should NOT be deleted
-        $this->assertDatabaseHas('users', ['id' => $admin2->id]);
+        // Admin2 should be deleted
+        $this->assertDatabaseMissing('users', ['id' => $admin2->id]);
+    }
+
+    public function test_admin_cannot_delete_own_account(): void
+    {
+        $admin = $this->adminUser();
+
+        $this->actingAs($admin)
+             ->delete(route('admin.user.destroy', $admin))
+             ->assertRedirect();
+
+        // Admin should NOT be deleted (self-deletion blocked)
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
     }
 }

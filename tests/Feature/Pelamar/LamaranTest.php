@@ -21,7 +21,10 @@ class LamaranTest extends TestCase
     private function makePelamar(): array
     {
         $user    = User::factory()->create(['role' => 'pelamar']);
-        $pelamar = Pelamar::factory()->create(['user_id' => $user->id]);
+        $pelamar = Pelamar::factory()->create([
+            'user_id'           => $user->id,
+            'phone_verified_at' => now(),
+        ]);
 
         return [$user, $pelamar];
     }
