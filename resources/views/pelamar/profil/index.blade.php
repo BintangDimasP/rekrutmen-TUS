@@ -494,7 +494,7 @@
                 
                 <div class="space-y-4">
                     {{-- Jenjang 1 --}}
-                    <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-[#8b1515]/40 py-2 relative">
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang ?: '-' }}</p>
                             <div x-show="isEditing" x-cloak class="relative mt-1"
@@ -625,7 +625,7 @@
                     </div>
 
                     {{-- Jenjang 2 --}}
-                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu2 || (!isEditing && {{ $pelamar->jenjang_2 ? 'true' : 'false' }})" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu2=false; jenjang2=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 ?: '-' }}</p>
@@ -705,7 +705,7 @@
                     </div>
 
                     {{-- Jenjang 3 --}}
-                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
+                    <div x-show="showEdu3 || (!isEditing && {{ $pelamar->jenjang_3 ? 'true' : 'false' }})" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-6 gap-y-3 pl-4 border-l-[3px] border-gray-200 py-2 relative" x-cloak>
                         <button type="button" x-show="isEditing" @click="showEdu3=false; jenjang3=''" class="absolute -left-2 -top-1 w-5 h-5 bg-red-100 hover:bg-red-200 text-red-600 rounded-full flex items-center justify-center text-[10px] font-bold" title="Hapus Jenjang">✕</button>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p>
                             <p x-show="!isEditing" class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 ?: '-' }}</p>

@@ -32,8 +32,8 @@
 
     {{-- Chart Area (spans 2 cols) --}}
     {{-- Chart Area (spans 2 cols) --}}
-    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col">
-        <div class="flex items-center justify-between mb-6 flex-shrink-0">
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-3 flex-shrink-0">
             <div>
                 <h2 class="text-[0.95rem] font-bold text-gray-800">Statistik Pelamar Tahun {{ $currentYear }}</h2>
                 <p class="text-xs text-gray-400 mt-0.5">Jumlah pelamar mendaftar per bulan</p>

@@ -113,7 +113,7 @@
                         <div class="relative" style="width:40px;height:40px;">
                             <svg width="40" height="40" viewBox="0 0 40 40" class="rotate-[-90deg]">
                                 <circle cx="20" cy="20" r="16" fill="none" stroke="#e5e7eb" stroke-width="3"/>
-                                <circle id="clock-arc" cx="20" cy="20" r="16" fill="none"
+                            <circle id="clock-arc" cx="20" cy="20" r="16" fill="none"
                                         stroke="#b91c1c" stroke-width="3"
                                         stroke-linecap="round"
                                         stroke-dasharray="100.53"
@@ -161,10 +161,14 @@
                 <div class="text-center mt-6">
                     <p class="text-sm text-gray-500">
                         Tidak menerima kode?
-                        <form action="{{ route('password.otp.send') }}" method="POST" class="inline">
+                        <form action="{{ route('password.otp.send') }}" method="POST" class="inline" id="resend-form">
                             @csrf
                             <input type="hidden" name="email" value="{{ $email }}">
-                            <button type="submit" class="text-[#b91c1c] font-semibold hover:underline">Kirim Ulang</button>
+                            <button type="submit" id="resend-btn"
+                                    class="text-[#b91c1c] font-semibold hover:underline disabled:opacity-40 disabled:cursor-not-allowed disabled:no-underline"
+                                    {{ $remainingCooldown > 0 ? 'disabled' : '' }}>
+                                Kirim Ulang<span id="resend-timer" class="font-normal text-gray-400"></span>
+                            </button>
                         </form>
                     </p>
                 </div>
@@ -227,40 +231,51 @@
         // Auto-focus pertama
         if (boxes[0]) boxes[0].focus();
 
-        // ── Countdown 60 detik ──────────────────────────────────
-        const TOTAL_SEC   = 60;
+        // ── Countdown ──────────────────────────────────────────────
+        const TOTAL_SEC     = {{ $remainingCooldown > 0 ? $remainingCooldown : 60 }};
         const circumference = 2 * Math.PI * 16; // r=16 → ~100.53
-        const arc         = document.getElementById('clock-arc');
-        const countText   = document.getElementById('countdown-text');
-        const wrap        = document.getElementById('countdown-wrap');
+        const arc           = document.getElementById('clock-arc');
+        const countText     = document.getElementById('countdown-text');
+        const wrap          = document.getElementById('countdown-wrap');
+        const resendBtn     = document.getElementById('resend-btn');
+        const resendTimer   = document.getElementById('resend-timer');
 
         let remaining = TOTAL_SEC;
 
         function pad(n) { return String(n).padStart(2, '0'); }
 
         function tick() {
-            // Update teks
-            const m = Math.floor(remaining / 60);
-            const s = remaining % 60;
-            countText.textContent = pad(m) + ':' + pad(s);
-
-            // Update arc — dari penuh ke kosong
-            const progress = remaining / TOTAL_SEC;           // 1 → 0
-            arc.style.strokeDashoffset = circumference * (1 - progress);
-
-            if (remaining <= 10) {
-                // Merah saat 10 detik terakhir
-                arc.style.stroke = '#ef4444';
-                countText.style.color = '#ef4444';
-            }
-
             if (remaining <= 0) {
                 countText.textContent = 'Kedaluwarsa';
                 countText.style.color = '#ef4444';
                 arc.style.stroke = '#ef4444';
                 arc.style.strokeDashoffset = circumference;
                 wrap.classList.add('expired');
-                return; // stop
+                // Aktifkan tombol Kirim Ulang
+                if (resendBtn) {
+                    resendBtn.disabled = false;
+                    resendTimer.textContent = '';
+                }
+                return;
+            }
+
+            // Update teks jam
+            const m = Math.floor(remaining / 60);
+            const s = remaining % 60;
+            countText.textContent = pad(m) + ':' + pad(s);
+
+            // Update arc — dari penuh ke kosong
+            const progress = remaining / TOTAL_SEC;
+            arc.style.strokeDashoffset = circumference * (1 - progress);
+
+            if (remaining <= 10) {
+                arc.style.stroke = '#ef4444';
+                countText.style.color = '#ef4444';
+            }
+
+            // Update teks sisa di tombol Kirim Ulang
+            if (resendBtn && resendBtn.disabled) {
+                resendTimer.textContent = ' (' + pad(m) + ':' + pad(s) + ')';
             }
 
             remaining--;

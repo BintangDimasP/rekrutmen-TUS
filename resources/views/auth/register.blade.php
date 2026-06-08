@@ -139,7 +139,7 @@
 <div id="toast-container"></div>
 
 {{-- ── Navbar ── --}}
-<nav class="sticky top-0 z-50 flex items-center justify-between px-8 h-[60px] shadow-md bg-[#8b1515]">
+<nav class="sticky top-0 z-50 flex items-center justify-between px-4 sm:px-8 h-[60px] shadow-md bg-[#8b1515]">
     <div class="flex items-center gap-2.5">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
                 <div class="relative w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">

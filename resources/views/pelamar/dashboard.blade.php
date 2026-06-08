@@ -40,26 +40,26 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse table-fixed">
+                <table class="w-full text-left border-collapse table-fixed" style="min-width:560px">
                     <thead>
                         <tr class="bg-[#8b1515]">
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[40%]">Posisi & Prodi</th>
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[30%]">Tanggal</th>
-                            <th class="py-4 px-6 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[30%]">Status</th>
+                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[40%]">Posisi & Prodi</th>
+                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[28%]">Tanggal</th>
+                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[32%]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($recentLamarans as $lamaran)
                         <tr class="hover:bg-gray-50/50 transition-colors">
-                            <td class="py-5 px-6">
+                            <td class="py-5 px-4">
                                 <div class="text-sm font-bold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</div>
                                 <div class="text-xs text-gray-500 mt-1">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
                             </td>
-                            <td class="py-5 px-6">
-                                <div class="text-sm font-semibold text-gray-700">{{ $lamaran->created_at->format('d M Y') }}</div>
+                            <td class="py-5 px-4">
+                                <div class="text-sm font-semibold text-gray-700 whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>
                                 <div class="text-xs text-gray-400 mt-1">{{ $lamaran->created_at->diffForHumans() }}</div>
                             </td>
-                            <td class="py-5 px-6">
+                            <td class="py-5 px-4">
                                 @php
                                     $statusColors = [
                                         'menunggu'       => 'bg-gray-50 text-gray-600 border-gray-200',
@@ -70,7 +70,7 @@
                                     ];
                                     $colorClass = $statusColors[$lamaran->status] ?? 'bg-gray-50 text-gray-600 border-gray-200';
                                 @endphp
-                                <span class="inline-flex px-3 py-1.5 rounded-lg border text-[0.65rem] font-bold uppercase tracking-widest {{ $colorClass }}">
+                                <span class="inline-flex px-2 py-1 rounded-lg border text-[0.6rem] font-bold uppercase tracking-wide {{ $colorClass }}">
                                     {{ $lamaran->status_label }}
                                 </span>
                             </td>

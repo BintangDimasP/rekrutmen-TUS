@@ -34,7 +34,7 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse table-fixed">
+                <table class="w-full text-left border-collapse table-fixed" style="min-width:550px">
                     <thead class="bg-[#8b1515] text-white">
                         <tr>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Pelamar</th>

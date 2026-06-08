@@ -76,10 +76,11 @@ class ForgotPasswordOtpController extends Controller
             $elapsedSec = $createdAt->diffInSeconds(now(), false); // false = signed (bisa negatif)
 
             if ($elapsedSec >= 0 && $elapsedSec < self::OTP_RESEND_COOLDOWN) {
-                $waitSec = self::OTP_RESEND_COOLDOWN - $elapsedSec;
-                return back()
-                    ->withInput()
-                    ->withErrors(['email' => "Tunggu {$waitSec} detik sebelum meminta kode baru."]);
+                // OTP masih dalam cooldown — langsung arahkan ke step 2 tanpa kirim ulang
+                session(['fp_email' => $email]);
+                return redirect()
+                    ->route('password.otp.form')
+                    ->with('info', 'Kode OTP sudah dikirim. Silakan cek email Anda.');
             }
         }
 
@@ -129,8 +130,26 @@ class ForgotPasswordOtpController extends Controller
             return redirect()->route('password.otp.email');
         }
 
+        $email = session('fp_email');
+
+        // Hitung sisa cooldown agar countdown di view mulai dari waktu yang tepat
+        $remainingCooldown = 0;
+        $lastOtp = DB::table('password_reset_otps')
+            ->where('email', $email)
+            ->latest('created_at')
+            ->first();
+
+        if ($lastOtp) {
+            $createdAt  = \Carbon\Carbon::parse($lastOtp->created_at);
+            $elapsedSec = $createdAt->diffInSeconds(now(), false);
+            if ($elapsedSec >= 0 && $elapsedSec < self::OTP_RESEND_COOLDOWN) {
+                $remainingCooldown = self::OTP_RESEND_COOLDOWN - $elapsedSec;
+            }
+        }
+
         return view('auth.forgot-password.otp', [
-            'email' => session('fp_email'),
+            'email'             => $email,
+            'remainingCooldown' => $remainingCooldown,
         ]);
     }
 
@@ -182,6 +201,7 @@ class ForgotPasswordOtpController extends Controller
         }
 
         // OTP cocok — generate reset_token untuk step terakhir
+        // Perpanjang expires_at 10 menit agar user punya waktu cukup mengisi password baru
         $resetToken = Str::random(64);
 
         DB::table('password_reset_otps')
@@ -189,6 +209,7 @@ class ForgotPasswordOtpController extends Controller
             ->update([
                 'verified_at' => now(),
                 'reset_token' => $resetToken,
+                'expires_at'  => now()->addMinutes(10),
                 'updated_at'  => now(),
             ]);
 

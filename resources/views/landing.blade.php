@@ -55,6 +55,8 @@
         #navbar.scrolled .btn-daftar:hover { background: #f3f4f6; }
         #navbar.scrolled .logo-normal { opacity: 0; }
         #navbar.scrolled .logo-scrolled { opacity: 1; }
+        /* Mobile menu background always white regardless of scroll */
+        #navbar .mobile-menu { background: #fff; }
 
         /* ─── Panduan Card Hover Effects ─── */
         .panduan-card {
@@ -138,15 +140,16 @@
 <body class="bg-white text-gray-900">
 
     {{-- ========================= NAVBAR ========================= --}}
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent">
-        <div class="max-w-[1200px] mx-auto px-8 h-[68px] flex items-center justify-between">
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent" x-data="{ mobileOpen: false }">
+        <div class="max-w-[1200px] mx-auto px-5 sm:px-8 h-[68px] flex items-center justify-between">
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
-                <div class="relative w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">
+                <div class="relative w-[100px] sm:w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">
                     <img src="{{ asset('storage/images/logo1.png') }}" alt="Telkom University Logo" class="logo-normal w-full h-8 object-contain transition-opacity duration-300 opacity-100">
                     <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="logo-scrolled w-full h-8 object-contain transition-opacity duration-300 opacity-0 absolute">
                 </div>
             </a>
 
+            {{-- Desktop nav links --}}
             <div class="hidden md:flex items-center gap-8">
                 <a href="#hero" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Beranda</a>
                 <a href="#panduan" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Panduan</a>
@@ -154,7 +157,8 @@
                 <a href="#lokasi" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Lokasi</a>
             </div>
 
-            <div class="flex items-center gap-3">
+            {{-- Desktop auth buttons --}}
+            <div class="hidden md:flex items-center gap-3">
                 @if (Route::has('login'))
                     @auth
                         <a href="{{ url('/dashboard') }}" class="btn-masuk text-sm font-medium text-gray-900 no-underline px-4 py-2 rounded-md transition-all duration-300 hover:bg-black/5">Dashboard</a>
@@ -169,33 +173,110 @@
                     <a href="#" class="btn-daftar text-sm font-semibold text-white no-underline bg-[#8b1515] px-5 py-2 rounded-md transition-all duration-300 hover:bg-[#991b1b]">Daftar</a>
                 @endif
             </div>
+
+            {{-- Mobile: auth + hamburger --}}
+            <div class="flex md:hidden items-center gap-2">
+                @if (Route::has('login'))
+                    @auth
+                        <a href="{{ url('/dashboard') }}" class="btn-masuk text-xs font-medium text-gray-900 no-underline px-3 py-1.5 rounded-md transition-all duration-300 hover:bg-black/5">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="btn-masuk text-xs font-medium text-gray-900 no-underline px-3 py-1.5 rounded-md transition-all duration-300 hover:bg-black/5">Masuk</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="btn-daftar text-xs font-semibold text-white no-underline bg-[#8b1515] px-3 py-1.5 rounded-md transition-all duration-300 hover:bg-[#991b1b]">Daftar</a>
+                        @endif
+                    @endauth
+                @endif
+                {{-- Hamburger button --}}
+                <button @click="mobileOpen = !mobileOpen" type="button"
+                        class="btn-masuk w-9 h-9 flex items-center justify-center rounded-md transition-all duration-300 hover:bg-black/5 focus:outline-none"
+                        aria-label="Toggle menu">
+                    <svg x-show="!mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                    <svg x-show="mobileOpen" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" style="display:none;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{-- Mobile dropdown menu --}}
+        <div x-show="mobileOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 -translate-y-2"
+             x-transition:enter-end="opacity-100 translate-y-0"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 -translate-y-2"
+             style="display:none;"
+             class="md:hidden bg-white border-t border-gray-100 shadow-lg">
+            <div class="max-w-[1200px] mx-auto px-5 py-4 flex flex-col gap-1">
+                <a href="#hero" @click="mobileOpen = false" class="text-sm font-medium text-gray-800 no-underline px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">Beranda</a>
+                <a href="#panduan" @click="mobileOpen = false" class="text-sm font-medium text-gray-800 no-underline px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">Panduan</a>
+                <a href="#lowongan" @click="mobileOpen = false" class="text-sm font-medium text-gray-800 no-underline px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">Lowongan</a>
+                <a href="#lokasi" @click="mobileOpen = false" class="text-sm font-medium text-gray-800 no-underline px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">Lokasi</a>
+            </div>
         </div>
     </nav>
 
     {{-- ========================= HERO ========================= --}}
-    <section id="hero" class="min-h-screen flex items-center relative overflow-hidden" style="background: #fff url('{{ asset('images/hero-bg.png') }}') no-repeat center right / cover;">
-        <div class="max-w-[1200px] mx-auto px-8 pt-[100px] pb-[60px] w-full">
-            <div class="relative z-10 max-w-[50%] animate-hero">
-                <h1 class="animate-hero-1 text-[2.6rem] font-extrabold leading-[1.2] text-gray-900 mb-1">
+    {{-- Desktop: background image kanan. Mobile: layout 2 baris (teks atas, gambar bawah) --}}
+    <section id="hero" class="relative overflow-hidden bg-white">
+
+        {{-- ── DESKTOP layout (md ke atas): background image seperti semula ── --}}
+        <div class="hidden md:flex items-center min-h-screen"
+             style="background: #fff url('{{ asset('images/hero-bg.png') }}') no-repeat center right / cover;">
+            <div class="max-w-[1200px] mx-auto px-8 pt-[100px] pb-[60px] w-full">
+                <div class="relative z-10 max-w-[55%] animate-hero">
+                    <h1 class="animate-hero-1 text-[2.6rem] font-extrabold leading-[1.2] text-gray-900 mb-1">
+                        Wujudkan Karier<br>
+                        Impianmu Bersama<br>
+                        <span class="text-[#8b1515]">Telkom University</span>
+                    </h1>
+                    <p class="animate-hero-2 text-[0.95rem] text-gray-500 leading-relaxed mb-7 max-w-[420px]">
+                        Kami membuka kesempatan emas bagi akademisi terbaik Indonesia untuk berkontribusi sebagai tenaga pendidik profesional di kampus kami.
+                    </p>
+                    <div class="animate-hero-3 flex items-center gap-6 flex-wrap">
+                        <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-7 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5">Selengkapnya</a>
+                        <span class="text-xs text-gray-400 font-medium">
+                            <strong class="text-gray-900 font-bold">{{ $totalPendaftar }}+</strong> Total Pendaftar
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── MOBILE layout (di bawah md): teks di atas, gambar di bawah ── --}}
+        <div class="md:hidden flex flex-col">
+            {{-- Teks atas dengan background putih bersih --}}
+            <div class="bg-white px-5 pt-[88px] pb-8 z-10 relative">
+                <h1 class="text-[1.85rem] font-extrabold leading-[1.2] text-gray-900 mb-3">
                     Wujudkan Karier<br>
                     Impianmu Bersama<br>
                     <span class="text-[#8b1515]">Telkom University</span>
                 </h1>
-                <p class="animate-hero-2 text-[0.95rem] text-gray-500 leading-relaxed mb-7 max-w-[420px]">
+                <p class="text-[0.9rem] text-gray-500 leading-relaxed mb-6">
                     Kami membuka kesempatan emas bagi akademisi terbaik Indonesia untuk berkontribusi sebagai tenaga pendidik profesional di kampus kami.
                 </p>
-                <div class="animate-hero-3 flex items-center gap-6 flex-wrap">
-                    <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-7 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5">Selengkapnya</a>
+                <div class="flex items-center gap-5 flex-wrap">
+                    <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b]">Selengkapnya</a>
                     <span class="text-xs text-gray-400 font-medium">
                         <strong class="text-gray-900 font-bold">{{ $totalPendaftar }}+</strong> Total Pendaftar
                     </span>
                 </div>
             </div>
+            {{-- Gambar penuh di bawah --}}
+            <div class="w-full h-[320px] overflow-hidden">
+                <img src="{{ asset('images/hero-bg.png') }}"
+                     alt="Hero"
+                     class="w-full h-full object-cover object-top">
+            </div>
         </div>
+
     </section>
 
     {{-- ========================= PANDUAN ========================= --}}
-    <section id="panduan" class="bg-gray-50 py-16 px-8">
+    <section id="panduan" class="bg-gray-50 py-12 sm:py-16 px-5 sm:px-8">
         <div class="max-w-[1200px] mx-auto text-center mb-16 animate-on-scroll slide-bottom">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
                 4 Langkah Mudah Menjadi <span class="text-[#8b1515]">Bagian Dari Kami</span>
@@ -249,7 +330,7 @@
     </section>
 
     {{-- ========================= LOWONGAN ========================= --}}
-    <section id="lowongan" class="py-16 px-8 bg-white">
+    <section id="lowongan" class="py-12 sm:py-16 px-5 sm:px-8 bg-white">
         <div class="max-w-[1200px] mx-auto text-center mb-16
          animate-on-scroll slide-bottom">
             
@@ -357,7 +438,7 @@
     </section>
 
     {{-- ========================= LOKASI ========================= --}}
-    <section id="lokasi" class="bg-gray-50 py-16 px-8">
+    <section id="lokasi" class="bg-gray-50 py-12 sm:py-16 px-5 sm:px-8">
         <div class="max-w-[1200px] mx-auto">
 
             {{-- Header --}}
@@ -443,7 +524,7 @@
 
     {{-- ========================= FOOTER ========================= --}}
     <footer class="bg-[#1a1a1a] text-gray-400 text-sm">
-        <div class="max-w-[1200px] mx-auto px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div class="max-w-[1200px] mx-auto px-5 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {{-- Logo --}}
             <div>
                 <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University" class="h-12 object-contain mb-4">
@@ -474,7 +555,7 @@
         </div>
 
         {{-- Bottom Bar --}}
-        <div class="bg-[#8b1515] px-8 py-4 flex items-center justify-center gap-6 flex-wrap">
+        <div class="bg-[#8b1515] px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 flex-wrap">
             <p class="text-white text-xs m-0">Don't forget to follow Tel-U Career's official social media:</p>
             <div class="flex items-center gap-4">
                 <a href="#" aria-label="Instagram" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">

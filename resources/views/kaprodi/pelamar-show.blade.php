@@ -64,7 +64,7 @@
                 <div class="space-y-8">
                     @if($data->jenjang)
                     <div class="pl-4 border-l-[3px] border-[#8b1515]/40 py-1">
-                        <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan ?: '-' }}</p></div>
@@ -78,7 +78,7 @@
                     @endif
                     @if($data->jenjang_2)
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
-                        <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_2 }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_2 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_2 ?: '-' }}</p></div>
@@ -92,7 +92,7 @@
                     @endif
                     @if($data->jenjang_3)
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
-                        <div class="grid grid-cols-2 md:grid-cols-8 gap-x-6 gap-y-4">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_3 }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_3 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_3 ?: '-' }}</p></div>
@@ -112,7 +112,7 @@
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Dokumen Pendukung</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>@if($data->file_cv)<a href="{{ asset('storage/' . $data->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto</p>@if($data->file_pas_foto)<a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">KTP</p>@if($data->file_ktp)<a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
@@ -122,7 +122,7 @@
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Sertifikat Bahasa Inggris</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_tes_bahasa ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->skor_bahasa ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_tes_bahasa ? \Carbon\Carbon::parse($data->tanggal_tes_bahasa)->format('d M Y') : '-' }}</p></div>
@@ -132,7 +132,7 @@
 
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Data Akademik (Dosen)</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->nidn ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->homebase ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jabatan_akademik ? ucwords(str_replace('_', ' ', $data->jabatan_akademik)) : '-' }}</p></div>
@@ -235,7 +235,7 @@
                         </div>
                         @else
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm border border-gray-200 border-collapse">
+                            <table class="w-full text-sm border border-gray-200 border-collapse" style="min-width:600px">
                                 <thead>
                                     <tr class="bg-gray-50 text-xs text-gray-500 border-b border-gray-200">
                                         <th class="px-4 py-2 text-left font-semibold border border-gray-200">Penguji</th>
@@ -304,7 +304,7 @@
                         </div>
                         @else
                         <div class="overflow-x-auto">
-                            <table class="w-full text-sm border border-gray-200 border-collapse">
+                            <table class="w-full text-sm border border-gray-200 border-collapse" style="min-width:600px">
                                 <thead>
                                     <tr class="bg-gray-50 text-xs text-gray-500 border-b border-gray-200">
                                         <th class="px-4 py-2 text-left font-semibold border border-gray-200">Penguji</th>
@@ -359,7 +359,7 @@
                     <div class="mt-4">
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Kualifikasi &amp; Hasil Akhir</h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
-                            <table class="w-full text-sm border-collapse">
+                            <table class="w-full text-sm border-collapse" style="min-width:650px">
                                 <thead>
                                     <tr class="bg-gray-50 text-xs text-gray-500">
                                         <th class="px-4 py-2 text-center font-semibold border border-gray-200">SPT</th>

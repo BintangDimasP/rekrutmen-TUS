@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Histori Lamaran')
 
@@ -50,10 +50,10 @@
                     </button>
                     {{-- Expanding input --}}
                     <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                         :style="searchOpen ? 'width: min(288px, calc(100vw - 8rem)); opacity: 1' : 'width: 36px; opacity: 0'">
                         <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari lowongan..."
                                @keydown.escape="search = ''; searchOpen = false"
-                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                               class="w-[min(288px,calc(100vw-8rem))] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
                     </div>
                     {{-- Close button --}}
                     <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
@@ -165,14 +165,14 @@
     {{-- Table History --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse table-fixed">
+            <table class="w-full text-left border-collapse table-fixed" style="min-width:680px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[25%]">Posisi</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Prodi</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Tanggal Melamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Status</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
+                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[26%]">Posisi</th>
+                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[20%]">Prodi</th>
+                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[18%]">Tanggal Melamar</th>
+                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[24%]">Status</th>
+                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[12%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tbody">
@@ -182,32 +182,32 @@
                         data-status="{{ $lamaran->status }}"
                         data-prodi="{{ $lamaran->lowongan->prodi->nama ?? '' }}"
                         data-posisi="{{ strtolower($lamaran->lowongan->nama_posisi) }}">
-                        <td class="py-3 px-5">
+                        <td class="py-3 px-3">
                             <div class="text-sm font-semibold text-gray-600 text-center">{{ $lamaran->lowongan->nama_posisi }}</div>
                         </td>
-                        <td class="py-3 px-5">
+                        <td class="py-3 px-3">
                             <div class="text-sm text-gray-600 text-center">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-5">
-                            <div class="text-sm text-gray-600 text-center">{{ $lamaran->created_at->format('d M Y') }}</div>
+                        <td class="py-3 px-3">
+                            <div class="text-sm text-gray-600 text-center whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>
                         </td>
-                        <td class="py-3 px-5 text-center">
+                        <td class="py-3 px-3 text-center">
                             @php
                                 $statusColors = [
-                                    'menunggu'       => 'bg-gray-100 text-gray-500 border-gray-200',
-                                    'seleksi_tahap1' => 'bg-blue-50 text-blue-600 border-blue-100',
-                                    'seleksi_tahap2' => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                                    'diterima'       => 'bg-green-50 text-green-600 border-green-100',
-                                    'ditolak'        => 'bg-red-50 text-red-600 border-red-100',
+                                    'menunggu'          => 'bg-gray-100 text-gray-500 border-gray-200',
+                                    'seleksi_tahap1'    => 'bg-blue-50 text-blue-600 border-blue-100',
+                                    'seleksi_tahap2'    => 'bg-indigo-50 text-indigo-600 border-indigo-100',
+                                    'diterima'          => 'bg-green-50 text-green-600 border-green-100',
+                                    'ditolak'           => 'bg-red-50 text-red-600 border-red-100',
                                     'mengundurkan_diri' => 'bg-slate-50 text-slate-600 border-slate-200',
                                 ];
                                 $colorClass = $statusColors[$lamaran->status] ?? $statusColors['menunggu'];
                             @endphp
-                            <span class="inline-flex px-3 py-1 rounded-lg text-[0.65rem] font-black uppercase tracking-wider border {{ $colorClass }}">
+                            <span class="inline-flex px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-wider border {{ $colorClass }}">
                                 {{ $lamaran->status_label }}
                             </span>
                         </td>
-                        <td class="py-3 px-5">
+                        <td class="py-3 px-3">
                             <div class="flex items-center justify-center">
                                 <a href="{{ route('pelamar.history.show', $lamaran->id) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail Lamaran">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>

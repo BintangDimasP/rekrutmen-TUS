@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Manajemen Pelamar')
 
@@ -59,10 +59,10 @@
                     </button>
                     {{-- Expanding input --}}
                     <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
-                         :style="searchOpen ? 'width: 288px; opacity: 1' : 'width: 36px; opacity: 0'">
+                         :style="searchOpen ? 'width: min(288px, calc(100vw - 8rem)); opacity: 1' : 'width: 36px; opacity: 0'">
                         <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama atau no hp..."
                                @keydown.escape="search = ''; searchOpen = false"
-                               class="w-[288px] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
+                               class="w-[min(288px,calc(100vw-8rem))] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
                     </div>
                     {{-- Close button --}}
                     <button type="button" x-show="searchOpen" x-transition.opacity.duration.200ms
@@ -135,14 +135,14 @@
     {{-- Daftar Pelamar Global Table --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse table-fixed">
+            <table class="w-full text-left border-collapse table-fixed" style="min-width:780px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama Pelamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">No Handphone</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Lamaran Diajukan</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[22%]">Nama Pelamar</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[20%]">Jenjang Pendidikan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[16%]">No Handphone</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[32%]">Lamaran Diajukan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -152,17 +152,17 @@
                         data-name="{{ strtolower(addslashes($pelamar->nama)) }}"
                         data-phone="{{ strtolower(addslashes($pelamar->no_telepon)) }}"
                         data-prodis="{{ $pelamar->lamarans->pluck('lowongan.prodi_id')->filter()->unique()->implode(',') }}">
-                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->nama }}">
+                        <td class="py-3 px-4 max-w-0" title="{{ $pelamar->nama }}">
                             <div class="text-sm font-medium text-gray-800 truncate">{{ $pelamar->nama }}</div>
                         </td>
-                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
+                        <td class="py-3 px-4 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
                             <div class="text-sm text-gray-600 font-medium truncate">{{ $pelamar->jenjang ?? '-' }}</div>
                             <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5 truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-5 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
+                        <td class="py-3 px-4 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
                             <span class="text-sm text-gray-600 font-medium truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
                         </td>
-                        <td class="py-3 px-5 max-w-0">
+                        <td class="py-3 px-4 max-w-0">
                             @if($pelamar->lamarans->count() > 0)
                                 <div class="flex flex-col gap-1">
                                     @foreach($pelamar->lamarans->take(2) as $lamaran)
@@ -180,7 +180,7 @@
                                 </span>
                             @endif
                         </td>
-                        <td class="py-3 px-5">
+                        <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-2">
                                 <a href="{{ route('admin.pelamar.show', $pelamar) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Detail & Edit Pelamar">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>

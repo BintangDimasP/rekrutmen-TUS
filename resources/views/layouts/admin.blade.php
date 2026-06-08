@@ -351,7 +351,7 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          style="display:none;"
-                         class="absolute right-0 top-12 w-[360px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[80] overflow-hidden">
+                         class="absolute right-0 top-12 w-[calc(100vw-2rem)] max-w-[360px] bg-white border border-gray-200 rounded-2xl shadow-xl z-[80] overflow-hidden">
 
                         {{-- Header --}}
                         <div class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-gray-100">
@@ -516,7 +516,7 @@
         </header>
 
         {{-- PAGE CONTENT --}}
-        <main class="flex-1 overflow-x-hidden overflow-y-auto px-7 py-7">
+        <main class="flex-1 overflow-x-auto overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
             @include('components.toast')
             @yield('content')
         </main>
