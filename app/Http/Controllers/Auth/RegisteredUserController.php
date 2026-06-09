@@ -88,7 +88,7 @@ class RegisteredUserController extends Controller
             'sertifikat_bahasa' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
 
             // Step 5
-            'nidn' => ['nullable', 'string', 'max:10', 'digits_max:10'],
+            'nidn' => ['nullable', 'string', 'digits_between:1,10'],
             'homebase' => ['nullable', 'string', 'max:255'],
             'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan'],
             'minat_riset' => ['nullable', 'string'],

@@ -464,7 +464,7 @@
                 {{-- Foto gedung --}}
                 <div class="shrink-0 w-full md:w-[200px] h-[130px] rounded-xl overflow-hidden shadow-sm">
                     {{-- Simpan foto gedung di: storage/app/public/images/telu-surabaya.jpg --}}
-                    @if(file_exists(storage_path('app/public/images/telu-surabaya.jpg')))
+                    @if(file_exists(public_path('images/telu-surabaya.jpg')))
                         <img src="{{ asset('images/telu-surabaya.jpg') }}"
                              alt="Gedung Telkom University Surabaya"
                              class="w-full h-full object-cover">

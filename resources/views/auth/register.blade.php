@@ -904,7 +904,7 @@
         {{-- ═══════════════════════════════════════ --}}
         {{-- STEP 5 — RIWAYAT AKADEMIK               --}}
         {{-- ═══════════════════════════════════════ --}}
-        <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-5">
+        <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-5" x-data="{ nidnValue: '{{ old('nidn', '') }}' }">
             <div class="bg-[#8b1515] px-7 py-5">
                 <h2 class="text-white text-xl font-bold">Riwayat Akademik</h2>
             </div>
@@ -925,11 +925,12 @@
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
                         </label>
                         <input type="text" id="nidn" name="nidn" maxlength="20"
+                            x-model="nidnValue"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
                             placeholder="Nomor Induk Dosen Nasional" value="{{ old('nidn') }}">
                     </div>
 
-                    <div class="flex flex-col gap-1.5">
+                    <div class="flex flex-col gap-1.5" x-show="nidnValue.trim() !== ''" x-transition>
                         <label for="homebase" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Homebase Asal
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ber-NIDN</span>
@@ -1006,7 +1007,7 @@
                                 <p class="text-xs text-gray-400">Maks. 2MB</p>
                             </div>
                         </label>
-                        <input type="file" id="kartu_dosen" name="kartu_dosen" class="hidden" accept=".jpg,.jpeg,.png,.pdf" onchange="showFileName(this,'kartu-name')">
+                        <input type="file" id="kartu_dosen" name="kartu_dosen" class="hidden" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'kartu-name')">
                         <p class="text-xs text-red-600 min-h-[16px]" id="kartu-name"></p>
                     </div>
                 </div>
