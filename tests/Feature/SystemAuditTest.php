@@ -507,9 +507,10 @@ class SystemAuditTest extends TestCase
 
     public function test_settings_page_not_accessible_by_admin(): void
     {
+        // Settings page accessible by ALL roles including admin (password & foto)
         $user = User::factory()->create(['role' => 'admin']);
         $this->actingAs($user)->get(route('settings.index'))
-             ->assertRedirect(route('admin.dashboard'));
+             ->assertOk();
     }
 
     // ═══════════════════════════════════════════════════════════

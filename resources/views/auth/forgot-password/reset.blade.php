@@ -41,8 +41,7 @@
     </style>
 </head>
 <body class="bg-white text-gray-900">
-
-    <div id="toast-wrap"></div>
+@include('partials.loading-screen')
 
     <div class="min-h-screen flex flex-col lg:flex-row">
 

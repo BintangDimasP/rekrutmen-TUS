@@ -138,8 +138,7 @@
     </style>
 </head>
 <body class="bg-white text-gray-900">
-
-    {{-- ========================= NAVBAR ========================= --}}
+@include('partials.loading-screen')
     <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent" x-data="{ mobileOpen: false }">
         <div class="max-w-[1200px] mx-auto px-5 sm:px-8 h-[68px] flex items-center justify-between">
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">

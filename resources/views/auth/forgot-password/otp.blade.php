@@ -39,6 +39,7 @@
     </style>
 </head>
 <body class="bg-white text-gray-900">
+@include('partials.loading-screen')
     <div class="min-h-screen flex flex-col lg:flex-row">
 
         {{-- LEFT --}}
@@ -240,7 +241,7 @@
         const resendBtn     = document.getElementById('resend-btn');
         const resendTimer   = document.getElementById('resend-timer');
 
-        let remaining = TOTAL_SEC;
+        let remaining = Math.floor(TOTAL_SEC);
 
         function pad(n) { return String(n).padStart(2, '0'); }
 

@@ -14,7 +14,13 @@ return new class extends Migration
             ->where('jabatan_akademik', 'profesor')
             ->update(['jabatan_akademik' => 'guru_besar']);
 
-        DB::statement("ALTER TABLE pelamars MODIFY COLUMN jabatan_akademik ENUM('asisten_ahli','lektor','lektor_kepala','guru_besar','non_jabatan') NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE pelamars MODIFY COLUMN jabatan_akademik ENUM('asisten_ahli','lektor','lektor_kepala','guru_besar','non_jabatan') NULL");
+        } else {
+            Schema::table('pelamars', function (Blueprint $table) {
+                $table->string('jabatan_akademik')->nullable()->change();
+            });
+        }
     }
 
     public function down(): void
@@ -29,6 +35,12 @@ return new class extends Migration
             ->where('jabatan_akademik', 'non_jabatan')
             ->update(['jabatan_akademik' => null]);
 
-        DB::statement("ALTER TABLE pelamars MODIFY COLUMN jabatan_akademik ENUM('asisten_ahli','lektor','lektor_kepala','profesor') NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE pelamars MODIFY COLUMN jabatan_akademik ENUM('asisten_ahli','lektor','lektor_kepala','profesor') NULL");
+        } else {
+            Schema::table('pelamars', function (Blueprint $table) {
+                $table->string('jabatan_akademik')->nullable()->change();
+            });
+        }
     }
 };

@@ -41,7 +41,9 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // URL relatif agar gambar dimuat dari host/port yang sedang diakses
+            // (cocok untuk artisan serve, Laragon, maupun produksi satu domain).
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

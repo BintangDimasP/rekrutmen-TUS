@@ -22,6 +22,11 @@ class PhoneVerificationOtpController extends Controller
      */
     public function sendOtp(Request $request)
     {
+        // Tolak jika verifikasi WA dinonaktifkan
+        if (! config('services.fonnte.phone_verification_required')) {
+            return response()->json(['message' => 'Fitur verifikasi WhatsApp sedang dinonaktifkan.'], 403);
+        }
+
         $user = auth()->user();
 
         if (! $user || ! $user->pelamar) {

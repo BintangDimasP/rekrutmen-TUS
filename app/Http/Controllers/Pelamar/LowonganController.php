@@ -100,8 +100,8 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek verifikasi nomor telepon
-        if (!$pelamar->phone_verified_at) {
+        // Cek verifikasi nomor telepon (hanya jika diwajibkan)
+        if (config('services.fonnte.phone_verification_required') && !$pelamar->phone_verified_at) {
             return redirect()->route('pelamar.profil.index')
                 ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
         }
@@ -137,8 +137,8 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek verifikasi nomor telepon
-        if (!$pelamar->phone_verified_at) {
+        // Cek verifikasi nomor telepon (hanya jika diwajibkan)
+        if (config('services.fonnte.phone_verification_required') && !$pelamar->phone_verified_at) {
             return redirect()->route('pelamar.profil.index')
                 ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
         }

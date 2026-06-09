@@ -38,6 +38,9 @@ return [
     'fonnte' => [
         'token'   => env('FONNTE_TOKEN'),
         'enabled' => env('FONNTE_ENABLED', false),
+        // Apakah verifikasi nomor WhatsApp diwajibkan sebelum melamar.
+        // Set false jika ingin menonaktifkan (mis. menghindari risiko ban WA Fonnte).
+        'phone_verification_required' => env('WA_VERIFICATION_REQUIRED', false),
     ],
 
 ];

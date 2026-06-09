@@ -146,13 +146,12 @@ class JadwalSeleksiTest extends TestCase
              ->assertRedirect(); // redirect somewhere (either index or back with warning)
 
         // Masih hanya 1 jadwal micro teaching untuk kombinasi ini
-        $this->assertEquals(1, JadwalSeleksi::where([
-            'tanggal'      => $tanggal,
-            'pelamar_id'   => $pelamar->id,
-            'penguji_id'   => $dosen->id,
-            'tipe_seleksi' => 'micro_teaching',
-            'sesi'         => 1,
-        ])->count());
+        $this->assertEquals(1, JadwalSeleksi::whereDate('tanggal', $tanggal)
+            ->where('pelamar_id', $pelamar->id)
+            ->where('penguji_id', $dosen->id)
+            ->where('tipe_seleksi', 'micro_teaching')
+            ->where('sesi', 1)
+            ->count());
     }
 
     // ── Destroy ────────────────────────────────────────────────────────

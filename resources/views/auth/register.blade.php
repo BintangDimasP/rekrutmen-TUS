@@ -134,6 +134,7 @@
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
+@include('partials.loading-screen')
 
 {{-- ── Toast Container ── --}}
 <div id="toast-container"></div>
@@ -183,7 +184,7 @@
 
     {{-- Form --}}
     <div id="cardWrapper" class="w-full max-w-md transition-all duration-500 ease-in-out">
-        <form id="registerForm" action="#" method="POST" enctype="multipart/form-data" novalidate>
+        <form id="registerForm" action="#" method="POST" enctype="multipart/form-data" novalidate data-no-loading>
             @csrf
 
         {{-- ═══════════════════════════════════════ --}}
@@ -411,8 +412,8 @@
                             Kewarganegaraan <span class="text-red-600">*</span>
                         </label>
                         <div x-data="{ open: false, val: '{{ old('kewarganegaraan') }}', opts: [{v:'WNI',l:'WNI (Warga Negara Indonesia)'},{v:'WNA',l:'WNA (Warga Negara Asing)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="kewarganegaraan" :value="val">
-                            <button type="button" @click="open = !open"
+                            <input type="hidden" id="kewarganegaraan" name="kewarganegaraan" :value="val">
+                            <button type="button" id="kewarganegaraan_btn" @click="open = !open"
                                 class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
                                 :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
                                 <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih —'"></span>
@@ -436,8 +437,8 @@
                             Status Pernikahan <span class="text-red-600">*</span>
                         </label>
                         <div x-data="{ open: false, val: '{{ old('status_pernikahan') }}', opts: [{v:'Belum Kawin',l:'Belum Kawin'},{v:'Kawin',l:'Kawin'},{v:'Cerai Hidup',l:'Cerai Hidup'},{v:'Cerai Mati',l:'Cerai Mati'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="status_pernikahan" :value="val">
-                            <button type="button" @click="open = !open"
+                            <input type="hidden" id="status_pernikahan" name="status_pernikahan" :value="val">
+                            <button type="button" id="status_pernikahan_btn" @click="open = !open"
                                 class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
                                 :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
                                 <span x-text="val ? val : '— Pilih —'"></span>
@@ -507,8 +508,8 @@
                             Jenjang Pendidikan <span class="text-red-600">*</span>
                         </label>
                         <div x-data="{ open: false, val: '{{ old('jenjang') }}', opts: [{v:'S1',l:'S1 (Sarjana)'},{v:'S2',l:'S2 (Magister)'},{v:'S3',l:'S3 (Doktor)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="jenjang" :value="val">
-                            <button type="button" @click="open = !open"
+                            <input type="hidden" id="jenjang" name="jenjang" :value="val">
+                            <button type="button" id="jenjang_btn" @click="open = !open"
                                 class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
                                 :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
                                 <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jenjang —'"></span>
@@ -944,8 +945,8 @@
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
                         </label>
                         <div x-data="{ open: false, val: '{{ old('jabatan_akademik', 'non_jabatan') }}', opts: [{v:'non_jabatan',l:'Non Jabatan (NJAD)'},{v:'asisten_ahli',l:'Asisten Ahli (AA)'},{v:'lektor',l:'Lektor (L)'},{v:'lektor_kepala',l:'Lektor Kepala (LK)'},{v:'guru_besar',l:'Guru Besar (GB)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="jabatan_akademik" :value="val">
-                            <button type="button" @click="open = !open"
+                            <input type="hidden" id="jabatan_akademik" name="jabatan_akademik" :value="val">
+                            <button type="button" id="jabatan_akademik_btn" @click="open = !open"
                                 class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
                                 :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
                                 <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jabatan —'"></span>
@@ -1126,25 +1127,42 @@
         5: [],
     };
 
+    // Field dropdown Alpine (hidden input) — dibaca via name selector
+    const dropdownFields = ['jenis_kelamin', 'kewarganegaraan', 'status_pernikahan', 'jenjang'];
+
     function validateStep(step) {
         const fields = requiredFields[step] || [];
         let valid = true;
-        let firstError = null;
+        let firstErrorBtn = null;
 
         fields.forEach(id => {
             const el = document.getElementById(id);
             if (!el) return;
-            el.classList.remove('error');
-            if (!el.value.trim()) {
-                el.classList.add('error');
+
+            // Untuk hidden input Alpine dropdown, cek value DOM property
+            const val = el.value ? el.value.trim() : '';
+            const btnId = id + '_btn';
+            const btn   = document.getElementById(btnId);
+
+            // Reset styling
+            if (btn) btn.classList.remove('border-red-400', 'ring-1', 'ring-red-300');
+            else el.classList.remove('error');
+
+            if (!val) {
                 valid = false;
-                if (!firstError) firstError = el;
+                if (btn) {
+                    btn.classList.add('border-red-400', 'ring-1', 'ring-red-300');
+                    if (!firstErrorBtn) firstErrorBtn = btn;
+                } else {
+                    el.classList.add('error');
+                    if (!firstErrorBtn) firstErrorBtn = el;
+                }
             }
         });
 
         if (!valid) {
             showToast('Error', 'Harap lengkapi semua kolom yang wajib diisi (ditandai *).', 'error');
-            if (firstError) firstError.focus();
+            if (firstErrorBtn) firstErrorBtn.focus();
             return false;
         }
 

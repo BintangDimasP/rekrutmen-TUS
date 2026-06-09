@@ -226,7 +226,7 @@
     deleteFotoModal: false,
     fotoPreview: null,
     fotoFileName: '',
-    openFotoFile() { this.$refs.fotoProfilInput.click(); },
+    openFotoFile() { document.getElementById('fotoProfilInputPelamar').click(); },
     onFotoChange(e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -238,7 +238,8 @@
     resetFotoForm() {
         this.fotoPreview = null;
         this.fotoFileName = '';
-        this.$refs.fotoProfilInput.value = '';
+        const inp = document.getElementById('fotoProfilInputPelamar');
+        if (inp) inp.value = '';
     }
 }">
 
@@ -428,7 +429,7 @@
                                         <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                                         Terverifikasi
                                     </span>
-                                @else
+                                @elseif(config('services.fonnte.phone_verification_required'))
                                     <button type="button" @click="sendPhoneOtp()" :disabled="isLoadingPhoneOtp"
                                         class="text-[0.65rem] font-bold text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap flex-shrink-0 inline-flex items-center gap-1 disabled:opacity-50">
                                         <span x-text="isLoadingPhoneOtp ? 'Mengirim...' : 'Verifikasi by WA'"></span>
@@ -1199,6 +1200,110 @@
     </div>
     </template>
 
+    {{-- ─── Modal Ubah Foto Profil (Pelamar) ─── --}}
+    <template x-teleport="body">
+        <div x-show="fotoModal" x-transition.opacity style="display:none;"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="fotoModal = false; resetFotoForm()">
+            <div x-show="fotoModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+                <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white">Ubah Foto Profil</h3>
+                    <button type="button" @click="fotoModal = false; resetFotoForm()"
+                            class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/40 text-white hover:bg-white/10 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <form method="POST" action="{{ route('settings.foto.update') }}" enctype="multipart/form-data" class="p-6 space-y-5">
+                    @csrf
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-32 h-32 rounded-full ring-4 ring-gray-100 shadow-inner overflow-hidden flex items-center justify-center bg-gray-100">
+                            <template x-if="fotoPreview">
+                                <img :src="fotoPreview" alt="Preview" class="w-full h-full object-cover">
+                            </template>
+                            <template x-if="!fotoPreview">
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8b1515] to-[#6e1010] text-white text-4xl font-bold">
+                                    @if(auth()->user()->foto_profil_url)
+                                        <img src="{{ auth()->user()->foto_profil_url }}" alt="Foto" class="w-full h-full object-cover">
+                                    @else
+                                        {{ strtoupper(substr($pelamar->nama ?? 'P', 0, 1)) }}
+                                    @endif
+                                </div>
+                            </template>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3" x-show="!fotoFileName">Pilih file gambar baru</p>
+                        <p class="text-xs text-gray-700 font-medium mt-3 truncate max-w-full" x-show="fotoFileName" x-text="fotoFileName"></p>
+                    </div>
+
+                    <input type="file" name="foto_profil" id="fotoProfilInputPelamar" accept="image/jpeg,image/jpg,image/png,image/webp"
+                           @change="onFotoChange($event)" class="hidden">
+
+                    <button type="button" @click="openFotoFile()"
+                            class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Pilih File
+                    </button>
+
+                    <p class="text-[0.7rem] text-gray-400 text-center">Format: JPG, JPEG, PNG, WEBP — Maksimal 2 MB</p>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" @click="fotoModal = false; resetFotoForm()"
+                                class="flex-1 py-2.5 border border-gray-300 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" :disabled="!fotoPreview"
+                                :class="fotoPreview ? 'bg-[#8b1515] hover:bg-red-900 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
+                                class="flex-1 py-2.5 text-white text-sm font-bold rounded-xl shadow-md transition-colors">
+                            Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    {{-- ─── Modal Hapus Foto Profil (Pelamar) ─── --}}
+    <template x-teleport="body">
+        <div x-show="deleteFotoModal" x-transition.opacity style="display:none;"
+             class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+             @click.self="deleteFotoModal = false">
+            <div x-show="deleteFotoModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                <button type="button" @click="deleteFotoModal = false"
+                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2">Hapus foto profil?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Foto akan kembali ke<br>tampilan inisial nama.</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <form method="POST" action="{{ route('settings.foto.delete') }}" class="contents">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Yes</button>
+                    </form>
+                    <button type="button" @click="deleteFotoModal = false"
+                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">No</button>
+                </div>
+            </div>
+        </div>
+    </template>
+
    
 </div>
 
@@ -1301,110 +1406,6 @@
     });
 </script>
 @endpush
-
-{{-- ─── Modal Ubah Foto Profil (Pelamar) ─── --}}
-<template x-teleport="body">
-    <div x-show="fotoModal" x-transition.opacity style="display:none;"
-         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-         @click.self="fotoModal = false; resetFotoForm()">
-        <div x-show="fotoModal"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
-             class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
-
-            <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
-                <h3 class="text-base font-bold text-white">Ubah Foto Profil</h3>
-                <button type="button" @click="fotoModal = false; resetFotoForm()"
-                        class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/40 text-white hover:bg-white/10 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <form method="POST" action="{{ route('settings.foto.update') }}" enctype="multipart/form-data" class="p-6 space-y-5">
-                @csrf
-
-                <div class="flex flex-col items-center">
-                    <div class="w-32 h-32 rounded-full ring-4 ring-gray-100 shadow-inner overflow-hidden flex items-center justify-center bg-gray-100">
-                        <template x-if="fotoPreview">
-                            <img :src="fotoPreview" alt="Preview" class="w-full h-full object-cover">
-                        </template>
-                        <template x-if="!fotoPreview">
-                            <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#8b1515] to-[#6e1010] text-white text-4xl font-bold">
-                                @if(auth()->user()->foto_profil_url)
-                                    <img src="{{ auth()->user()->foto_profil_url }}" alt="Foto" class="w-full h-full object-cover">
-                                @else
-                                    {{ strtoupper(substr($pelamar->nama ?? 'P', 0, 1)) }}
-                                @endif
-                            </div>
-                        </template>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3" x-show="!fotoFileName">Pilih file gambar baru</p>
-                    <p class="text-xs text-gray-700 font-medium mt-3 truncate max-w-full" x-show="fotoFileName" x-text="fotoFileName"></p>
-                </div>
-
-                <input type="file" name="foto_profil" accept="image/jpeg,image/jpg,image/png,image/webp"
-                       x-ref="fotoProfilInput" @change="onFotoChange($event)" class="hidden">
-
-                <button type="button" @click="openFotoFile()"
-                        class="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-bold rounded-xl transition-colors flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    Pilih File
-                </button>
-
-                <p class="text-[0.7rem] text-gray-400 text-center">Format: JPG, JPEG, PNG, WEBP — Maksimal 2 MB</p>
-
-                <div class="flex gap-3 pt-2">
-                    <button type="button" @click="fotoModal = false; resetFotoForm()"
-                            class="flex-1 py-2.5 border border-gray-300 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors">
-                        Batal
-                    </button>
-                    <button type="submit" :disabled="!fotoPreview"
-                            :class="fotoPreview ? 'bg-[#8b1515] hover:bg-red-900 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
-                            class="flex-1 py-2.5 text-white text-sm font-bold rounded-xl shadow-md transition-colors">
-                        Simpan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</template>
-
-{{-- ─── Modal Hapus Foto Profil (Pelamar) ─── --}}
-<template x-teleport="body">
-    <div x-show="deleteFotoModal" x-transition.opacity style="display:none;"
-         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-         @click.self="deleteFotoModal = false">
-        <div x-show="deleteFotoModal"
-             x-transition:enter="transition ease-out duration-200"
-             x-transition:enter-start="opacity-0 scale-95"
-             x-transition:enter-end="opacity-100 scale-100"
-             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
-            <button type="button" @click="deleteFotoModal = false"
-                    class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            <div class="mx-auto mb-5 flex justify-center">
-                <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
-                    <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
-                    <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="12" cy="16.5" r="1.5" fill="white"/>
-                </svg>
-            </div>
-            <h2 class="text-xl font-extrabold text-gray-800 mb-2">Hapus foto profil?</h2>
-            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Foto akan kembali ke<br>tampilan inisial nama.</p>
-            <div class="grid grid-cols-2 gap-3">
-                <form method="POST" action="{{ route('settings.foto.delete') }}" class="contents">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Yes</button>
-                </form>
-                <button type="button" @click="deleteFotoModal = false"
-                        class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">No</button>
-            </div>
-        </div>
-    </div>
-</template>
 
 @endsection
 

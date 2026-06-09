@@ -92,6 +92,7 @@
     </style>
 </head>
 <body class="bg-white flex min-h-screen text-gray-900">
+@include('partials.loading-screen')
 
     {{-- ── Toast Container ── --}}
     <div id="toast-container"></div>

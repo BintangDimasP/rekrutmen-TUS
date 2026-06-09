@@ -34,6 +34,16 @@ class ForgotPasswordOtpController extends Controller
     private const MAX_ATTEMPTS        = 5;
     private const ALLOWED_ROLES       = ['pelamar', 'penguji', 'kaprodi'];
 
+    /**
+     * Domain email internal yang tidak boleh reset password sendiri.
+     */
+    private const BLOCKED_DOMAINS = [
+        'admin.telkomuniversity.ac.id',
+        'pengajar.telkomuniversity.ac.id',
+        'penguji.telkomuniversity.ac.id',
+        'kaprodi.telkomuniversity.ac.id',
+    ];
+
     // ═══════════════════════════════════════════════════════════════
     // STEP 1: Email
     // ═══════════════════════════════════════════════════════════════
@@ -41,6 +51,14 @@ class ForgotPasswordOtpController extends Controller
     public function showEmailForm()
     {
         return view('auth.forgot-password.email');
+    }
+
+    /**
+     * Tampilkan halaman blokir untuk domain internal.
+     */
+    public function showBlockedPage()
+    {
+        return view('auth.forgot-password.blocked');
     }
 
     public function sendOtp(Request $request)
@@ -53,6 +71,13 @@ class ForgotPasswordOtpController extends Controller
         ]);
 
         $email = strtolower(trim($request->email));
+
+        // Cek apakah email menggunakan domain internal (admin/dosen) → blokir
+        foreach (self::BLOCKED_DOMAINS as $domain) {
+            if (str_ends_with($email, '@' . $domain)) {
+                return redirect()->route('password.otp.blocked');
+            }
+        }
 
         // Cari user berdasarkan email
         $user = User::where('email', $email)->first();
@@ -143,7 +168,7 @@ class ForgotPasswordOtpController extends Controller
             $createdAt  = \Carbon\Carbon::parse($lastOtp->created_at);
             $elapsedSec = $createdAt->diffInSeconds(now(), false);
             if ($elapsedSec >= 0 && $elapsedSec < self::OTP_RESEND_COOLDOWN) {
-                $remainingCooldown = self::OTP_RESEND_COOLDOWN - $elapsedSec;
+            $remainingCooldown = self::OTP_RESEND_COOLDOWN - (int) $elapsedSec;
             }
         }
 

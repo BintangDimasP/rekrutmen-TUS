@@ -73,16 +73,16 @@
                                 get label() { return this.opts.find(o => o.v == prodiId)?.l ?? '— Pilih —'; }
                              }" @click.outside="open = false" class="relative">
                             <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm transition-all"
+                                class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm transition-all"
                                 :class="prodiId ? 'text-gray-800' : 'text-gray-400'">
                                 <span x-text="label" class="truncate"></span>
-                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                                     <template x-for="opt in opts" :key="opt.v">
                                         <button type="button" @click="prodiId = opt.v; onProdiChange(); open = false"
-                                            class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
                                             :class="prodiId == opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
                                             <span x-text="opt.l"></span>
                                         </button>
@@ -113,16 +113,16 @@
                         <div x-show="!loadingLowongan"
                              x-data="{ open: false }" @click.outside="open = false" class="relative">
                             <button type="button" @click="if(prodiId) open = !open" :disabled="!prodiId"
-                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg border border-gray-200 bg-gray-50 text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                                 :class="lowonganId ? 'text-gray-800' : 'text-gray-400'">
                                 <span x-text="lowonganId ? (lowongans.find(l => l.id == lowonganId)?.nama_posisi ?? '— Pilih —') : '— Pilih —'" class="truncate"></span>
-                                <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
                                     <template x-for="l in lowongans" :key="l.id">
                                         <button type="button" @click="lowonganId = l.id; onLowonganChange(); open = false"
-                                            class="w-full text-left px-3 py-2 text-sm rounded-lg transition-colors"
+                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
                                             :class="lowonganId == l.id ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
                                             <span x-text="l.nama_posisi"></span>
                                         </button>
@@ -159,20 +159,31 @@
             {{-- TABEL UTAMA --}}
             <div class="rounded-xl border border-gray-200 overflow-hidden mb-5">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse" style="min-width: 900px;">
+                    <table class="w-full text-left border-collapse" style="min-width: 1100px; table-layout: fixed;">
+                        <colgroup>
+                            <col style="width: 40px">       {{-- No --}}
+                            <col style="width: 180px">      {{-- Pelamar --}}
+                            <col style="width: 220px">      {{-- Penguji Micro --}}
+                            <col style="width: 220px">      {{-- Penguji Wawancara --}}
+                            <col style="width: 210px">      {{-- Sesi --}}
+                            <col style="width: 210px">      {{-- Link Meeting --}}
+                            <col style="width: 70px">       {{-- Status --}}
+                        </colgroup>
                         <thead>
                             <tr>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-8">No.</th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-44">Pelamar</th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-52">
-                                    Penguji Micro Teaching <span class="font-normal text-red-300 block">30 mnt pertama</span>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3">No.</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3">Pelamar</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3 border-l border-red-700">
+                                    Penguji Micro Teaching
+                                    <span class="font-normal text-red-300 normal-case tracking-normal block mt-0.5">30 mnt pertama</span>
                                 </th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-52">
-                                    Penguji Wawancara <span class="font-normal text-red-300 block">30 mnt kedua</span>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3 border-l border-red-700">
+                                    Penguji Wawancara
+                                    <span class="font-normal text-red-300 normal-case tracking-normal block mt-0.5">30 mnt kedua</span>
                                 </th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 border-l border-red-700 w-44">Sesi Seleksi</th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold px-3 py-2 w-44">Link Meeting</th>
-                                <th class="bg-red-800 text-white text-[0.6rem] font-medium px-3 py-2.5 w-16 text-center border-l border-red-700">Status</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3 border-l border-red-700">Sesi Seleksi</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3 border-l border-red-700">Link Meeting</th>
+                                <th class="bg-red-800 text-white text-[0.6rem] font-semibold uppercase tracking-wide px-3 py-3 text-center border-l border-red-700">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -211,13 +222,13 @@
                                     <td class="py-3 px-3 text-xs text-gray-400 font-medium" x-text="idx + 1"></td>
 
                                     {{-- Pelamar --}}
-                                    <td class="py-3 px-3 max-w-0">
+                                    <td class="py-3 px-3 align-top">
                                         <div class="flex items-start gap-2">
                                             <span class="mt-1.5 flex-shrink-0 w-1.5 h-1.5 rounded-full"
                                                 :class="getConflictWarning(p.id) ? 'bg-red-500' : isRowComplete(p.id) ? 'bg-green-500' : 'bg-gray-300'"></span>
-                                            <div class="min-w-0 flex-1">
+                                            <div class="min-w-0">
                                                 <p class="text-xs font-semibold text-gray-800 truncate" :title="p.nama" x-text="p.nama"></p>
-                                                <p class="text-[0.65rem] text-gray-400 font-medium truncate" :title="p.email" x-text="p.email"></p>
+                                                <p class="text-[0.65rem] text-gray-400 truncate" :title="p.email" x-text="p.email"></p>
                                                 <p x-show="getConflictWarning(p.id)" x-text="getConflictWarning(p.id)"
                                                     class="text-[0.62rem] text-red-600 mt-1 leading-snug"></p>
                                             </div>
@@ -225,80 +236,130 @@
                                     </td>
 
                                     {{-- ═══ MICRO: Penguji (multi, tag style) ═══ --}}
-                                    <td class="py-3 px-3 border-l border-gray-100">
+                                    <td class="py-3 px-3 align-top border-l border-gray-100">
                                         <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...</div>
                                         <template x-if="!loadingPenguji">
                                             <div>
                                                 <div class="flex flex-wrap gap-1 mb-1.5" x-show="assignments[p.id]?.penguji_micro_ids?.length > 0">
                                                     <template x-for="pgId in assignments[p.id]?.penguji_micro_ids ?? []" :key="pgId">
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
-                                                            <span x-text="getPengujiNama(pgId)"></span>
-                                                            <button type="button" @click="removePengujiM(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800 max-w-full">
+                                                            <span class="truncate max-w-[120px]" :title="getPengujiNama(pgId)" x-text="getPengujiNama(pgId)"></span>
+                                                            <button type="button" @click="removePengujiM(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5 flex-shrink-0">
                                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                                             </button>
                                                             <input type="hidden" :name="`schedule[${p.id}][penguji_micro_ids][]`" :value="pgId">
                                                         </span>
                                                     </template>
                                                 </div>
-                                                <select @change="addPengujiM(p.id, $event)" class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
-                                                    <option value="">+ Tambah penguji micro</option>
-                                                    <template x-for="pg in availablePengujisM(p.id)" :key="pg.id">
-                                                        <option :value="pg.id" x-text="`${pg.nama} (${pg.kode})`"></option>
-                                                    </template>
-                                                </select>
+                                                <div x-data="{ open:false, t:0, l:0, w:0,
+                                                        place(){ const r=$refs.trg.getBoundingClientRect(); this.t=r.bottom+4; this.l=r.left; this.w=r.width; },
+                                                        toggle(){ this.open=!this.open; if(this.open) $nextTick(()=>this.place()); } }"
+                                                     @click.outside="open=false" class="relative">
+                                                    <button type="button" x-ref="trg" @click="toggle()"
+                                                        class="w-full flex items-center justify-between px-2 py-2 rounded-lg border border-gray-200 bg-gray-50 text-xs text-gray-500 hover:border-gray-300 transition-all">
+                                                        <span class="truncate">+ Tambah penguji micro</span>
+                                                        <svg class="w-3.5 h-3.5 text-gray-400 ml-1 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                                    </button>
+                                                    <div x-show="open" x-transition @click.outside="open=false"
+                                                         :style="`top:${t}px;left:${l}px;width:${w}px;`"
+                                                         class="fixed z-[200] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                                        <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                                            <template x-if="availablePengujisM(p.id).length === 0">
+                                                                <div class="px-3 py-2 text-xs text-gray-400 italic">Semua penguji sudah dipilih</div>
+                                                            </template>
+                                                            <template x-for="pg in availablePengujisM(p.id)" :key="pg.id">
+                                                                <button type="button" @click="addPengujiMById(p.id, pg.id); open=false"
+                                                                    class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-100 text-gray-700 transition-colors truncate"
+                                                                    x-text="`${pg.nama} (${pg.kode})`"></button>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </template>
                                     </td>
 
                                     {{-- ═══ WAWANCARA: Penguji (multi, tag style) ═══ --}}
-                                    <td class="py-3 px-3 border-l border-gray-100">
+                                    <td class="py-3 px-3 align-top border-l border-gray-100">
                                         <div x-show="loadingPenguji" class="text-[0.65rem] text-gray-300 italic">Memuat...</div>
                                         <template x-if="!loadingPenguji">
                                             <div>
                                                 <div class="flex flex-wrap gap-1 mb-1.5" x-show="assignments[p.id]?.penguji_wawancara_ids?.length > 0">
                                                     <template x-for="pgId in assignments[p.id]?.penguji_wawancara_ids ?? []" :key="pgId">
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800">
-                                                            <span x-text="getPengujiNama(pgId)"></span>
-                                                            <button type="button" @click="removePengujiW(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 border border-red-100 text-[0.62rem] text-red-800 max-w-full">
+                                                            <span class="truncate max-w-[120px]" :title="getPengujiNama(pgId)" x-text="getPengujiNama(pgId)"></span>
+                                                            <button type="button" @click="removePengujiW(p.id, pgId)" class="text-red-300 hover:text-red-600 transition-colors ml-0.5 flex-shrink-0">
                                                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                                                             </button>
                                                             <input type="hidden" :name="`schedule[${p.id}][penguji_wawancara_ids][]`" :value="pgId">
                                                         </span>
                                                     </template>
                                                 </div>
-                                                <select @change="addPengujiW(p.id, $event)" class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white">
-                                                    <option value="">+ Tambah penguji wwncr</option>
-                                                    <template x-for="pg in availablePengujisW(p.id)" :key="pg.id">
-                                                        <option :value="pg.id" x-text="`${pg.nama} (${pg.kode})`"></option>
-                                                    </template>
-                                                </select>
+                                                <div x-data="{ open:false, t:0, l:0, w:0,
+                                                        place(){ const r=$refs.trg.getBoundingClientRect(); this.t=r.bottom+4; this.l=r.left; this.w=r.width; },
+                                                        toggle(){ this.open=!this.open; if(this.open) $nextTick(()=>this.place()); } }"
+                                                     @click.outside="open=false" class="relative">
+                                                    <button type="button" x-ref="trg" @click="toggle()"
+                                                        class="w-full flex items-center justify-between px-2 py-2 rounded-lg border border-gray-200 bg-gray-50 text-xs text-gray-500 hover:border-gray-300 transition-all">
+                                                        <span class="truncate">+ Tambah penguji wawancara</span>
+                                                        <svg class="w-3.5 h-3.5 text-gray-400 ml-1 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                                    </button>
+                                                    <div x-show="open" x-transition @click.outside="open=false"
+                                                         :style="`top:${t}px;left:${l}px;width:${w}px;`"
+                                                         class="fixed z-[200] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                                        <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                                            <template x-if="availablePengujisW(p.id).length === 0">
+                                                                <div class="px-3 py-2 text-xs text-gray-400 italic">Semua penguji sudah dipilih</div>
+                                                            </template>
+                                                            <template x-for="pg in availablePengujisW(p.id)" :key="pg.id">
+                                                                <button type="button" @click="addPengujiWById(p.id, pg.id); open=false"
+                                                                    class="w-full text-left px-3 py-2 text-xs rounded-lg hover:bg-gray-100 text-gray-700 transition-colors truncate"
+                                                                    x-text="`${pg.nama} (${pg.kode})`"></button>
+                                                            </template>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </template>
                                     </td>
 
                                     {{-- ═══ SESI (Unified) ═══ --}}
-                                    <td class="py-3 px-3 border-l border-gray-100">
+                                    <td class="py-3 px-3 align-top border-l border-gray-100">
                                         <template x-if="!(assignments[p.id]?.penguji_micro_ids?.length > 0) && !(assignments[p.id]?.penguji_wawancara_ids?.length > 0)">
                                             <span class="text-[0.65rem] text-gray-300 italic">Pilih penguji dulu</span>
                                         </template>
                                         <template x-if="assignments[p.id]?.penguji_micro_ids?.length > 0 || assignments[p.id]?.penguji_wawancara_ids?.length > 0">
-                                            <select :name="`schedule[${p.id}][sesi]`"
-                                                x-model="assignments[p.id].sesi"
-                                                class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white"
-                                                :class="{ 'border-red-400 bg-red-50': isSesiConflict(p.id) }">
-                                                <option value="">— Pilih Sesi (60 Menit) —</option>
-                                                <template x-for="(info, sesiKey) in sessions.micro_teaching" :key="sesiKey">
-                                                    <option :value="sesiKey"
-                                                        :disabled="isSesiDisabled(p.id, parseInt(sesiKey))"
-                                                        x-text="sesiLabel(sesiKey, isSesiDisabled(p.id, parseInt(sesiKey)))">
-                                                    </option>
-                                                </template>
-                                            </select>
+                                            <div x-data="{ open:false, t:0, l:0, w:0,
+                                                    place(){ const r=$refs.trg.getBoundingClientRect(); this.t=r.bottom+4; this.l=r.left; this.w=r.width; },
+                                                    toggle(){ this.open=!this.open; if(this.open) $nextTick(()=>this.place()); } }"
+                                                 @click.outside="open=false" class="relative">
+                                                <input type="hidden" :name="`schedule[${p.id}][sesi]`" x-model="assignments[p.id].sesi">
+                                                <button type="button" x-ref="trg" @click="toggle()"
+                                                    class="w-full flex items-center justify-between px-2 py-2 rounded-lg border text-xs transition-all"
+                                                    :class="isSesiConflict(p.id) ? 'border-red-400 bg-red-50 text-red-700' : (assignments[p.id].sesi ? 'border-gray-200 bg-gray-50 text-gray-700' : 'border-gray-200 bg-gray-50 text-gray-500')">
+                                                    <span class="truncate" x-text="assignments[p.id].sesi ? sesiLabel(assignments[p.id].sesi, false) : '— Pilih Sesi —'"></span>
+                                                    <svg class="w-3.5 h-3.5 text-gray-400 ml-1 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                                </button>
+                                                <div x-show="open" x-transition @click.outside="open=false"
+                                                     :style="`top:${t}px;left:${l}px;width:${w}px;`"
+                                                     class="fixed z-[200] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                                    <div class="p-1.5 space-y-0.5 max-h-52 overflow-y-auto">
+                                                        <template x-for="(info, sesiKey) in sessions.micro_teaching" :key="sesiKey">
+                                                            <button type="button"
+                                                                @click="if(!isSesiDisabled(p.id, parseInt(sesiKey))){ assignments[p.id].sesi = sesiKey; open=false; }"
+                                                                :disabled="isSesiDisabled(p.id, parseInt(sesiKey))"
+                                                                class="w-full text-left px-3 py-2 text-xs rounded-lg transition-colors"
+                                                                :class="isSesiDisabled(p.id, parseInt(sesiKey)) ? 'text-gray-300 cursor-not-allowed line-through' : (assignments[p.id].sesi == sesiKey ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700')"
+                                                                x-text="sesiLabel(sesiKey, isSesiDisabled(p.id, parseInt(sesiKey)))"></button>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </template>
                                     </td>
 
                                     {{-- ═══ LINK MEETING ═══ --}}
-                                    <td class="py-3 px-3">
+                                    <td class="py-3 px-3 align-top border-l border-gray-100">
                                         <template x-if="!assignments[p.id]?.sesi">
                                             <span class="text-[0.65rem] text-gray-300 italic">Isi sesi dulu</span>
                                         </template>
@@ -306,12 +367,12 @@
                                             <input type="url" :name="`schedule[${p.id}][link]`"
                                                 x-model="assignments[p.id].link"
                                                 placeholder="https://meet.google.com/..."
-                                                class="w-full px-2 py-1.5 rounded-md border border-gray-200 text-xs text-gray-800 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white placeholder-gray-300">
+                                                class="w-full px-2 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-gray-50 placeholder-gray-300">
                                         </template>
                                     </td>
 
                                     {{-- Status --}}
-                                    <td class="py-3 px-3 text-center border-l border-gray-100">
+                                    <td class="py-3 px-3 align-top text-center border-l border-gray-100">
                                         <template x-if="isRowComplete(p.id) && !getConflictWarning(p.id)">
                                             <span class="inline-block text-[0.62rem] font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-700">Siap</span>
                                         </template>
@@ -482,6 +543,12 @@
                     event.target.value = ''; 
                 },
 
+                addPengujiWById(pelamarId, val) {
+                    if (!val) return;
+                    const ids = this.assignments[pelamarId].penguji_wawancara_ids;
+                    if (!ids.map(Number).includes(Number(val))) ids.push(Number(val));
+                },
+
                 removePengujiW(pelamarId, pgId) {
                     const a = this.assignments[pelamarId];
                     a.penguji_wawancara_ids = a.penguji_wawancara_ids.filter(id => Number(id) !== Number(pgId));
@@ -494,6 +561,12 @@
                     const ids = this.assignments[pelamarId].penguji_micro_ids;
                     if (!ids.map(Number).includes(Number(val))) ids.push(Number(val));
                     event.target.value = '';
+                },
+
+                addPengujiMById(pelamarId, val) {
+                    if (!val) return;
+                    const ids = this.assignments[pelamarId].penguji_micro_ids;
+                    if (!ids.map(Number).includes(Number(val))) ids.push(Number(val));
                 },
 
                 removePengujiM(pelamarId, pgId) {

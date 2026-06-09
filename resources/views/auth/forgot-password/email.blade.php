@@ -24,6 +24,7 @@
     </style>
 </head>
 <body class="bg-white text-gray-900">
+@include('partials.loading-screen')
     <div class="min-h-screen flex flex-col lg:flex-row">
 
         {{-- LEFT --}}

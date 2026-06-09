@@ -26,7 +26,11 @@ return new class extends Migration
             ]);
         }
 
-        // 2. Drop the column
+        // 2. Drop the column (drop unique index first for SQLite compatibility)
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropUnique(['secondary_email']);
+        });
+
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('secondary_email');
         });

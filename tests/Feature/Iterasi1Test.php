@@ -71,7 +71,10 @@ class Iterasi1Test extends TestCase
         ])->assertRedirect('/dashboard');
 
         $this->assertDatabaseHas('users', ['email' => 'pelamar@gmail.com']);
-        $this->assertDatabaseHas('pelamars', ['nik' => '3201234567890123']);
+        // nik is encrypted at rest, so verify via model instead of raw DB check
+        $pelamar = \App\Models\Pelamar::first();
+        $this->assertNotNull($pelamar);
+        $this->assertEquals('3201234567890123', $pelamar->nik);
     }
 
     public function test_register_rejects_duplicate_nik(): void
@@ -221,8 +224,9 @@ class Iterasi1Test extends TestCase
 
     public function test_settings_not_accessible_by_admin(): void
     {
+        // Settings page accessible by ALL roles including admin (password & foto)
         $user = User::factory()->create(['role' => 'admin']);
         $this->actingAs($user)->get(route('settings.index'))
-             ->assertRedirect(route('admin.dashboard'));
+             ->assertOk();
     }
 }

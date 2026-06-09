@@ -45,11 +45,12 @@ class SettingsTest extends TestCase
 
     public function test_admin_cannot_access_settings_page(): void
     {
+        // Settings page accessible by ALL roles including admin (password & foto)
         $admin = User::factory()->create(['role' => 'admin']);
 
         $this->actingAs($admin)
              ->get(route('settings.index'))
-             ->assertRedirect(); // dikick karena bukan pelamar/penguji/kaprodi
+             ->assertOk();
     }
 
     // ── Update password ──────────────────────────────────────────

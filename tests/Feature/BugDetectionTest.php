@@ -147,11 +147,12 @@ class BugDetectionTest extends TestCase
 
     public function test_bug06_admin_redirected_from_settings_to_admin_dashboard(): void
     {
+        // Settings page accessible by ALL roles including admin (password & foto)
         $admin = User::factory()->create(['role' => 'admin']);
 
         $this->actingAs($admin)
             ->get(route('settings.index'))
-            ->assertRedirect(route('admin.dashboard'));
+            ->assertOk();
     }
 
     // ─────────────────────────────────────────────────────────────────────

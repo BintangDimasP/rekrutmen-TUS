@@ -110,9 +110,10 @@ class JadwalSeleksiController extends Controller
         $schedule = $request->input('schedule', []);
 
         $saved = 0;
+        $savedPelamars = 0; // jumlah pelamar yang berhasil dijadwalkan
         $errors = [];
 
-        DB::transaction(function () use ($tanggal, $lowonganId, $schedule, &$saved, &$errors) {
+        DB::transaction(function () use ($tanggal, $lowonganId, $schedule, &$saved, &$savedPelamars, &$errors) {
 
             foreach ($schedule as $pelamarIdRaw => $slotInfo) {
                 $pelamarId = (int) $pelamarIdRaw;
@@ -150,7 +151,7 @@ class JadwalSeleksiController extends Controller
                         }
 
                         if (
-                            JadwalSeleksi::where('tanggal', $tanggal)
+                            JadwalSeleksi::whereDate('tanggal', $tanggal)
                                 ->where('pelamar_id', $pelamarId)
                                 ->where('penguji_id', $pengujiId)
                                 ->where('tipe_seleksi', $dbTipe)
@@ -189,6 +190,7 @@ class JadwalSeleksiController extends Controller
                 }
 
                 if ($anySavedForPelamar) {
+                    $savedPelamars++;
                     Lamaran::where('pelamar_id', $pelamarId)
                         ->where('lowongan_id', $lowonganId)
                         ->whereIn('status', ['menunggu', 'seleksi_tahap1'])
@@ -263,7 +265,7 @@ class JadwalSeleksiController extends Controller
             }
         }
 
-        $message = "{$saved} jadwal berhasil disimpan.";
+        $message = "{$savedPelamars} jadwal berhasil disimpan.";
         if (!empty($errors)) {
             $message .= ' Sebagian gagal: ' . implode('; ', $errors);
         }

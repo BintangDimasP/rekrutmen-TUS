@@ -295,7 +295,7 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">Akun login dibuat otomatis &mdash; kata sandi bawaan <code class="bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-medium">penguji123</code>.</p>
+                    <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">Akun login dibuat otomatis &mdash; kata sandi bawaan <code class="bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-medium">dosen123</code>.</p>
                 </div>
                 <form method="POST" action="{{ route('admin.penguji.store') }}" class="flex-1 overflow-hidden flex flex-col min-h-0">
                     @csrf

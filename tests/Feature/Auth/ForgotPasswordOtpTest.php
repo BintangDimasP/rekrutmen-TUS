@@ -80,14 +80,29 @@ class ForgotPasswordOtpTest extends TestCase
         Mail::fake();
         $admin = User::factory()->create([
             'role'  => 'admin',
-            'email' => 'admin@example.com',
+            'email' => 'admin@admin.telkomuniversity.ac.id',
         ]);
 
+        // Domain internal → redirect ke halaman blocked
         $this->post(route('password.otp.send'), ['email' => $admin->email])
-            ->assertSessionHasErrors('email');
+            ->assertRedirect(route('password.otp.blocked'));
 
         Mail::assertNothingSent();
         $this->assertDatabaseMissing('password_reset_otps', ['email' => $admin->email]);
+    }
+
+    public function test_send_otp_blocked_for_dosen_internal_domain(): void
+    {
+        Mail::fake();
+        $penguji = User::factory()->create([
+            'role'  => 'penguji',
+            'email' => 'dosen@pengajar.telkomuniversity.ac.id',
+        ]);
+
+        $this->post(route('password.otp.send'), ['email' => $penguji->email])
+            ->assertRedirect(route('password.otp.blocked'));
+
+        Mail::assertNothingSent();
     }
 
     public function test_send_otp_fails_for_unregistered_email(): void
@@ -117,9 +132,12 @@ class ForgotPasswordOtpTest extends TestCase
         // Kirim pertama
         $this->post(route('password.otp.send'), ['email' => $user->email])->assertRedirect();
 
-        // Coba kirim ulang segera → harus diblokir cooldown
+        // Coba kirim ulang segera → langsung redirect ke step 2 tanpa kirim ulang
         $this->post(route('password.otp.send'), ['email' => $user->email])
-            ->assertSessionHasErrors('email');
+            ->assertRedirect(route('password.otp.form'));
+
+        // Hanya 1 email yang terkirim (tidak kirim ulang)
+        Mail::assertSent(\App\Mail\PasswordResetOtpMail::class, 1);
     }
 
     // ════════════════════════════════════════════════════════════

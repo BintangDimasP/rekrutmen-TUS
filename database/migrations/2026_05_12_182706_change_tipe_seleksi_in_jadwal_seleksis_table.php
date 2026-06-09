@@ -12,12 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Modify column type to VARCHAR first
-        DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi VARCHAR(50)");
+        if (DB::getDriverName() === 'mysql') {
+            // Modify column type to VARCHAR first
+            DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi VARCHAR(50)");
+        } else {
+            // SQLite — change via Schema builder
+            Schema::table('jadwal_seleksis', function (Blueprint $table) {
+                $table->string('tipe_seleksi', 50)->change();
+            });
+        }
 
-        // Update existing data
-        DB::statement("UPDATE jadwal_seleksis SET tipe_seleksi = 'wawancara' WHERE tipe_seleksi = 'tahap1'");
-        DB::statement("UPDATE jadwal_seleksis SET tipe_seleksi = 'micro_teaching' WHERE tipe_seleksi = 'tahap2'");
+        // Update existing data (cross-driver compatible)
+        DB::table('jadwal_seleksis')->where('tipe_seleksi', 'tahap1')->update(['tipe_seleksi' => 'wawancara']);
+        DB::table('jadwal_seleksis')->where('tipe_seleksi', 'tahap2')->update(['tipe_seleksi' => 'micro_teaching']);
     }
 
     /**
@@ -26,10 +33,16 @@ return new class extends Migration
     public function down(): void
     {
         // Revert data first
-        DB::statement("UPDATE jadwal_seleksis SET tipe_seleksi = 'tahap1' WHERE tipe_seleksi = 'wawancara'");
-        DB::statement("UPDATE jadwal_seleksis SET tipe_seleksi = 'tahap2' WHERE tipe_seleksi = 'micro_teaching'");
+        DB::table('jadwal_seleksis')->where('tipe_seleksi', 'wawancara')->update(['tipe_seleksi' => 'tahap1']);
+        DB::table('jadwal_seleksis')->where('tipe_seleksi', 'micro_teaching')->update(['tipe_seleksi' => 'tahap2']);
 
-        // Revert column type to ENUM
-        DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi ENUM('tahap1', 'tahap2')");
+        if (DB::getDriverName() === 'mysql') {
+            // Revert column type to ENUM
+            DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi ENUM('tahap1', 'tahap2')");
+        } else {
+            Schema::table('jadwal_seleksis', function (Blueprint $table) {
+                $table->string('tipe_seleksi', 50)->change();
+            });
+        }
     }
 };

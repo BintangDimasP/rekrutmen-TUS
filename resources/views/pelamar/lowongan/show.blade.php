@@ -324,10 +324,16 @@
                     // Flag dari server: apakah email sudah terverifikasi
                     var emailVerified = {{ auth()->user()->hasVerifiedEmail() ? 'true' : 'false' }};
                     var userEmail    = '{{ auth()->user()->email }}';
+                    // Flag dari server: apakah nomor WhatsApp sudah terverifikasi
+                    // Jika verifikasi WA tidak diwajibkan (config), anggap selalu lolos.
+                    var phoneVerificationRequired = {{ config('services.fonnte.phone_verification_required') ? 'true' : 'false' }};
+                    var phoneVerified = phoneVerificationRequired
+                        ? {{ optional(auth()->user()->pelamar)->phone_verified_at ? 'true' : 'false' }}
+                        : true;
 
                     /**
                      * Intercept klik pada area upload.
-                     * Jika email belum terverifikasi → tampilkan toast dan batalkan.
+                     * Email & nomor WhatsApp wajib terverifikasi dulu.
                      */
                     function handleUploadClick(event, inputId, labelId) {
                         if (!emailVerified) {
@@ -340,6 +346,16 @@
                             );
                             return;
                         }
+                        if (!phoneVerified) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            showLamaranToast(
+                                'Nomor WhatsApp Belum Diverifikasi',
+                                'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum mengunggah dokumen.',
+                                'warning'
+                            );
+                            return;
+                        }
                         document.getElementById(inputId).click();
                     }
 
@@ -348,6 +364,14 @@
                             showLamaranToast(
                                 'Email Belum Diverifikasi',
                                 'Verifikasi alamat email <strong>' + userEmail + '</strong> terlebih dahulu sebelum mengajukan lamaran.',
+                                'warning'
+                            );
+                            return false;
+                        }
+                        if (!phoneVerified) {
+                            showLamaranToast(
+                                'Nomor WhatsApp Belum Diverifikasi',
+                                'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum mengajukan lamaran.',
                                 'warning'
                             );
                             return false;

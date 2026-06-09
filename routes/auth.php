@@ -35,6 +35,10 @@ Route::middleware('guest')->group(function () {
         ->middleware('throttle:6,1')
         ->name('password.otp.send');
 
+    // Blocked: domain internal tidak boleh reset sendiri
+    Route::get('forgot-password/blocked', [ForgotPasswordOtpController::class, 'showBlockedPage'])
+        ->name('password.otp.blocked');
+
     // Step 2: OTP
     Route::get('forgot-password/otp', [ForgotPasswordOtpController::class, 'showOtpForm'])
         ->name('password.otp.form');

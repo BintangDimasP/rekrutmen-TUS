@@ -113,7 +113,7 @@
           }
       }"
       x-init="fetchNotif()">
-<div class="flex h-screen overflow-hidden">
+@include('partials.loading-screen')<div class="flex h-screen overflow-hidden">
 
     {{-- ── BACKDROP (Mobile) ── --}}
     <div x-show="sidebarOpen"

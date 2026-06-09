@@ -88,7 +88,7 @@ class JadwalSeleksi extends Model
      */
     public static function isPengujiAvailable(string $tanggal, int $pengujiId, string $tipe, int $sesi): bool
     {
-        return !self::where('tanggal', $tanggal)
+        return !self::whereDate('tanggal', $tanggal)
             ->where('penguji_id', $pengujiId)
             ->where('tipe_seleksi', $tipe)
             ->where('sesi', $sesi)
@@ -101,7 +101,7 @@ class JadwalSeleksi extends Model
      */
     public static function isPelamarAvailable(string $tanggal, int $pelamarId, string $tipe, int $sesi): bool
     {
-        return !self::where('tanggal', $tanggal)
+        return !self::whereDate('tanggal', $tanggal)
             ->where('pelamar_id', $pelamarId)
             ->where('tipe_seleksi', $tipe)
             ->where('sesi', $sesi)

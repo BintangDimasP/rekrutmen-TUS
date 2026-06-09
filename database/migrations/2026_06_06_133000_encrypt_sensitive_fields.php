@@ -16,7 +16,12 @@ return new class extends Migration
         });
 
         // 2. Ubah nik dan no_telepon di pelamars menjadi TEXT
-        //    agar bisa menampung hasil enkripsi yang panjang
+        //    agar bisa menampung hasil enkripsi yang panjang.
+        //    Drop unique index dulu karena TEXT tidak bisa di-index di MySQL.
+        Schema::table('pelamars', function (Blueprint $table) {
+            $table->dropUnique(['nik']);
+        });
+
         Schema::table('pelamars', function (Blueprint $table) {
             $table->text('nik')->change();
             $table->text('no_telepon')->nullable()->change();
@@ -37,6 +42,7 @@ return new class extends Migration
         Schema::table('pelamars', function (Blueprint $table) {
             $table->string('nik', 16)->change();
             $table->string('no_telepon', 20)->nullable()->change();
+            $table->unique('nik');
         });
 
         Schema::table('dosens', function (Blueprint $table) {

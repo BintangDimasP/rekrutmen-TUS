@@ -55,14 +55,23 @@ class SettingController extends Controller
 
         $user = $request->user();
 
-        // Hapus foto lama jika ada
-        if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
-            Storage::disk('public')->delete($user->foto_profil);
+        try {
+            // Hapus foto lama jika ada
+            if ($user->foto_profil && Storage::disk('public')->exists($user->foto_profil)) {
+                Storage::disk('public')->delete($user->foto_profil);
+            }
+
+            $path = $request->file('foto_profil')->store('foto_profil/'.$user->id, 'public');
+
+            if (!$path) {
+                return back()->withErrors(['foto_profil' => 'Gagal menyimpan foto. Periksa izin folder storage.']);
+            }
+
+            $user->update(['foto_profil' => $path]);
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['foto_profil' => 'Gagal mengunggah foto: '.$e->getMessage()]);
         }
-
-        $path = $request->file('foto_profil')->store('foto_profil/'.$user->id, 'public');
-
-        $user->update(['foto_profil' => $path]);
 
         return back()->with('success', 'Foto profil berhasil diperbarui.');
     }
