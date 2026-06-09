@@ -38,14 +38,14 @@ COPY . .
 # Build frontend assets
 RUN npm run build
 
-# Run Laravel optimizations
-RUN php artisan storage:link || true
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-
 # Expose port
 EXPOSE 8080
 
 # Start the application
-CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=8080
+CMD php artisan config:clear \
+    && php artisan storage:link || true \
+    && php artisan migrate --force \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan serve --host=0.0.0.0 --port=8080
