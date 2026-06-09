@@ -930,7 +930,7 @@
                             placeholder="Nomor Induk Dosen Nasional" value="{{ old('nidn') }}">
                     </div>
 
-                    <div class="flex flex-col gap-1.5" x-show="nidnValue.trim() !== ''" x-transition>
+                    <div class="flex flex-col gap-1.5">
                         <label for="homebase" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
                             Homebase Asal
                             <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ber-NIDN</span>
@@ -1131,6 +1131,35 @@
     // Field dropdown Alpine (hidden input) — dibaca via name selector
     const dropdownFields = ['jenis_kelamin', 'kewarganegaraan', 'status_pernikahan', 'jenjang'];
 
+    // Batas ukuran file per input (dalam KB) — harus sama dengan validasi server
+    const fileMaxSizes = {
+        ijazah: 5120, transkrip: 5120,
+        cv: 5120, pas_foto: 2048, ktp: 2048,
+        sertifikat_kompetensi: 5120, sertifikat_bahasa: 5120,
+        kartu_dosen: 2048,
+    };
+    // File input yang ada di tiap step
+    const stepFileFields = {
+        3: ['ijazah', 'transkrip'],
+        4: ['cv', 'pas_foto', 'ktp', 'sertifikat_kompetensi', 'sertifikat_bahasa'],
+        5: ['kartu_dosen'],
+    };
+
+    function validateStepFiles(step) {
+        const fields = stepFileFields[step] || [];
+        for (const id of fields) {
+            const el = document.getElementById(id);
+            if (!el || !el.files || el.files.length === 0) continue;
+            const file = el.files[0];
+            const maxKB = fileMaxSizes[id] || 5120;
+            if (file.size > maxKB * 1024) {
+                showToast('Ukuran File Terlalu Besar', `File ${id.replace(/_/g,' ')} maksimal ${(maxKB/1024)}MB. Ukuran file Anda ${(file.size/1024/1024).toFixed(1)}MB.`, 'error');
+                return false;
+            }
+        }
+        return true;
+    }
+
     function validateStep(step) {
         const fields = requiredFields[step] || [];
         let valid = true;
@@ -1191,6 +1220,9 @@
                 return false;
             }
         }
+
+        // Validasi ukuran file untuk step yang punya input file
+        if (!validateStepFiles(step)) return false;
 
         return true;
     }

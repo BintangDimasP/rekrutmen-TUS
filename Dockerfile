@@ -21,6 +21,9 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Custom PHP config (upload limits)
+COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+
 # Set working directory
 WORKDIR /app
 
