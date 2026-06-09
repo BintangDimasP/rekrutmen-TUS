@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
-@section('title', 'Dosen Prodi — ' . $prodi->nama)
+@section('title', 'Dosen Prodi â€“ ' . $prodi->nama)
 
 @section('content')
 
@@ -346,7 +346,7 @@
                                                                 class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
                                                             <div>
                                                                 <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                                                <p class="text-xs text-gray-400">Hanya 1 per prodi — menggantikan kaprodi sebelumnya</p>
+                                                                <p class="text-xs text-gray-400">Hanya 1 per prodi â€“ menggantikan kaprodi sebelumnya</p>
                                                             </div>
                                                         </label>
                                                     </div>
@@ -467,7 +467,7 @@
                                     class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
                                 <div>
                                     <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                    <p class="text-xs text-gray-400">Hanya 1 per prodi — menggantikan kaprodi sebelumnya</p>
+                                    <p class="text-xs text-gray-400">Hanya 1 per prodi â€“ menggantikan kaprodi sebelumnya</p>
                                 </div>
                             </label>
                         </div>
@@ -531,7 +531,7 @@
                     <div class="p-5">
                         <p class="text-sm text-gray-500 leading-relaxed mb-4">
                             Upload file <span class="font-medium text-gray-700">.xlsx</span> atau
-                            <span class="font-medium text-gray-700">.csv</span> — header baris pertama:
+                            <span class="font-medium text-gray-700">.csv</span> â€“ header baris pertama:
                             <code class="font-medium text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
                         </p>
 

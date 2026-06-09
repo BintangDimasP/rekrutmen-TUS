@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar ' . $pelamar->nama)
 
@@ -31,7 +31,7 @@
                         <p class="text-red-200 text-sm mt-0.5">{{ $pelamar->user?->email }}</p>
                         <div class="flex items-center gap-3 mt-2 flex-wrap">
                             <span class="text-red-200 text-xs">Terdaftar: {{ $pelamar->created_at->format('d M Y') }}</span>
-                            <span class="text-red-300 text-xs">•</span>
+                            <span class="text-red-300 text-xs">â€“</span>
                             <span class="text-red-200 text-xs">{{ $pelamar->lamarans->count() }} Lamaran</span>
                         </div>
                     </div>
@@ -49,7 +49,7 @@
                                 :class="open ? 'rounded-t-xl' : 'rounded-xl'">
                             <span class="truncate">
                                 @if($activeLamaran)
-                                    {{ $activeLamaran->lowongan?->nama_posisi ?? '—' }} — {{ \App\Models\Lamaran::STATUS_LABELS[$activeLamaran->status] ?? $activeLamaran->status }}
+                                    {{ $activeLamaran->lowongan?->nama_posisi ?? 'â€“' }} â€“ {{ \App\Models\Lamaran::STATUS_LABELS[$activeLamaran->status] ?? $activeLamaran->status }}
                                 @else
                                     Pilih Lamaran
                                 @endif
@@ -66,7 +66,7 @@
                                 <a href="{{ route('admin.pelamar.show', [$pelamar, 'lamaran_id' => $lmr->id]) }}"
                                    class="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm transition-all {{ $isActive ? 'bg-white/20' : 'hover:bg-white/10' }}"
                                    style="color: white; {{ !$loop->last ? 'border-bottom: 1px solid rgba(255,255,255,0.1);' : '' }}">
-                                    <span class="truncate font-medium">{{ $lmr->lowongan?->nama_posisi ?? '—' }}</span>
+                                    <span class="truncate font-medium">{{ $lmr->lowongan?->nama_posisi ?? 'â€“' }}</span>
                                     <span class="text-[0.6rem] font-bold flex-shrink-0 px-2 py-0.5 rounded-md"
                                           style="background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85);">
                                         {{ \App\Models\Lamaran::STATUS_LABELS[$lmr->status] ?? $lmr->status }}
@@ -340,7 +340,7 @@
                     @if($micro && $micro->count() > 0)
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
-                            Micro Teaching <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} • {{ $micro[0]->session_label }}</span>
+                            Micro Teaching <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} â€“ {{ $micro[0]->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
                         @if($microDinilai->count() === 0)
@@ -398,7 +398,7 @@
                     @if($wawancara && $wawancara->count() > 0)
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
-                            Wawancara <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} • {{ $wawancara[0]->session_label }}</span>
+                            Wawancara <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} â€“ {{ $wawancara[0]->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
                         @if($wawancaraDinilai->count() === 0)
@@ -507,7 +507,7 @@
                                 </tr></tbody>
                             </table>
                             <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
-                                <p class="text-[0.65rem] text-gray-400">(Micro×20%) + (WWC×40%) + (Kualifikasi×40%)</p>
+                                <p class="text-[0.65rem] text-gray-400">(Microâ€“20%) + (WWCâ€“40%) + (Kualifikasiâ€“40%)</p>
                             </div>
                         </div>
                     </div>

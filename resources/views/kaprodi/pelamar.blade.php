@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
-@section('title', 'Daftar Pelamar — ' . auth()->user()->prodi?->nama)
+@section('title', 'Daftar Pelamar â€“ ' . auth()->user()->prodi?->nama)
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6" x-data="kaprodiPelamar()" x-init="init()">
@@ -188,7 +188,7 @@
 
         {{-- Pagination --}}
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-            <span>Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
+            <span>Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>â€“<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
             <div class="flex items-center gap-1">
                 <button type="button" @click="prevPage()" :disabled="currentPage === 1"
                         :class="currentPage === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"

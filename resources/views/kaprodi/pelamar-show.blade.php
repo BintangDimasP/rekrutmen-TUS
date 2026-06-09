@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar')
 
@@ -22,7 +22,7 @@
                         <p class="text-red-200 text-sm mt-0.5">{{ $pelamar->user?->email }}</p>
                         <div class="flex items-center gap-3 mt-2 flex-wrap">
                             <span class="text-red-200 text-xs">Terdaftar: {{ $pelamar->created_at->format('d M Y') }}</span>
-                            <span class="text-red-300 text-xs">•</span>
+                            <span class="text-red-300 text-xs">â€“</span>
                             <span class="text-red-200 text-xs">Melamar: <strong class="text-white">{{ $activeLamaran->lowongan?->nama_posisi ?? '-' }}</strong></span>
                         </div>
                     </div>
@@ -225,7 +225,7 @@
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Micro Teaching
-                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} • {{ $micro[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} â€“ {{ $micro[0]->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
                         @if($microDinilai->count() === 0)
@@ -294,7 +294,7 @@
                     <div class="mt-4">
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Wawancara
-                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} • {{ $wawancara[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} â€“ {{ $wawancara[0]->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
                         @if($wawancaraDinilai->count() === 0)
@@ -396,7 +396,7 @@
                                 </tbody>
                             </table>
                             <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
-                                <p class="text-[0.65rem] text-gray-400">(Micro×20%) + (WWC×40%) + (Kualifikasi×40%)</p>
+                                <p class="text-[0.65rem] text-gray-400">(Microâ€“20%) + (WWCâ€“40%) + (Kualifikasiâ€“40%)</p>
                             </div>
                         </div>
                     </div>

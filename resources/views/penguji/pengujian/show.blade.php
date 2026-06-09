@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar')
 
@@ -57,7 +57,7 @@
                             @else
                                 <span class="inline-flex px-2 py-0.5 bg-white/20 text-white text-xs font-bold rounded">Micro Teaching</span>
                             @endif
-                            <span class="text-red-200 text-xs">{{ $jadwal->tanggal->format('d M Y') }} · Sesi {{ $jadwal->sesi }} ({{ $sesiInfo['start'] ?? '-' }} - {{ $sesiInfo['end'] ?? '-' }})</span>
+                            <span class="text-red-200 text-xs">{{ $jadwal->tanggal->format('d M Y') }} â€“ Sesi {{ $jadwal->sesi }} ({{ $sesiInfo['start'] ?? '-' }} - {{ $sesiInfo['end'] ?? '-' }})</span>
                         </div>
                     </div>
                 </div>
@@ -325,7 +325,7 @@
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Micro Teaching
-                            <span class="text-gray-500 font-normal">{{ $first->tanggal->format('d M Y') }} • {{ $first->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $first->tanggal->format('d M Y') }} â€“ {{ $first->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
 
@@ -403,7 +403,7 @@
                     <div class="mt-4">
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Wawancara
-                            <span class="text-gray-500 font-normal">{{ $first->tanggal->format('d M Y') }} • {{ $first->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $first->tanggal->format('d M Y') }} â€“ {{ $first->session_label }}</span>
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
 

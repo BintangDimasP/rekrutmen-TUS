@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+ï»¿@extends('layouts.admin')
 
-@section('title', 'Detail Lamaran — ' . $lamaran->pelamar->nama)
+@section('title', 'Detail Lamaran â€“ ' . $lamaran->pelamar->nama)
 
 @section('content')
 @php
@@ -412,7 +412,7 @@
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Micro Teaching
-                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} • {{ $micro[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} â€“ {{ $micro[0]->session_label }}</span>
                             
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
@@ -497,7 +497,7 @@
                     <div class="mt-4">
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Wawancara
-                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} • {{ $wawancara[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} â€“ {{ $wawancara[0]->session_label }}</span>
                             
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
@@ -684,7 +684,7 @@
                                 </tbody>
                             </table>
                             <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
-                                <p class="text-[0.65rem] text-gray-400">(Micro×20%) + (WWC×40%) + (Kualifikasi×40%)</p>
+                                <p class="text-[0.65rem] text-gray-400">(Microâ€“20%) + (WWCâ€“40%) + (Kualifikasiâ€“40%)</p>
                             </div>
                         </div>
                     </div>
