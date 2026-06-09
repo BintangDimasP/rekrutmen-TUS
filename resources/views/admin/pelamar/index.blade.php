@@ -1,4 +1,4 @@
-ï»¿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Pelamar')
 
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-        {{-- Upload Button (outside card, flush right â€” opens import modal) --}}
+        {{-- Upload Button (outside card, flush right — opens import modal) --}}
         <button type="button" @click="$dispatch('open-import-modal')"
                 class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Import Pelamar">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
@@ -210,7 +210,7 @@
         {{-- Pagination --}}
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <span>
-                Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>â€“<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
+                Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
             </span>
             <div class="flex items-center gap-1">
                 <button type="button" @click="prevPage()" :disabled="currentPage === 1"

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Penguji')
 
@@ -218,7 +218,7 @@
             {{-- Pagination --}}
             <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
                 <span>
-                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
+                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>�<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
                 </span>
                 <div class="flex items-center gap-1">
                     <button type="button" @click="prevPage()" :disabled="currentPage === 1"
@@ -240,7 +240,7 @@
 
         </div>{{-- /inner layout --}}
 
-        {{-- ── Tunjuk Penguji Modal ── --}}
+        {{-- -- Tunjuk Penguji Modal -- --}}
         <div x-show="openAddModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
              class="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-sm" @click="openAddModal = false" style="display: none;"></div>
 

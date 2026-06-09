@@ -115,7 +115,7 @@
             <!-- Logo area -->
             <div class="mb-14 flex items-center justify-center gap-2.5">
                 <!-- Logo image -->
-                <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
+                <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
             </div>
 
             <!-- Focus Icon Circle -->

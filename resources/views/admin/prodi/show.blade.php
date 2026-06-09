@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Dosen Prodi — ' . $prodi->nama)
+@section('title', 'Dosen Prodi � ' . $prodi->nama)
 
 @section('content')
 
@@ -209,7 +209,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                         </button>
 
-                                        {{-- ── Delete Modal ── --}}
+                                        {{-- -- Delete Modal -- --}}
                                         <div x-show="showDeleteModal" x-transition.opacity
                                              class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
                                              @click.self="showDeleteModal = false" style="display: none;">
@@ -250,7 +250,7 @@
                                         </div>
                                     </div>
 
-                                    {{-- ── Edit Modal ── --}}
+                                    {{-- -- Edit Modal -- --}}
                                     <div x-show="openEditModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                                         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
                                         @click.self="openEditModal = false" style="display: none;">
@@ -346,7 +346,7 @@
                                                                 class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
                                                             <div>
                                                                 <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                                                <p class="text-xs text-gray-400">Hanya 1 per prodi — menggantikan kaprodi sebelumnya</p>
+                                                                <p class="text-xs text-gray-400">Hanya 1 per prodi � menggantikan kaprodi sebelumnya</p>
                                                             </div>
                                                         </label>
                                                     </div>
@@ -390,7 +390,7 @@
         </div>
         </div>
 
-        {{-- ── Add Modal ── --}}
+        {{-- -- Add Modal -- --}}
         <div x-show="openAddModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
             @click.self="openAddModal = false" style="display: none;">
@@ -467,7 +467,7 @@
                                     class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
                                 <div>
                                     <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                    <p class="text-xs text-gray-400">Hanya 1 per prodi — menggantikan kaprodi sebelumnya</p>
+                                    <p class="text-xs text-gray-400">Hanya 1 per prodi � menggantikan kaprodi sebelumnya</p>
                                 </div>
                             </label>
                         </div>
@@ -483,7 +483,7 @@
             </div>
         </div>
 
-        {{-- ── Import Modal ── --}}
+        {{-- -- Import Modal -- --}}
         <div x-show="openImportModal"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
@@ -531,7 +531,7 @@
                     <div class="p-5">
                         <p class="text-sm text-gray-500 leading-relaxed mb-4">
                             Upload file <span class="font-medium text-gray-700">.xlsx</span> atau
-                            <span class="font-medium text-gray-700">.csv</span> — header baris pertama:
+                            <span class="font-medium text-gray-700">.csv</span> � header baris pertama:
                             <code class="font-medium text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
                         </p>
 

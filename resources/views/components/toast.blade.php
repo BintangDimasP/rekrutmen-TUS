@@ -1,4 +1,4 @@
-﻿{{-- Toast Notification Component - Matches mockup design --}}
+{{-- Toast Notification Component - Matches mockup design --}}
 {{-- Included in layout, handles: session('success'), session('error'), session('warning'), session('info'), $errors --}}
 
 <div id="toast-stack" class="fixed top-6 right-6 z-[9999] flex flex-col gap-3 pointer-events-none" style="max-width:400px;">

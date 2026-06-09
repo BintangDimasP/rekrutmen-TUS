@@ -144,7 +144,7 @@
     <div class="flex items-center gap-2.5">
         <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
                 <div class="relative w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">
-                    <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-8 object-contain">
+                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-8 object-contain">
                 </div>
             </a>
     </div>

@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Detail Lamaran — ' . $lamaran->pelamar->nama)
+@section('title', 'Detail Lamaran � ' . $lamaran->pelamar->nama)
 
 @section('content')
 @php
@@ -407,12 +407,12 @@
                 @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
                 <div class="space-y-6">
 
-                    {{-- ── MICRO TEACHING ── --}}
+                    {{-- -- MICRO TEACHING -- --}}
                     @if($micro && $micro->count() > 0)
                     <div>
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Micro Teaching
-                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} • {{ $micro[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $micro[0]->tanggal->format('d M Y') }} � {{ $micro[0]->session_label }}</span>
                             
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
@@ -492,12 +492,12 @@
                     </div>
                     @endif
 
-                    {{-- ── WAWANCARA ── --}}
+                    {{-- -- WAWANCARA -- --}}
                     @if($wawancara && $wawancara->count() > 0)
                     <div class="mt-4">
                         <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-4">
                             Wawancara
-                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} • {{ $wawancara[0]->session_label }}</span>
+                            <span class="text-gray-500 font-normal">{{ $wawancara[0]->tanggal->format('d M Y') }} � {{ $wawancara[0]->session_label }}</span>
                             
                         </h4>
                         <div class="border border-gray-200 rounded-xl overflow-hidden">
@@ -582,7 +582,7 @@
                     </div>
                     @endif
 
-                    {{-- ── KUALIFIKASI DOSEN ── --}}
+                    {{-- -- KUALIFIKASI DOSEN -- --}}
                     @php
                         // Ambil status rekrutmen dari penilaian wawancara (penguji pertama yang menilai)
                         $statusRekrutmenNilai = $wawancaraDinilai->first()?->penilaian?->status_rekrutmen ?? null;
@@ -684,7 +684,7 @@
                                 </tbody>
                             </table>
                             <div class="px-4 py-2 bg-gray-50 border-t border-gray-100">
-                                <p class="text-[0.65rem] text-gray-400">(Micro×20%) + (WWC×40%) + (Kualifikasi×40%)</p>
+                                <p class="text-[0.65rem] text-gray-400">(Micro�20%) + (WWC�40%) + (Kualifikasi�40%)</p>
                             </div>
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Lowongan')
 
@@ -121,7 +121,7 @@
                                             class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-indigo-50 text-indigo-700">{{ $lowongan->jenjang_minimal }}</span>
                                         <span
                                             class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-gray-100 text-gray-600">IPK
-                                            ≥ {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                                            = {{ number_format($lowongan->minimal_ipk, 2) }}</span>
                                     </div>
                                     @if($lowongan->skill_dibutuhkan)
                                         <div class="flex flex-wrap gap-1 mt-1.5">

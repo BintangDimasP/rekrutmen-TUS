@@ -53,7 +53,7 @@
 
             <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
                 <div class="mb-14">
-                    <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="h-10 object-contain">
+                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="h-10 object-contain">
                 </div>
                 <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

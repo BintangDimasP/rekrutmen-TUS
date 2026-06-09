@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Akses Sistem')
 
@@ -194,7 +194,7 @@
                                     @endif
                                 </div>
                                 
-                                {{-- ── Edit Modal ── --}}
+                                {{-- -- Edit Modal -- --}}
                                 <div x-show="openEditModal" x-transition.opacity
                                     class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
                                     @click.self="openEditModal = false" style="display: none;">
@@ -244,7 +244,7 @@
                                     </div>
                                 </div>
 
-                                {{-- ── Delete / Cabut Role Modal ── --}}
+                                {{-- -- Delete / Cabut Role Modal -- --}}
                                 @if($user->id !== auth()->id())
                                 <div x-show="openDeleteModal" x-transition.opacity
                                      class="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
@@ -309,7 +309,7 @@
             {{-- Pagination --}}
             <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
                 <span>
-                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
+                    Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>�<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data
                 </span>
                 <div class="flex items-center gap-1">
                     {{-- Previous --}}

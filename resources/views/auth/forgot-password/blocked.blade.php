@@ -37,7 +37,7 @@
 
             <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
                 <div class="mb-14 flex items-center justify-center gap-2.5">
-                    <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
+                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
                 </div>
 
                 <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm">

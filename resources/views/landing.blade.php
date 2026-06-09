@@ -143,8 +143,8 @@
         <div class="max-w-[1200px] mx-auto px-5 sm:px-8 h-[68px] flex items-center justify-between">
             <a href="{{ url('/') }}" class="flex items-center gap-2.5 no-underline">
                 <div class="relative w-[100px] sm:w-[120px] h-14 flex items-center justify-center shrink-0 overflow-hidden">
-                    <img src="{{ asset('storage/images/logo1.png') }}" alt="Telkom University Logo" class="logo-normal w-full h-8 object-contain transition-opacity duration-300 opacity-100">
-                    <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University Logo" class="logo-scrolled w-full h-8 object-contain transition-opacity duration-300 opacity-0 absolute">
+                    <img src="{{ asset('images/logo1.png') }}" alt="Telkom University Logo" class="logo-normal w-full h-8 object-contain transition-opacity duration-300 opacity-100">
+                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="logo-scrolled w-full h-8 object-contain transition-opacity duration-300 opacity-0 absolute">
                 </div>
             </a>
 
@@ -465,7 +465,7 @@
                 <div class="shrink-0 w-full md:w-[200px] h-[130px] rounded-xl overflow-hidden shadow-sm">
                     {{-- Simpan foto gedung di: storage/app/public/images/telu-surabaya.jpg --}}
                     @if(file_exists(storage_path('app/public/images/telu-surabaya.jpg')))
-                        <img src="{{ asset('storage/images/telu-surabaya.jpg') }}"
+                        <img src="{{ asset('images/telu-surabaya.jpg') }}"
                              alt="Gedung Telkom University Surabaya"
                              class="w-full h-full object-cover">
                     @else
@@ -526,7 +526,7 @@
         <div class="max-w-[1200px] mx-auto px-5 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
             {{-- Logo --}}
             <div>
-                <img src="{{ asset('storage/images/logo2.png') }}" alt="Telkom University" class="h-12 object-contain mb-4">
+                <img src="{{ asset('images/logo2.png') }}" alt="Telkom University" class="h-12 object-contain mb-4">
             </div>
 
             {{-- Kontak Kami --}}

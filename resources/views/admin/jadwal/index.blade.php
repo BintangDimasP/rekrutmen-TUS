@@ -1,4 +1,4 @@
-Ôªø@extends('layouts.admin')
+@extends('layouts.admin')
 @section('title', 'Penjadwalan')
 @section('content')
 
@@ -55,7 +55,7 @@
                     </button>
                 </div>
 
-                {{-- Tanggal ‚Äî input date langsung (tanpa dropdown) --}}
+                {{-- Tanggal ó input date langsung (tanpa dropdown) --}}
                 <div class="flex items-center gap-1.5">
                     <input type="date" x-model="fTanggal"
                            class="px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]/20 transition cursor-pointer"
@@ -214,7 +214,7 @@
                         <td class="py-4 px-4 align-top">
                             @if($mFirst && $mInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
-                                    <div><strong>Sesi {{ $mFirst->sesi }}:</strong> {{ $mInfo['start'] }} ‚Äì {{ $mInfo['end'] }}</div>
+                                    <div><strong>Sesi {{ $mFirst->sesi }}:</strong> {{ $mInfo['start'] }} ñ {{ $mInfo['end'] }}</div>
                                     <div class="leading-snug">
                                         <strong>Penguji:</strong>
                                         @foreach($row->micro as $mj)
@@ -258,7 +258,7 @@
                         <td class="py-4 px-4 align-top">
                             @if($wFirst && $wInfo)
                                 <div class="text-xs text-gray-700 space-y-1">
-                                    <div><strong>Sesi {{ $wFirst->sesi }}:</strong> {{ $wInfo['start'] }} ‚Äì {{ $wInfo['end'] }}</div>
+                                    <div><strong>Sesi {{ $wFirst->sesi }}:</strong> {{ $wInfo['start'] }} ñ {{ $wInfo['end'] }}</div>
                                     <div class="leading-snug">
                                         <strong>Penguji:</strong>
                                         @foreach($row->wawancara as $wj)
@@ -354,7 +354,7 @@
 
         {{-- Pagination --}}
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-            <span>Menampilkan <strong x-text="paginatedStart + 1"></strong>‚Äì<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
+            <span>Menampilkan <strong x-text="paginatedStart + 1"></strong>ñ<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
             <div class="flex items-center gap-1">
                 {{-- Previous --}}
                 <button type="button" @click="prevPage()" :disabled="currentPage === 1"
@@ -377,7 +377,7 @@
         </div>
     </div>
 
-{{-- ‚ïê‚ïê MODAL EDIT ‚ïê‚ïê --}}
+{{-- -- MODAL EDIT -- --}}
 <template x-teleport="body">
 <div x-show="modal.open" style="display:none" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
     
@@ -558,7 +558,7 @@
                                     'border-gray-200 bg-white text-gray-800': modal.wSesi && !isSesiBlocked(parseInt(modal.wSesi)),
                                     'border-gray-200 bg-white text-gray-400': !modal.wSesi
                                 }">
-                                <span x-text="modal.wSesi ? (mSessions[modal.wSesi]?.label ?? 'Sesi ' + modal.wSesi) : '‚Äî Pilih Sesi ‚Äî'"></span>
+                                <span x-text="modal.wSesi ? (mSessions[modal.wSesi]?.label ?? 'Sesi ' + modal.wSesi) : 'ó Pilih Sesi ó'"></span>
                                 <svg class="w-3.5 h-3.5 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="openSesi ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                             </button>
                             <div x-show="openSesi" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
@@ -576,7 +576,7 @@
                             </div>
                         </div>
                         <p x-show="modal.wSesi && isSesiBlocked(parseInt(modal.wSesi))"
-                           class="text-[0.7rem] text-red-600 mt-1">Sesi ini bentrok ‚Äî pilih sesi lain.</p>
+                           class="text-[0.7rem] text-red-600 mt-1">Sesi ini bentrok ó pilih sesi lain.</p>
                     </div>
                 </template>
             </div>
@@ -774,7 +774,7 @@ function jadwalIndex() {
 
         sesiLabel(key, info, isBlocked) {
             const base = info.block_label || `Sesi ${key}`;
-            return isBlocked ? base + ' ‚úó' : base;
+            return isBlocked ? base + ' ?' : base;
         },
 
         // Unified sesi check: cek bentrok untuk SEMUA penguji (micro + wawancara) pada sesi ini
