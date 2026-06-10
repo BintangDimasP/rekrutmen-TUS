@@ -35,6 +35,7 @@ class DashboardController extends Controller
         $countProses = ($statusCounts['seleksi_tahap1'] ?? 0) + ($statusCounts['seleksi_tahap2'] ?? 0);
         $countDiterima = $statusCounts['diterima'] ?? 0;
         $countDitolak = $statusCounts['ditolak'] ?? 0;
+        $countMengundurkan = $statusCounts['mengundurkan_diri'] ?? 0;
         
         $statusData = [
             'total' => $totalLamaran,
@@ -42,6 +43,7 @@ class DashboardController extends Controller
             'proses' => $countProses,
             'diterima' => $countDiterima,
             'ditolak' => $countDitolak,
+            'mengundurkan' => $countMengundurkan,
         ];
 
         // 4. Monthly Chart Data

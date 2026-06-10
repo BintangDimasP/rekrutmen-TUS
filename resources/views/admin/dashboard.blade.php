@@ -103,17 +103,19 @@
                 $pProses = ($statusData['proses'] / $t) * 100;
                 $pDiterima = ($statusData['diterima'] / $t) * 100;
                 $pDitolak = ($statusData['ditolak'] / $t) * 100;
+                $pMengundurkan = ($statusData['mengundurkan'] / $t) * 100;
 
                 $offMenunggu = 0;
                 $offProses = -($pMenunggu);
                 $offDiterima = -($pMenunggu + $pProses);
                 $offDitolak = -($pMenunggu + $pProses + $pDiterima);
+                $offMengundurkan = -($pMenunggu + $pProses + $pDiterima + $pDitolak);
             @endphp
 
             <div class="flex items-center justify-center py-2 relative group cursor-pointer">
                 {{-- Tooltip for Donut --}}
                 <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[0.65rem] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                    Menunggu: {{ $statusData['menunggu'] }} | Proses: {{ $statusData['proses'] }}<br>Diterima: {{ $statusData['diterima'] }} | Ditolak: {{ $statusData['ditolak'] }}
+                    Menunggu: {{ $statusData['menunggu'] }} | Proses: {{ $statusData['proses'] }}<br>Diterima: {{ $statusData['diterima'] }} | Ditolak: {{ $statusData['ditolak'] }}<br>Mengundurkan Diri: {{ $statusData['mengundurkan'] }}
                 </div>
 
                 <div class="relative w-32 h-32">
@@ -136,6 +138,10 @@
                             @if($pDitolak > 0)
                                 <circle cx="18" cy="18" r="15.915494309" fill="none" stroke="#ef4444" stroke-width="3.5" stroke-dasharray="{{ $pDitolak }} {{ 100 - $pDitolak }}" stroke-dashoffset="{{ $offDitolak }}"/>
                             @endif
+                            {{-- Mengundurkan Diri (amber) --}}
+                            @if($pMengundurkan > 0)
+                                <circle cx="18" cy="18" r="15.915494309" fill="none" stroke="#f59e0b" stroke-width="3.5" stroke-dasharray="{{ $pMengundurkan }} {{ 100 - $pMengundurkan }}" stroke-dashoffset="{{ $offMengundurkan }}"/>
+                            @endif
                         @endif
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
@@ -152,6 +158,7 @@
                     ['label' => 'Proses',    'color' => 'bg-blue-500', 'count' => $statusData['proses']],
                     ['label' => 'Diterima',  'color' => 'bg-emerald-500', 'count' => $statusData['diterima']],
                     ['label' => 'Ditolak',   'color' => 'bg-red-500', 'count' => $statusData['ditolak']],
+                    ['label' => 'Mengundurkan Diri', 'color' => 'bg-amber-500', 'count' => $statusData['mengundurkan']],
                 ]; @endphp
                 @foreach($statusItems as $s)
                 <div class="flex items-center justify-between text-xs text-gray-600">

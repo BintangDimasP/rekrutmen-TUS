@@ -57,7 +57,12 @@ class HasilAkhirSheet implements FromArray, WithTitle, WithStyles, WithColumnWid
         $no = 1;
         $rekMap = ['direkomendasikan' => 'Direkomendasikan', 'tidak_direkomendasikan' => 'Tidak Direkomendasikan', 'perlu_dipertimbangkan' => 'Perlu Dipertimbangkan'];
 
+        $eligibleIds = $this->data['eligibleIds'] ?? [];
+
         foreach ($this->lowongan->lamarans as $lamaran) {
+            // Hanya pelamar yang sudah dinilai micro & wawancara
+            if (!in_array($lamaran->pelamar_id, $eligibleIds, true)) continue;
+
             // Use snapshot data (data saat melamar) for profile fields
             $pelamar    = $lamaran->effectivePelamar;
             $pelamarId  = $lamaran->pelamar_id;

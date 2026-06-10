@@ -133,13 +133,13 @@
                 <div class="relative ml-auto flex items-center gap-2">
                     
                     {{-- Export Rekap Nilai --}}
-                    <a href="{{ route('admin.lamaran.exportNilai', $lowongan) }}" title="Export Rekap Nilai"
+                    <a href="{{ route('admin.lamaran.exportNilai', $lowongan) }}" download data-no-loading title="Export Rekap Nilai"
                        class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                     </a>
 
                     {{-- Export Pelamar Excel --}}
-                    <a href="{{ route('admin.lamaran.export', $lowongan) }}" title="Export Data Pelamar"
+                    <a href="{{ route('admin.lamaran.export', $lowongan) }}" download data-no-loading title="Export Data Pelamar"
                        class="w-9 h-9 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
                     </a>
@@ -208,7 +208,7 @@
                                     'mengundurkan_diri'=> 'Mengundurkan Diri',
                                 ];
                             @endphp
-                            <span class="inline-flex px-2.5 py-1 rounded-md text-[0.7rem] font-bold border truncate {{ $statusColors[$lamaran->status] ?? $statusColors['menunggu'] }}">
+                            <span class="inline-block px-2.5 py-1 rounded-md text-[0.7rem] font-bold border leading-tight break-words {{ $statusColors[$lamaran->status] ?? $statusColors['menunggu'] }}">
                                 {{ $statusLabels[$lamaran->status] ?? 'Menunggu' }}
                             </span>
                         </td>

@@ -1250,7 +1250,7 @@
                         Pilih File
                     </button>
 
-                    <p class="text-[0.7rem] text-gray-400 text-center">Format: JPG, JPEG, PNG, WEBP — Maksimal 2 MB</p>
+                    <p class="text-[0.7rem] text-gray-400 text-center">Format: JPG, JPEG, PNG, WEBP — Maksimal 8 MB</p>
 
                     <div class="flex gap-3 pt-2">
                         <button type="button" @click="fotoModal = false; resetFotoForm()"

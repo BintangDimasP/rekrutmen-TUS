@@ -45,12 +45,12 @@ class SettingController extends Controller
     public function updateFoto(Request $request)
     {
         $request->validate([
-            'foto_profil' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'foto_profil' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:8192'],
         ], [
             'foto_profil.required' => 'Pilih foto profil terlebih dahulu.',
             'foto_profil.image'    => 'File harus berupa gambar.',
             'foto_profil.mimes'    => 'Format yang diizinkan: jpg, jpeg, png, webp.',
-            'foto_profil.max'      => 'Ukuran foto maksimal 2 MB.',
+            'foto_profil.max'      => 'Ukuran foto maksimal 8 MB.',
         ]);
 
         $user = $request->user();

@@ -17,6 +17,28 @@ class LamaranNilaiExport implements WithMultipleSheets
         $this->data     = $this->buildData();
     }
 
+    /**
+     * ID pelamar yang LAYAK diexport: sudah dinilai pada micro teaching
+     * DAN wawancara. Pelamar yang masih menunggu, mengundurkan diri, atau
+     * belum selesai diuji pada salah satu tahap tidak diikutkan.
+     */
+    public static function eligiblePelamarIds(Lowongan $lowongan): array
+    {
+        return JadwalSeleksi::with('penilaian')
+            ->where('lowongan_id', $lowongan->id)
+            ->get()
+            ->groupBy('pelamar_id')
+            ->filter(function ($group) {
+                $hasMicro = $group->where('tipe_seleksi', 'micro_teaching')
+                    ->first(fn($j) => $j->penilaian !== null) !== null;
+                $hasWawancara = $group->where('tipe_seleksi', 'wawancara')
+                    ->first(fn($j) => $j->penilaian !== null) !== null;
+                return $hasMicro && $hasWawancara;
+            })
+            ->keys()
+            ->all();
+    }
+
     public function sheets(): array
     {
         return [
@@ -33,6 +55,8 @@ class LamaranNilaiExport implements WithMultipleSheets
     {
         $this->lowongan->load(['lamarans.pelamar', 'prodi']);
 
+        $eligibleIds = self::eligiblePelamarIds($this->lowongan);
+
         $microRows     = [];
         $wawancaraRows = [];
 
@@ -42,6 +66,9 @@ class LamaranNilaiExport implements WithMultipleSheets
         $rekMap       = ['direkomendasikan' => 'Direkomendasikan', 'tidak_direkomendasikan' => 'Tidak Direkomendasikan', 'perlu_dipertimbangkan' => 'Perlu Dipertimbangkan'];
 
         foreach ($this->lowongan->lamarans as $lamaran) {
+            // Hanya proses pelamar yang sudah dinilai micro & wawancara
+            if (!in_array($lamaran->pelamar_id, $eligibleIds, true)) continue;
+
             // Use snapshot data (data saat melamar) for profile fields
             $pelamar    = $lamaran->effectivePelamar;
             $pelamarId  = $lamaran->pelamar_id;
@@ -134,6 +161,9 @@ class LamaranNilaiExport implements WithMultipleSheets
         $kualifikasiRows = [];
         $no = 1;
         foreach ($this->lowongan->lamarans as $lamaran) {
+            // Hanya proses pelamar yang sudah dinilai micro & wawancara
+            if (!in_array($lamaran->pelamar_id, $eligibleIds, true)) continue;
+
             // Use snapshot data (data saat melamar) for profile fields
             $pelamar    = $lamaran->effectivePelamar;
             $pelamarId  = $lamaran->pelamar_id;
@@ -208,6 +238,6 @@ class LamaranNilaiExport implements WithMultipleSheets
             ];
         }
 
-        return compact('microRows', 'wawancaraRows', 'kualifikasiRows');
+        return compact('microRows', 'wawancaraRows', 'kualifikasiRows', 'eligibleIds');
     }
 }
