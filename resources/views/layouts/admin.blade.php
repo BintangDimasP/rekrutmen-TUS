@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
     <title>@yield('title', 'Admin Area') — Rekrutmen Telkom University</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
 

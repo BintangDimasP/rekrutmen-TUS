@@ -46,7 +46,8 @@ EXPOSE 8080
 
 # Start the application
 CMD php artisan config:clear \
-    && php artisan storage:link || true \
+    && rm -rf /app/public/storage \
+    && php artisan storage:link \
     && php artisan migrate --force \
     && php artisan config:cache \
     && php artisan route:cache \

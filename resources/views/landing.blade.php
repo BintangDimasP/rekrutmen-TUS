@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    {{-- Paksa tampilan light agar tidak digelapkan otomatis oleh "Force Dark Mode" browser HP --}}
+    <meta name="color-scheme" content="light">
     <title>Rekrutmen Dosen — Telkom University</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
 
@@ -21,6 +23,9 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; }
+
+        /* Kunci skema warna ke light: cegah browser HP menggelapkan halaman */
+        html { color-scheme: light; }
 
         /* ─── Animations (cannot be done purely in Tailwind) ─── */
         @keyframes slideInFromLeft {
@@ -219,56 +224,32 @@
     </nav>
 
     {{-- ========================= HERO ========================= --}}
-    {{-- Desktop: background image kanan. Mobile: layout 2 baris (teks atas, gambar bawah) --}}
-    <section id="hero" class="relative overflow-hidden bg-white">
+    {{-- Satu layout responsif: foto & tulisan selalu berdampingan (mobile, tablet, desktop) --}}
+    <section id="hero" class="relative overflow-hidden bg-white flex items-center min-h-[100svh]">
 
-        {{-- ── DESKTOP layout (md ke atas): background image seperti semula ── --}}
-        <div class="hidden md:flex items-center min-h-screen"
-             style="background: #fff url('{{ asset('images/hero-bg.png') }}') no-repeat center right / cover;">
-            <div class="max-w-[1200px] mx-auto px-8 pt-[100px] pb-[60px] w-full">
-                <div class="relative z-10 max-w-[55%] animate-hero">
-                    <h1 class="animate-hero-1 text-[2.6rem] font-extrabold leading-[1.2] text-gray-900 mb-1">
-                        Wujudkan Karier<br>
-                        Impianmu Bersama<br>
-                        <span class="text-[#8b1515]">Telkom University</span>
-                    </h1>
-                    <p class="animate-hero-2 text-[0.95rem] text-gray-500 leading-relaxed mb-7 max-w-[420px]">
-                        Kami membuka kesempatan emas bagi akademisi terbaik Indonesia untuk berkontribusi sebagai tenaga pendidik profesional di kampus kami.
-                    </p>
-                    <div class="animate-hero-3 flex items-center gap-6 flex-wrap">
-                        <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-7 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5">Selengkapnya</a>
-                        <span class="text-xs text-gray-400 font-medium">
-                            <strong class="text-gray-900 font-bold">{{ $totalPendaftar }}+</strong> Total Pendaftar
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- Background foto: di kanan untuk semua ukuran layar --}}
+        <div class="absolute inset-0 bg-no-repeat bg-cover bg-right"
+             style="background-image: url('{{ asset('images/hero-bg.png') }}');"></div>
 
-        {{-- ── MOBILE layout (di bawah md): teks di atas, gambar di bawah ── --}}
-        <div class="md:hidden flex flex-col">
-            {{-- Teks atas dengan background putih bersih --}}
-            <div class="bg-white px-5 pt-[88px] pb-8 z-10 relative">
-                <h1 class="text-[1.85rem] font-extrabold leading-[1.2] text-gray-900 mb-3">
+        {{-- Overlay gradien putih agar teks tetap terbaca di atas foto (terutama di mobile) --}}
+        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-white/40 sm:to-white/10 md:to-transparent"></div>
+
+        <div class="relative z-10 max-w-[1200px] mx-auto px-5 sm:px-8 pt-[100px] pb-[60px] w-full">
+            <div class="max-w-[68%] sm:max-w-[60%] md:max-w-[55%] animate-hero">
+                <h1 class="animate-hero-1 text-[1.5rem] sm:text-[2rem] md:text-[2.6rem] font-extrabold leading-[1.2] text-gray-900 mb-3 md:mb-1">
                     Wujudkan Karier<br>
                     Impianmu Bersama<br>
                     <span class="text-[#8b1515]">Telkom University</span>
                 </h1>
-                <p class="text-[0.9rem] text-gray-500 leading-relaxed mb-6">
+                <p class="animate-hero-2 text-[0.85rem] sm:text-[0.9rem] md:text-[0.95rem] text-gray-500 leading-relaxed mb-6 md:mb-7 max-w-[420px]">
                     Kami membuka kesempatan emas bagi akademisi terbaik Indonesia untuk berkontribusi sebagai tenaga pendidik profesional di kampus kami.
                 </p>
-                <div class="flex items-center gap-5 flex-wrap">
-                    <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-6 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b]">Selengkapnya</a>
+                <div class="animate-hero-3 flex items-center gap-4 sm:gap-6 flex-wrap">
+                    <a href="#lowongan" class="inline-block no-underline bg-[#8b1515] text-white font-semibold text-sm px-6 sm:px-7 py-3 rounded-md transition-all duration-200 hover:bg-[#991b1b] hover:-translate-y-0.5">Selengkapnya</a>
                     <span class="text-xs text-gray-400 font-medium">
                         <strong class="text-gray-900 font-bold">{{ $totalPendaftar }}+</strong> Total Pendaftar
                     </span>
                 </div>
-            </div>
-            {{-- Gambar penuh di bawah --}}
-            <div class="w-full h-[320px] overflow-hidden">
-                <img src="{{ asset('images/hero-bg.png') }}"
-                     alt="Hero"
-                     class="w-full h-full object-cover object-top">
             </div>
         </div>
 

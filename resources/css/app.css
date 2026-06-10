@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Kunci skema warna ke light untuk seluruh halaman:
+   mencegah browser HP (Chrome/Samsung Internet "Force Dark Mode")
+   menggelapkan tampilan secara otomatis. */
+html {
+    color-scheme: light;
+}
