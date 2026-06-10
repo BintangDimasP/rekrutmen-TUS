@@ -162,11 +162,11 @@
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Nama Pelamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">No Handphone</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Email</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[12%]">Status</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[12%]">Aksi</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Jenjang Pendidikan</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[13%]">No Handphone</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Email</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[15%]">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[14%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -189,7 +189,7 @@
                         <td class="py-3 px-5 max-w-0">
                             <div class="text-sm font-medium text-gray-600 truncate" title="{{ $lamaran->pelamar->user?->email ?? '-' }}">{{ $lamaran->pelamar->user?->email ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-5 max-w-0">
+                        <td class="py-3 px-3 align-top">
                             @php
                                 $statusColors = [
                                     'menunggu'       => 'bg-gray-100 text-gray-600 border-gray-200',
@@ -208,7 +208,7 @@
                                     'mengundurkan_diri'=> 'Mengundurkan Diri',
                                 ];
                             @endphp
-                            <span class="inline-block px-2.5 py-1 rounded-md text-[0.7rem] font-bold border leading-tight break-words {{ $statusColors[$lamaran->status] ?? $statusColors['menunggu'] }}">
+                            <span class="inline-block max-w-full px-2 py-1 rounded-md text-[0.65rem] font-bold border leading-tight text-center [overflow-wrap:anywhere] {{ $statusColors[$lamaran->status] ?? $statusColors['menunggu'] }}">
                                 {{ $statusLabels[$lamaran->status] ?? 'Menunggu' }}
                             </span>
                         </td>
