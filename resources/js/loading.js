@@ -7,8 +7,6 @@ import lottie from 'lottie-web';
 
     var safetyTimer = null;
     var showDelayTimer = null;
-    var topbar      = document.getElementById('top-progress');
-    var topbarTimer = null;
 
     // Inisialisasi Lottie
     var anim = lottie.loadAnimation({
@@ -20,10 +18,10 @@ import lottie from 'lottie-web';
     });
 
     function showLoader() {
-        // Tunda kemunculan: kalau halaman selesai/berpindah dalam <350ms,
+        // Tunda kemunculan: kalau halaman selesai/berpindah dalam <500ms,
         // loader tidak pernah tampil sehingga tidak "ngeflash" di navigasi cepat.
         if (showDelayTimer) clearTimeout(showDelayTimer);
-        showDelayTimer = setTimeout(renderLoader, 350);
+        showDelayTimer = setTimeout(renderLoader, 500);
     }
 
     function renderLoader() {
@@ -47,35 +45,6 @@ import lottie from 'lottie-web';
         }, 300);
     }
 
-    // ── Top progress bar (penanda untuk export/cetak) ──────────────────────
-    function startTopBar() {
-        if (!topbar) return;
-        if (topbarTimer) clearTimeout(topbarTimer);
-        topbar.style.transition = 'none';
-        topbar.style.width = '0%';
-        topbar.style.opacity = '1';
-        void topbar.offsetWidth; // paksa reflow
-        topbar.style.transition = 'width 1.8s cubic-bezier(0.1, 0.7, 0.3, 1)';
-        topbar.style.width = '88%';
-        // Aksi unduh/cetak tidak memicu navigasi, jadi selesaikan otomatis.
-        topbarTimer = setTimeout(finishTopBar, 2000);
-    }
-
-    function finishTopBar() {
-        if (!topbar) return;
-        if (topbarTimer) { clearTimeout(topbarTimer); topbarTimer = null; }
-        topbar.style.transition = 'width 0.25s ease';
-        topbar.style.width = '100%';
-        setTimeout(function () {
-            topbar.style.transition = 'opacity 0.3s ease';
-            topbar.style.opacity = '0';
-            setTimeout(function () {
-                topbar.style.transition = 'none';
-                topbar.style.width = '0%';
-            }, 320);
-        }, 280);
-    }
-
     // Sembunyikan saat first load selesai (tidak tampil saat pertama buka)
     if (document.readyState === 'complete') {
         hideLoader();
@@ -93,30 +62,26 @@ import lottie from 'lottie-web';
         if (!anchor) return;
         var href = anchor.getAttribute('href');
         if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
+
+        // Aksi unduh / buka tab baru (export, cetak berita acara, cetak individu):
+        // tidak terjadi navigasi di tab ini. Biarkan browser menangani
+        // (unduhan muncul di bilah download; tab baru punya loading bawaan
+        // pada judul/favicon tab). Jadi TIDAK perlu loader sama sekali di sini.
+        if (anchor.hasAttribute('download')
+            || anchor.hasAttribute('data-no-loading')
+            || anchor.target === '_blank') return;
+
         try {
             var url = new URL(href, window.location.href);
             if (url.origin !== window.location.origin) return;
         } catch (_) { return; }
-
-        // Aksi export/cetak: hanya mengunduh file atau membuka tab baru —
-        // tidak terjadi navigasi di tab ini. Tampilkan progress bar tipis
-        // di atas (bukan gif layar penuh yang bisa nyangkut).
-        var isUnduh  = anchor.hasAttribute('download') || anchor.hasAttribute('data-no-loading');
-        var isTabBaru = anchor.target === '_blank';
-        if (isUnduh || isTabBaru) {
-            startTopBar();
-            return;
-        }
 
         showLoader();
     });
 
     // Tampilkan saat submit form (skip form dengan data-no-loading)
     document.addEventListener('submit', function (e) {
-        if (e.target && e.target.hasAttribute('data-no-loading')) {
-            startTopBar();
-            return;
-        }
+        if (e.target && e.target.hasAttribute('data-no-loading')) return;
         showLoader();
     });
 })();

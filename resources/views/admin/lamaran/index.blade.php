@@ -161,12 +161,12 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Nama Pelamar</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[13%]">No Handphone</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Email</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[15%]">Status</th>
-                        <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[14%]">Aksi</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[22%]">Nama Pelamar</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[18%]">Jenjang Pendidikan</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[13%]">No Handphone</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[18%]">Email</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[15%]">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[14%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
