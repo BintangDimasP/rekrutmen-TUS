@@ -38,7 +38,7 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi (Prodi Pembuka) <span class="text-red-500">*</span></label>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi <span class="text-red-500">*</span></label>
                             {{-- hidden select tetap ada untuk JS listener & submit --}}
                             <select name="prodi_id" id="prodi_id"
                                     class="hidden">
@@ -84,14 +84,14 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Lowongan <span class="text-red-500">*</span></label>
                             <input type="text" name="nama_posisi" id="nama_posisi" value="{{ old('nama_posisi') }}" placeholder="Dosen Tetap" readonly
                                    class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
                             @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
                       
                         <div>
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan Pendaftaran <span class="text-red-500">*</span></label>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan<span class="text-red-500">*</span></label>
                             <input type="date" name="tanggal_tutup" value="{{ old('tanggal_tutup') }}"
                                    class="w-full px-4 py-2.5 rounded-lg border @error('tanggal_tutup') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                             @error('tanggal_tutup') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
@@ -281,7 +281,7 @@
                 <div class="flex justify-center gap-3 pt-4 border-t border-gray-100">
                     <button type="submit" name="status" value="aktif"
                             class="px-6 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-lg shadow-md transition-colors">
-                        Submit
+                        Tambah Lowongan
                     </button>
                 </div>
             </form>

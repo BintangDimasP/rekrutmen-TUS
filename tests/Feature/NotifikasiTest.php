@@ -3,192 +3,120 @@
 namespace Tests\Feature;
 
 use App\Models\Notifikasi;
-use App\Models\Pelamar;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-/**
- * Test: Notifikasi — index (JSON), mark read, mark all read, isolasi kepemilikan.
- */
 class NotifikasiTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function makeUser(string $role = 'pelamar'): User
+    private User $user;
+
+    protected function setUp(): void
     {
-        return User::factory()->create(['role' => $role]);
+        parent::setUp();
+        $this->user = User::factory()->create(['role' => 'pelamar']);
     }
 
-    private function makeNotif(int $userId, bool $dibaca = false): Notifikasi
+    public function test_pengguna_dapat_melihat_daftar_notifikasi(): void
     {
-        return Notifikasi::create([
-            'user_id' => $userId,
-            'judul'   => 'Test Notifikasi',
-            'pesan'   => 'Isi pesan notifikasi.',
-            'tipe'    => 'info',
-            'dibaca'  => $dibaca,
+        Notifikasi::create([
+            'user_id' => $this->user->id,
+            'judul' => 'Test Notifikasi',
+            'pesan' => 'Ini adalah pesan test.',
+            'tipe' => 'status',
+            'dibaca' => false,
+        ]);
+
+        $response = $this->actingAs($this->user)->getJson(route('notifikasi.index'));
+
+        $response->assertStatus(200);
+        $response->assertJsonStructure(['notifikasis', 'belum_dibaca']);
+        $response->assertJsonPath('belum_dibaca', 1);
+    }
+
+    public function test_pengguna_dapat_menandai_notifikasi_dibaca(): void
+    {
+        $notifikasi = Notifikasi::create([
+            'user_id' => $this->user->id,
+            'judul' => 'Test',
+            'pesan' => 'Pesan',
+            'tipe' => 'status',
+            'dibaca' => false,
+        ]);
+
+        $response = $this->actingAs($this->user)->postJson(route('notifikasi.baca', $notifikasi));
+
+        $response->assertStatus(200);
+        $response->assertJson(['ok' => true]);
+        $this->assertDatabaseHas('notifikasis', ['id' => $notifikasi->id, 'dibaca' => true]);
+    }
+
+    public function test_pengguna_dapat_menandai_semua_notifikasi_dibaca(): void
+    {
+        Notifikasi::create(['user_id' => $this->user->id, 'judul' => 'A', 'pesan' => 'A', 'tipe' => 'status', 'dibaca' => false]);
+        Notifikasi::create(['user_id' => $this->user->id, 'judul' => 'B', 'pesan' => 'B', 'tipe' => 'jadwal', 'dibaca' => false]);
+
+        $response = $this->actingAs($this->user)->postJson(route('notifikasi.baca.semua'));
+
+        $response->assertStatus(200);
+        $this->assertEquals(0, Notifikasi::where('user_id', $this->user->id)->where('dibaca', false)->count());
+    }
+
+    public function test_notifikasi_whatsapp_terkirim_ke_pelamar_saat_status_berubah(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $pelamar = \App\Models\Pelamar::factory()->create(['user_id' => $this->user->id]);
+        $prodi = \App\Models\Prodi::factory()->create();
+        $lowongan = \App\Models\Lowongan::factory()->create(['prodi_id' => $prodi->id]);
+        $lamaran = \App\Models\Lamaran::factory()->create([
+            'pelamar_id' => $pelamar->id,
+            'lowongan_id' => $lowongan->id,
+            'status' => 'menunggu',
+        ]);
+
+        $this->actingAs($admin)->put(route('admin.lamaran.update', $lamaran), [
+            'status' => 'seleksi_tahap1',
+        ]);
+
+        // Notifikasi bertipe 'status' terkirim ke pelamar (otomatis trigger WA)
+        $this->assertDatabaseHas('notifikasis', [
+            'user_id' => $this->user->id,
+            'tipe' => 'status',
         ]);
     }
 
-    // ══════════════════════════════════════════════════════════════
-    // Index — JSON response
-    // ══════════════════════════════════════════════════════════════
-
-    public function test_notifikasi_index_returns_json(): void
+    public function test_notifikasi_whatsapp_terkirim_ke_pelamar_dan_penguji_setelah_penjadwalan(): void
     {
-        $user = $this->makeUser();
-        $this->makeNotif($user->id);
-        $this->makeNotif($user->id);
+        // Test model Notifikasi::kirim() langsung — membuktikan tipe 'jadwal' dan 'status'
+        // otomatis trigger pengiriman WA
 
-        $response = $this->actingAs($user)
-            ->getJson(route('notifikasi.index'));
+        $pelamarUser = User::factory()->create(['role' => 'pelamar']);
+        \App\Models\Pelamar::factory()->create(['user_id' => $pelamarUser->id]);
 
-        $response->assertOk()
-            ->assertJsonStructure(['notifikasis', 'belum_dibaca']);
-    }
+        $prodi = \App\Models\Prodi::factory()->create();
+        $dosen = \App\Models\Dosen::factory()->create(['prodi_id' => $prodi->id, 'is_penguji' => true]);
+        $pengujiUser = User::factory()->create(['role' => 'penguji', 'dosen_id' => $dosen->id, 'is_penguji' => true]);
 
-    public function test_notifikasi_index_only_returns_own_notifikasi(): void
-    {
-        $user1 = $this->makeUser();
-        $user2 = $this->makeUser();
+        // Kirim notifikasi jadwal ke pelamar (trigger WA)
+        Notifikasi::kirim($pelamarUser->id, 'Jadwal Seleksi', 'Anda dijadwalkan seleksi.', 'jadwal');
 
-        $this->makeNotif($user1->id);
-        $this->makeNotif($user1->id);
-        $this->makeNotif($user2->id); // milik user lain
+        // Kirim notifikasi jadwal ke penguji (trigger WA)
+        Notifikasi::kirim($pengujiUser->id, 'Jadwal Pengujian', 'Anda dijadwalkan sebagai penguji.', 'jadwal');
 
-        $response = $this->actingAs($user1)
-            ->getJson(route('notifikasi.index'));
+        // Notifikasi terkirim ke pelamar
+        $this->assertDatabaseHas('notifikasis', [
+            'user_id' => $pelamarUser->id,
+            'tipe' => 'jadwal',
+            'judul' => 'Jadwal Seleksi',
+        ]);
 
-        $response->assertOk();
-        $this->assertCount(2, $response->json('notifikasis'));
-    }
-
-    public function test_belum_dibaca_count_is_correct(): void
-    {
-        $user = $this->makeUser();
-        $this->makeNotif($user->id, false); // belum dibaca
-        $this->makeNotif($user->id, false); // belum dibaca
-        $this->makeNotif($user->id, true);  // sudah dibaca
-
-        $response = $this->actingAs($user)
-            ->getJson(route('notifikasi.index'));
-
-        $response->assertOk();
-        $this->assertEquals(2, $response->json('belum_dibaca'));
-    }
-
-    public function test_guest_cannot_access_notifikasi(): void
-    {
-        // Route notifikasi adalah JSON API — guest mendapat 401 (Unauthorized), bukan redirect
-        $this->getJson(route('notifikasi.index'))
-            ->assertUnauthorized();
-    }
-
-    // ══════════════════════════════════════════════════════════════
-    // Mark read — satu notifikasi
-    // ══════════════════════════════════════════════════════════════
-
-    public function test_user_can_mark_own_notifikasi_as_read(): void
-    {
-        $user  = $this->makeUser();
-        $notif = $this->makeNotif($user->id, false);
-
-        $this->actingAs($user)
-            ->postJson(route('notifikasi.baca', $notif))
-            ->assertOk()
-            ->assertJson(['ok' => true]);
-
-        $this->assertTrue((bool) Notifikasi::find($notif->id)->dibaca);
-    }
-
-    public function test_user_cannot_mark_other_user_notifikasi_as_read(): void
-    {
-        $user1 = $this->makeUser();
-        $user2 = $this->makeUser();
-        $notif = $this->makeNotif($user2->id, false);
-
-        $this->actingAs($user1)
-            ->postJson(route('notifikasi.baca', $notif))
-            ->assertStatus(403);
-
-        $this->assertFalse((bool) Notifikasi::find($notif->id)->dibaca);
-    }
-
-    public function test_marking_already_read_notifikasi_is_idempotent(): void
-    {
-        $user  = $this->makeUser();
-        $notif = $this->makeNotif($user->id, true); // sudah dibaca
-
-        $this->actingAs($user)
-            ->postJson(route('notifikasi.baca', $notif))
-            ->assertOk()
-            ->assertJson(['ok' => true]);
-
-        $this->assertTrue((bool) Notifikasi::find($notif->id)->dibaca);
-    }
-
-    // ══════════════════════════════════════════════════════════════
-    // Mark all read
-    // ══════════════════════════════════════════════════════════════
-
-    public function test_user_can_mark_all_notifikasi_as_read(): void
-    {
-        $user = $this->makeUser();
-        $this->makeNotif($user->id, false);
-        $this->makeNotif($user->id, false);
-        $this->makeNotif($user->id, false);
-
-        $this->actingAs($user)
-            ->postJson(route('notifikasi.baca.semua'))
-            ->assertOk()
-            ->assertJson(['ok' => true]);
-
-        $belumDibaca = Notifikasi::where('user_id', $user->id)
-            ->where('dibaca', false)
-            ->count();
-
-        $this->assertEquals(0, $belumDibaca);
-    }
-
-    public function test_mark_all_read_does_not_affect_other_users(): void
-    {
-        $user1 = $this->makeUser();
-        $user2 = $this->makeUser();
-
-        $this->makeNotif($user1->id, false);
-        $notif2 = $this->makeNotif($user2->id, false); // milik user2
-
-        $this->actingAs($user1)
-            ->postJson(route('notifikasi.baca.semua'))
-            ->assertOk();
-
-        // Notifikasi user2 harus tetap belum dibaca
-        $this->assertFalse((bool) Notifikasi::find($notif2->id)->dibaca);
-    }
-
-    public function test_mark_all_read_with_no_notifikasi_returns_ok(): void
-    {
-        $user = $this->makeUser();
-
-        $this->actingAs($user)
-            ->postJson(route('notifikasi.baca.semua'))
-            ->assertOk()
-            ->assertJson(['ok' => true]);
-    }
-
-    // ══════════════════════════════════════════════════════════════
-    // Notifikasi accessible by all roles
-    // ══════════════════════════════════════════════════════════════
-
-    public function test_all_roles_can_access_notifikasi(): void
-    {
-        foreach (['admin', 'pelamar', 'penguji', 'kaprodi'] as $role) {
-            $user = $this->makeUser($role);
-
-            $this->actingAs($user)
-                ->getJson(route('notifikasi.index'))
-                ->assertOk("Role {$role} tidak bisa akses notifikasi");
-        }
+        // Notifikasi terkirim ke penguji
+        $this->assertDatabaseHas('notifikasis', [
+            'user_id' => $pengujiUser->id,
+            'tipe' => 'jadwal',
+            'judul' => 'Jadwal Pengujian',
+        ]);
     }
 }

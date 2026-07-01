@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use App\Services\FonnteService;
+use App\Traits\NotificationMessage;
 use Illuminate\Database\Eloquent\Model;
 
 class Notifikasi extends Model
 {
+    use NotificationMessage;
+
     protected $fillable = [
         'user_id',
         'judul',
@@ -31,10 +33,25 @@ class Notifikasi extends Model
 
     /**
      * Kirim notifikasi ke satu user.
-     * Jika tipe termasuk jadwal/status, otomatis kirim juga via WhatsApp.
+     * Jika tipe termasuk jadwal/status DAN ada template WA, kirim juga via WhatsApp.
+     *
+     * @param int         $userId
+     * @param string      $judul
+     * @param string      $pesan
+     * @param string      $tipe         info|jadwal|status|sistem|pelamar
+     * @param string|null $waTemplate   Nama template Wappin (null = tidak kirim WA)
+     * @param array       $waParams     Parameter template ['param1', 'param2', ...]
+     * @param string      $waUrl        URL untuk button template ('-' = tidak ada)
      */
-    public static function kirim(int $userId, string $judul, string $pesan, string $tipe = 'info'): void
-    {
+    public static function kirim(
+        int $userId,
+        string $judul,
+        string $pesan,
+        string $tipe = 'info',
+        ?string $waTemplate = null,
+        array $waParams = [],
+        string $waUrl = '-'
+    ): void {
         // 1. Simpan notifikasi in-app
         static::create([
             'user_id' => $userId,
@@ -44,9 +61,9 @@ class Notifikasi extends Model
             'dibaca'  => false,
         ]);
 
-        // 2. Kirim WhatsApp jika tipe termasuk yang di-broadcast
-        if (in_array($tipe, self::WA_TIPES)) {
-            static::kirimWhatsApp($userId, $judul, $pesan);
+        // 2. Kirim WhatsApp jika tipe termasuk yang di-broadcast DAN template disediakan
+        if (in_array($tipe, self::WA_TIPES) && $waTemplate) {
+            static::kirimWhatsApp($userId, $waTemplate, $waParams, $waUrl);
         }
     }
 
@@ -79,9 +96,9 @@ class Notifikasi extends Model
     }
 
     /**
-     * Kirim pesan WhatsApp ke user berdasarkan nomor telepon yang tersedia.
+     * Kirim pesan WhatsApp via Wappin template.
      */
-    private static function kirimWhatsApp(int $userId, string $judul, string $pesan): void
+    private static function kirimWhatsApp(int $userId, string $templateName, array $params, string $url = '-'): void
     {
         $user = User::with(['pelamar', 'dosen'])->find($userId);
 
@@ -102,9 +119,7 @@ class Notifikasi extends Model
             return;
         }
 
-        // Format pesan WhatsApp
-        $waMessage = "*{$judul}*\n\n{$pesan}\n\n— Rekrutmen Telkom University";
-
-        FonnteService::send($noTelepon, $waMessage);
+        // Kirim via Wappin trait
+        (new static)->sendWhatsapp($url, $noTelepon, $templateName, $params);
     }
 }

@@ -127,6 +127,11 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'wappin' => [
+        'driver' => 'single',
+        'path'   => storage_path('logs/wappin.log'),
+        'level'  => 'debug',
+        ],
     ],
 
 ];

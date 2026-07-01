@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Services\FonnteService;
+use App\Traits\NotificationMessage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 
 class PhoneVerificationOtpController extends Controller
 {
+    use NotificationMessage;
+
     private const OTP_VALID_MINUTES = 5;
 
     private const OTP_RESEND_COOLDOWN = 60; // detik
@@ -23,7 +25,7 @@ class PhoneVerificationOtpController extends Controller
     public function sendOtp(Request $request)
     {
         // Tolak jika verifikasi WA dinonaktifkan
-        if (! config('services.fonnte.phone_verification_required')) {
+        if (! config('services.wappin.enabled')) {
             return response()->json(['message' => 'Fitur verifikasi WhatsApp sedang dinonaktifkan.'], 403);
         }
 
@@ -45,10 +47,9 @@ class PhoneVerificationOtpController extends Controller
         }
 
         // Normalisasi nomor untuk key database
-        $normalizedPhone = FonnteService::normalizePhoneNumber($phone);
-
-        if (empty($normalizedPhone)) {
-            return response()->json(['message' => 'Format nomor telepon tidak valid.'], 400);
+        $normalizedPhone = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($normalizedPhone, '0')) {
+            $normalizedPhone = '62' . substr($normalizedPhone, 1);
         }
 
         // Cek cooldown
@@ -85,13 +86,8 @@ class PhoneVerificationOtpController extends Controller
         ]);
 
         // Kirim OTP via WhatsApp (Fonnte)
-        $message = "*Kode Verifikasi WhatsApp*\n\n"
-                 ."Kode OTP Anda: *{$otp}*\n\n"
-                 .'Berlaku selama '.self::OTP_VALID_MINUTES." menit.\n"
-                 ."Jangan berikan kode ini kepada siapapun.\n\n"
-                 .'— Rekrutmen Telkom University';
-
-        $sent = FonnteService::send($normalizedPhone, $message);
+        $result = $this->sendWhatsapp('-', $normalizedPhone, 'rekrutmen_informasi_send_otp', [$otp]);
+        $sent = $result['status'] ?? false;
 
         if (! $sent) {
             DB::table('phone_verification_otps')->where('phone', $normalizedPhone)->delete();
@@ -124,7 +120,10 @@ class PhoneVerificationOtpController extends Controller
         }
 
         $phone = $pelamar->no_telepon;
-        $normalizedPhone = FonnteService::normalizePhoneNumber($phone);
+        $normalizedPhone = preg_replace('/[^0-9]/', '', $phone);
+        if (str_starts_with($normalizedPhone, '0')) {
+            $normalizedPhone = '62' . substr($normalizedPhone, 1);
+        }
         $inputOtp = $request->otp;
 
         $record = DB::table('phone_verification_otps')

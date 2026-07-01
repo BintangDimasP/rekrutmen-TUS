@@ -245,7 +245,9 @@ class JadwalSeleksiController extends Controller
                 $pelamar->user->id,
                 'Jadwal Seleksi Ditetapkan',
                 "Anda dijadwalkan mengikuti seleksi untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk melihat detail kedua tahapan pengujian pada sesi ini.",
-                'jadwal'
+                'jadwal',
+                'rekrutmen_informasi_pelamar_jadwal_ujian',
+                [$posisi, $tanggal, $sesiLabel]
             );
         }
 
@@ -260,7 +262,9 @@ class JadwalSeleksiController extends Controller
                     $userPenguji->id,
                     'Jadwal Pengujian Ditetapkan',
                     "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa daftar jadwal pengujian Anda untuk melihat detail pelamar dan urutan pengujiannya.",
-                    'jadwal'
+                    'jadwal',
+                    'rekrutmen_information_jadwal_uji',
+                    [$posisi, $tanggal, $sesiLabel]
                 );
             }
         }
@@ -351,7 +355,9 @@ class JadwalSeleksiController extends Controller
                 $jadwal->pelamar->user->id,
                 'Jadwal Seleksi Diperbarui',
                 "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk menyesuaikan persiapan pengujian.",
-                'jadwal'
+                'jadwal',
+                'rekrutmen_informasi_pelamar_pergantian_jadwal_ujian',
+                [$posisi, $tanggal, $sesiLabel]
             );
         }
         if ($jadwal->penguji) {
@@ -361,7 +367,9 @@ class JadwalSeleksiController extends Controller
                     $userPenguji->id,
                     'Jadwal Pengujian Diperbarui',
                     "Jadwal Anda sebagai penguji untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali daftar jadwal pengujian untuk penyesuaian agenda Anda.",
-                    'jadwal'
+                    'jadwal',
+                    'rekrutmen_informasi_pergantian_jadwal',
+                    [$posisi, $tanggal, $sesiLabel]
                 );
             }
         }
@@ -538,7 +546,9 @@ class JadwalSeleksiController extends Controller
                 $pelamar->user->id,
                 'Jadwal Seleksi Diperbarui',
                 "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk menyesuaikan persiapan pengujian.",
-                'jadwal'
+                'jadwal',
+                'rekrutmen_informasi_pelamar_pergantian_jadwal_ujian',
+                [$posisi, $tanggal, $sesiLabel]
             );
         }
 
@@ -557,7 +567,9 @@ class JadwalSeleksiController extends Controller
                     $userPenguji->id,
                     'Jadwal Pengujian Dibatalkan',
                     "Anda tidak lagi dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}.",
-                    'jadwal'
+                    'jadwal',
+                    'rekrutmen_informasi_penghentian_jadwal_uji',
+                    [$posisi, $tanggal, $sesiLabel]
                 );
             }
         }
@@ -571,7 +583,9 @@ class JadwalSeleksiController extends Controller
                     $userPenguji->id,
                     'Jadwal Pengujian Ditetapkan',
                     "Anda dijadwalkan sebagai penguji untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa daftar jadwal pengujian Anda untuk melihat detail pelamar dan urutan pengujiannya.",
-                    'jadwal'
+                    'jadwal',
+                    'rekrutmen_information_jadwal_uji',
+                    [$posisi, $tanggal, $sesiLabel]
                 );
             }
         }
@@ -585,7 +599,9 @@ class JadwalSeleksiController extends Controller
                     $userPenguji->id,
                     'Jadwal Pengujian Diperbarui',
                     "Jadwal Anda sebagai penguji untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali daftar jadwal pengujian untuk penyesuaian agenda Anda.",
-                    'jadwal'
+                    'jadwal',
+                    'rekrutmen_informasi_pergantian_jadwal',
+                    [$posisi, $tanggal, $sesiLabel]
                 );
             }
         }

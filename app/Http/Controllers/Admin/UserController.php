@@ -132,13 +132,8 @@ class UserController extends Controller
             $updateData = [];
 
             if ($isPelamar) {
-                $oldEmail = $user->email;
                 $newEmail = $request->email;
                 $updateData['email'] = $newEmail;
-
-                if ($oldEmail !== $newEmail) {
-                    Pelamar::where('email', $oldEmail)->update(['email' => $newEmail]);
-                }
             }
 
             if ($request->filled('password')) {

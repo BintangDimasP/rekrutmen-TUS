@@ -136,7 +136,8 @@
 
             {{-- Tombol + Tambah Admin (inside the filter bar) --}}
             <button type="button" @click="openAddAdminModal = true"
-                    class="absolute top-0 right-0 h-full w-14 z-20 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors cursor-pointer" title="Tambah Admin">
+                    class="absolute top-0 right-0 h-full w-14 z-20 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors cursor-pointer" title="Tambah
+                     Admin">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>
             </button>
         </div>
@@ -218,20 +219,20 @@
                                             
                                             <div class="p-6 space-y-4 text-left">
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Akun</label>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Username</label>
                                                     <input type="text" value="{{ $user->name }}" disabled class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-gray-200 text-sm text-gray-500 cursor-not-allowed">
                                                 </div>
 
                                                 @if($user->role === 'pelamar')
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Email Akses (Login)</label>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Email</label>
                                                     <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                     @if($errors->has('email') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('email') }}</p> @endif
                                                 </div>
                                                 @endif
 
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Reset Kata Sandi <span class="text-xs text-gray-400 font-normal">(kosongkan jika tidak ingin diubah)</span></label>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Password <span class="text-xs text-gray-400 font-normal"></span></label>
                                                     <input type="password" name="password" placeholder="Masukkan password baru..." class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
                                                     @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
                                                 </div>
@@ -348,7 +349,7 @@
                      class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
 
                     <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
-                        <h2 class="text-base font-bold text-white">Tambah Admin Baru</h2>
+                        <h2 class="text-base font-bold text-white">Tambah Admin</h2>
                         <button type="button" @click="openAddAdminModal = false" class="w-7 h-7 flex items-center justify-center rounded-lg border border-white/40 text-white hover:bg-white/10 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
@@ -358,7 +359,7 @@
                         @csrf
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Nama Lengkap <span class="text-red-500">*</span></label>
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Username <span class="text-red-500">*</span></label>
                             <input type="text" name="name" value="{{ old('name') }}" required
                                    placeholder="Nama admin"
                                    class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
@@ -366,12 +367,12 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Username <span class="text-red-500">*</span></label>
-                            <div class="flex items-center border border-gray-200 rounded-xl bg-gray-50 overflow-hidden focus-within:border-[#8b1515] focus-within:ring-2 focus-within:ring-[#8b1515]/15 transition-all">
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Email <span class="text-red-500">*</span></label>
+                            <div class="flex items-center rounded-xl bg-gray-50 border border-gray-200 overflow-hidden">
                                 <input type="text" name="username" value="{{ old('username') }}" required
                                        placeholder="username"
-                                       class="flex-1 px-4 py-2.5 bg-transparent text-sm focus:outline-none">
-                                <span class="px-3 py-2.5 text-xs text-gray-400 bg-gray-100 border-l border-gray-200 whitespace-nowrap font-medium">@admin.telkomuniversity.ac.id</span>
+                                       class="flex-1 min-w-0 px-4 py-2.5 bg-transparent text-sm focus:outline-none border-none ring-0 focus:ring-0">
+                                <span class="shrink-0 px-3 py-2.5 text-xs text-gray-400 border-l border-gray-200 font-medium truncate max-w-[180px]" title="@admin.telkomuniversity.ac.id">@admin.telkomuniversity.ac.id</span>
                             </div>
                             @if($errors->has('username'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('username') }}</p>@endif
                         </div>
@@ -386,7 +387,7 @@
 
                         <div class="pt-2 flex justify-center">
                             <button type="submit" class="px-8 py-2.5 bg-[#8b1515] hover:bg-red-900 text-white text-sm font-bold rounded-xl shadow-md transition-all">
-                                Tambah Admin
+                                Buat Akun
                             </button>
                         </div>
                     </form>

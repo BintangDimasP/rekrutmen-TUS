@@ -207,6 +207,13 @@
             </table>
         </div>
 
+        {{-- Empty state when filter yields no results --}}
+        <div x-show="totalFiltered === 0" class="py-14 text-center" style="display: none;">
+            <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data pelamar</h3>
+            <p class="text-xs text-gray-400">Tidak ada pelamar yang cocok dengan pencarian atau filter.</p>
+        </div>
+
         {{-- Pagination --}}
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <span>
@@ -277,14 +284,10 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 </div>
                 <div class="relative flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                        </div>
+                        
                         <div>
                             <h2 id="modal-title" class="text-lg font-bold text-white">Import Data Pelamar</h2>
-                            <p class="text-red-200 text-xs mt-0.5">Upload file Excel untuk menambah data pelamar</p>
+                            
                         </div>
                     </div>
                     <button @click="showModal = false" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition">
@@ -311,16 +314,9 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 @endif
 
                 {{-- Download Template Link --}}
-                <div class="mb-5 p-3 bg-blue-50 border border-blue-200 rounded-xl flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-sm text-blue-700 font-medium">Belum punya template? Download contoh file di sini</p>
-                    </div>
-                    <a href="{{ asset('templates/pelamar_template.xlsx') }}" download class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                        Download
-                    </a>
-                </div>
+                <p class="mb-5 text-sm text-gray-500">
+                    Belum punya template? <a href="{{ asset('templates/pelamar_template.xlsx') }}" download class="text-[#8b1515] font-semibold hover:underline">Download template di sini</a>
+                </p>
 
                 <form action="{{ route('admin.pelamar.import') }}" method="POST" enctype="multipart/form-data" @submit="isLoading = true">
                     @csrf
@@ -382,16 +378,11 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     
 
                     {{-- Action Buttons --}}
-                    <div class="flex gap-3 mt-6 pt-5 border-t border-gray-100">
-                        <button type="button" 
-                                @click="showModal = false"
-                                class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:border-gray-300 font-semibold text-sm transition-colors">
-                            Batal
-                        </button>
+                    <div class="flex justify-center mt-6 pt-5 border-t border-gray-100">
                         <button type="submit" 
                                 :disabled="!fileName || isLoading"
                                 :class="(!fileName || isLoading) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#8b1515] hover:bg-[#6e1010] text-white shadow-lg shadow-red-500/20 hover:shadow-red-500/30'"
-                                class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2">
+                                class="px-8 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2">
                             <template x-if="!isLoading">
                                 <span class="flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>

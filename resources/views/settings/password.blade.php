@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Akun')
 
 @section('content')
-<div class="{{ auth()->user()->role === 'pelamar' ? 'max-w-lg' : 'max-w-4xl' }} mx-auto"
+<div class="{{ auth()->user()->role === 'pelamar' ? 'max-w-lg' : 'max-w-4xl' }} mx-auto min-h-[calc(100vh-8rem)] flex flex-col justify-center py-6"
      x-data="{
         photoModal: false,
         deletePhotoModal: false,
@@ -38,16 +38,12 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         {{-- Header --}}
-        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-8 py-6">
+        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-8 py-8">
             <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center ring-2 ring-white/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28zM15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    </svg>
-                </div>
+                
                 <div>
                     <h2 class="text-lg font-bold text-white">Pengaturan Akun</h2>
-                    <p class="text-red-200 text-xs mt-0.5">{{ auth()->user()->email }}</p>
+                    
                 </div>
             </div>
         </div>
@@ -58,7 +54,7 @@
 
             {{-- ── Kiri: Foto Profil (non-pelamar only) ── --}}
             @if(!$isPelamar)
-            <div class="p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/40">
+            <div class="p-10 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-100 bg-gray-50/40">
 
                 <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Foto Profil</h3>
 
@@ -94,10 +90,10 @@
             @endif
 
             {{-- ── Kanan: Form Password ── --}}
-            <div class="{{ $isPelamar ? 'p-8' : 'p-8' }}">
-                <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-6">Ubah Password</h3>
+            <div class="{{ $isPelamar ? 'p-10' : 'p-10' }}">
+                <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest mb-8">Ubah Password</h3>
 
-                <form method="POST" action="{{ route('settings.password.update') }}" class="space-y-4">
+                <form method="POST" action="{{ route('settings.password.update') }}" class="space-y-5">
                     @csrf
                     @method('PUT')
 
@@ -133,7 +129,7 @@
                                placeholder="Ulangi password baru">
                     </div>
 
-                    <div class="pt-3">
+                    <div class="pt-5">
                         <button type="submit"
                                 class="w-full py-2.5 bg-[#8b1515] hover:bg-red-900 text-white font-bold text-sm rounded-xl shadow-md transition-colors">
                             Simpan Password

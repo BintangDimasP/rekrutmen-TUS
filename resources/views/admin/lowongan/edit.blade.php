@@ -39,7 +39,7 @@
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi (Prodi Pembuka) <span class="text-red-500">*</span></label>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi <span class="text-red-500">*</span></label>
                             <select name="prodi_id" id="prodi_id" class="hidden">
                                 @foreach($prodis as $prodi)
                                     <option value="{{ $prodi->id }}" data-nama="{{ $prodi->nama }}" {{ old('prodi_id', $lowongan->prodi_id) == $prodi->id ? 'selected' : '' }}>
@@ -75,40 +75,12 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Posisi <span class="text-red-500">*</span></label>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Lowongan <span class="text-red-500">*</span></label>
                             <input type="text" name="nama_posisi" id="nama_posisi" value="{{ old('nama_posisi', $lowongan->nama_posisi) }}" readonly
                                    class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
                             @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Status Publikasi <span class="text-red-500">*</span></label>
-                            <div x-data="{
-                                    open: false,
-                                    val: '{{ old('status', $lowongan->status) }}',
-                                    opts: [{ v: 'draft', l: 'Draft' }, { v: 'aktif', l: 'Aktif' }],
-                                    get label() { return this.opts.find(o => o.v === this.val)?.l ?? '— Pilih —'; }
-                                 }" @click.outside="open = false" class="relative">
-                                <input type="hidden" name="status" :value="val">
-                                <button type="button" @click="open = !open"
-                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm transition-all"
-                                    :class="val ? 'text-gray-800' : 'text-gray-400'">
-                                    <span x-text="label"></span>
-                                    <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                                </button>
-                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                    <div class="p-1 space-y-0.5">
-                                        <template x-for="opt in opts" :key="opt.v">
-                                            <button type="button" @click="val = opt.v; open = false"
-                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                                :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                                <span x-text="opt.l"></span>
-                                            </button>
-                                        </template>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan <span class="text-red-500">*</span></label>
                             <input type="date" name="tanggal_tutup" value="{{ old('tanggal_tutup', $lowongan->tanggal_tutup->format('Y-m-d')) }}"
@@ -236,7 +208,7 @@
                             <div class="flex items-center gap-3">
                                 <input type="number" name="kuota" value="{{ old('kuota', $lowongan->kuota) }}" min="1"
                                        class="w-40 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                                <span class="text-sm text-gray-500">orang &bull; Terpakai: <strong>{{ $lowongan->lamarans->count() }}</strong> &bull; Sisa: <strong class="{{ $lowongan->sisa_kuota <= 0 ? 'text-red-600' : 'text-gray-800' }}">{{ $lowongan->sisa_kuota }}</strong></span>
+                               
                             </div>
                         </div>
                     </div>

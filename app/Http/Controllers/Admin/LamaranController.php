@@ -132,7 +132,9 @@ class LamaranController extends Controller
                     'Status Lamaran Diperbarui',
                     "Status lamaran Anda untuk posisi \"{$posisi}\" telah diubah menjadi: {$labelBaru}." .
                     ($lamaran->catatan_admin ? " Catatan: {$lamaran->catatan_admin}" : ''),
-                    'status'
+                    'status',
+                    'rekrutmen_informasi_status_pelamar',
+                    [$posisi, $labelBaru, $lamaran->catatan_admin ?? '-']
                 );
             }
 

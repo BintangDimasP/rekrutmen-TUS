@@ -138,11 +138,11 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:700px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[12%]">Kode</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">NIP/NIDN</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[10%]">Kode</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[16%]">NIP/NIDN</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Status</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right w-[12%]">Aksi</th>
                         </tr>
                     </thead>
@@ -181,14 +181,14 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-5 text-sm">
-                                    <div class="flex flex-wrap gap-1.5">
+                                    <div class="flex items-center gap-1.5 flex-nowrap">
                                         @if($dosen->is_kaprodi)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800">Kaprodi</span>
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 whitespace-nowrap">Kaprodi</span>
                                         @endif
                                         @if($dosen->is_penguji)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800">Penguji</span>
+                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800 whitespace-nowrap">Penguji</span>
                                         @endif
                                         @if(!$dosen->is_kaprodi && !$dosen->is_penguji)
                                             <span class="text-gray-400">-</span>
@@ -282,20 +282,18 @@
 
                                                 <div class="p-6 space-y-4">
                                                     <div>
-                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama
-                                                            Lengkap</label>
+                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Lengkap</label>
                                                         <input type="text" name="nama" value="{{ old('nama', $dosen->nama) }}"
-                                                            required
+                                                            required placeholder="Dr. Budi Santoso, M.Kom."
                                                             class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('nama') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('nama') }}</p>
                                                         @endif
                                                     </div>
                                                     <div>
-                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode
-                                                            Dosen</label>
+                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode Dosen</label>
                                                         <input type="text" name="kode" value="{{ old('kode', $dosen->kode) }}"
-                                                            required
+                                                            required placeholder="BDS"
                                                             class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('kode') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p>
@@ -303,52 +301,48 @@
                                                     </div>
                                                     <div class="grid grid-cols-2 gap-4">
                                                         <div>
-                                                            <label
-                                                                class="block text-sm font-medium text-gray-800 mb-1.5">NIP</label>
-                                                            <input type="text" name="nip" value="{{ old('nip', $dosen->nip) }}"
+                                                            <label class="block text-sm font-medium text-gray-800 mb-1.5">NIP</label>
+                                                            <input type="text" name="nip" value="{{ old('nip', $dosen->nip) }}" placeholder="19850101202201"
                                                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                             @if($errors->has('nip') && old('edit_dosen_id') == $dosen->id)
                                                                 <p class="text-xs text-red-500 mt-1">{{ $errors->first('nip') }}</p>
                                                             @endif
                                                         </div>
                                                         <div>
-                                                            <label
-                                                                class="block text-sm font-medium text-gray-800 mb-1.5">NIDN</label>
+                                                            <label class="block text-sm font-medium text-gray-800 mb-1.5">NIDN</label>
                                                             <input type="text" name="nidn"
-                                                                value="{{ old('nidn', $dosen->nidn) }}"
+                                                                value="{{ old('nidn', $dosen->nidn) }}" placeholder="0401018503"
                                                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                             @if($errors->has('nidn') && old('edit_dosen_id') == $dosen->id)
-                                                                <p class="text-xs text-red-500 mt-1">{{ $errors->first('nidn') }}
-                                                            </p> @endif
+                                                                <p class="text-xs text-red-500 mt-1">{{ $errors->first('nidn') }}</p>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon / WhatsApp</label>
-                                                        <div class="relative">
-                                                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                                                <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                                            </div>
-                                                            <input type="text" name="no_telepon" value="{{ old('edit_dosen_id') == $dosen->id ? old('no_telepon', $dosen->no_telepon) : $dosen->no_telepon }}" placeholder="08xxxxxxxxxx"
-                                                                class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
-                                                        </div>
-                                                        <p class="text-xs text-gray-400 mt-1">Untuk notifikasi WhatsApp jadwal pengujian</p>
+                                                        <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon</label>
+                                                        <input type="text" name="no_telepon" value="{{ old('edit_dosen_id') == $dosen->id ? old('no_telepon', $dosen->no_telepon) : $dosen->no_telepon }}" placeholder="081234567890"
+                                                            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('no_telepon') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('no_telepon') }}</p>
                                                         @endif
                                                     </div>
-                                
 
-                                                    {{-- Roles --}}
-                                                    <div class="border border-gray-100 rounded-xl p-4 bg-gray-50 space-y-3">
-                                                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jabatan / Peran</p>
-                                                        <label class="flex items-center gap-3 cursor-pointer group">
-                                                            <input type="checkbox" name="is_kaprodi" value="1" {{ old('edit_dosen_id') == $dosen->id ? (old('is_kaprodi') ? 'checked' : '') : ($dosen->is_kaprodi ? 'checked' : '') }}
-                                                                class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
-                                                            <div>
-                                                                <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                                                <p class="text-xs text-gray-400">Hanya 1 per prodi – menggantikan kaprodi sebelumnya</p>
-                                                            </div>
-                                                        </label>
+                                                    {{-- Tunjuk Kaprodi --}}
+                                                    <div class="rounded-xl border border-gray-200 overflow-hidden">
+                                                        <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                                            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Tunjuk Sebagai</p>
+                                                        </div>
+                                                        <div class="p-4">
+                                                            <label class="flex items-center gap-3 cursor-pointer group">
+                                                                <input type="checkbox" name="is_kaprodi" value="1" {{ old('edit_dosen_id') == $dosen->id ? (old('is_kaprodi') ? 'checked' : '') : ($dosen->is_kaprodi ? 'checked' : '') }}
+                                                                    class="w-5 h-5 rounded-md border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer transition-all">
+                                                                <div>
+                                                                    <span class="text-sm font-semibold text-gray-800 group-hover:text-[#8b1515] transition-colors">Kaprodi</span>
+                                                                    <p class="text-xs text-gray-400 mt-0.5">Hanya 1 kaprodi per prodi</p>
+                                                                </div>
+                                                            </label>
+                                                           
+                                                        </div>
                                                     </div>
 
                                                 </div>
@@ -404,7 +398,7 @@
                 class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left">
 
                 <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-white tracking-tight">Tambah Dosen Baru</h2>
+                    <h2 class="text-xl font-semibold text-white tracking-tight">Tambah Dosen</h2>
                     <button type="button" @click="openAddModal = false"
                         class="w-7 h-7 flex items-center justify-center rounded-lg border-2 border-white/60 text-white hover:bg-white/15 hover:border-white transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -418,14 +412,14 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="nama" value="{{ !old('edit_dosen_id') ? old('nama') : '' }}" required
+                            <input type="text" name="nama" value="{{ !old('edit_dosen_id') ? old('nama') : '' }}" required placeholder="Amanda Rachmawati"
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('nama') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('nama') }}</p> @endif
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode Dosen</label>
-                            <input type="text" name="kode" value="{{ !old('edit_dosen_id') ? old('kode') : '' }}" required
+                            <input type="text" name="kode" value="{{ !old('edit_dosen_id') ? old('kode') : '' }}" required placeholder="ARC"
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('kode') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p> @endif
@@ -433,43 +427,37 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-1.5">NIP</label>
-                                <input type="text" name="nip" value="{{ !old('edit_dosen_id') ? old('nip') : '' }}"
+                                <input type="text" name="nip" value="{{ !old('edit_dosen_id') ? old('nip') : '' }}" placeholder="19850101202201"
                                     class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-1.5">NIDN</label>
-                                <input type="text" name="nidn" value="{{ !old('edit_dosen_id') ? old('nidn') : '' }}"
+                                <input type="text" name="nidn" value="{{ !old('edit_dosen_id') ? old('nidn') : '' }}" placeholder="0401018503"
                                     class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon / WhatsApp</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                    <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-                                </div>
-                                <input type="text" name="no_telepon" value="{{ !old('edit_dosen_id') ? old('no_telepon') : '' }}" placeholder="08xxxxxxxxxx"
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                            <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon</label>
+                            <input type="text" name="no_telepon" value="{{ !old('edit_dosen_id') ? old('no_telepon') : '' }}" placeholder="08******"
+                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
+                        </div>
+
+                        {{-- Tunjuk Kaprodi --}}
+                        <div class="rounded-xl border border-gray-200 overflow-hidden">
+                            <div class="px-4 py-3 bg-gray-50 border-b border-gray-100">
+                                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">Jabatan</p>
                             </div>
-                            <p class="text-xs text-gray-400 mt-1">Untuk notifikasi WhatsApp jadwal pengujian</p>
-                        </div>
-
-                        {{-- Info: email otomatis --}}
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-                            <p class="text-xs text-blue-600 font-medium">Email akan otomatis dibuat saat dosen ditunjuk sebagai Penguji atau Kaprodi.</p>
-                        </div>
-
-                        {{-- Roles --}}
-                        <div class="border border-gray-100 rounded-xl p-4 bg-gray-50 space-y-3">
-                            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jabatan / Peran</p>
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" name="is_kaprodi" value="1" {{ old('is_kaprodi') ? 'checked' : '' }}
-                                    class="w-4 h-4 rounded border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer">
-                                <div>
-                                    <span class="text-sm font-medium text-gray-800">Kaprodi</span>
-                                    <p class="text-xs text-gray-400">Hanya 1 per prodi – menggantikan kaprodi sebelumnya</p>
-                                </div>
-                            </label>
+                            <div class="p-4">
+                                <label class="flex items-center gap-3 cursor-pointer group">
+                                    <input type="checkbox" name="is_kaprodi" value="1" {{ old('is_kaprodi') ? 'checked' : '' }}
+                                        class="w-5 h-5 rounded-md border-gray-300 text-[#8b1515] focus:ring-[#8b1515] cursor-pointer transition-all">
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-800 group-hover:text-[#8b1515] transition-colors">Kaprodi</span>
+                                        <p class="text-xs text-gray-400 mt-0.5">Hanya 1 kaprodi per prodi</p>
+                                    </div>
+                                </label>
+                                
+                            </div>
                         </div>
 
 
@@ -477,7 +465,7 @@
 
                     <div class="px-6 py-4 bg-gray-50 flex justify-center border-t border-gray-100">
                         <button type="submit"
-                            class="px-8 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-xl shadow-md transition-colors w-full sm:w-auto">Simpan</button>
+                            class="px-8 py-2.5 text-sm font-semibold text-white bg-[#8b1515] hover:bg-red-900 rounded-xl shadow-md transition-colors w-full sm:w-auto">Tambah Dosen</button>
                     </div>
                 </form>
             </div>
@@ -511,8 +499,8 @@
                 {{-- Header --}}
                 <div class="flex items-center justify-between px-6 py-4" style="background: #8b1515;">
                     <div>
-                        <h2 class="text-base font-semibold text-white">Import Dosen</h2>
-                        <p class="text-xs text-white/60 mt-0.5">Upload file Excel ke program studi ini</p>
+                        <h2 class="text-base font-semibold text-white">Import Data Dosen</h2>
+                       
                     </div>
                     <button type="button" @click="openImportModal = false"
                         class="w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
@@ -529,10 +517,11 @@
                 >
                     @csrf
                     <div class="p-5">
-                        <p class="text-sm text-gray-500 leading-relaxed mb-4">
-                            Upload file <span class="font-medium text-gray-700">.xlsx</span> atau
-                            <span class="font-medium text-gray-700">.csv</span> – header baris pertama:
-                            <code class="font-medium text-xs bg-gray-100 px-1.5 py-0.5 rounded text-gray-600">nama, kode, nip, nidn</code>.
+                        
+
+                        {{-- Download Template Link --}}
+                        <p class="mb-4 text-sm text-gray-500">
+                            Belum punya template? <a href="{{ asset('templates/dosen_template.xlsx') }}" download class="text-[#8b1515] font-semibold hover:underline">Download template di sini</a>
                         </p>
 
                         <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-7 cursor-pointer transition-colors"

@@ -89,6 +89,18 @@
             transition: opacity 0.2s;
         }
         .toast-close:hover { opacity: 1; }
+
+        /* Override browser autofill background color */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px white inset !important;
+            box-shadow: 0 0 0 30px white inset !important;
+            -webkit-text-fill-color: #111827 !important;
+            background-color: white !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
     </style>
 </head>
 <body class="bg-white flex min-h-screen text-gray-900">

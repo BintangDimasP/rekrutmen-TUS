@@ -326,7 +326,7 @@
                     var userEmail    = '{{ auth()->user()->email }}';
                     // Flag dari server: apakah nomor WhatsApp sudah terverifikasi
                     // Jika verifikasi WA tidak diwajibkan (config), anggap selalu lolos.
-                    var phoneVerificationRequired = {{ config('services.fonnte.phone_verification_required') ? 'true' : 'false' }};
+                    var phoneVerificationRequired = {{ config('services.wappin.enabled') ? 'true' : 'false' }};
                     var phoneVerified = phoneVerificationRequired
                         ? {{ optional(auth()->user()->pelamar)->phone_verified_at ? 'true' : 'false' }}
                         : true;

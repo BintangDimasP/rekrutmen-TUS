@@ -2,36 +2,16 @@
 @section('title', 'Penjadwalan')
 @section('content')
 
-<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="initPagination(); $watch('search', () => filterBySearch())">
+<div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="$nextTick(() => recalcAll()); $watch('search', () => resetAndRecalc()); $watch('fTanggal', () => resetAndRecalc()); $watch('fProdi', () => resetAndRecalc()); $watch('fStatus', () => resetAndRecalc())">
 
 
     {{-- Filter Chips Bar (with attached + button) --}}
     <div class="relative">
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 px-5 py-4 pr-20"
              x-data="{
-                fTanggal: '{{ request('tanggal') }}',
-                fProdi: '{{ request('prodi_id') }}',
-                fStatus: '{{ request('status') }}',
                 prodiOpen: false,
                 statusOpen: false,
-                get hasFilters() { return this.fTanggal !== '' || this.fProdi !== '' || this.fStatus !== ''; },
-                prodiName(id) {
-                    const m = { @foreach($prodis as $p)'{{ $p->id }}': '{{ addslashes($p->nama) }}',@endforeach };
-                    return m[id] ?? '';
-                },
-                statusName(s) {
-                    return {'belum':'Belum Dinilai','sebagian':'Sebagian Dinilai','selesai':'Selesai'}[s] ?? s;
-                },
-                applyFilters() {
-                    document.querySelectorAll('tr[data-jadwal-row]').forEach(row => {
-                        const matchT = this.fTanggal === '' || row.dataset.tanggal === this.fTanggal;
-                        const matchP = this.fProdi === '' || row.dataset.prodi === this.fProdi;
-                        const matchS = this.fStatus === '' || row.dataset.status === this.fStatus;
-                        row.style.display = (matchT && matchP && matchS) ? '' : 'none';
-                    });
-                }
              }"
-             x-init="$watch('fTanggal', () => applyFilters()); $watch('fProdi', () => applyFilters()); $watch('fStatus', () => applyFilters());"
              @click.outside.window="prodiOpen = false; statusOpen = false">
             <div class="flex items-center gap-3 flex-wrap">
 
@@ -143,13 +123,13 @@
         </a>
     </div>
     {{-- Table --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" x-data="jadwalTable()">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px; width:100%">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[9%]">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[13%]">Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[13%]">Nama Lowongan</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[12%]">Pelamar</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[20%]">Micro Teaching</th>
                         <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[9%]">Status</th>
@@ -352,9 +332,16 @@
             </table>
         </div>
 
+        {{-- Empty state for filter --}}
+        <div x-show="totalFiltered === 0" class="py-14 text-center" style="display: none;">
+            <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data jadwal</h3>
+            <p class="text-xs text-gray-400">Tidak ada jadwal yang cocok dengan pencarian atau filter.</p>
+        </div>
+
         {{-- Pagination --}}
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
-            <span>Menampilkan <strong x-text="paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
+            <span>Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
             <div class="flex items-center gap-1">
                 {{-- Previous --}}
                 <button type="button" @click="prevPage()" :disabled="currentPage === 1"
@@ -618,9 +605,70 @@
 const _sess = @json(\App\Models\JadwalSeleksi::SESSIONS);
 const _base  = '{{ url("/") }}';
 
+function jadwalTable() {
+    // stub – pagination is handled in jadwalIndex
+    return {};
+}
+
 function jadwalIndex() {
     return {
         search: '',
+        fTanggal: '{{ request('tanggal') }}',
+        fProdi: '{{ request('prodi_id') }}',
+        fStatus: '{{ request('status') }}',
+        currentPage: 1,
+        perPage: 10,
+        totalFiltered: 0,
+
+        get hasFilters() { return this.fTanggal !== '' || this.fProdi !== '' || this.fStatus !== ''; },
+        get paginatedStart() { return (this.currentPage - 1) * this.perPage; },
+        get paginatedEnd()   { return this.currentPage * this.perPage; },
+        get totalPages()     { return Math.max(1, Math.ceil(this.totalFiltered / this.perPage)); },
+        get pageNumbers() {
+            const pages = [];
+            for (let i = Math.max(1, this.currentPage - 2); i <= Math.min(this.totalPages, this.currentPage + 2); i++) pages.push(i);
+            return pages;
+        },
+
+        prodiName(id) {
+            const m = { @foreach($prodis as $p)'{{ $p->id }}': '{{ addslashes($p->nama) }}',@endforeach };
+            return m[id] ?? '';
+        },
+        statusName(s) {
+            return {'belum':'Belum Dinilai','sebagian':'Sebagian Dinilai','selesai':'Selesai'}[s] ?? s;
+        },
+
+        initPagination() {},
+
+        recalcAll() {
+            const rows = Array.from(document.querySelectorAll('tr[data-jadwal-row]'));
+            const query = this.search.toLowerCase().trim();
+            const visible = rows.filter(row => {
+                const matchT = this.fTanggal === '' || row.dataset.tanggal === this.fTanggal;
+                const matchP = this.fProdi === '' || row.dataset.prodi === this.fProdi;
+                const matchS = this.fStatus === '' || row.dataset.status === this.fStatus;
+                const matchQ = query === '' || (row.dataset.pelamar || '').includes(query);
+                return matchT && matchP && matchS && matchQ;
+            });
+            this.totalFiltered = visible.length;
+
+            // Hide all rows
+            rows.forEach(r => r.style.display = 'none');
+            // Show only paginated visible rows
+            visible.forEach((row, idx) => {
+                row.style.display = (idx >= this.paginatedStart && idx < this.paginatedEnd) ? '' : 'none';
+            });
+        },
+
+        resetAndRecalc() {
+            this.currentPage = 1;
+            this.recalcAll();
+        },
+
+        prevPage() { if (this.currentPage > 1) { this.currentPage--; this.recalcAll(); } },
+        nextPage() { if (this.currentPage < this.totalPages) { this.currentPage++; this.recalcAll(); } },
+        goToPage(p) { this.currentPage = p; this.recalcAll(); },
+
         modal: {
             open: false,
             readOnly: false,
@@ -809,16 +857,7 @@ function jadwalIndex() {
         },
 
         filterBySearch() {
-            const rows = document.querySelectorAll('tr[data-row]');
-            const query = this.search.toLowerCase().trim();
-            rows.forEach(row => {
-                if (!query) {
-                    row.style.display = '';
-                } else {
-                    const pelamar = row.dataset.pelamar || '';
-                    row.style.display = pelamar.includes(query) ? '' : 'none';
-                }
-            });
+            this.resetAndRecalc();
         },
     };
 }

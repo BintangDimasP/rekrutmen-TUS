@@ -29,7 +29,14 @@
     </div>
 </div>
 @else
-<div class="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500">
-    <span>Total: <strong>{{ $paginator->total() }}</strong> data</span>
+<div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+    <span>
+        Menampilkan <strong>{{ $paginator->firstItem() ?? 0 }}</strong>–<strong>{{ $paginator->lastItem() ?? 0 }}</strong> dari <strong>{{ $paginator->total() }}</strong> data
+    </span>
+    <div class="flex items-center gap-1">
+        <span class="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed font-medium">Prev</span>
+        <span class="px-3 py-1.5 rounded-lg bg-[#8b1515] text-white font-bold">1</span>
+        <span class="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed font-medium">Next</span>
+    </div>
 </div>
 @endif

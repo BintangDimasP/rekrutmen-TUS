@@ -101,7 +101,7 @@ class LowonganController extends Controller
         }
 
         // Cek verifikasi nomor telepon (hanya jika diwajibkan)
-        if (config('services.fonnte.phone_verification_required') && !$pelamar->phone_verified_at) {
+        if (config('services.wappin.enabled') && !$pelamar->phone_verified_at) {
             return redirect()->route('pelamar.profil.index')
                 ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
         }
@@ -138,7 +138,7 @@ class LowonganController extends Controller
         }
 
         // Cek verifikasi nomor telepon (hanya jika diwajibkan)
-        if (config('services.fonnte.phone_verification_required') && !$pelamar->phone_verified_at) {
+        if (config('services.wappin.enabled') && !$pelamar->phone_verified_at) {
             return redirect()->route('pelamar.profil.index')
                 ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
         }

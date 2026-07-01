@@ -251,7 +251,7 @@
         </div>
 
         {{-- ── MOBILE layout (di bawah md): foto & tulisan berdampingan ── --}}
-        <div class="md:hidden relative overflow-hidden min-h-[88vh] flex items-center">
+        <div class="md:hidden relative overflow-hidden min-h-[100svh] flex items-center">
             {{-- Background foto di kanan --}}
             <div class="absolute inset-0 bg-no-repeat bg-cover bg-right"
                  style="background-image: url('{{ asset('images/hero-bg.png') }}');"></div>

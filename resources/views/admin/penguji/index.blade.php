@@ -7,6 +7,13 @@
     {{-- Main Container --}}
     <div x-data="{
             openAddModal: false, searchDosen: '', filterProdi: '',
+            calonList: @js($calonPengujis->map(fn($c) => ['id' => $c->id, 'nama' => $c->nama, 'nama_lower' => strtolower($c->nama), 'prodi_id' => (string)$c->prodi_id])->values()),
+            get visibleCalonCount() {
+                return this.calonList.filter(c =>
+                    (this.searchDosen === '' || c.nama_lower.includes(this.searchDosen.toLowerCase())) &&
+                    (this.filterProdi === '' || this.filterProdi == c.prodi_id)
+                ).length;
+            },
             searchMain: '{{ request('search') }}',
             filterProdiMain: '{{ request('prodi_id') }}',
             filterStatus: '',
@@ -182,18 +189,18 @@
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}">{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}</td>
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $pengujiEmails[$penguji->id] ?? '-' }}">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
                             <td class="py-3 px-5 text-sm">
-                                <div class="flex flex-wrap gap-1.5">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800">Penguji</span>
+                                <div class="flex items-center gap-1.5 flex-nowrap">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800 whitespace-nowrap">Penguji</span>
                                     @if($penguji->is_kaprodi)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800">Kaprodi</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 whitespace-nowrap">Kaprodi</span>
                                     @endif
                                 </div>
                             </td>
                             <td class="py-3 px-5 text-sm">
                                 <div class="flex items-center justify-center gap-2">
                                     <a href="{{ route('admin.penguji.show', $penguji) }}"
-                                       class="text-gray-400 hover:text-blue-600 transition-colors flex items-center justify-center p-1.5 rounded" title="Detail Penguji">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                       class="text-gray-400 hover:text-amber-600 transition-colors flex items-center justify-center p-1.5 rounded" title="Edit Penguji">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                     </a>
                                 </div>
                             </td>
@@ -246,7 +253,7 @@
 
         <div x-show="openAddModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
              class="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none" style="display: none;">
-            <div class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl" style="max-height: 85vh;">
+            <div class="bg-white rounded-2xl w-full max-w-3xl overflow-hidden flex flex-col pointer-events-auto shadow-2xl" style="height: 600px; max-height: 85vh;">
                 <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="background: #8b1515;">
                     <div>
                         <h2 class="text-base font-semibold text-white">Tunjuk Penguji</h2>
@@ -295,18 +302,26 @@
                             </div>
                         </div>
                     </div>
-                    <p class="text-xs text-gray-400 mt-2.5 leading-relaxed">Akun login dibuat otomatis &mdash; kata sandi bawaan <code class="bg-white border border-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-medium">dosen123</code>.</p>
+                    
                 </div>
                 <form method="POST" action="{{ route('admin.penguji.store') }}" class="flex-1 overflow-hidden flex flex-col min-h-0">
                     @csrf
                     <div class="flex-1 overflow-y-auto">
                         @if($calonPengujis->isEmpty())
-                            <div class="py-16 text-center">
+                            <div class="h-full flex flex-col items-center justify-center py-10 text-center">
                                 <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-                                <p class="text-sm text-gray-400">Seluruh dosen telah menjadi penguji.</p>
+                                <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data dosen</h3>
+                                <p class="text-xs text-gray-400">Tambahkan dosen terlebih dahulu melalui halaman Prodi.</p>
                             </div>
                         @else
-                            <table class="w-full text-left border-collapse">
+                            {{-- Empty state when filter/search matches nothing --}}
+                            <div x-show="visibleCalonCount === 0" class="h-full flex flex-col items-center justify-center py-10 text-center" style="display: none;">
+                                <svg class="w-10 h-10 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data dosen</h3>
+                                <p class="text-xs text-gray-400">Tidak ada dosen yang cocok dengan pencarian atau filter.</p>
+                            </div>
+
+                            <table class="w-full text-left border-collapse" x-show="visibleCalonCount > 0">
                                 <thead class="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
                                     <tr>
                                         <th class="py-3 px-5 text-xs font-semibold text-gray-400 uppercase tracking-wider">Nama Dosen</th>
@@ -320,7 +335,7 @@
                                             x-show="(searchDosen === '' || '{{ strtolower($calon->nama) }}'.includes(searchDosen.toLowerCase())) && (filterProdi === '' || filterProdi === '{{ $calon->prodi_id }}')">
                                             <td class="py-3.5 px-5">
                                                 <div class="text-sm font-medium text-gray-800 group-hover:text-[#8b1515] transition-colors">{{ $calon->nama }}</div>
-                                                <div class="text-xs text-gray-400 font-medium mt-0.5">{{ $calon->kode }} &middot; {{ $calon->email }}</div>
+                                                <div class="text-xs text-gray-400 font-medium mt-0.5">{{ $calon->kode }}</div>
                                             </td>
                                             <td class="py-3.5 px-4">
                                                 <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-500">{{ $calon->prodi?->nama ?? '-' }}</span>
@@ -335,7 +350,7 @@
                         @endif
                     </div>
                     <div class="px-6 py-4 bg-white border-t border-gray-100 flex-shrink-0 flex items-center justify-center gap-3">
-                        <button type="submit" class="px-10 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-md" style="background: #8b1515;">Simpan</button>
+                        <button type="submit" class="px-10 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-md" style="background: #8b1515;">Tunjuk</button>
                     </div>
                 </form>
             </div>

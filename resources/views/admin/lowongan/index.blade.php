@@ -7,15 +7,21 @@
     <div class="max-w-6xl mx-auto space-y-6" x-data="{
         search: '',
         filterProdi: '',
+        totalFiltered: 0,
         updateRows() {
-            document.querySelectorAll('tr[data-row]').forEach(row => {
+            const rows = document.querySelectorAll('tr[data-row]');
+            let count = 0;
+            rows.forEach(row => {
                 const matchProdi = this.filterProdi === '' || row.dataset.prodi === this.filterProdi;
                 const matchSearch = this.search === '' || row.dataset.posisi.includes(this.search.toLowerCase());
-                row.style.display = (matchProdi && matchSearch) ? '' : 'none';
+                const visible = matchProdi && matchSearch;
+                row.style.display = visible ? '' : 'none';
+                if (visible) count++;
             });
+            this.totalFiltered = count;
         }
     }"
-    x-init="$watch('search', () => updateRows()); $watch('filterProdi', () => updateRows())">
+    x-init="$nextTick(() => updateRows()); $watch('search', () => updateRows()); $watch('filterProdi', () => updateRows())">
 
         {{-- Filter & Action (with attached + button) --}}
         <div class="relative">
@@ -96,7 +102,7 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Posisi / Prodi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama Lowongan</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Persyaratan</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Kuota</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Pelamar</th>
@@ -124,10 +130,18 @@
                                             = {{ number_format($lowongan->minimal_ipk, 2) }}</span>
                                     </div>
                                     @if($lowongan->skill_dibutuhkan)
+                                        @php
+                                            $skills = array_filter(array_map('trim', explode(',', $lowongan->skill_dibutuhkan)));
+                                            $showSkills = array_slice($skills, 0, 2);
+                                            $moreCount = count($skills) - count($showSkills);
+                                        @endphp
                                         <div class="flex flex-wrap gap-1 mt-1.5">
-                                            @foreach(array_filter(array_map('trim', explode(',', $lowongan->skill_dibutuhkan))) as $sk)
+                                            @foreach($showSkills as $sk)
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] font-medium bg-gray-100 text-gray-600">{{ $sk }}</span>
                                             @endforeach
+                                            @if($moreCount > 0)
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] font-medium bg-gray-100 text-gray-400 cursor-default" title="{{ implode(', ', $skills) }}">+{{ $moreCount }}</span>
+                                            @endif
                                         </div>
                                     @endif
                                 </td>
@@ -244,26 +258,21 @@
                                                     {{ $lowongan->status === 'aktif' ? 'Lowongan akan ditutup dan tidak dapat menerima pelamar baru.' : 'Lowongan akan dipublish dan dapat dilamar oleh kandidat.' }}
                                                 </p>
 
-                                                <div class="flex justify-center gap-3">
-                                                    <!-- Wrapper untuk tombol No disamakan dengan Form -->
-                                                    <div class="flex-1 m-0">
-                                                        <button type="button" @click="showToggleModal = false"
-                                                            class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">
-                                                            No
-                                                        </button>
-                                                    </div>
-
-                                                    <!-- Wrapper form untuk tombol Yes -->
+                                                <div class="grid grid-cols-2 gap-3">
                                                     <form method="POST"
                                                         action="{{ route('admin.lowongan.toggleStatus', $lowongan) }}"
-                                                        class="flex-1 m-0">
+                                                        class="contents">
                                                         @csrf
                                                         @method('PATCH')
                                                         <button type="submit"
-                                                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 border-2 border-transparent active:scale-95 rounded-xl shadow-md transition-all">
+                                                            class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">
                                                             Yes
                                                         </button>
                                                     </form>
+                                                    <button type="button" @click="showToggleModal = false"
+                                                        class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">
+                                                        No
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -294,6 +303,13 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            {{-- Empty state when filter yields no results --}}
+            <div x-show="totalFiltered === 0" class="py-14 text-center" style="display: none;">
+                <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706"/></svg>
+                <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data lowongan</h3>
+                <p class="text-xs text-gray-400">Tidak ada lowongan yang cocok dengan pencarian atau filter.</p>
             </div>
 
             {{-- Footer --}}
