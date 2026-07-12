@@ -1,95 +1,156 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\Pelamar;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
-class ProfilPelamarTest extends TestCase
+uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->user = User::factory()->create([
+        'role'              => 'pelamar',
+        'email'             => 'pelamar@example.com',
+        'email_verified_at' => now(),
+        'password'          => Hash::make('password'),
+    ]);
+
+    $this->pelamar = Pelamar::factory()->create([
+        'user_id'          => $this->user->id,
+        'nama'             => 'Budi Santoso',
+        'nik'              => '3201234567890001',
+        'no_telepon'       => '081234567890',
+        'jenis_kelamin'    => 'L',
+        'tempat_lahir'     => 'Bandung',
+        'tanggal_lahir'    => '1990-01-01',
+        'kewarganegaraan'  => 'WNI',
+        'status_pernikahan'=> 'Belum Menikah',
+        'alamat_domisili'  => 'Jl. Sudirman No. 1',
+        'alamat_ktp'       => 'Jl. Sudirman No. 1',
+    ]);
+});
+
+function basePayload(): array
 {
-    use RefreshDatabase;
-
-    private User $user;
-    private Pelamar $pelamar;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create(['role' => 'pelamar', 'email' => 'pelamar@test.com']);
-        $this->pelamar = Pelamar::factory()->create(['user_id' => $this->user->id]);
-    }
-
-    public function test_pelamar_dapat_melihat_halaman_profil(): void
-    {
-        $response = $this->actingAs($this->user)->get(route('pelamar.profil.index'));
-
-        $response->assertStatus(200);
-    }
-
-    public function test_pelamar_dapat_update_data_diri(): void
-    {
-        $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), [
-            'email' => 'pelamar@test.com',
-            'nik' => '1234567890123456',
-            'nama' => 'Nama Baru',
-            'tempat_lahir' => 'Jakarta',
-            'tanggal_lahir' => '1995-01-01',
-            'no_telepon' => '081234567890',
-            'jenis_kelamin' => 'L',
-            'kewarganegaraan' => 'Indonesia',
-            'status_pernikahan' => 'Belum Menikah',
-            'alamat_domisili' => 'Jl. Test No. 1',
-            'alamat_ktp' => 'Jl. Test No. 1',
-        ]);
-
-        $response->assertRedirect(route('pelamar.profil.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('pelamars', ['id' => $this->pelamar->id, 'nama' => 'Nama Baru']);
-    }
-
-    public function test_ubah_email_mereset_verifikasi(): void
-    {
-        $this->user->update(['email_verified_at' => now()]);
-
-        $this->actingAs($this->user)->put(route('pelamar.profil.update'), [
-            'email' => 'baru@test.com',
-            'nik' => '1234567890123456',
-            'nama' => 'Test',
-            'tempat_lahir' => 'Jakarta',
-            'tanggal_lahir' => '1995-01-01',
-            'no_telepon' => '081234567890',
-            'jenis_kelamin' => 'L',
-            'kewarganegaraan' => 'Indonesia',
-            'status_pernikahan' => 'Belum Menikah',
-            'alamat_domisili' => 'Jl. Test',
-            'alamat_ktp' => 'Jl. Test',
-        ]);
-
-        $this->user->refresh();
-        $this->assertNull($this->user->email_verified_at);
-    }
-
-    public function test_ubah_no_telepon_mereset_verifikasi_whatsapp(): void
-    {
-        $this->pelamar->update(['phone_verified_at' => now(), 'no_telepon' => '081111111111']);
-
-        $this->actingAs($this->user)->put(route('pelamar.profil.update'), [
-            'email' => 'pelamar@test.com',
-            'nik' => '1234567890123456',
-            'nama' => 'Test',
-            'tempat_lahir' => 'Jakarta',
-            'tanggal_lahir' => '1995-01-01',
-            'no_telepon' => '089999999999',
-            'jenis_kelamin' => 'L',
-            'kewarganegaraan' => 'Indonesia',
-            'status_pernikahan' => 'Belum Menikah',
-            'alamat_domisili' => 'Jl. Test',
-            'alamat_ktp' => 'Jl. Test',
-        ]);
-
-        $this->pelamar->refresh();
-        $this->assertNull($this->pelamar->phone_verified_at);
-    }
+    return [
+        'email'             => 'pelamar@example.com',
+        'nik'               => '3201234567890001',
+        'nama'              => 'Budi Santoso',
+        'tempat_lahir'      => 'Bandung',
+        'tanggal_lahir'     => '1990-01-01',
+        'no_telepon'        => '081234567890',
+        'jenis_kelamin'     => 'L',
+        'kewarganegaraan'   => 'WNI',
+        'status_pernikahan' => 'Belum Menikah',
+        'alamat_domisili'   => 'Jl. Sudirman No. 1',
+        'alamat_ktp'        => 'Jl. Sudirman No. 1',
+    ];
 }
+
+test('TC-01: Pelamar memperbarui data diri, sistem berhasil menyimpan perubahan', function () {
+    $payload = array_merge(basePayload(), ['nama' => 'Budi Santoso Updated']);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+    $response->assertSessionHas('success');
+
+    $this->pelamar->refresh();
+    expect($this->pelamar->nama)->toBe('Budi Santoso Updated');
+
+    $this->user->refresh();
+    expect($this->user->name)->toBe('Budi Santoso Updated');
+});
+
+test('TC-02: Pelamar mengubah email ke email baru, sistem mereset verifikasi dan mengirim email verifikasi', function () {
+    $payload = array_merge(basePayload(), ['email' => 'budi.baru@example.com']);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+
+    $this->user->refresh();
+    expect($this->user->email)->toBe('budi.baru@example.com');
+    expect($this->user->email_verified_at)->toBeNull();
+});
+
+test('TC-03: Pelamar memperbarui profil dengan email yang sama, sistem menyimpan tanpa mereset verifikasi', function () {
+    $payload = basePayload();
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+
+    $this->user->refresh();
+    expect($this->user->email_verified_at)->not->toBeNull();
+});
+
+test('TC-04: Pelamar mengubah nomor telepon, sistem mereset verifikasi nomor telepon', function () {
+    $payload = array_merge(basePayload(), ['no_telepon' => '089876543210']);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+
+    $this->pelamar->refresh();
+    expect($this->pelamar->no_telepon)->toBe('089876543210');
+    expect($this->pelamar->phone_verified_at)->toBeNull();
+});
+
+test('TC-05: Pelamar mengunggah file ijazah, sistem berhasil menyimpan file', function () {
+    Storage::fake('public');
+
+    $payload = array_merge(basePayload(), [
+        'file_ijazah' => UploadedFile::fake()->create('ijazah.pdf', 500, 'application/pdf'),
+    ]);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+
+    $this->pelamar->refresh();
+    expect($this->pelamar->file_ijazah)->not->toBeNull();
+    Storage::disk('public')->assertExists($this->pelamar->file_ijazah);
+});
+
+test('TC-06: Pelamar mengganti file ijazah yang sudah ada, sistem menghapus file lama dan menyimpan file baru', function () {
+    Storage::fake('public');
+
+    $oldPath = 'pelamar/' . $this->user->id . '/ijazah_lama.pdf';
+    Storage::disk('public')->put($oldPath, 'fake-content');
+    $this->pelamar->update(['file_ijazah' => $oldPath]);
+
+    $payload = array_merge(basePayload(), [
+        'file_ijazah' => UploadedFile::fake()->create('ijazah_baru.pdf', 500, 'application/pdf'),
+    ]);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertRedirect(route('pelamar.profil.index'));
+
+    Storage::disk('public')->assertMissing($oldPath);
+
+    $this->pelamar->refresh();
+    expect($this->pelamar->file_ijazah)->not->toBe($oldPath);
+    Storage::disk('public')->assertExists($this->pelamar->file_ijazah);
+});
+
+test('TC-07: Pelamar menginput NIK yang sudah digunakan akun lain, sistem menampilkan pesan error', function () {
+    Pelamar::factory()->create(['nik' => '9999888877776666']);
+
+    $payload = array_merge(basePayload(), ['nik' => '9999888877776666']);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertSessionHasErrors(['nik']);
+});
+
+test('TC-08: Pelamar menginput email dengan domain internal dosen, sistem menampilkan pesan error', function () {
+    $payload = array_merge(basePayload(), ['email' => 'test@pengajar.telkomuniversity.ac.id']);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.profil.update'), $payload);
+
+    $response->assertSessionHasErrors(['email']);
+});

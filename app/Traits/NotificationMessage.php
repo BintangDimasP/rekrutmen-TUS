@@ -40,6 +40,38 @@ trait NotificationMessage
                 "text" => $value
             ], $params);
 
+            $components = [
+                [
+                    "type" => "body",
+                    "parameters" => $body
+                ]
+            ];
+
+            // Tambah button URL jika ada
+            if (!empty($url) && $url != "-") {
+                $components[] = [
+                    "type" => "button",
+                    "sub_type" => "url",
+                    "index" => "0",
+                    "parameters" => [
+                        ["type" => "text", "text" => $url]
+                    ]
+                ];
+            }
+
+            // Tambah button copy_code untuk template Authentication (OTP)
+            // Tombol "Salin Kode" butuh parameter copy_code dengan nilai OTP
+            if (!empty($params[0]) && $templateName === 'rekrutmen_informasi_send_otp') {
+                $components[] = [
+                    "type" => "button",
+                    "sub_type" => "copy_code",
+                    "index" => "0",
+                    "parameters" => [
+                        ["type" => "coupon_code", "coupon_code" => $params[0]]
+                    ]
+                ];
+            }
+
             $post = [
                 "to" => preg_replace('/^(?:\+?62|0)?/', '+62', $recipientNumber),
                 "type" => "template",
@@ -49,25 +81,9 @@ trait NotificationMessage
                         "policy" => "deterministic",
                         "code" => "id"
                     ],
-                    "components" => [
-                        [
-                            "type" => "body",
-                            "parameters" => $body
-                        ]
-                    ]
+                    "components" => $components
                 ]
             ];
-
-            if (!empty($url) && $url != "-") {
-                $post['template']['components'][] = [
-                    "type" => "button",
-                    "sub_type" => "url",
-                    "index" => "0",
-                    "parameters" => [
-                        ["type" => "text", "text" => $url]
-                    ]
-                ];
-            }
 
             // Kirim pesan WA dengan retry
             $response = Http::withHeaders([
@@ -78,6 +94,13 @@ trait NotificationMessage
                     return true;
                 })
                 ->post('https://api.chat.wappin.app/v1/messages', $post);
+
+                Log::channel('wappin')->info('Response kirim WA', [
+    'to' => $recipientNumber,
+    'template' => $templateName,
+    'status_code' => $response->status(),
+    'body' => $response->json(),
+]);
 
             if ($response->failed()) {
                 Log::channel('wappin')->error('Gagal mengirim WA', [

@@ -326,10 +326,8 @@
                     var userEmail    = '{{ auth()->user()->email }}';
                     // Flag dari server: apakah nomor WhatsApp sudah terverifikasi
                     // Jika verifikasi WA tidak diwajibkan (config), anggap selalu lolos.
-                    var phoneVerificationRequired = {{ config('services.wappin.enabled') ? 'true' : 'false' }};
-                    var phoneVerified = phoneVerificationRequired
-                        ? {{ optional(auth()->user()->pelamar)->phone_verified_at ? 'true' : 'false' }}
-                        : true;
+                    var phoneVerificationRequired = false; // Disabled verification, only check if phone exists
+                    var phoneVerified = {{ !empty(optional(auth()->user()->pelamar)->no_telepon) ? 'true' : 'false' }};
 
                     /**
                      * Intercept klik pada area upload.
@@ -350,8 +348,8 @@
                             event.preventDefault();
                             event.stopPropagation();
                             showLamaranToast(
-                                'Nomor WhatsApp Belum Diverifikasi',
-                                'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum mengunggah dokumen.',
+                                'Nomor WhatsApp Belum Diisi',
+                                'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.',
                                 'warning'
                             );
                             return;
@@ -370,8 +368,8 @@
                         }
                         if (!phoneVerified) {
                             showLamaranToast(
-                                'Nomor WhatsApp Belum Diverifikasi',
-                                'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum mengajukan lamaran.',
+                                'Nomor WhatsApp Belum Diisi',
+                                'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.',
                                 'warning'
                             );
                             return false;

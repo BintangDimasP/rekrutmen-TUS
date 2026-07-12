@@ -187,6 +187,8 @@
                 this.phoneOtpCode = '';
                 this.phoneOtpModal = true;
                 this.startPhoneCountdown();
+                // Tampilkan toast notifikasi OTP terkirim
+                if(window.showProfilToast) window.showProfilToast('OTP Terkirim', res.body.message || 'Kode OTP telah dikirim ke WhatsApp Anda.', 'success');
             } else {
                 if(window.showProfilToast) window.showProfilToast('Gagal', res.body.message, 'error');
             }
@@ -423,26 +425,23 @@
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Telepon / WA</p>
                         <div x-show="!isEditing" class="flex items-center gap-2 mt-0.5 flex-wrap">
                             <p class="text-sm text-gray-700">{{ $pelamar->no_telepon ?: '-' }}</p>
-                            @if($pelamar->no_telepon)
-                                @if($pelamar->phone_verified_at)
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 border border-green-200 text-[0.6rem] font-bold text-green-700">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                                        Terverifikasi
-                                    </span>
-                                @elseif(config('services.wappin.enabled'))
-                                    <button type="button" @click="sendPhoneOtp()" :disabled="isLoadingPhoneOtp"
-                                        class="text-[0.65rem] font-bold text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap flex-shrink-0 inline-flex items-center gap-1 disabled:opacity-50">
-                                        <span x-text="isLoadingPhoneOtp ? 'Mengirim...' : 'Verifikasi by WA'"></span>
-                                    </button>
-                                @endif
+                            @if(!$pelamar->no_telepon)
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-[0.6rem] font-bold text-amber-700">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                                    Wajib Diisi
+                                </span>
                             @endif
                         </div>
                         <input x-show="isEditing" x-cloak type="text" name="no_telepon"
                             value="{{ old('no_telepon',$pelamar->no_telepon) }}"
                             maxlength="15" placeholder="08xxx (maks. 15 digit)"
                             oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-                            class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
+                            class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1"
+                            required>
                         @error('no_telepon')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
+                        <p x-show="isEditing" x-cloak class="text-[0.65rem] text-gray-500 mt-1">
+                            📱 Nomor WhatsApp wajib diisi untuk menerima notifikasi status lamaran dan jadwal seleksi
+                        </p>
                     </div>
                     <div class="md:row-span-3 flex flex-col justify-start">
                         <div x-show="!isEditing" class="w-full">

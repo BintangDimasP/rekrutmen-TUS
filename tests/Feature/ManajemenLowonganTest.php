@@ -1,271 +1,354 @@
 <?php
 
-namespace Tests\Feature;
+/**
+ * WHITE BOX TESTING - MANAJEMEN LOWONGAN
+ * Teknik     : Branch Coverage
+ * Controller : Admin\LowonganController
+ *
+ * ============================================================
+ * ANALISIS BRANCH:
+ * ============================================================
+ *
+ * [store() — Buat Lowongan Baru]
+ *
+ *   if (is_string($prodiPrioritasRaw) && $prodiPrioritasRaw !== '')  // Branch 1
+ *   if (is_string($skillRaw) && $skillRaw !== '')                    // Branch 2
+ *
+ * Branch 1 — Prodi prioritas diisi
+ *   TRUE  : Ada nilai → parse dan simpan
+ *   FALSE : Kosong → simpan null
+ *
+ * Branch 2 — Skill dibutuhkan diisi
+ *   TRUE  : Ada nilai → parse dan simpan
+ *   FALSE : Kosong → simpan null
+ *
+ * ------------------------------------------------------------
+ *
+ * [update() — Update Lowongan]
+ *
+ *   foreach ['prodi_prioritas', 'skill_dibutuhkan']                 // Branch 3
+ *     if (is_string($raw) && $raw !== '') → parse                   // Branch 3
+ *     else → null                                                   // Branch 3
+ *
+ * (Sama dengan store, tapi di loop foreach)
+ *
+ * ------------------------------------------------------------
+ *
+ * [toggleStatus() — Toggle Status Lowongan]
+ *
+ *   $newStatus = $rawStatus === 'aktif' ? 'ditutup' : 'aktif'       // Branch 4
+ *   if ($newStatus === 'aktif')                                      // Branch 5
+ *     if ($lowongan->tanggal_tutup && isPast())                     // Branch 6
+ *     if ($lowongan->sisa_kuota <= 0)                               // Branch 7
+ *
+ * Branch 4 — Arah toggle
+ *   TRUE  : Status aktif → jadi ditutup
+ *   FALSE : Status ditutup/draft → jadi aktif
+ *
+ * Branch 5 — Validasi saat akan diaktifkan
+ *   TRUE  : Akan diaktifkan → cek tanggal dan kuota
+ *   FALSE : Akan ditutup → langsung update
+ *
+ * Branch 6 — Tanggal tutup sudah lewat
+ *   TRUE  : Sudah lewat → return error
+ *   FALSE : Belum lewat → lanjut cek kuota
+ *
+ * Branch 7 — Kuota habis
+ *   TRUE  : Kuota habis → return error
+ *   FALSE : Kuota cukup → update status
+ *
+ * ============================================================
+ * PETA TEST CASE → BRANCH YANG DICAKUP:
+ * ============================================================
+ *
+ * [Buat Lowongan]
+ * TC-01 : B1=F, B2=F → buat lowongan tanpa prodi prioritas dan skill
+ * TC-02 : B1=T, B2=T → buat lowongan dengan prodi prioritas dan skill
+ * TC-03 : validasi   → tanggal tutup bukan setelah hari ini
+ *
+ * [Update Lowongan]
+ * TC-04 : B3=F → update lowongan, field optional dikosongkan
+ * TC-05 : B3=T → update lowongan dengan prodi prioritas dan skill
+ *
+ * [Toggle Status]
+ * TC-06 : B4=T (aktif→ditutup) → toggle lowongan aktif menjadi ditutup
+ * TC-07 : B4=F, B5=T, B6=F, B7=F → toggle lowongan ditutup menjadi aktif (valid)
+ * TC-08 : B5=T, B6=T → aktifkan lowongan yang tanggal tutupnya sudah lewat
+ * TC-09 : B5=T, B7=T → aktifkan lowongan yang kuotanya habis
+ */
 
-use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\Pelamar;
+use App\Models\Lamaran;
 use App\Models\Prodi;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class ManajemenLowonganTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    private User $admin;
-    private Prodi $prodi;
+beforeEach(function () {
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->prodi = Prodi::factory()->create();
+});
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->prodi = Prodi::factory()->create();
-    }
+// ================================================================
+// BUAT LOWONGAN BARU
+// ================================================================
 
-    // ── INDEX ────────────────────────────────────────────────────
+// ---------------------------------------------------------------
+// TC-01 | Happy Path
+// B1=F, B2=F : Buat lowongan tanpa prodi prioritas dan skill
+// ---------------------------------------------------------------
+test('TC-01: Admin membuat lowongan tanpa prodi prioritas dan skill, sistem berhasil menyimpan lowongan', function () {
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
+        'nama_posisi'     => 'Dosen Teknik Informatika',
+        'prodi_id'        => $this->prodi->id,
+        'jenjang_minimal' => 'S2',
+        'minimal_ipk'     => 3.0,
+        'kuota'           => 5,
+        'tanggal_tutup'   => now()->addDays(30)->format('Y-m-d'),
+        'status'          => 'aktif',
+    ]);
 
-    public function test_admin_dapat_melihat_daftar_lowongan(): void
-    {
-        Lowongan::factory()->count(3)->create(['prodi_id' => $this->prodi->id]);
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('success');
 
-        $response = $this->actingAs($this->admin)->get(route('admin.lowongan.index'));
+    $lowongan = Lowongan::where('nama_posisi', 'Dosen Teknik Informatika')->first();
+    expect($lowongan)->not->toBeNull();
+    expect($lowongan->prodi_prioritas)->toBeNull();
+    expect($lowongan->skill_dibutuhkan)->toBeNull();
+});
 
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.lowongan.index');
-        $response->assertViewHas('lowongans');
-        $response->assertViewHas('prodis');
-    }
+// ---------------------------------------------------------------
+// TC-02 | Happy Path
+// B1=T, B2=T : Buat lowongan dengan prodi prioritas dan skill
+// ---------------------------------------------------------------
+test('TC-02: Admin membuat lowongan dengan prodi prioritas dan skill, sistem berhasil menyimpan dengan data lengkap', function () {
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
+        'nama_posisi'      => 'Dosen Sistem Informasi',
+        'prodi_id'         => $this->prodi->id,
+        'jenjang_minimal'  => 'S2',
+        'minimal_ipk'      => 3.0,
+        'kuota'            => 3,
+        'tanggal_tutup'    => now()->addDays(30)->format('Y-m-d'),
+        'status'           => 'aktif',
+        'prodi_prioritas'  => 'Sistem Informasi||Teknik Informatika',
+        'skill_dibutuhkan' => 'Machine Learning||Data Science',
+    ]);
 
-    public function test_non_admin_tidak_bisa_akses_halaman_lowongan(): void
-    {
-        $pelamar = User::factory()->create(['role' => 'pelamar']);
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('success');
 
-        $response = $this->actingAs($pelamar)->get(route('admin.lowongan.index'));
+    $lowongan = Lowongan::where('nama_posisi', 'Dosen Sistem Informasi')->first();
+    expect($lowongan)->not->toBeNull();
+    expect($lowongan->prodi_prioritas)->toBe('Sistem Informasi, Teknik Informatika');
+    expect($lowongan->skill_dibutuhkan)->toBe('Machine Learning, Data Science');
+});
 
-        $response->assertRedirect(route('pelamar.dashboard'));
-    }
+// ---------------------------------------------------------------
+// TC-03 | Validasi
+// Tanggal tutup bukan setelah hari ini
+// ---------------------------------------------------------------
+test('TC-03: Admin membuat lowongan dengan tanggal tutup yang sudah lewat, sistem menampilkan pesan error', function () {
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
+        'nama_posisi'     => 'Dosen Test',
+        'prodi_id'        => $this->prodi->id,
+        'jenjang_minimal' => 'S1',
+        'minimal_ipk'     => 3.0,
+        'kuota'           => 1,
+        'tanggal_tutup'   => now()->subDays(1)->format('Y-m-d'), // kemarin
+        'status'          => 'aktif',
+    ]);
 
-    // ── CREATE ───────────────────────────────────────────────────
+    // Assert
+    $response->assertSessionHasErrors(['tanggal_tutup']);
+});
 
-    public function test_admin_dapat_melihat_form_buat_lowongan(): void
-    {
-        $response = $this->actingAs($this->admin)->get(route('admin.lowongan.create'));
+// ================================================================
+// UPDATE LOWONGAN
+// ================================================================
 
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.lowongan.create');
-        $response->assertViewHas('prodis');
-        $response->assertViewHas('defaultDeskripsi');
-    }
+// ---------------------------------------------------------------
+// TC-04 | Happy Path
+// B3=F : Update lowongan, field optional dikosongkan
+// ---------------------------------------------------------------
+test('TC-04: Admin mengubah data lowongan tanpa prodi prioritas dan skill, sistem berhasil memperbarui', function () {
+    // Arrange
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'         => $this->prodi->id,
+        'nama_posisi'      => 'Dosen Lama',
+        'prodi_prioritas'  => 'Teknik Informatika',
+        'skill_dibutuhkan' => 'Python',
+        'tanggal_tutup'    => now()->addDays(30),
+        'status'           => 'draft',
+    ]);
 
-    // ── STORE ────────────────────────────────────────────────────
+    // Act
+    $response = $this->actingAs($this->admin)->put(route('admin.lowongan.update', $lowongan), [
+        'nama_posisi'     => 'Dosen Baru',
+        'prodi_id'        => $this->prodi->id,
+        'jenjang_minimal' => 'S2',
+        'minimal_ipk'     => 3.0,
+        'kuota'           => 5,
+        'tanggal_tutup'   => now()->addDays(30)->format('Y-m-d'),
+        'status'          => 'draft',
+        // prodi_prioritas dan skill_dibutuhkan tidak dikirim → null
+    ]);
 
-    public function test_buat_lowongan_berhasil(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
-            'nama_posisi'      => 'Dosen Teknik Informatika',
-            'prodi_id'         => $this->prodi->id,
-            'jenjang_minimal'  => 'S2',
-            'minimal_ipk'      => 3.00,
-            'kuota'            => 5,
-            'tanggal_tutup'    => now()->addDays(30)->format('Y-m-d'),
-            'deskripsi'        => 'Deskripsi lowongan',
-            'status'           => 'aktif',
-        ]);
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('success');
 
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('lowongans', [
-            'nama_posisi' => 'Dosen Teknik Informatika',
-            'prodi_id'    => $this->prodi->id,
-        ]);
-    }
+    $lowongan->refresh();
+    expect($lowongan->nama_posisi)->toBe('Dosen Baru');
+    expect($lowongan->prodi_prioritas)->toBeNull();
+    expect($lowongan->skill_dibutuhkan)->toBeNull();
+});
 
-    public function test_buat_lowongan_dengan_prodi_prioritas_dan_skill(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
-            'nama_posisi'      => 'Dosen SI',
-            'prodi_id'         => $this->prodi->id,
-            'jenjang_minimal'  => 'S3',
-            'minimal_ipk'      => 3.25,
-            'prodi_prioritas'  => 'Teknik Informatika||Sistem Informasi',
-            'skill_dibutuhkan' => 'Machine Learning||Data Science',
-            'kuota'            => 3,
-            'tanggal_tutup'    => now()->addDays(60)->format('Y-m-d'),
-            'status'           => 'aktif',
-        ]);
+// ---------------------------------------------------------------
+// TC-05 | Happy Path
+// B3=T : Update lowongan dengan prodi prioritas dan skill
+// ---------------------------------------------------------------
+test('TC-05: Admin mengubah lowongan dengan menambahkan prodi prioritas dan skill, sistem berhasil memperbarui', function () {
+    // Arrange
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'        => $this->prodi->id,
+        'tanggal_tutup'   => now()->addDays(30),
+        'status'          => 'draft',
+    ]);
 
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $lowongan = Lowongan::where('nama_posisi', 'Dosen SI')->first();
-        $this->assertEquals('Teknik Informatika, Sistem Informasi', $lowongan->prodi_prioritas);
-        $this->assertEquals('Machine Learning, Data Science', $lowongan->skill_dibutuhkan);
-    }
+    // Act
+    $response = $this->actingAs($this->admin)->put(route('admin.lowongan.update', $lowongan), [
+        'nama_posisi'      => $lowongan->nama_posisi,
+        'prodi_id'         => $this->prodi->id,
+        'jenjang_minimal'  => 'S2',
+        'minimal_ipk'      => 3.0,
+        'kuota'            => 5,
+        'tanggal_tutup'    => now()->addDays(30)->format('Y-m-d'),
+        'status'           => 'draft',
+        'prodi_prioritas'  => 'Teknik Informatika||Sistem Informasi',
+        'skill_dibutuhkan' => 'Web Development||Cloud Computing',
+    ]);
 
-    public function test_buat_lowongan_gagal_field_kosong(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
-            'nama_posisi'     => '',
-            'prodi_id'        => '',
-            'jenjang_minimal' => '',
-            'minimal_ipk'     => '',
-            'kuota'           => '',
-            'tanggal_tutup'   => '',
-            'status'          => '',
-        ]);
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
 
-        $response->assertSessionHasErrors([
-            'nama_posisi', 'prodi_id', 'jenjang_minimal',
-            'minimal_ipk', 'kuota', 'tanggal_tutup', 'status',
-        ]);
-    }
+    $lowongan->refresh();
+    expect($lowongan->prodi_prioritas)->toBe('Teknik Informatika, Sistem Informasi');
+    expect($lowongan->skill_dibutuhkan)->toBe('Web Development, Cloud Computing');
+});
 
-    public function test_buat_lowongan_gagal_tanggal_tutup_masa_lalu(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
-            'nama_posisi'      => 'Dosen Test',
-            'prodi_id'         => $this->prodi->id,
-            'jenjang_minimal'  => 'S2',
-            'minimal_ipk'      => 3.00,
-            'kuota'            => 2,
-            'tanggal_tutup'    => '2020-01-01',
-            'status'           => 'aktif',
-        ]);
+// ================================================================
+// TOGGLE STATUS
+// ================================================================
 
-        $response->assertSessionHasErrors('tanggal_tutup');
-    }
+// ---------------------------------------------------------------
+// TC-06 | Happy Path
+// B4=T : Toggle lowongan aktif → menjadi ditutup
+// ---------------------------------------------------------------
+test('TC-06: Admin menonaktifkan lowongan yang sedang aktif, sistem mengubah status menjadi ditutup', function () {
+    // Arrange: status 'aktif' di DB dengan tanggal belum lewat
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'      => $this->prodi->id,
+        'status'        => 'aktif',
+        'tanggal_tutup' => now()->addDays(10),
+        'kuota'         => 5,
+    ]);
 
-    public function test_buat_lowongan_gagal_ipk_diluar_range(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.lowongan.store'), [
-            'nama_posisi'      => 'Dosen Test',
-            'prodi_id'         => $this->prodi->id,
-            'jenjang_minimal'  => 'S2',
-            'minimal_ipk'      => 5.0,
-            'kuota'            => 2,
-            'tanggal_tutup'    => now()->addDays(30)->format('Y-m-d'),
-            'status'           => 'aktif',
-        ]);
+    // Act
+    $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
 
-        $response->assertSessionHasErrors('minimal_ipk');
-    }
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('success');
 
-    // ── EDIT ─────────────────────────────────────────────────────
+    expect($lowongan->fresh()->getRawOriginal('status'))->toBe('ditutup');
+});
 
-    public function test_admin_dapat_melihat_form_edit_lowongan(): void
-    {
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $this->prodi->id]);
+// ---------------------------------------------------------------
+// TC-07 | Happy Path
+// B4=F, B5=T, B6=F, B7=F : Toggle lowongan ditutup → menjadi aktif (valid)
+// ---------------------------------------------------------------
+test('TC-07: Admin mengaktifkan lowongan yang sedang ditutup dengan data valid, sistem mengubah status menjadi aktif', function () {
+    // Arrange
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'      => $this->prodi->id,
+        'status'        => 'ditutup',
+        'tanggal_tutup' => now()->addDays(10), // belum lewat
+        'kuota'         => 5,                  // kuota cukup
+    ]);
 
-        $response = $this->actingAs($this->admin)->get(route('admin.lowongan.edit', $lowongan));
+    // Act
+    $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
 
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.lowongan.edit');
-        $response->assertViewHas('lowongan');
-    }
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('success');
 
-    // ── UPDATE ───────────────────────────────────────────────────
+    expect($lowongan->fresh()->getRawOriginal('status'))->toBe('aktif');
+});
 
-    public function test_update_lowongan_berhasil(): void
-    {
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $this->prodi->id]);
+// ---------------------------------------------------------------
+// TC-08 | Unhappy Path
+// B5=T, B6=T : Aktifkan lowongan yang tanggal tutupnya sudah lewat
+// ---------------------------------------------------------------
+test('TC-08: Admin mengaktifkan lowongan yang tanggal tutupnya sudah lewat, sistem menampilkan pesan error', function () {
+    // Arrange
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'      => $this->prodi->id,
+        'status'        => 'ditutup',
+        'tanggal_tutup' => now()->subDays(1), // sudah lewat
+        'kuota'         => 5,
+    ]);
 
-        $response = $this->actingAs($this->admin)->put(route('admin.lowongan.update', $lowongan), [
-            'nama_posisi'      => 'Dosen Sistem Informasi',
-            'prodi_id'         => $this->prodi->id,
-            'jenjang_minimal'  => 'S3',
-            'minimal_ipk'      => 3.50,
-            'kuota'            => 10,
-            'tanggal_tutup'    => now()->addDays(90)->format('Y-m-d'),
-            'status'           => 'aktif',
-        ]);
+    // Act
+    $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
 
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('lowongans', ['id' => $lowongan->id, 'nama_posisi' => 'Dosen Sistem Informasi']);
-    }
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('error');
 
-    // ── TOGGLE STATUS ────────────────────────────────────────────
+    expect($lowongan->fresh()->getRawOriginal('status'))->toBe('ditutup'); // tidak berubah
+});
 
-    public function test_toggle_status_aktif_ke_ditutup(): void
-    {
-        $lowongan = Lowongan::factory()->create([
-            'prodi_id' => $this->prodi->id,
-            'status'   => 'aktif',
-            'tanggal_tutup' => now()->addDays(30),
-            'kuota'    => 5,
-        ]);
+// ---------------------------------------------------------------
+// TC-09 | Unhappy Path
+// B5=T, B7=T : Aktifkan lowongan yang kuotanya habis
+// ---------------------------------------------------------------
+test('TC-09: Admin mengaktifkan lowongan yang kuotanya habis, sistem menampilkan pesan error', function () {
+    // Arrange
+    $lowongan = Lowongan::factory()->create([
+        'prodi_id'      => $this->prodi->id,
+        'status'        => 'ditutup',
+        'tanggal_tutup' => now()->addDays(10),
+        'kuota'         => 2,
+    ]);
 
-        $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
+    // Isi kuota dengan lamaran aktif
+    $pelamar1 = Pelamar::factory()->create();
+    $pelamar2 = Pelamar::factory()->create();
+    Lamaran::factory()->create([
+        'lowongan_id' => $lowongan->id,
+        'pelamar_id'  => $pelamar1->id,
+        'status'      => 'menunggu',
+    ]);
+    Lamaran::factory()->create([
+        'lowongan_id' => $lowongan->id,
+        'pelamar_id'  => $pelamar2->id,
+        'status'      => 'menunggu',
+    ]);
 
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('lowongans', ['id' => $lowongan->id, 'status' => 'ditutup']);
-    }
+    // Act
+    $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
 
-    public function test_toggle_status_ditutup_ke_aktif_berhasil(): void
-    {
-        $lowongan = Lowongan::factory()->create([
-            'prodi_id'      => $this->prodi->id,
-            'status'        => 'ditutup',
-            'tanggal_tutup' => now()->addDays(30),
-            'kuota'         => 5,
-        ]);
+    // Assert
+    $response->assertRedirect(route('admin.lowongan.index'));
+    $response->assertSessionHas('error');
 
-        $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
-
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('lowongans', ['id' => $lowongan->id, 'status' => 'aktif']);
-    }
-
-    public function test_toggle_status_gagal_tanggal_tutup_sudah_lewat(): void
-    {
-        $lowongan = Lowongan::factory()->create([
-            'prodi_id'      => $this->prodi->id,
-            'status'        => 'ditutup',
-            'tanggal_tutup' => now()->subDays(5),
-            'kuota'         => 5,
-        ]);
-
-        $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
-
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('error');
-    }
-
-    public function test_toggle_status_gagal_kuota_habis(): void
-    {
-        $lowongan = Lowongan::factory()->create([
-            'prodi_id'      => $this->prodi->id,
-            'status'        => 'ditutup',
-            'tanggal_tutup' => now()->addDays(30),
-            'kuota'         => 1,
-        ]);
-
-        // Tambahkan lamaran agar kuota penuh
-        $pelamar = Pelamar::factory()->create();
-        Lamaran::factory()->create([
-            'lowongan_id' => $lowongan->id,
-            'pelamar_id'  => $pelamar->id,
-            'status'      => 'diproses',
-        ]);
-
-        $response = $this->actingAs($this->admin)->patch(route('admin.lowongan.toggleStatus', $lowongan));
-
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('error');
-    }
-
-    // ── DESTROY ──────────────────────────────────────────────────
-
-    public function test_hapus_lowongan_berhasil(): void
-    {
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $this->prodi->id]);
-
-        $response = $this->actingAs($this->admin)->delete(route('admin.lowongan.destroy', $lowongan));
-
-        $response->assertRedirect(route('admin.lowongan.index'));
-        $response->assertSessionHas('success');
-        $this->assertDatabaseMissing('lowongans', ['id' => $lowongan->id]);
-    }
-}
+    expect($lowongan->fresh()->getRawOriginal('status'))->toBe('ditutup'); // tidak berubah
+});

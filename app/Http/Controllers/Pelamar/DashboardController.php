@@ -40,12 +40,12 @@ class DashboardController extends Controller
             if ($request->session()->pull('show_profile_reminder', false)) {
                 $showProfileModal = true;
 
-                // 1. Verifikasi Email & No. Telepon
+                // 1. Verifikasi Email & No. Telepon Kosong
                 if (empty(auth()->user()->email_verified_at)) {
                     $incompleteSections[] = 'Verifikasi Email';
                 }
-                if (empty($pelamar->phone_verified_at)) {
-                    $incompleteSections[] = 'Verifikasi No. Telepon';
+                if (empty($pelamar->no_telepon)) {
+                    $incompleteSections[] = 'Nomor WhatsApp (wajib untuk notifikasi)';
                 }
 
                 // 2. Data Diri

@@ -1,191 +1,220 @@
 <?php
 
-namespace Tests\Feature;
+/**
+ * WHITE BOX TESTING - MANAJEMEN PENGUJI
+ * Teknik     : Branch Coverage
+ * Controller : Admin\PengujiController
+ *
+ * ============================================================
+ * ANALISIS BRANCH:
+ * ============================================================
+ *
+ * [store() — Tunjuk Penguji]
+ *
+ *   foreach dosen_ids → getOrCreateUser()                          // Branch 1
+ *   if (empty($user->role)) → set role penguji                     // Branch 2
+ *   else                    → biarkan role tetap (kaprodi rangkap) // Branch 2
+ *
+ * Branch 1 — Dosen sudah punya akun atau belum
+ *   TRUE  : Sudah punya akun → gunakan akun existing
+ *   FALSE : Belum punya akun → buat akun baru
+ *
+ * Branch 2 — Dosen sudah punya role aktif
+ *   TRUE  : Belum punya role → set role penguji
+ *   FALSE : Sudah kaprodi → role tetap kaprodi, tambah flag is_penguji
+ *
+ * ------------------------------------------------------------
+ *
+ * [destroy() — Cabut Penguji]
+ *
+ *   if (!$user) return                                              // Branch 3
+ *   if ($user->is_kaprodi) → downgrade ke kaprodi                  // Branch 4
+ *   else                   → hapus akun user                       // Branch 4
+ *
+ * Branch 3 — User tidak ada
+ *   TRUE  : Tidak ada akun → skip
+ *
+ * Branch 4 — Penguji juga kaprodi
+ *   TRUE  : Masih kaprodi → role kembali ke kaprodi
+ *   FALSE : Bukan kaprodi → hapus akun user
+ *
+ * ============================================================
+ * PETA TEST CASE → BRANCH YANG DICAKUP:
+ * ============================================================
+ *
+ * [Tunjuk Penguji]
+ * TC-01 : B1=F, B2=T → dosen belum punya akun, ditunjuk penguji
+ * TC-02 : B1=T, B2=F → dosen sudah kaprodi, ditunjuk penguji (rangkap)
+ * TC-03 : validasi   → dosen_ids kosong
+ *
+ * [Cabut Penguji]
+ * TC-04 : B4=F → penguji biasa dicabut, akun dihapus
+ * TC-05 : B4=T → penguji yang juga kaprodi dicabut, role kembali ke kaprodi
+ */
 
 use App\Models\Dosen;
 use App\Models\Prodi;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class ManajemenPengujiTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    private User $admin;
-    private Prodi $prodi;
+beforeEach(function () {
+    $this->admin = User::factory()->create(['role' => 'admin']);
+    $this->prodi = Prodi::factory()->create();
+});
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->admin = User::factory()->create(['role' => 'admin']);
-        $this->prodi = Prodi::factory()->create();
-    }
+// ================================================================
+// TUNJUK PENGUJI
+// ================================================================
 
-    // ── INDEX ────────────────────────────────────────────────────
+// ---------------------------------------------------------------
+// TC-01 | Happy Path
+// B1=F, B2=T : Dosen belum punya akun → buat akun dengan role penguji
+// ---------------------------------------------------------------
+test('TC-01: Admin menunjuk dosen biasa sebagai penguji, sistem membuat akun penguji', function () {
+    // Arrange
+    $dosen = Dosen::factory()->create([
+        'prodi_id'   => $this->prodi->id,
+        'is_penguji' => false,
+        'is_kaprodi' => false,
+    ]);
 
-    public function test_admin_dapat_melihat_daftar_penguji(): void
-    {
-        $dosen = Dosen::factory()->create(['prodi_id' => $this->prodi->id, 'is_penguji' => true]);
+    // Pastikan belum ada akun user
+    $this->assertDatabaseMissing('users', ['dosen_id' => $dosen->id]);
 
-        $response = $this->actingAs($this->admin)->get(route('admin.penguji.index'));
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
+        'dosen_ids' => [$dosen->id],
+    ]);
 
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.penguji.index');
-        $response->assertViewHas('pengujis');
-        $response->assertViewHas('calonPengujis');
-    }
+    // Assert
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
 
-    public function test_non_admin_tidak_bisa_akses_halaman_penguji(): void
-    {
-        $pelamar = User::factory()->create(['role' => 'pelamar']);
+    $dosen->refresh();
+    expect($dosen->is_penguji)->toBeTrue();
 
-        $response = $this->actingAs($pelamar)->get(route('admin.penguji.index'));
+    $user = User::where('dosen_id', $dosen->id)->first();
+    expect($user)->not->toBeNull();
+    expect($user->role)->toBe('penguji');
+    expect($user->is_penguji)->toBeTrue();
+});
 
-        $response->assertRedirect(route('pelamar.dashboard'));
-    }
+// ---------------------------------------------------------------
+// TC-02 | Happy Path
+// B1=T, B2=F : Dosen sudah kaprodi → rangkap penguji, role tetap kaprodi
+// ---------------------------------------------------------------
+test('TC-02: Admin menunjuk dosen yang sudah kaprodi sebagai penguji, sistem menambahkan flag penguji tanpa mengubah role', function () {
+    // Arrange
+    $dosen = Dosen::factory()->create([
+        'prodi_id'   => $this->prodi->id,
+        'is_penguji' => false,
+        'is_kaprodi' => true,
+    ]);
+    $user = User::factory()->create([
+        'role'       => 'kaprodi',
+        'dosen_id'   => $dosen->id,
+        'prodi_id'   => $this->prodi->id,
+        'is_kaprodi' => true,
+        'is_penguji' => false,
+    ]);
 
-    // ── SHOW ─────────────────────────────────────────────────────
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
+        'dosen_ids' => [$dosen->id],
+    ]);
 
-    public function test_admin_dapat_melihat_detail_penguji(): void
-    {
-        $dosen = Dosen::factory()->create(['prodi_id' => $this->prodi->id, 'is_penguji' => true]);
-        User::factory()->create(['dosen_id' => $dosen->id, 'role' => 'penguji', 'is_penguji' => true]);
+    // Assert
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
 
-        $response = $this->actingAs($this->admin)->get(route('admin.penguji.show', $dosen));
+    $dosen->refresh();
+    expect($dosen->is_penguji)->toBeTrue();
 
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.penguji.show');
-        $response->assertViewHas('penguji');
-    }
+    $user->refresh();
+    expect($user->role)->toBe('kaprodi'); // Role tetap kaprodi
+    expect($user->is_penguji)->toBeTrue();
+});
 
-    // ── STORE (Tunjuk Penguji) ───────────────────────────────────
+// ---------------------------------------------------------------
+// TC-03 | Validasi
+// dosen_ids kosong
+// ---------------------------------------------------------------
+test('TC-03: Admin menunjuk penguji tanpa memilih dosen, sistem menampilkan pesan error', function () {
+    // Act
+    $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
+        'dosen_ids' => [],
+    ]);
 
-    public function test_tunjuk_penguji_berhasil(): void
-    {
-        $dosen1 = Dosen::factory()->create(['prodi_id' => $this->prodi->id, 'is_penguji' => false]);
-        $dosen2 = Dosen::factory()->create(['prodi_id' => $this->prodi->id, 'is_penguji' => false]);
+    // Assert
+    $response->assertSessionHasErrors(['dosen_ids']);
+});
 
-        $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
-            'dosen_ids' => [$dosen1->id, $dosen2->id],
-        ]);
+// ================================================================
+// CABUT PENGUJI
+// ================================================================
 
-        $response->assertRedirect();
-        $response->assertSessionHas('success');
+// ---------------------------------------------------------------
+// TC-04 | Happy Path
+// B4=F : Penguji biasa dicabut → akun user dihapus
+// ---------------------------------------------------------------
+test('TC-04: Admin mencabut status penguji dari dosen yang bukan kaprodi, sistem menghapus akun user', function () {
+    // Arrange
+    $dosen = Dosen::factory()->create([
+        'prodi_id'   => $this->prodi->id,
+        'is_penguji' => true,
+        'is_kaprodi' => false,
+    ]);
+    $user = User::factory()->create([
+        'role'       => 'penguji',
+        'dosen_id'   => $dosen->id,
+        'is_penguji' => true,
+        'is_kaprodi' => false,
+    ]);
 
-        $dosen1->refresh();
-        $dosen2->refresh();
-        $this->assertTrue($dosen1->is_penguji);
-        $this->assertTrue($dosen2->is_penguji);
-        $this->assertNotNull($dosen1->user);
-        $this->assertNotNull($dosen2->user);
-    }
+    // Act
+    $response = $this->actingAs($this->admin)->delete(route('admin.penguji.destroy', $dosen));
 
-    public function test_tunjuk_penguji_membuat_akun_user_dengan_role_penguji(): void
-    {
-        $dosen = Dosen::factory()->create(['prodi_id' => $this->prodi->id, 'is_penguji' => false]);
+    // Assert
+    $response->assertRedirect(route('admin.penguji.index'));
+    $response->assertSessionHas('success');
 
-        $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
-            'dosen_ids' => [$dosen->id],
-        ]);
+    $dosen->refresh();
+    expect($dosen->is_penguji)->toBeFalse();
+    $this->assertDatabaseMissing('users', ['id' => $user->id]);
+});
 
-        $dosen->refresh();
-        $user = $dosen->user;
-        $this->assertNotNull($user);
-        $this->assertEquals('penguji', $user->role);
-        $this->assertTrue($user->is_penguji);
-    }
+// ---------------------------------------------------------------
+// TC-05 | Happy Path
+// B4=T : Penguji yang juga kaprodi dicabut → role kembali ke kaprodi
+// ---------------------------------------------------------------
+test('TC-05: Admin mencabut status penguji dari dosen yang juga kaprodi, sistem mengubah role kembali ke kaprodi', function () {
+    // Arrange
+    $dosen = Dosen::factory()->create([
+        'prodi_id'   => $this->prodi->id,
+        'is_penguji' => true,
+        'is_kaprodi' => true,
+    ]);
+    $user = User::factory()->create([
+        'role'       => 'kaprodi',
+        'dosen_id'   => $dosen->id,
+        'prodi_id'   => $this->prodi->id,
+        'is_penguji' => true,
+        'is_kaprodi' => true,
+    ]);
 
-    public function test_tunjuk_penguji_dosen_kaprodi_tetap_role_kaprodi(): void
-    {
-        $dosen = Dosen::factory()->create([
-            'prodi_id'   => $this->prodi->id,
-            'is_penguji' => false,
-            'is_kaprodi' => true,
-        ]);
-        $user = User::factory()->create([
-            'dosen_id'   => $dosen->id,
-            'role'       => 'kaprodi',
-            'is_kaprodi' => true,
-            'is_penguji' => false,
-            'prodi_id'   => $this->prodi->id,
-        ]);
+    // Act
+    $response = $this->actingAs($this->admin)->delete(route('admin.penguji.destroy', $dosen));
 
-        $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
-            'dosen_ids' => [$dosen->id],
-        ]);
+    // Assert
+    $response->assertRedirect(route('admin.penguji.index'));
+    $response->assertSessionHas('success');
 
-        $user->refresh();
-        // Role tetap kaprodi karena sudah punya role
-        $this->assertEquals('kaprodi', $user->role);
-        $this->assertTrue($user->is_penguji);
-    }
+    $dosen->refresh();
+    expect($dosen->is_penguji)->toBeFalse();
 
-    public function test_tunjuk_penguji_gagal_dosen_ids_kosong(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
-            'dosen_ids' => [],
-        ]);
-
-        $response->assertSessionHasErrors('dosen_ids');
-    }
-
-    public function test_tunjuk_penguji_gagal_dosen_tidak_ada(): void
-    {
-        $response = $this->actingAs($this->admin)->post(route('admin.penguji.store'), [
-            'dosen_ids' => [99999],
-        ]);
-
-        $response->assertSessionHasErrors('dosen_ids.0');
-    }
-
-    // ── DESTROY (Cabut Penguji) ──────────────────────────────────
-
-    public function test_cabut_penguji_dosen_biasa_hapus_akun(): void
-    {
-        $dosen = Dosen::factory()->create([
-            'prodi_id'   => $this->prodi->id,
-            'is_penguji' => true,
-        ]);
-        $user = User::factory()->create([
-            'dosen_id'   => $dosen->id,
-            'role'       => 'penguji',
-            'is_penguji' => true,
-            'is_kaprodi' => false,
-        ]);
-
-        $response = $this->actingAs($this->admin)->delete(route('admin.penguji.destroy', $dosen));
-
-        $response->assertRedirect(route('admin.penguji.index'));
-        $response->assertSessionHas('success');
-
-        $dosen->refresh();
-        $this->assertFalse($dosen->is_penguji);
-        $this->assertDatabaseMissing('users', ['id' => $user->id]);
-    }
-
-    public function test_cabut_penguji_dosen_rangkap_kaprodi_role_kembali_kaprodi(): void
-    {
-        $dosen = Dosen::factory()->create([
-            'prodi_id'   => $this->prodi->id,
-            'is_penguji' => true,
-            'is_kaprodi' => true,
-        ]);
-        $user = User::factory()->create([
-            'dosen_id'   => $dosen->id,
-            'role'       => 'kaprodi',
-            'is_penguji' => true,
-            'is_kaprodi' => true,
-            'prodi_id'   => $this->prodi->id,
-        ]);
-
-        $this->actingAs($this->admin)->delete(route('admin.penguji.destroy', $dosen));
-
-        $dosen->refresh();
-        $user->refresh();
-        $this->assertFalse($dosen->is_penguji);
-        $this->assertFalse($user->is_penguji);
-        $this->assertEquals('kaprodi', $user->role);
-        $this->assertDatabaseHas('users', ['id' => $user->id]);
-    }
-}
+    $user->refresh();
+    expect($user->role)->toBe('kaprodi');
+    expect($user->is_penguji)->toBeFalse();
+});

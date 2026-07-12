@@ -85,8 +85,18 @@ class PhoneVerificationOtpController extends Controller
             'updated_at' => now(),
         ]);
 
-        // Kirim OTP via WhatsApp (Fonnte)
-        $result = $this->sendWhatsapp('-', $normalizedPhone, 'rekrutmen_informasi_send_otp', [$otp]);
+        // DEBUG: Log nomor sebelum dikirim
+        \Log::channel('wappin')->info('DEBUG Send OTP', [
+            'phone_raw' => $phone,
+            'normalized_for_db' => $normalizedPhone,
+            'phone_for_wa' => $phone,
+            'otp' => $otp
+        ]);
+
+        // Kirim OTP via WhatsApp
+        // PENTING: Kirim $phone (format asli), bukan $normalizedPhone
+        // Trait sendWhatsapp akan otomatis format ke +62xxx
+        $result = $this->sendWhatsapp('-', $phone, 'rekrutmen_informasi_send_otp', [$otp]);
         $sent = $result['status'] ?? false;
 
         if (! $sent) {

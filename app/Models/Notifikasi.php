@@ -99,27 +99,31 @@ class Notifikasi extends Model
      * Kirim pesan WhatsApp via Wappin template.
      */
     private static function kirimWhatsApp(int $userId, string $templateName, array $params, string $url = '-'): void
-    {
-        $user = User::with(['pelamar', 'dosen'])->find($userId);
+{
+    $user = User::with(['pelamar', 'dosen'])->find($userId);
 
-        if (!$user) {
-            return;
-        }
-
-        // Ambil nomor telepon: pelamar atau dosen
-        $noTelepon = null;
-
-        if ($user->pelamar && $user->pelamar->no_telepon) {
-            $noTelepon = $user->pelamar->no_telepon;
-        } elseif ($user->dosen && $user->dosen->no_telepon) {
-            $noTelepon = $user->dosen->no_telepon;
-        }
-
-        if (!$noTelepon) {
-            return;
-        }
-
-        // Kirim via Wappin trait
-        (new static)->sendWhatsapp($url, $noTelepon, $templateName, $params);
+    if (!$user) {
+        \Log::info('WA skip: user tidak ditemukan', ['user_id' => $userId]);
+        return;
     }
+
+    $noTelepon = null;
+    if ($user->pelamar && $user->pelamar->no_telepon) {
+        $noTelepon = $user->pelamar->no_telepon;
+    } elseif ($user->dosen && $user->dosen->no_telepon) {
+        $noTelepon = $user->dosen->no_telepon;
+    }
+
+    if (!$noTelepon) {
+        \Log::info('WA skip: no_telepon kosong', [
+            'user_id' => $userId,
+            'has_pelamar' => (bool) $user->pelamar,
+            'has_dosen' => (bool) $user->dosen,
+        ]);
+        return;
+    }
+
+    $result = (new static)->sendWhatsapp($url, $noTelepon, $templateName, $params);
+    \Log::info('WA send result', ['user_id' => $userId, 'to' => $noTelepon, 'template' => $templateName, 'result' => $result]);
+}
 }

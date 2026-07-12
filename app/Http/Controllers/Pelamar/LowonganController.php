@@ -100,10 +100,10 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek verifikasi nomor telepon (hanya jika diwajibkan)
-        if (config('services.wappin.enabled') && !$pelamar->phone_verified_at) {
+        // Cek nomor WhatsApp sudah diisi (wajib untuk notifikasi)
+        if (empty($pelamar->no_telepon)) {
             return redirect()->route('pelamar.profil.index')
-                ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
+                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.');
         }
 
         return view('pelamar.lowongan.apply', compact('lowongan', 'pelamar'));
@@ -137,10 +137,10 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek verifikasi nomor telepon (hanya jika diwajibkan)
-        if (config('services.wappin.enabled') && !$pelamar->phone_verified_at) {
+        // Cek nomor WhatsApp sudah diisi (wajib untuk notifikasi)
+        if (empty($pelamar->no_telepon)) {
             return redirect()->route('pelamar.profil.index')
-                ->with('warning', 'Verifikasi nomor WhatsApp Anda terlebih dahulu sebelum melamar.');
+                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.');
         }
 
         $request->validate([
