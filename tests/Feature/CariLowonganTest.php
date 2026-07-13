@@ -41,7 +41,7 @@ test('TC-01: Pelamar mengakses halaman cari lowongan, sistem menampilkan daftar 
     expect($available)->not->toBeEmpty();
 });
 
-test('TC-02: Pelamar mengakses halaman cari lowongan tanpa data pelamar, sistem mengarahkan ke halaman profil', function () {
+test('TC-02: Pelamar mengakses halaman cari lowongan sebelum melengkapi profil, sistem mengarahkan ke halaman profil dengan pesan peringatan', function () {
     $userTanpaPelamar = User::factory()->create(['role' => 'pelamar', 'email_verified_at' => now()]);
 
     $response = $this->actingAs($userTanpaPelamar)->get(route('pelamar.lowongan.index'));
@@ -104,7 +104,7 @@ test('TC-06: Pelamar mengakses form lamaran yang sudah pernah dilamar, sistem me
     $response->assertRedirect(route('pelamar.history.index'));
 });
 
-test('TC-07: Pelamar mengakses form lamaran dengan email belum terverifikasi, sistem mengarahkan ke halaman profil', function () {
+test('TC-07: Pelamar mengakses form lamaran dengan email belum terverifikasi, sistem menampilkan pesan peringatan', function () {
     $userUnverified = User::factory()->unverified()->create(['role' => 'pelamar']);
     $pelamarUnverified = Pelamar::factory()->create([
         'user_id'    => $userUnverified->id,
@@ -116,7 +116,7 @@ test('TC-07: Pelamar mengakses form lamaran dengan email belum terverifikasi, si
     $response->assertRedirect(route('pelamar.profil.index'));
 });
 
-test('TC-08: Pelamar mengakses form lamaran dengan nomor telepon belum diisi, sistem mengarahkan ke halaman profil', function () {
+test('TC-08: Pelamar mengakses form lamaran dengan nomor telepon belum diisi, sistem menampilkan pesan peringatan', function () {
     $this->pelamar->update(['no_telepon' => null]);
 
     $response = $this->actingAs($this->user)->get(route('pelamar.lowongan.apply', $this->lowongan));

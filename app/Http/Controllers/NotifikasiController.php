@@ -7,9 +7,7 @@ use Illuminate\Http\Request;
 
 class NotifikasiController extends Controller
 {
-    /**
-     * Ambil semua notifikasi milik user yang sedang login (JSON).
-     */
+    
     public function index()
     {
         $notifikasis = Notifikasi::where('user_id', auth()->id())

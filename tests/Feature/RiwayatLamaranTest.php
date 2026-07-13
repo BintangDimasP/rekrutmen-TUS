@@ -1,79 +1,139 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\Lamaran;
 use App\Models\Lowongan;
 use App\Models\Pelamar;
 use App\Models\Prodi;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class RiwayatLamaranTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    private User $user;
-    private Pelamar $pelamar;
+beforeEach(function () {
+    $this->prodi = Prodi::factory()->create();
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->create(['role' => 'pelamar']);
-        $this->pelamar = Pelamar::factory()->create(['user_id' => $this->user->id]);
-    }
+    $this->user = User::factory()->create([
+        'role'              => 'pelamar',
+        'email_verified_at' => now(),
+    ]);
 
-    public function test_pelamar_dapat_melihat_riwayat_lamaran(): void
-    {
-        $response = $this->actingAs($this->user)->get(route('pelamar.history.index'));
+    $this->pelamar = Pelamar::factory()->create([
+        'user_id'    => $this->user->id,
+        'no_telepon' => '081234567890',
+    ]);
 
-        $response->assertStatus(200);
-    }
+    $this->lowongan = Lowongan::factory()->create([
+        'prodi_id'      => $this->prodi->id,
+        'status'        => 'aktif',
+        'tanggal_tutup' => now()->addDays(30),
+        'kuota'         => 5,
+    ]);
+});
 
-    public function test_pelamar_dapat_melihat_detail_riwayat(): void
-    {
-        $prodi = Prodi::factory()->create();
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $prodi->id]);
-        $lamaran = Lamaran::factory()->create([
-            'pelamar_id' => $this->pelamar->id,
-            'lowongan_id' => $lowongan->id,
-        ]);
+test('TC-01: Pelamar mengakses riwayat lamaran, sistem menampilkan daftar lamaran', function () {
+    Lamaran::factory()->create([
+        'pelamar_id'  => $this->pelamar->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'menunggu',
+    ]);
 
-        $response = $this->actingAs($this->user)->get(route('pelamar.history.show', $lamaran));
+    $response = $this->actingAs($this->user)->get(route('pelamar.history.index'));
 
-        $response->assertStatus(200);
-    }
+    $response->assertStatus(200)->assertViewIs('pelamar.history.index');
 
-    public function test_pelamar_dapat_mengundurkan_diri(): void
-    {
-        $prodi = Prodi::factory()->create();
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $prodi->id]);
-        $lamaran = Lamaran::factory()->create([
-            'pelamar_id' => $this->pelamar->id,
-            'lowongan_id' => $lowongan->id,
-            'status' => 'menunggu',
-        ]);
+    $lamarans = $response->viewData('lamarans');
+    expect($lamarans->total())->toBe(1);
+});
 
-        $response = $this->actingAs($this->user)->put(route('pelamar.history.withdraw', $lamaran));
+test('TC-02: Pelamar mengakses riwayat lamaran sebelum melengkapi profil, sistem mengarahkan ke halaman profil dengan pesan peringatan', function () {
+    $userTanpaPelamar = User::factory()->create(['role' => 'pelamar']);
 
-        $response->assertSessionHas('success');
-        $this->assertDatabaseHas('lamarans', ['id' => $lamaran->id, 'status' => 'mengundurkan_diri']);
-    }
+    $response = $this->actingAs($userTanpaPelamar)->get(route('pelamar.history.index'));
 
-    public function test_pelamar_tidak_bisa_mengundurkan_diri_dari_lamaran_yang_sudah_final(): void
-    {
-        $prodi = Prodi::factory()->create();
-        $lowongan = Lowongan::factory()->create(['prodi_id' => $prodi->id]);
-        $lamaran = Lamaran::factory()->create([
-            'pelamar_id' => $this->pelamar->id,
-            'lowongan_id' => $lowongan->id,
-            'status' => 'diterima',
-        ]);
+    $response->assertRedirect(route('pelamar.profil.index'));
+    $response->assertSessionHas('warning');
+});
 
-        $response = $this->actingAs($this->user)->put(route('pelamar.history.withdraw', $lamaran));
+test('TC-03: Pelamar mengakses detail riwayat lamaran miliknya, sistem menampilkan detail lamaran', function () {
+    $lamaran = Lamaran::factory()->create([
+        'pelamar_id'  => $this->pelamar->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'menunggu',
+    ]);
 
-        $response->assertSessionHas('error');
-        $this->assertDatabaseHas('lamarans', ['id' => $lamaran->id, 'status' => 'diterima']);
-    }
-}
+    $response = $this->actingAs($this->user)->get(route('pelamar.history.show', $lamaran));
+
+    $response->assertStatus(200)->assertViewIs('pelamar.history.show');
+});
+
+test('TC-04: Pelamar mengakses detail riwayat lamaran yang bukan miliknya, sistem menampilkan error 403', function () {
+    $userLain    = User::factory()->create(['role' => 'pelamar']);
+    $pelamarLain = Pelamar::factory()->create(['user_id' => $userLain->id]);
+
+    $lamaranLain = Lamaran::factory()->create([
+        'pelamar_id'  => $pelamarLain->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'menunggu',
+    ]);
+
+    $response = $this->actingAs($this->user)->get(route('pelamar.history.show', $lamaranLain));
+
+    $response->assertStatus(403);
+});
+
+test('TC-05: Pelamar mengakses riwayat lamaran sebelum mengajukan lamaran, sistem menampilkan daftar kosong', function () {
+    $response = $this->actingAs($this->user)->get(route('pelamar.history.index'));
+
+    $response->assertStatus(200)->assertViewIs('pelamar.history.index');
+
+    $lamarans = $response->viewData('lamarans');
+    expect($lamarans->total())->toBe(0);
+});
+
+test('TC-06: Pelamar mengundurkan diri dari lamaran yang masih aktif, sistem berhasil mengubah status', function () {
+    $lamaran = Lamaran::factory()->create([
+        'pelamar_id'  => $this->pelamar->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'menunggu',
+    ]);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.history.withdraw', $lamaran));
+
+    $response->assertRedirect();
+    $response->assertSessionHas('success');
+
+    $lamaran->refresh();
+    expect($lamaran->status)->toBe('mengundurkan_diri');
+});
+
+test('TC-07: Pelamar mengundurkan diri dari lamaran yang sudah diterima, sistem menampilkan pesan error', function () {
+    $lamaran = Lamaran::factory()->create([
+        'pelamar_id'  => $this->pelamar->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'diterima',
+    ]);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.history.withdraw', $lamaran));
+
+    $response->assertRedirect();
+    $response->assertSessionHas('error');
+
+    $lamaran->refresh();
+    expect($lamaran->status)->toBe('diterima');
+});
+
+test('TC-08: Pelamar mengundurkan diri dari lamaran yang sudah ditolak, sistem menampilkan pesan error', function () {
+    $lamaran = Lamaran::factory()->create([
+        'pelamar_id'  => $this->pelamar->id,
+        'lowongan_id' => $this->lowongan->id,
+        'status'      => 'ditolak',
+    ]);
+
+    $response = $this->actingAs($this->user)->put(route('pelamar.history.withdraw', $lamaran));
+
+    $response->assertRedirect();
+    $response->assertSessionHas('error');
+
+    $lamaran->refresh();
+    expect($lamaran->status)->toBe('ditolak');
+});
