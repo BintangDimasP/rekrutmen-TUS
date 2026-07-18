@@ -1,59 +1,108 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="public/images/logo.png" width="300" alt="Logo Rekrutmen TUS" onerror="this.src='https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg'">
 </p>
 
-## About Laravel
+# Sistem Informasi Rekrutmen Dosen & Tenaga Kependidikan
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistem Informasi Rekrutmen adalah aplikasi berbasis web yang dirancang khusus untuk mengelola alur pendaftaran, penjadwalan, hingga proses penilaian seleksi calon pegawai (Dosen dan Tenaga Kependidikan). Sistem ini dibangun menggunakan **Laravel** dan **Tailwind CSS**, dengan interaktivitas yang didukung oleh **Alpine.js**.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Sistem ini mendukung *Multi-Role Authentication* dengan hak akses dan fitur spesifik untuk masing-masing pengguna:
 
-## Learning Laravel
+### 1. Pelamar (Applicant)
+- **Melihat Lowongan:** Melihat daftar lowongan pekerjaan yang sedang dibuka.
+- **Melamar Pekerjaan:** Mengisi formulir pendaftaran, melengkapi berkas, dan memilih posisi/program studi tujuan.
+- **Riwayat & Status Lamaran:** Memantau status lamaran (Menunggu, Lolos Administrasi, Penjadwalan, hingga Hasil Akhir).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2. Admin (HR / Kepegawaian)
+- **Manajemen Lowongan & Pelamar:** Membuka/menutup lowongan dan melakukan verifikasi berkas administrasi pelamar.
+- **Manajemen Penguji:** Menambah atau menetapkan dosen/staf yang akan bertugas sebagai penguji.
+- **Penjadwalan Seleksi:** Mengatur jadwal sesi **Micro Teaching** dan **Wawancara** beserta plotting penguji untuk masing-masing sesi pelamar.
+- **Rekapitulasi Nilai:** Memantau progres penilaian dari penguji dan melihat hasil rekapitulasi akhir dari seluruh pelamar.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Penguji (Reviewer / Interviewer)
+- **Dashboard Jadwal:** Melihat daftar jadwal ujian pelamar yang ditugaskan kepada penguji tersebut.
+- **Form Penilaian Terstruktur:** 
+  - **Micro Teaching:** Menilai aspek Perencanaan Pembelajaran, Penggunaan Media, Sistematika, Pengelolaan Kelas, Sikap & Etika, serta Manajemen Waktu Pembelajaran.
+  - **Wawancara:** Menilai aspek Motivasi, Potensi Kontribusi, Kemampuan Penelitian/Publikasi, Komunikasi, dan Relasi.
+- **Rekomendasi Akhir:** Memberikan keputusan rekomendasi (Direkomendasikan, Dipertimbangkan, Tidak Direkomendasikan) beserta catatan khusus untuk Pelamar.
 
-## Laravel Sponsors
+### 4. Kepala Program Studi (Kaprodi)
+- **Review Hasil Penilaian:** Melihat detail nilai gabungan (Micro Teaching & Wawancara) dari pelamar yang ditugaskan ke program studinya.
+- **Pertimbangan Akhir:** Kaprodi dapat meninjau hasil nilai dari para penguji sebagai bahan pertimbangan pengambilan keputusan kelulusan.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ Teknologi yang Digunakan
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Backend:** [Laravel](https://laravel.com/) (PHP Framework)
+- **Frontend:** HTML, [Tailwind CSS](https://tailwindcss.com/) (Styling), [Alpine.js](https://alpinejs.dev/) (Interactivity)
+- **Database:** MySQL
+- **Alerts / Notifications:** SweetAlert2 & Toast (Custom Alpine Modal)
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Instalasi & Cara Menjalankan (Local Development)
 
-## Code of Conduct
+Ikuti langkah-langkah di bawah ini untuk menjalankan aplikasi di komputer/laptop (Localhost):
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/BintangDimasP/rekrutmen-TUS.git
+   cd rekrutmen-TUS
+   ```
 
-## Security Vulnerabilities
+2. **Install Dependencies**
+   Install dependensi PHP menggunakan Composer dan dependensi Node.js menggunakan NPM.
+   ```bash
+   composer install
+   npm install
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+3. **Konfigurasi Environment**
+   Salin file `.env.example` menjadi `.env` lalu sesuaikan konfigurasi database Anda.
+   ```bash
+   cp .env.example .env
+   ```
+   *Atur `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD` di dalam file `.env` sesuai dengan MySQL Anda.*
 
-## License
+4. **Generate Application Key**
+   ```bash
+   php artisan key:generate
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. **Migrasi Database & Seeder (Opsional)**
+   Jalankan migrasi untuk membuat tabel database. Jika terdapat seeder untuk data awal, jalankan juga perintah seed.
+   ```bash
+   php artisan migrate --seed
+   ```
+
+6. **Link Storage**
+   Jalankan perintah ini agar file unggahan/berkas (seperti CV atau foto) dapat diakses publik.
+   ```bash
+   php artisan storage:link
+   ```
+
+7. **Jalankan Aplikasi**
+   Buka 2 terminal secara bersamaan dan jalankan perintah berikut:
+   
+   **Terminal 1 (Backend - Laravel):**
+   ```bash
+   php artisan serve
+   ```
+   
+   **Terminal 2 (Frontend - Vite/Tailwind):**
+   ```bash
+   npm run dev
+   ```
+
+8. **Akses Website**
+   Buka browser Anda dan akses: `http://localhost:8000`
+
+---
+
+## 👨‍💻 Kontributor
+- **Bintang Dimas P.** - *Lead Developer*
+
+*(Silakan tambahkan informasi lisensi atau catatan tambahan lainnya di bagian bawah README ini jika diperlukan).*
