@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Tambah Lowongan Baru')
+@section('title', 'Tambah Lowongan')
 
 @section('content')
 
@@ -10,7 +10,7 @@
     <div class="flex items-center gap-2 text-sm text-gray-500">
         <a href="{{ route('admin.lowongan.index') }}" class="hover:text-[#8b1515] transition-colors font-medium">Lowongan</a>
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="font-semibold text-gray-800">Tambah Lowongan Baru</span>
+        <span class="font-semibold text-gray-800">Tambah Lowongan</span>
     </div>
 
     <!-- Single Card -->
@@ -20,7 +20,7 @@
         <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] p-4 md:p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-xl font-bold text-white">Tambah Lowongan Baru</h1>
+                    <h1 class="text-xl font-bold text-white">Tambah Lowongan</h1>
                    
                 </div>
             </div>
@@ -118,7 +118,7 @@
                             <div x-data="{
                                     open: false,
                                     val: '{{ old('jenjang_minimal') }}',
-                                    opts: [{ v: '', l: '— Pilih Jenjang —' }, { v: 'D3', l: 'D3' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
+                                    opts: [{ v: '', l: '— Pilih Jenjang —' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
                                     get label() { return this.opts.find(o => o.v === this.val)?.l ?? '— Pilih Jenjang —'; }
                                  }" @click.outside="open = false" class="relative">
                                 <input type="hidden" name="jenjang_minimal" :value="val">
@@ -168,9 +168,13 @@
                                         else this.selected.splice(idx, 1);
                                     },
                                     isChecked(v) { return this.selected.includes(v); },
-                                    setFirst(v) {
+                                    setFirst(detail) {
+                                        const v = typeof detail === 'object' ? detail.nama : detail;
+                                        const isUserChange = typeof detail === 'object' ? detail.isUserChange : false;
                                         if (!v || !this.allOpts.includes(v)) return;
-                                        if (!this.selected.includes(v)) this.selected.unshift(v);
+                                        if (isUserChange || this.selected.length === 0) {
+                                            this.selected = [v];
+                                        }
                                     }
                                  }"
                                  @click.outside="open = false"
@@ -294,9 +298,9 @@
         const prodiSelect = document.getElementById('prodi_id');
         const namaPosisiInput = document.getElementById('nama_posisi');
 
-        function setProdiPembuka(prodiNama) {
+        function setProdiPembuka(prodiNama, isUserChange = false) {
             if (!prodiNama) return;
-            window.dispatchEvent(new CustomEvent('set-prodi-pembuka', { detail: prodiNama }));
+            window.dispatchEvent(new CustomEvent('set-prodi-pembuka', { detail: { nama: prodiNama, isUserChange: isUserChange } }));
         }
 
         prodiSelect.addEventListener('change', function() {
@@ -304,7 +308,7 @@
             const prodiNama = opt.getAttribute('data-nama');
             if (prodiNama) {
                 namaPosisiInput.value = 'Dosen Tetap S1 ' + prodiNama;
-                setProdiPembuka(prodiNama);
+                setProdiPembuka(prodiNama, true);
             } else {
                 namaPosisiInput.value = '';
             }
@@ -316,7 +320,7 @@
             const nama = opt?.getAttribute('data-nama');
             if (nama) {
                 // Tunggu Alpine init
-                setTimeout(() => setProdiPembuka(nama), 50);
+                setTimeout(() => setProdiPembuka(nama, false), 50);
             }
         }
     });

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin', ['hideSidebar' => true])
 
 
 @section('title', 'Form Penilaian Micro Teaching')
@@ -18,35 +18,25 @@
         'kategori_1' => [
             'title' => 'Perencanaan Pembelajaran',
             'items' => [
-                'Calon dosen menyampaikan rencana pembelajaran yang mencakup materi, tujuan, dan aturan kegiatan pembelajaran serta penilaian hasil belajar.',
                 'Calon dosen menyampaikan outline mengenai materi yang akan disampaikan.',
             ]
         ],
         'kategori_2' => [
-            'title' => 'Penguasaan Materi',
+            'title' => 'Penggunaan Media Pembelajaran (Kejelasan Suara & Tulisan)',
             'items' => [
-                'Calon dosen menunjukkan penguasaan materi pembelajaran.',
-                'Materi yang disampaikan terupdate dengan isu terkini dan relevan terhadap kebutuhan kompetensi yang ditetapkan prodi.',
-                'Calon dosen mengaitkan materi dengan keilmuan lain yang relevan.',
+                'Calon Dosen menggunakan media pembelajaran secara efektif untuk mendukung penyampaian materi dan memfasilitasi pemahaman peserta.',
             ]
         ],
         'kategori_3' => [
             'title' => 'Sistematika (Kemudahan Dipahami)',
             'items' => [
-                'Calon dosen menjelaskan materi secara sistematis / runtut.',
-                'Calon dosen menjelaskan materi dengan memberikan contoh konkret/nyata.',
-                'Calon dosen menggunakan metode mengajar yang variatif (ceramah, studi kasus, eksperimen, maupun lainnya).',
-                'Calon dosen menggunakan bahasa lisan dan tulis secara jelas, baik, dan benar.',
-                'Calon dosen mengkolaborasikan beberapa media dan atau software dalam penyampaian materi.',
-                'Calon dosen memberikan refleksi dari materi yang disampaikan.',
+                'Calon Dosen mampu menyampaikan materi secara jelas dan mudah dipahami, menyederhanakan konsep yang kompleks, serta mengaitkannya dengan contoh atau penerapan yang relevan.',
             ]
         ],
         'kategori_4' => [
-            'title' => 'Pengelolaan Kelas dan Interaksi',
+            'title' => 'Pengelolaan Kelas dan Interaksi (Penguasaan materi & Audiens)',
             'items' => [
-                'Calon dosen memberikan kesempatan untuk adanya interaksi (tanya jawab dan diskusi).',
-                'Calon dosen mampu menciptakan kelas yang interaktif dan menarik perhatian.',
-                'Calon dosen melaksanakan pembelajaran sesuai dengan alokasi waktu yang direncanakan.',
+                'Calon Dosen mampu mengelola proses pembelajaran secara efektif dengan menciptakan suasana kelas yang interaktif dan menarik serta menyampaikan materi sesuai alokasi waktu yang telah direncanakan.',
             ]
         ],
         'kategori_5' => [
@@ -55,11 +45,17 @@
                 'Calon dosen berpakaian sopan dan bersikap profesional selama melaksanakan pembelajaran.',
             ]
         ],
+        'kategori_6' => [
+            'title' => 'Manajemen Waktu Pembelajaran',
+            'items' => [
+                'Calon Dosen mampu membagi waktu secara proporsional antara pembukaan, penyampaian materi, interaksi, dan penutupan pembelajaran.',
+            ]
+        ],
     ];
 
     // item counts per kategori
-    $itemCounts = [1 => 2, 2 => 3, 3 => 6, 4 => 3, 5 => 1];
-    $totalItems = array_sum($itemCounts); // 15
+    $itemCounts = [1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1];
+    $totalItems = array_sum($itemCounts); // 6
 
     $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
@@ -144,7 +140,7 @@
             </a>
         </div>
     @else
-        <form id="microForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST">
+        <form id="microForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST" @submit.prevent="submitForm">
             @csrf
 
             <!-- Rubrik Penilaian -->
@@ -259,17 +255,7 @@
                         </div>
                     </div>
 
-                    <!-- Bidang Keahlian Kandidat -->
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Bidang Keahlian Kandidat <span class="text-red-500">*</span></label>
-                        <input type="text" name="bidang_keahlian"
-                            value="{{ old('bidang_keahlian') }}"
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition"
-                            placeholder="Contoh: Machine Learning, Sistem Embedded, Manajemen Operasi...">
-                        @error('bidang_keahlian')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-2">Catatan Penilaian</label>
                         <textarea name="catatan" rows="3"
@@ -308,7 +294,7 @@
                         <div class="flex items-center justify-between p-3.5 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors">
                             <div class="flex items-center gap-3 pr-4">
                                 <div class="w-8 h-8 rounded-lg bg-red-50 text-[#8b1515] font-bold text-sm flex items-center justify-center flex-shrink-0">{{ $kNum }}</div>
-                                <span class="text-[13px] md:text-sm font-semibold text-gray-700 line-clamp-1 leading-snug" title="{{ $rubrik['title'] }}">{{ $rubrik['title'] }}</span>
+                                <span class="text-[13px] md:text-sm font-semibold text-gray-700 leading-snug break-words" title="{{ $rubrik['title'] }}">{{ $rubrik['title'] }}</span>
                             </div>
                             <div class="flex items-center gap-4 flex-shrink-0">
                                 <div class="hidden sm:block w-24 lg:w-32 h-2.5 bg-gray-200 rounded-full overflow-hidden">
@@ -360,12 +346,41 @@
             </div>
 
         </form>
+
+        {{-- Custom Confirm Modal --}}
+        <div x-show="showConfirmModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showConfirmModal = false">
+            <div x-show="showConfirmModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Simpan penilaian?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Nilai yang telah disimpan tidak dapat diubah.</p>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" @click="processSubmit()" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
+                    <button type="button" @click="showConfirmModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
+                </div>
+            </div>
+        </div>
+
     @endif
 </div>
 
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('microForm', () => ({
+        showConfirmModal: false,
+        formEvent: null,
         scores: {
             @php
                 $allFields = [];
@@ -444,6 +459,49 @@ document.addEventListener('alpine:init', () => {
             if (s >= 2.5) return 'Cukup';
             if (s >= 1.5) return 'Kurang';
             return 'Sangat Kurang';
+        },
+
+        submitForm(e) {
+            this.formEvent = e.target;
+            this.showConfirmModal = true;
+        },
+
+        async processSubmit() {
+            if (!this.formEvent) return;
+            const form = this.formEvent;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            this.showConfirmModal = false;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'MENYIMPAN...';
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.reload();
+                    }
+                    window.close();
+                    // Fallback jika window.close() diblokir
+                    window.location.href = "{{ route('penguji.pengujian.show', $jadwal->id) }}";
+                } else {
+                    throw new Error('Terjadi kesalahan saat menyimpan data.');
+                }
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'SIMPAN PENILAIAN';
+            }
         }
     }))
 })

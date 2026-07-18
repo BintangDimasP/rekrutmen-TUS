@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Manajemen Akses Sistem')
+@section('title', 'Manajemen Pengguna')
 
 @section('content')
 
@@ -88,7 +88,6 @@
                     <button type="button" @click="roleOpen = !roleOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                             :class="roleFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         Role
                         <span x-show="roleFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="roleOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -148,10 +147,10 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:600px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[35%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Role</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[20%]">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[25%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[30%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Role</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -170,17 +169,17 @@
                             data-is-penguji="{{ $matchPenguji }}">
                             <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->name }}">{{ $user->name }}</td>
                             <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $user->email }}">{{ $user->email }}</td>
-                            <td class="py-3 px-5 text-sm font-medium">
+                            <td class="py-3 px-5 text-sm font-medium text-center">
                                 @if($isMulti)
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-indigo-100 text-indigo-800 uppercase">Kaprodi & Penguji</span>
+                                    <span class="text-sm text-gray-800 font-medium">Kaprodi & Penguji</span>
                                 @elseif($user->role === 'admin')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-purple-100 text-purple-800 uppercase">Admin</span>
+                                    <span class="text-sm text-gray-800 font-medium">Admin</span>
                                 @elseif($user->role === 'pelamar')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-green-100 text-green-800 uppercase">Pelamar</span>
+                                    <span class="text-sm text-gray-800 font-medium">Pelamar</span>
                                 @elseif($user->role === 'penguji')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800 uppercase">Penguji</span>
+                                    <span class="text-sm text-gray-800 font-medium">Penguji</span>
                                 @elseif($user->role === 'kaprodi')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 uppercase">Kaprodi</span>
+                                    <span class="text-sm text-gray-800 font-medium">Kaprodi</span>
                                 @endif
                             </td>
                             <td class="py-3 px-5 text-sm">
@@ -206,7 +205,7 @@
                                         class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden text-left">
                                         
                                         <div class="bg-[#8b1515] px-6 py-4 flex items-center justify-between">
-                                            <h2 class="text-xl font-semibold text-white tracking-tight">Edit Akun</h2>
+                                            <h2 class="text-xl font-semibold text-white tracking-tight">Edit</h2>
                                             <button type="button" @click="openEditModal = false" class="w-7 h-7 flex items-center justify-center rounded-lg border-2 border-white/60 text-white hover:bg-white/15 hover:border-white transition-all">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                                             </button>
@@ -219,7 +218,7 @@
                                             
                                             <div class="p-6 space-y-4 text-left">
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Username</label>
+                                                    <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama</label>
                                                     <input type="text" value="{{ $user->name }}" disabled class="w-full px-4 py-2.5 rounded-xl bg-gray-100 border border-gray-200 text-sm text-gray-500 cursor-not-allowed">
                                                 </div>
 
@@ -233,7 +232,7 @@
 
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-800 mb-1.5">Password <span class="text-xs text-gray-400 font-normal"></span></label>
-                                                    <input type="password" name="password" placeholder="Masukkan password baru..." class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
+                                                    <input type="password" name="password" placeholder="********" class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all outline-none">
                                                     @if($errors->has('password') && old('edit_user_id') == $user->id) <p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p> @endif
                                                 </div>
                                             </div>
@@ -256,13 +255,6 @@
                                          x-transition:enter-end="opacity-100 scale-100"
                                          class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
                                         
-                                        {{-- Close Button --}}
-                                        <button type="button" @click="openDeleteModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                                            </svg>
-                                        </button>
-
                                         {{-- Warning Icon --}}
                                         <div class="mx-auto mb-5 flex justify-center">
                                             <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -287,9 +279,9 @@
                                             <form method="POST" action="{{ route('admin.user.destroy', $user) }}" class="contents">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
                                             </form>
-                                            <button type="button" @click="openDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                                            <button type="button" @click="openDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">Tidak</button>
                                         </div>
                                     </div>
                                 </div>
@@ -359,9 +351,9 @@
                         @csrf
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Username <span class="text-red-500">*</span></label>
+                            <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Nama <span class="text-red-500">*</span></label>
                             <input type="text" name="name" value="{{ old('name') }}" required
-                                   placeholder="Nama admin"
+                                   placeholder="John Doe"
                                    class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('name'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('name') }}</p>@endif
                         </div>
@@ -370,7 +362,7 @@
                             <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Email <span class="text-red-500">*</span></label>
                             <div class="flex items-center rounded-xl bg-gray-50 border border-gray-200 overflow-hidden">
                                 <input type="text" name="username" value="{{ old('username') }}" required
-                                       placeholder="username"
+                                       placeholder="John Doe"
                                        class="flex-1 min-w-0 px-4 py-2.5 bg-transparent text-sm focus:outline-none border-none ring-0 focus:ring-0">
                                 <span class="shrink-0 px-3 py-2.5 text-xs text-gray-400 border-l border-gray-200 font-medium truncate max-w-[180px]" title="@admin.telkomuniversity.ac.id">@admin.telkomuniversity.ac.id</span>
                             </div>
@@ -380,7 +372,7 @@
                         <div>
                             <label class="block text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">Password <span class="text-red-500">*</span></label>
                             <input type="password" name="password" required
-                                   placeholder="Min. 8 karakter"
+                                   placeholder="********"
                                    class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('password'))<p class="text-xs text-red-500 mt-1">{{ $errors->first('password') }}</p>@endif
                         </div>

@@ -15,8 +15,11 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
+        [x-cloak] { display: none !important; }
         body { font-family: 'Poppins', sans-serif; }
 
         /* Custom sidebar scrollbar */
@@ -116,6 +119,7 @@
       x-init="fetchNotif()">
 @include('partials.loading-screen')<div class="flex h-screen overflow-hidden">
 
+    @empty($hideSidebar)
     {{-- ── BACKDROP (Mobile) ── --}}
     <div x-show="sidebarOpen"
          x-transition.opacity
@@ -247,12 +251,12 @@
                 $menus = [
                     'admin' => [
                         ['label' => 'Dashboard',        'route' => 'admin.dashboard',    'match' => 'admin.dashboard',     'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
-                        ['label' => 'Manajemen User',   'route' => 'admin.user.index',   'match' => 'admin.user.*',        'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
-                        ['label' => 'Prodi',            'route' => 'admin.prodi.index',  'match' => 'admin.prodi.*',       'icon' => 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25'],
+                        ['label' => 'Pengguna',   'route' => 'admin.user.index',   'match' => 'admin.user.*',        'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
+                        ['label' => 'Program Studi',            'route' => 'admin.prodi.index',  'match' => 'admin.prodi.*',       'icon' => 'M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25'],
                         ['label' => 'Penguji',          'route' => 'admin.penguji.index','match' => 'admin.penguji.*',     'icon' => 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z'],
-                        ['label' => 'Jadwal Seleksi',   'route' => 'admin.jadwal.index', 'match' => 'admin.jadwal.*',      'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
                         ['label' => 'Lowongan',         'route' => 'admin.lowongan.index','match' => ['admin.lowongan.*', 'admin.lamaran.*'],   'icon' => 'M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z'],
-                        ['label' => 'Manajemen Pelamar','route' => 'admin.pelamar.index','match' => 'admin.pelamar.*',    'icon' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'],
+                        ['label' => 'Jadwal Seleksi',   'route' => 'admin.jadwal.index', 'match' => 'admin.jadwal.*',      'icon' => 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'],
+                        ['label' => 'Pelamar','route' => 'admin.pelamar.index','match' => 'admin.pelamar.*',    'icon' => 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z'],
                         ['label' => 'Pengaturan',       'route' => 'settings.index',     'match' => 'settings.*',          'icon' => 'M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 010 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 010-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28zM15 12a3 3 0 11-6 0 3 3 0 016 0z'],
                     ],
                     'pelamar' => [
@@ -303,10 +307,12 @@
         </div>
 
     </aside>
+    @endempty
 
     {{-- ── MAIN CONTENT ── --}}
     <div class="flex flex-col flex-1 h-screen overflow-hidden min-w-0">
 
+        @empty($hideSidebar)
         {{-- TOP NAV --}}
         <header class="flex-shrink-0 flex items-center justify-between h-[65px] px-6 bg-white border-b border-gray-200/80 shadow-sm z-40">
             <div class="flex items-center gap-4">
@@ -515,6 +521,7 @@
                 </div>
             </div>
         </header>
+        @endempty
 
         {{-- PAGE CONTENT --}}
         <main class="flex-1 overflow-x-auto overflow-y-auto px-4 py-4 sm:px-6 sm:py-6 lg:px-7 lg:py-7">
@@ -532,13 +539,6 @@
              x-transition:enter-end="opacity-100 scale-100"
              class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
             
-            {{-- Close Button --}}
-            <button type="button" @click="showLogoutModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-
             {{-- Warning Icon --}}
             <div class="mx-auto mb-5 flex justify-center">
                 <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -554,9 +554,9 @@
             <div class="grid grid-cols-2 gap-3">
                 <form method="POST" action="{{ route('logout') }}" class="contents">
                     @csrf
-                    <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                    <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
                 </form>
-                <button type="button" @click="showLogoutModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">No</button>
+                <button type="button" @click="showLogoutModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
             </div>
         </div>
     </div>

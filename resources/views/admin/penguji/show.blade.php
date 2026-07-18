@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Penguji — ' . $penguji->nama)
+@section('title', 'Detail Penguji')
 
 @section('content')
 
@@ -73,7 +73,7 @@
         <div class="border-t border-gray-100" x-data="{ showCabutModal: false }">
             <div class="px-8 py-7 flex items-center justify-between gap-4">
                 <div>
-                    <p class="text-sm font-semibold text-gray-700">Ubah menjadi Non-Penguji</p>
+                    <p class="text-sm font-semibold text-gray-700">Ubah status penguji</p>
                     <p class="text-xs text-gray-400 mt-0.5">Dosen tetap terdaftar di sistem, namun tidak lagi berstatus penguji.</p>
                 </div>
                 <button type="button" @click="showCabutModal = true"
@@ -90,13 +90,6 @@
                      x-transition:enter-end="opacity-100 scale-100"
                      class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
                     
-                    {{-- Close Button --}}
-                    <button type="button" @click="showCabutModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-
                     {{-- Warning Icon --}}
                     <div class="mx-auto mb-5 flex justify-center">
                         <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -113,9 +106,9 @@
                         <form method="POST" action="{{ route('admin.penguji.destroy', $penguji) }}" class="contents">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                            <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
                         </form>
-                        <button type="button" @click="showCabutModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">No</button>
+                        <button type="button" @click="showCabutModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
                     </div>
                 </div>
             </div>

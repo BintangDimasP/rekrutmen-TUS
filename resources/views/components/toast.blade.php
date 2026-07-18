@@ -15,7 +15,7 @@
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
         </div>
         <div class="flex-1 py-3 pr-2">
-            <h4 class="text-sm font-bold text-gray-800">Success</h4>
+            <h4 class="text-sm font-bold text-gray-800">Berhasil</h4>
             <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ session('success') }}</p>
         </div>
         <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors">
@@ -36,7 +36,7 @@
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </div>
         <div class="flex-1 py-3 pr-2">
-            <h4 class="text-sm font-bold text-gray-800">Error</h4>
+            <h4 class="text-sm font-bold text-gray-800">Gagal</h4>
             <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ session('error') }}</p>
         </div>
         <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors">
@@ -45,8 +45,8 @@
     </div>
     @endif
 
-    {{-- Validation Errors Toast --}}
-    @if($errors->any() && !$errors->has('edit'))
+    {{-- Validation Errors Toast (Disabled so errors stay inline under form fields) --}}
+    @if(false && $errors->any() && !$errors->has('edit'))
     <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 7000)" x-show="show"
          x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-x-12"
          x-transition:enter-end="opacity-100 translate-x-0" x-transition:leave="transition ease-in duration-200"
@@ -57,7 +57,7 @@
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </div>
         <div class="flex-1 py-3 pr-2">
-            <h4 class="text-sm font-bold text-gray-800">Error</h4>
+            <h4 class="text-sm font-bold text-gray-800">Gagal</h4>
             <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ $errors->first() }}</p>
         </div>
         <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors">
@@ -78,7 +78,7 @@
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </div>
         <div class="flex-1 py-3 pr-2">
-            <h4 class="text-sm font-bold text-gray-800">Error</h4>
+            <h4 class="text-sm font-bold text-gray-800">Gagal</h4>
             <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ $errors->first('edit') }}</p>
         </div>
         <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors">
@@ -120,7 +120,7 @@
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
         </div>
         <div class="flex-1 py-3 pr-2">
-            <h4 class="text-sm font-bold text-gray-800">Warning</h4>
+            <h4 class="text-sm font-bold text-gray-800">Perhatian</h4>
             <p class="text-xs text-gray-500 mt-0.5 leading-relaxed">{{ session('warning') }}</p>
         </div>
         <button @click="show = false" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors">

@@ -1294,10 +1294,10 @@
                     <form method="POST" action="{{ route('settings.foto.delete') }}" class="contents">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Yes</button>
+                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Iya</button>
                     </form>
                     <button type="button" @click="deleteFotoModal = false"
-                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">No</button>
+                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">Tidak</button>
                 </div>
             </div>
         </div>

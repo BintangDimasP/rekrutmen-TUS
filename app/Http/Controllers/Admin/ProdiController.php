@@ -26,9 +26,16 @@ class ProdiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => ['required', 'string', 'max:120'],
+            'nama' => ['required', 'string', 'max:120', 'unique:prodis,nama'],
             'kode' => ['required', 'string', 'max:20', 'unique:prodis,kode'],
-            'logo' => ['nullable', 'image', 'max:2048'],
+            'logo' => ['nullable', 'image', 'max:6000'],
+        ], [
+            'nama.required' => 'Nama prodi wajib diisi.',
+            'nama.unique'   => 'Nama prodi sudah digunakan.',
+            'kode.required' => 'Kode prodi wajib diisi.',
+            'kode.unique'   => 'Kode prodi sudah digunakan.',
+            'logo.image'    => 'File logo harus berupa gambar.',
+            'logo.max'      => 'Ukuran logo maksimal adalah 5MB.',
         ]);
 
         $logoPath = null;
@@ -69,10 +76,18 @@ class ProdiController extends Controller
     public function update(Request $request, Prodi $prodi)
     {
         $request->validate([
-            'nama'       => ['required', 'string', 'max:120'],
-            'kode'       => ['required', 'string', 'max:20', 'unique:prodis,kode,' . $prodi->id],
-            'logo'       => ['nullable', 'image', 'max:2048'],
+            'nama' => ['required', 'string', 'max:120', 'unique:prodis,nama,' . $prodi->id],
+            'kode' => ['required', 'string', 'max:20', 'unique:prodis,kode,' . $prodi->id],
+            'logo' => ['nullable', 'image', 'max:6000'],
+        ], [
+            'nama.required' => 'Nama prodi wajib diisi.',
+            'nama.unique'   => 'Nama prodi sudah digunakan.',
+            'kode.required' => 'Kode prodi wajib diisi.',
+            'kode.unique'   => 'Kode prodi sudah digunakan.',
+            'logo.image'    => 'File logo harus berupa gambar.',
+            'logo.max'      => 'Ukuran logo maksimal adalah 5MB.',
         ]);
+
 
         $logoPath = $prodi->logo;
         if ($request->hasFile('logo')) {

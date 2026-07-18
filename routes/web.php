@@ -80,6 +80,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'store'])->name('admin.jadwal.store');
         Route::put('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'update'])->name('admin.jadwal.update');
         Route::put('admin/jadwal-group', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'updateGroup'])->name('admin.jadwal.updateGroup');
+        Route::delete('admin/jadwal-group', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroyGroup'])->name('admin.jadwal.destroyGroup');
         Route::delete('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroy'])->name('admin.jadwal.destroy');
 
         // API Endpoints (JSON - untuk AJAX di form penjadwalan)
@@ -88,6 +89,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('admin/api/pelamar-by-lowongan', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPelamar'])->name('admin.api.pelamar');
         Route::get('admin/api/sesi-tersedia', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiAvailableSessions'])->name('admin.api.sesi');
         Route::get('admin/api/sesi-taken-all', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiSesiTakenAll'])->name('admin.api.sesi.taken');
+        Route::get('admin/api/sesi-taken-pelamar', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiSesiTakenPelamar'])->name('admin.api.sesi.taken.pelamar');
         Route::get('admin/api/sesi-pelamar', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiSesiPelamar'])->name('admin.api.sesi.pelamar');
     });
 
@@ -124,6 +126,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/pelamar', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'pelamar'])->name('pelamar.index');
         Route::get('/pelamar/filter', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'filterPelamar'])->name('pelamar.filter');
         Route::get('/pelamar/{pelamar}', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'showPelamar'])->name('pelamar.show');
+        Route::patch('/lamaran/{lamaran}/toggle-rekomendasi', [\App\Http\Controllers\Kaprodi\KaprodiController::class, 'toggleRekomendasi'])->name('lamaran.toggleRekomendasi');
     });
 
     // Notifikasi (semua role)

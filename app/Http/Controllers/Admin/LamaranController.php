@@ -109,7 +109,23 @@ class LamaranController extends Controller
         ]);
 
         $statusLama = $lamaran->status;
+
+        // VALIDASI WAJIB: Admin tidak bisa loloskan ke Tahap 1 tanpa rekomendasi Kaprodi
+        if ($validated['status'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi) {
+            return back()->withErrors([
+                'status' => 'Pelamar ini belum mendapatkan rekomendasi dari Kaprodi. Lolos Tahap 1 tidak dapat diproses.',
+            ])->withInput();
+        }
+
         $lamaran->update($validated);
+
+        // AUTO-WITHDRAW: Jika pelamar diterima, gugurkan semua lamaran aktif lainnya
+        if ($validated['status'] === 'diterima' && $statusLama !== 'diterima') {
+            Lamaran::where('pelamar_id', $lamaran->pelamar_id)
+                ->where('id', '!=', $lamaran->id)
+                ->whereIn('status', ['menunggu', 'seleksi_tahap1', 'seleksi_tahap2'])
+                ->update(['status' => 'mengundurkan_diri']);
+        }
 
         // Kirim notifikasi jika status berubah
         if ($statusLama !== $validated['status']) {

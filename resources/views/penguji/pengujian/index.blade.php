@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Daftar Pengujian')
 
@@ -123,9 +123,9 @@
                             <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'dinilai' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'dinilai'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
                             <span class="text-sm font-medium text-gray-700">Dinilai</span>
                         </button>
-                        <button type="button" @click="statusFilter = statusFilter === 'pending' ? '' : 'pending'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="statusFilter === 'pending' ? 'bg-gray-100' : ''">
-                            <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'pending' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'pending'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                            <span class="text-sm font-medium text-gray-700">Pending</span>
+                        <button type="button" @click="statusFilter = statusFilter === 'belum_dinilai' ? '' : 'belum_dinilai'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-left" :class="statusFilter === 'belum_dinilai' ? 'bg-gray-100' : ''">
+                            <span class="w-4 h-4 rounded flex items-center justify-center" :class="statusFilter === 'belum_dinilai' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'belum_dinilai'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
+                            <span class="text-sm font-medium text-gray-700">Belum dinilai</span>
                         </button>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                 <button type="button" @click="seleksiFilter = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </span>
             <span x-show="statusFilter !== ''" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
-                <span x-text="statusFilter === 'dinilai' ? 'Dinilai' : 'Pending'"></span>
+                <span x-text="statusFilter === 'dinilai' ? 'Dinilai' : 'Belum dinilai'"></span>
                 <button type="button" @click="statusFilter = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
             </span>
 
@@ -178,7 +178,7 @@
                             @endphp
                             <tr data-row
                                 data-tipe="{{ $jadwal->tipe_seleksi == 'wawancara' ? 'wawancara' : 'micro' }}"
-                                data-status="{{ $sudahDinilai ? 'dinilai' : 'pending' }}"
+                                data-status="{{ $sudahDinilai ? 'dinilai' : 'belum_dinilai' }}"
                                 data-tanggal="{{ $jadwal->tanggal->format('Y-m-d') }}"
                                 data-nama="{{ strtolower($jadwal->pelamar->nama) }}"
                                 class="hover:bg-gray-50/50 transition-colors h-[52px]">
@@ -201,9 +201,9 @@
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if($sudahDinilai)
-                                        <span class="text-sm font-bold text-green-600">Dinilai</span>
+                                        <span class="px-2.5 py-1 rounded-lg text-[0.7rem] font-bold bg-green-800 text-white inline-block">Dinilai</span>
                                     @else
-                                        <span class="text-sm font-bold text-yellow-600">Pending</span>
+                                        <span class="px-2.5 py-1 rounded-lg text-[0.7rem] font-bold bg-red-800 text-white inline-block">Belum dinilai</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">

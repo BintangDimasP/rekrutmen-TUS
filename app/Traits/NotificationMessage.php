@@ -11,6 +11,10 @@ trait NotificationMessage
 {
     public function sendWhatsapp($url, $recipientNumber, $templateName, $params)
     {
+        if (!config('services.wappin.enabled')) {
+            return ['status' => false, 'message' => 'Notifikasi WhatsApp dinonaktifkan.'];
+        }
+
         $username = config('services.wappin.username');
         $password = config('services.wappin.password');
         try {

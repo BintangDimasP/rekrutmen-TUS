@@ -149,13 +149,14 @@ class PengujiController extends Controller
 
     private function storeWawancara(Request $request, JadwalSeleksi $jadwal)
     {
-        // 8 indikator flat, semua dalam k1_item_1 s/d k1_item_8
-        $totalItems = 8;
+        // 5 indikator flat, semua dalam k1_item_1 s/d k1_item_5
+        $totalItems = 5;
 
         $rules = [
             'catatan'          => 'nullable|string',
             'rekomendasi'      => 'required|in:direkomendasikan,tidak_direkomendasikan,perlu_dipertimbangkan',
             'prodi_tujuan'     => 'required|string|max:255',
+            'bidang_keahlian'  => 'required|string|max:255',
             'status_rekrutmen' => 'nullable|in:on_going,praktisi_part_time,profesional_full_time',
         ];
         for ($i = 1; $i <= $totalItems; $i++) {
@@ -171,7 +172,7 @@ class PengujiController extends Controller
             $sum += $val;
         }
 
-        // rata-rata 8 indikator, skala 1-5
+        // rata-rata 5 indikator, skala 1-5
         $total = round($sum / $totalItems, 2);
 
         Penilaian::create([
@@ -182,23 +183,28 @@ class PengujiController extends Controller
             'catatan'           => $request->catatan,
             'rekomendasi'       => $request->rekomendasi,
             'prodi_tujuan'      => $request->prodi_tujuan,
+            'bidang_keahlian'   => $request->bidang_keahlian,
             'status_rekrutmen'  => $request->status_rekrutmen,
         ]);
+
+        if ($request->wantsJson()) {
+            session()->flash('success', 'Penilaian wawancara berhasil disimpan.');
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('penguji.pengujian.show', $jadwal->id)->with('success', 'Penilaian Wawancara berhasil disimpan.');
     }
 
     private function storeMicroTeaching(Request $request, JadwalSeleksi $jadwal)
     {
-        // item counts per kategori: k1=2, k2=3, k3=6, k4=3, k5=1
-        $itemCounts = [1 => 2, 2 => 3, 3 => 6, 4 => 3, 5 => 1];
+        // item counts per kategori: k1=1, k2=1, k3=1, k4=1, k5=1, k6=1
+        $itemCounts = [1 => 1, 2 => 1, 3 => 1, 4 => 1, 5 => 1, 6 => 1];
 
         $rules = [
             'catatan'          => 'nullable|string',
             'rekomendasi'      => 'required|in:direkomendasikan,tidak_direkomendasikan,perlu_dipertimbangkan',
             'prodi_tujuan'     => 'required|string|max:255',
             'kelompok_keahlian'=> 'required|in:scout,ethes,riib',
-            'bidang_keahlian'  => 'required|string|max:255',
         ];
         foreach ($itemCounts as $k => $count) {
             for ($i = 1; $i <= $count; $i++) {
@@ -230,14 +236,19 @@ class PengujiController extends Controller
             'kategori_3'        => $categoryScores[3],
             'kategori_4'        => $categoryScores[4],
             'kategori_5'        => $categoryScores[5],
+            'kategori_6'        => $categoryScores[6],
             'detail_nilai'      => $detail,
             'total_nilai'       => $total,
             'catatan'           => $request->catatan,
             'rekomendasi'       => $request->rekomendasi,
             'prodi_tujuan'      => $request->prodi_tujuan,
             'kelompok_keahlian' => $request->kelompok_keahlian,
-            'bidang_keahlian'   => $request->bidang_keahlian,
         ]);
+
+        if ($request->wantsJson()) {
+            session()->flash('success', 'Penilaian Micro Teaching berhasil disimpan.');
+            return response()->json(['success' => true]);
+        }
 
         return redirect()->route('penguji.pengujian.show', $jadwal->id)->with('success', 'Penilaian Micro Teaching berhasil disimpan.');
     }

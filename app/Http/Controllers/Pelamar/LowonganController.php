@@ -79,6 +79,16 @@ class LowonganController extends Controller
     {
         $pelamar = auth()->user()->pelamar;
 
+        // Cek apakah pelamar sudah diterima di prodi manapun
+        $sudahDiterima = Lamaran::where('pelamar_id', $pelamar->id)
+            ->where('status', 'diterima')
+            ->exists();
+
+        if ($sudahDiterima) {
+            return redirect()->route('pelamar.lowongan.index')
+                ->with('warning', 'Anda sudah tidak dapat mengajukan lamaran.');
+        }
+
         // Cek apakah sudah pernah melamar di lowongan ini
         $existing = Lamaran::where('pelamar_id', $pelamar->id)
             ->where('lowongan_id', $lowongan->id)
@@ -86,6 +96,35 @@ class LowonganController extends Controller
 
         if ($existing) {
             return redirect()->route('pelamar.history.index')->with('warning', 'Anda sudah melamar pada posisi ini.');
+        }
+
+        // Status yang dianggap "aktif" (sedang berjalan)
+        $statusAktif = ['menunggu', 'seleksi_tahap1', 'seleksi_tahap2'];
+
+        // Cek apakah sudah punya lamaran aktif di prodi yang sama
+        $aktifDiProdiIni = Lamaran::where('pelamar_id', $pelamar->id)
+            ->whereIn('status', $statusAktif)
+            ->whereHas('lowongan', fn($q) => $q->where('prodi_id', $lowongan->prodi_id))
+            ->exists();
+
+        if ($aktifDiProdiIni) {
+            return redirect()->route('pelamar.lowongan.show', $lowongan->id)
+                ->with('warning', 'Anda sudah mengajukan lamaran di program studi ini.');
+        }
+
+        // Cek batas maksimal 4 prodi aktif berbeda
+        $jumlahProdiAktif = Lamaran::where('pelamar_id', $pelamar->id)
+            ->whereIn('status', $statusAktif)
+            ->whereHas('lowongan')
+            ->with('lowongan:id,prodi_id')
+            ->get()
+            ->pluck('lowongan.prodi_id')
+            ->unique()
+            ->count();
+
+        if ($jumlahProdiAktif >= 4) {
+            return redirect()->route('pelamar.lowongan.index')
+                ->with('warning', 'Anda telah mencapai batas maksimal 4 lamaran.');
         }
 
         // Cek kuota
@@ -116,13 +155,52 @@ class LowonganController extends Controller
     {
         $pelamar = auth()->user()->pelamar;
 
-        // Validasi duplikasi
+        // Cek apakah pelamar sudah diterima di prodi manapun
+        $sudahDiterima = Lamaran::where('pelamar_id', $pelamar->id)
+            ->where('status', 'diterima')
+            ->exists();
+
+        if ($sudahDiterima) {
+            return redirect()->route('pelamar.lowongan.index')
+                ->with('warning', 'Anda sudah tidak dapat mengajukan lamaran.');
+        }
+
+        // Validasi duplikasi (sama persis ID lowongan)
         $existing = Lamaran::where('pelamar_id', $pelamar->id)
             ->where('lowongan_id', $lowongan->id)
             ->first();
 
         if ($existing) {
             return redirect()->route('pelamar.history.index')->with('warning', 'Anda sudah melamar pada posisi ini.');
+        }
+
+        // Status yang dianggap "aktif" (sedang berjalan)
+        $statusAktif = ['menunggu', 'seleksi_tahap1', 'seleksi_tahap2'];
+
+        // Cek apakah sudah punya lamaran aktif di prodi yang sama
+        $aktifDiProdiIni = Lamaran::where('pelamar_id', $pelamar->id)
+            ->whereIn('status', $statusAktif)
+            ->whereHas('lowongan', fn($q) => $q->where('prodi_id', $lowongan->prodi_id))
+            ->exists();
+
+        if ($aktifDiProdiIni) {
+            return redirect()->route('pelamar.lowongan.show', $lowongan->id)
+                ->with('warning', 'Anda sudah mengajukan lamaran di program studi ini.');
+        }
+
+        // Cek batas maksimal 4 prodi aktif berbeda
+        $jumlahProdiAktif = Lamaran::where('pelamar_id', $pelamar->id)
+            ->whereIn('status', $statusAktif)
+            ->whereHas('lowongan')
+            ->with('lowongan:id,prodi_id')
+            ->get()
+            ->pluck('lowongan.prodi_id')
+            ->unique()
+            ->count();
+
+        if ($jumlahProdiAktif >= 4) {
+            return redirect()->route('pelamar.lowongan.index')
+                ->with('warning', 'Anda telah mencapai batas maksimal 4 lamaran.');
         }
 
         // Cek kuota (double-check saat submit)

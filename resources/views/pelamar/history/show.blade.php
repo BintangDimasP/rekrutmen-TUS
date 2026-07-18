@@ -112,7 +112,7 @@
                     @endphp
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         @if($micro && $micro->count() > 0)
-                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all flex flex-col h-full">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
 
                             @if($microRata !== null)
@@ -129,7 +129,7 @@
                             <div class="space-y-3">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-2">Penguji</p>
-                                    <div class="space-y-1.5">
+                                    <div class="{{ $micro->count() > 2 ? 'grid grid-cols-2 gap-x-4 gap-y-1.5' : 'space-y-1.5' }}">
                                         @foreach($micro as $microItem)
                                         <p class="text-sm font-semibold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
@@ -139,7 +139,7 @@
                             @else
                             <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Micro Teaching</h4>
 
-                            <div class="space-y-4 text-sm text-gray-700">
+                            <div class="space-y-4 text-sm text-gray-700 flex-1">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
                                     <p class="font-bold text-gray-800">{{ $micro[0]->tanggal->translatedFormat('d F Y') }}</p>
@@ -150,27 +150,33 @@
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
+                                    <div class="{{ $micro->count() > 2 ? 'grid grid-cols-2 gap-x-4 gap-y-2' : 'space-y-2' }}">
                                         @foreach($micro as $microItem)
                                         <p class="text-sm font-bold text-gray-800">{{ $microItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
                                     </div>
                                 </div>
+                            </div>
 
-                                @if($micro[0]->link_meeting)
-                                <div class="pt-3">
-                                    <a href="{{ $micro[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
-                                        Masuk Link Zoom
+                            @if($micro[0]->lokasi)
+                            <div class="mt-5">
+                                @if($micro[0]->jenis_sesi === 'online')
+                                    <a href="{{ $micro[0]->lokasi }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm gap-2">
+                                        Zoom Meeting
                                     </a>
-                                </div>
+                                @else
+                                    <div class="flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-gray-800 text-[0.75rem] font-bold rounded-xl shadow-sm hover:shadow-md transition-all cursor-default text-center">
+                                        Telkom University, {{ $micro[0]->lokasi }}
+                                    </div>
                                 @endif
                             </div>
+                            @endif
                             @endif
                         </div>
                         @endif
 
                         @if($wawancara && $wawancara->count() > 0)
-                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all">
+                        <div class="p-6 rounded-2xl bg-white border border-gray-200 shadow-sm relative overflow-hidden group hover:border-gray-300 hover:shadow-md transition-all flex flex-col h-full">
                             <div class="absolute top-0 left-0 w-full h-1 bg-[#8b1515]"></div>
 
                             @if($wawancaraRata !== null)
@@ -187,7 +193,7 @@
                             <div class="space-y-3">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-2">Penguji</p>
-                                    <div class="space-y-1.5">
+                                    <div class="{{ $wawancara->count() > 2 ? 'grid grid-cols-2 gap-x-4 gap-y-1.5' : 'space-y-1.5' }}">
                                         @foreach($wawancara as $wawancaraItem)
                                         <p class="text-sm font-semibold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
@@ -197,7 +203,7 @@
                             @else
                             <h4 class="text-[0.7rem] font-black text-[#8b1515] uppercase tracking-widest mb-5">Wawancara</h4>
 
-                            <div class="space-y-4 text-sm text-gray-700">
+                            <div class="space-y-4 text-sm text-gray-700 flex-1">
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Tanggal</p>
                                     <p class="font-bold text-gray-800">{{ $wawancara[0]->tanggal->translatedFormat('d F Y') }}</p>
@@ -208,21 +214,27 @@
                                 </div>
                                 <div>
                                     <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Penguji</p>
-                                    <div class="space-y-2">
+                                    <div class="{{ $wawancara->count() > 2 ? 'grid grid-cols-2 gap-x-4 gap-y-2' : 'space-y-2' }}">
                                         @foreach($wawancara as $wawancaraItem)
                                         <p class="text-sm font-bold text-gray-800">{{ $wawancaraItem->penguji->nama ?? '-' }}</p>
                                         @endforeach
                                     </div>
                                 </div>
+                            </div>
 
-                                @if($wawancara[0]->link_meeting)
-                                <div class="pt-3">
-                                    <a href="{{ $wawancara[0]->link_meeting }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm">
-                                        Masuk Link Zoom
+                            @if($wawancara[0]->lokasi)
+                            <div class="mt-5">
+                                @if($wawancara[0]->jenis_sesi === 'online')
+                                    <a href="{{ $wawancara[0]->lokasi }}" target="_blank" class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] text-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-[0.75rem] font-bold rounded-xl transition-all shadow-sm gap-2">
+                                        Zoom Meeting
                                     </a>
-                                </div>
+                                @else
+                                    <div class="flex items-center justify-center w-full px-4 py-2.5 bg-gray-50 hover:bg-[#8b1515] hover:text-white border border-gray-200 hover:border-[#8b1515] text-gray-800 text-[0.75rem] font-bold rounded-xl shadow-sm hover:shadow-md transition-all cursor-default text-center">
+                                        Telkom University, {{ $wawancara[0]->lokasi }}
+                                    </div>
                                 @endif
                             </div>
+                            @endif
                             @endif
                         </div>
                         @endif

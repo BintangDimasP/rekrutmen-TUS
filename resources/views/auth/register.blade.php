@@ -186,6 +186,7 @@
     <div id="cardWrapper" class="w-full max-w-md transition-all duration-500 ease-in-out">
         <form id="registerForm" action="#" method="POST" enctype="multipart/form-data" novalidate data-no-loading>
             @csrf
+            <input type="hidden" name="step" id="current_step_input" value="{{ old('step', 1) }}">
 
         {{-- ═══════════════════════════════════════ --}}
         {{-- STEP 1 — BUAT AKUN                      --}}
@@ -1076,6 +1077,10 @@
         const wrapper = document.getElementById('cardWrapper');
         wrapper.style.maxWidth = stepWidths[n] || '48rem';
 
+        // Update hidden input step
+        const stepInput = document.getElementById('current_step_input');
+        if (stepInput) stepInput.value = n;
+
         updateIndicator(n);
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
@@ -1152,9 +1157,31 @@
             if (!el || !el.files || el.files.length === 0) continue;
             const file = el.files[0];
             const maxKB = fileMaxSizes[id] || 5120;
+            
+            // Validate Size
             if (file.size > maxKB * 1024) {
                 showToast('Ukuran File Terlalu Besar', `File ${id.replace(/_/g,' ')} maksimal ${(maxKB/1024)}MB. Ukuran file Anda ${(file.size/1024/1024).toFixed(1)}MB.`, 'error');
                 return false;
+            }
+            
+            // Validate Type/Extension
+            const accept = el.getAttribute('accept');
+            if (accept) {
+                const allowed = accept.split(',').map(a => a.trim().toLowerCase());
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                const type = file.type.toLowerCase();
+                
+                let isValid = false;
+                for (const acc of allowed) {
+                    if (acc.startsWith('.') && ext === acc) { isValid = true; break; }
+                    if (acc.endsWith('/*') && type.startsWith(acc.replace('/*', ''))) { isValid = true; break; }
+                    if (acc === type) { isValid = true; break; }
+                }
+                
+                if (!isValid) {
+                    showToast('Format File Tidak Sesuai', `File ${id.replace(/_/g,' ')} harus berformat ${accept}.`, 'error');
+                    return false;
+                }
             }
         }
         return true;
@@ -1405,7 +1432,7 @@
             }, delay);
             delay += 300;
         @endforeach
-        showStep(1);
+        showStep({{ old('step', 1) }});
     @else
         showStep(1);
     @endif

@@ -47,7 +47,7 @@ class UserController extends Controller
 
         // Cek unik email lengkap
         if (User::where('email', $email)->exists()) {
-            return back()->withErrors(['username' => 'Username sudah digunakan.'])->withInput();
+            return back()->withErrors(['username' => 'Email sudah digunakan.'])->withInput();
         }
 
         User::create([
@@ -57,7 +57,7 @@ class UserController extends Controller
             'role'     => 'admin',
         ]);
 
-        return back()->with('success', "Admin {$request->name} berhasil ditambahkan dengan email {$email}.");
+        return back()->with('success', "Akun berhasil ditambahkan.");
     }
 
     /**
@@ -104,7 +104,7 @@ class UserController extends Controller
         } elseif ($isPelamarRole) {
             $message = 'Akun pelamar berhasil dihapus.';
         } else {
-            $message = 'Akun & role dosen berhasil dihapus. Dosen kembali tanpa akses sistem.';
+            $message = 'Akun & role dosen berhasil dihapus.';
         }
 
         return back()->with('success', $message);
@@ -145,6 +145,6 @@ class UserController extends Controller
             }
         });
 
-        return back()->with('success', 'Kredensial berhasil diperbarui.');
+        return back()->with('success', 'Akun berhasil diperbarui.');
     }
 }

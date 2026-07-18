@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Pelamar')
 
@@ -78,7 +78,6 @@
                 <button type="button" @click="prodiOpen = !prodiOpen"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                         :class="filterProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                     Prodi
                     <span x-show="filterProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                     <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -138,11 +137,11 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:780px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[22%]">Nama Pelamar</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[20%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[16%]">No Handphone</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[32%]">Lamaran Diajukan</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama Pelamar</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Jenjang Pendidikan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">No Handphone</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Lamaran Diajukan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -153,20 +152,20 @@
                         data-phone="{{ strtolower(addslashes($pelamar->no_telepon)) }}"
                         data-prodis="{{ $pelamar->lamarans->pluck('lowongan.prodi_id')->filter()->unique()->implode(',') }}">
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->nama }}">
-                            <div class="text-sm font-medium text-gray-800 truncate">{{ $pelamar->nama }}</div>
+                            <div class="text-sm font-medium text-gray-800 text-center truncate">{{ $pelamar->nama }}</div>
                         </td>
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
-                            <div class="text-sm text-gray-600 font-medium truncate">{{ $pelamar->jenjang ?? '-' }}</div>
-                            <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5 truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
+                            <div class="text-sm text-gray-800 font-medium text-center truncate">{{ $pelamar->jenjang ?? '-' }} - {{ $pelamar->institusi ?? '-'}}</div>
+                            <div class="text-[0.7rem] text-gray-400 uppercase text-center truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
                         </td>
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
-                            <span class="text-sm text-gray-600 font-medium truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
+                            <span class="text-sm text-gray-800 font-medium text-center truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
                         </td>
                         <td class="py-3 px-4 max-w-0">
                             @if($pelamar->lamarans->count() > 0)
                                 <div class="flex flex-col gap-1">
                                     @foreach($pelamar->lamarans->take(2) as $lamaran)
-                                        <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold" title="{{ $lamaran->lowongan->nama_posisi ?? '-' }}">
+                                        <span class="inline-flex text-sm text-gray-800 font-medium text-center " title="{{ $lamaran->lowongan->nama_posisi ?? '-' }}">
                                             <span class="truncate">{{ $lamaran->lowongan->nama_posisi ?? '-' }}</span>
                                         </span>
                                     @endforeach
@@ -208,6 +207,7 @@
         </div>
 
         {{-- Empty state when filter yields no results --}}
+        @if($pelamars->count() > 0)
         <div x-show="totalFiltered === 0" class="py-14 text-center" style="display: none;">
             <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data pelamar</h3>
@@ -235,6 +235,7 @@
                         class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
             </div>
         </div>
+        @endif
     </div>
 
 </div>

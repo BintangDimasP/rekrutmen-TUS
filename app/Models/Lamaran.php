@@ -29,11 +29,13 @@ class Lamaran extends Model
         'tanggal_wawancara',
         'link_zoom',
         'catatan_admin',
+        'is_direkomendasikan_kaprodi',
     ];
 
     protected $casts = [
-        'tanggal_wawancara' => 'date',
-        'snapshot_data'     => 'array',
+        'tanggal_wawancara'              => 'date',
+        'snapshot_data'                  => 'array',
+        'is_direkomendasikan_kaprodi'    => 'boolean',
     ];
 
     public function pelamar()
@@ -68,5 +70,27 @@ class Lamaran extends Model
             return (object) $snap;
         }
         return $this->pelamar;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($lamaran) {
+            \App\Models\JadwalSeleksi::where('pelamar_id', $lamaran->pelamar_id)
+                ->where('lowongan_id', $lamaran->lowongan_id)
+                ->delete();
+        });
+
+        static::updated(function ($lamaran) {
+            // Jika status berubah menjadi ditolak atau mengundurkan diri, hapus jadwalnya
+            if ($lamaran->wasChanged('status')) {
+                if (in_array($lamaran->status, ['mengundurkan_diri', 'ditolak'])) {
+                    \App\Models\JadwalSeleksi::where('pelamar_id', $lamaran->pelamar_id)
+                        ->where('lowongan_id', $lamaran->lowongan_id)
+                        ->delete();
+                }
+            }
+        });
     }
 }

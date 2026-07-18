@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Edit Lowongan — ' . $lowongan->nama_posisi)
+@section('title', 'Edit Lowongan ')
 
 @section('content')
 
@@ -83,7 +83,14 @@
 
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan <span class="text-red-500">*</span></label>
-                            <input type="date" name="tanggal_tutup" value="{{ old('tanggal_tutup', $lowongan->tanggal_tutup->format('Y-m-d')) }}"
+                            <input type="date" name="tanggal_tutup" value="{{ old('tanggal_tutup', $lowongan->tanggal_tutup->format('Y-m-d')) }}" min="{{ date('Y-m-d') }}"
+                                   class="w-full px-4 py-2.5 rounded-lg border @error('tanggal_tutup') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                            @error('tanggal_tutup') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Kuota Pendaftaran <span class="text-red-500">*</span></label>
+                            <input type="number" name="kuota" value="{{ old('kuota', $lowongan->kuota) }}" min="1"
                                    class="w-full px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
                         </div>
                     </div>
@@ -100,7 +107,7 @@
                             <div x-data="{
                                     open: false,
                                     val: '{{ old('jenjang_minimal', $lowongan->jenjang_minimal) }}',
-                                    opts: [{ v: 'D3', l: 'D3' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
+                                    opts: [{ v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
                                     get label() { return this.opts.find(o => o.v === this.val)?.l ?? '— Pilih —'; }
                                  }" @click.outside="open = false" class="relative">
                                 <input type="hidden" name="jenjang_minimal" :value="val">
@@ -203,14 +210,6 @@
                             </div>
                         </div>
 
-                        <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Kuota Pendaftaran <span class="text-red-500">*</span></label>
-                            <div class="flex items-center gap-3">
-                                <input type="number" name="kuota" value="{{ old('kuota', $lowongan->kuota) }}" min="1"
-                                       class="w-40 px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
-                               
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -224,6 +223,7 @@
                 </div>
 
                 {{-- ACTIONS --}}
+                <input type="hidden" name="status" value="{{ $lowongan->status }}">
                 <div class="flex justify-center pt-4 border-t border-gray-100 gap-3">
                     <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#8b1515] hover:bg-red-900 text-white text-sm font-bold rounded-lg shadow-md shadow-red-900/20 transition-all">
                         Simpan

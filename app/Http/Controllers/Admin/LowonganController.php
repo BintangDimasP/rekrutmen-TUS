@@ -81,6 +81,8 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'tanggal_tutup'    => 'required|date|after:today',
             'deskripsi'        => 'nullable|string',
             'status'           => 'required|in:aktif,ditutup,draft',
+        ], [
+            'tanggal_tutup.after' => 'Tanggal penutupan harus berisi tanggal setelah hari ini.',
         ]);
 
         // Prodi prioritas: nilai dipisah '||' dari multi-select → simpan dengan ', '
@@ -116,7 +118,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         });
 
         return redirect()->route('admin.lowongan.index')
-                         ->with('success', 'Lowongan "' . $validated['nama_posisi'] . '" berhasil dibuat.');
+                         ->with('success', 'Lowongan berhasil ditambahkan.');
     }
 
     /** Detail lowongan — redirect ke daftar lamaran */
@@ -158,9 +160,11 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'prodi_prioritas'  => 'nullable',
             'skill_dibutuhkan' => 'nullable',
             'kuota'            => 'required|integer|min:1',
-            'tanggal_tutup'    => 'required|date',
+            'tanggal_tutup'    => 'required|date|after_or_equal:today',
             'deskripsi'        => 'nullable|string',
             'status'           => 'required|in:aktif,ditutup,draft',
+        ], [
+            'tanggal_tutup.after_or_equal' => 'Tanggal penutupan tidak boleh sebelum hari ini.',
         ]);
 
         // Normalisasi multi-select (dipisah '||') → simpan dengan ', '
@@ -185,21 +189,21 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         });
 
         return redirect()->route('admin.lowongan.index')
-                         ->with('success', 'Lowongan "' . $lowongan->nama_posisi . '" berhasil diperbarui.');
+                         ->with('success', 'Lowongan berhasil diperbarui.');
     }
 
     /** Toggle status lowongan */
     public function toggleStatus(Lowongan $lowongan)
     {
-        $rawStatus = $lowongan->getRawOriginal('status');
-        $newStatus = $rawStatus === 'aktif' ? 'ditutup' : 'aktif';
+        $currentStatus = $lowongan->status; // Use computed status
+        $newStatus = $currentStatus === 'aktif' ? 'ditutup' : 'aktif';
 
         if ($newStatus === 'aktif') {
-            if ($lowongan->tanggal_tutup && $lowongan->tanggal_tutup->isPast()) {
-                return redirect()->route('admin.lowongan.index')->with('error', 'Gagal mem-publish! Tanggal tutup lowongan sudah lewat. Silakan edit tanggal tutup terlebih dahulu.');
+            if ($lowongan->tanggal_tutup && $lowongan->tanggal_tutup->endOfDay()->isPast()) {
+                return redirect()->route('admin.lowongan.index')->with('error', 'Perbarui tanggal lowongan.');
             }
             if ($lowongan->sisa_kuota <= 0) {
-                return redirect()->route('admin.lowongan.index')->with('error', 'Gagal mem-publish! Kuota lowongan tidak mencukupi atau sudah habis.');
+                return redirect()->route('admin.lowongan.index')->with('error', 'Perbarui kuota lowongan.');
             }
         }
 
@@ -212,7 +216,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             \App\Models\Notifikasi::kirimSistem($u->id, 'Status Lowongan Diubah', "Admin {$adminNama} mengubah status lowongan {$lowongan->nama_posisi} menjadi {$statusLabel} pada {$waktu}.");
         });
 
-        $message = $newStatus === 'aktif' ? 'Lowongan berhasil dipublish (Aktif).' : 'Lowongan berhasil di-unpublish (Ditutup).';
+        $message = $newStatus === 'aktif' ? 'Lowongan berhasil dipublish.' : 'Lowongan berhasil di-unpublish.';
         return redirect()->route('admin.lowongan.index')->with('success', $message);
     }
 
@@ -229,7 +233,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         });
 
         return redirect()->route('admin.lowongan.index')
-                         ->with('success', 'Lowongan "' . $nama . '" berhasil dihapus.');
+                         ->with('success', 'Lowongan berhasil dihapus.');
     }
 
     /** Cetak Berita Acara Penetapan Hasil Akhir Microteaching & Wawancara */

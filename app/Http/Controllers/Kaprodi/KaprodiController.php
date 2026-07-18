@@ -89,10 +89,28 @@ class KaprodiController extends Controller
             $query->where('status', $request->status);
         }
 
-        $lamarans  = $query->latest()->paginate(10)->appends($request->query());
+        $lamaransQuery = $query->latest()->get();
+        $initialLamarans = $lamaransQuery->map(function ($lamaran) {
+            return [
+                'id' => $lamaran->id,
+                'pelamar_id' => $lamaran->pelamar_id,
+                'nama' => $lamaran->pelamar->nama,
+                'jenjang' => $lamaran->pelamar->jenjang,
+                'prodi_pendidikan' => $lamaran->pelamar->prodi_pendidikan,
+                'no_telepon' => $lamaran->pelamar->no_telepon,
+                'email' => $lamaran->pelamar->user?->email,
+                'lowongan_id' => $lamaran->lowongan_id,
+                'lowongan_nama' => $lamaran->lowongan->nama_posisi,
+                'status' => $lamaran->status,
+                'status_label' => $lamaran->status_label,
+                'is_direkomendasikan_kaprodi' => $lamaran->is_direkomendasikan_kaprodi,
+                'instansi' => $lamaran->pelamar->institusi,
+            ];
+        });
+
         $lowongans = Lowongan::where('prodi_id', $prodiId)->orderBy('nama_posisi')->get();
 
-        return view('kaprodi.pelamar', compact('lamarans', 'lowongans'));
+        return view('kaprodi.pelamar', compact('initialLamarans', 'lowongans'));
     }
 
     /**
@@ -136,6 +154,8 @@ class KaprodiController extends Controller
                     'lowongan_nama' => $lamaran->lowongan->nama_posisi,
                     'status' => $lamaran->status,
                     'status_label' => $lamaran->status_label,
+                    'is_direkomendasikan_kaprodi' => $lamaran->is_direkomendasikan_kaprodi,
+                    'instansi' => $lamaran->pelamar->institusi,
                 ];
             }),
         ]);
@@ -183,5 +203,36 @@ class KaprodiController extends Controller
         $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
 
         return view('kaprodi.pelamar-show', compact('pelamar', 'activeLamaran', 'snapshot', 'micro', 'wawancara'));
+    }
+
+    /**
+     * PATCH /kaprodi/lamaran/{lamaran}/toggle-rekomendasi
+     * Toggle status rekomendasi Kaprodi (AJAX).
+     */
+    public function toggleRekomendasi(Request $request, \App\Models\Lamaran $lamaran)
+    {
+        $prodiId     = $this->getProdiId();
+        $lowonganIds = Lowongan::where('prodi_id', $prodiId)->pluck('id');
+
+        // Pastikan lamaran ini milik prodi kaprodi
+        if (!$lowonganIds->contains($lamaran->lowongan_id)) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
+        }
+
+        if ($lamaran->status !== 'menunggu') {
+            return response()->json(['success' => false, 'message' => 'Status lamaran sudah diproses oleh Admin.'], 403);
+        }
+
+        $nilai = $request->input('value');
+        if ($nilai !== null) {
+            $nilai = filter_var($nilai, FILTER_VALIDATE_BOOLEAN);
+        }
+        
+        $lamaran->update(['is_direkomendasikan_kaprodi' => $nilai]);
+
+        return response()->json([
+            'success' => true,
+            'value'   => $lamaran->is_direkomendasikan_kaprodi,
+        ]);
     }
 }

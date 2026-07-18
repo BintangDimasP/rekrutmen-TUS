@@ -15,6 +15,7 @@ class Penilaian extends Model
         'kategori_3',
         'kategori_4',
         'kategori_5',
+        'kategori_6',
         'detail_nilai',
         'total_nilai',
         'catatan',

@@ -24,14 +24,11 @@ class WawancaraDataSheet implements FromArray, WithTitle, WithStyles, WithColumn
 
         $rows[] = [
             'Nama Penilai', 'Nama Kandidat', 'Prodi Tujuan',
-            'Ind.1. Motivasi',
-            'Ind.2. Kemampuan Mengajar',
-            'Ind.3. Kemampuan Mengembangkan Kurikulum Pengajaran',
-            'Ind.4. Kemampuan Penelitian & Publikasi',
-            'Ind.5. Kemampuan Abdimas',
-            'Ind.6. Kemampuan Bekerjasama dgn Tim',
-            'Ind.7. Keahlian Lainnya',
-            'Ind.8. Komitmen Waktu dan Kesediaan Melakukan Hal Diluar Tugas Pokok',
+            'Ind.1. motivasi',
+            'Ind.2. Potensi Kontribusi terhadap Program Studi dan Institusi',
+            'Ind.3. Kemampuan Penelitian & Publikasi',
+            'Ind.4. Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat',
+            'Ind.5. Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain',
             'Catatan Penilai', 'Rekomendasi', 'Rekomendasi Prodi Tujuan',
             'SUM', 'AVERAGE',
         ];

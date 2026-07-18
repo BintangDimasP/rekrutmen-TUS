@@ -132,7 +132,7 @@ class LamaranNilaiExport implements WithMultipleSheets
                 $dv = $p->detail_nilai ?? [];
 
                 $items = [];
-                for ($i = 1; $i <= 8; $i++) {
+                for ($i = 1; $i <= 5; $i++) {
                     $raw = $dv["k1_item_{$i}"] ?? null;
                     $items[] = is_numeric($raw) ? (float) $raw : '-';
                 }

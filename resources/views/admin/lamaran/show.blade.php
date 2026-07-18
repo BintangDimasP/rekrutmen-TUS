@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Detail Lamaran – ' . $lamaran->pelamar->nama)
+@section('title', 'Detail Lamaran ' )
 
 @section('content')
 @php
@@ -48,19 +48,36 @@
                     </div>
                 </div>
                 
-                <div>
+                <div class="flex flex-col items-end gap-2">
+
+                    {{-- Status Badge --}}
                     @php
                         $statusColors = [
-                            'menunggu'       => 'bg-white/20 text-white border-white/30',
-                            'seleksi_tahap1' => 'bg-white text-blue-700 border-white',
-                            'seleksi_tahap2' => 'bg-white text-indigo-700 border-white',
-                            'diterima'       => 'bg-white text-green-700 border-white',
-                            'ditolak'        => 'bg-white text-red-700 border-white',
+                            'seleksi_tahap1' => 'bg-white text-blue-700 border-white shadow-sm',
+                            'seleksi_tahap2' => 'bg-white text-indigo-700 border-white shadow-sm',
+                            'diterima'       => 'bg-white text-green-700 border-white shadow-sm',
+                            'ditolak'        => 'bg-white text-red-700 border-white shadow-sm',
+                            'mengundurkan_diri' => 'bg-white text-gray-700 border-white shadow-sm',
                         ];
-                        $colorClass = $statusColors[$lamaran->status] ?? $statusColors['menunggu'];
+                        
+                        $label = $lamaran->status_label;
+                        $colorClass = $statusColors[$lamaran->status] ?? 'bg-white/20 text-white border-white/30';
+
+                        if ($lamaran->status === 'menunggu') {
+                            if ($lamaran->is_direkomendasikan_kaprodi === true) {
+                                $label = 'Direkomendasikan';
+                                $colorClass = 'bg-white text-green-700 border-white shadow-sm';
+                            } elseif ($lamaran->is_direkomendasikan_kaprodi === false) {
+                                $label = 'Tidak Direkomendasi';
+                                $colorClass = 'bg-white text-red-700 border-white shadow-sm';
+                            } else {
+                                $label = 'Menunggu Review';
+                                $colorClass = 'bg-white/20 text-white border-white/30';
+                            }
+                        }
                     @endphp
-                    <span class="inline-flex px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest border backdrop-blur-sm shadow-sm {{ $colorClass }}">
-                        {{ $lamaran->status_label }}
+                    <span class="inline-flex px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest border backdrop-blur-sm {{ $colorClass }}">
+                        {{ $label }}
                     </span>
                 </div>
             </div>
@@ -355,38 +372,34 @@
 
                 $microKategoriLabels = [
                     1 => 'PP',
-                    2 => 'PM',
+                    2 => 'PMP',
                     3 => 'Sis',
                     4 => 'PKI',
                     5 => 'SE',
+                    6 => 'MWP',
                 ];
                 $microKategoriTooltips = [
                     1 => 'Perencanaan Pembelajaran',
-                    2 => 'Penguasaan Materi',
+                    2 => 'Penggunaan Media Pembelajaran',
                     3 => 'Sistematika',
                     4 => 'Pengelolaan Kelas & Interaksi',
                     5 => 'Sikap & Etika',
+                    6 => 'Manajemen Waktu Pembelajaran',
                 ];
-                // Wawancara: 8 indikator flat
+                // Wawancara: 5 indikator flat
                 $wawancaraIndikatorLabels = [
                     1 => 'Mot',
-                    2 => 'KMgj',
-                    3 => 'KMKur',
-                    4 => 'KPP',
-                    5 => 'KAbd',
-                    6 => 'KBT',
-                    7 => 'KL',
-                    8 => 'KW',
+                    2 => 'PotKon',
+                    3 => 'KPP',
+                    4 => 'KKom',
+                    5 => 'KonRel',
                 ];
                 $wawancaraIndikatorTooltips = [
-                    1 => 'Motivasi',
-                    2 => 'Kemampuan Mengajar',
-                    3 => 'Kemampuan Mengembangkan Kurikulum',
-                    4 => 'Kemampuan Penelitian & Publikasi',
-                    5 => 'Kemampuan Abdimas',
-                    6 => 'Kemampuan Bekerjasama dengan Tim',
-                    7 => 'Keahlian Lainnya',
-                    8 => 'Komitmen Waktu',
+                    1 => 'motivasi',
+                    2 => 'Potensi Kontribusi terhadap Program Studi dan Institusi',
+                    3 => 'Kemampuan Penelitian & Publikasi',
+                    4 => 'Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat',
+                    5 => 'Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain',
                 ];
                 $wawancaraKategoriLabels = []; // tidak dipakai untuk wawancara
 
@@ -435,7 +448,6 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Kelompok</th>
-                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -464,7 +476,6 @@
                                         </td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->kelompok_keahlian ? ($kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian) : '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -519,6 +530,7 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -546,6 +558,7 @@
                                             @endif
                                         </td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -563,7 +576,7 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirWawancara }}</span>
                                         </td>
-                                        <td colspan="3" class="border border-gray-200"></td>
+                                        <td colspan="4" class="border border-gray-200"></td>
                                     </tr>
                                 </tfoot>
                                 @endif
@@ -785,15 +798,22 @@
                                     @php
                                         $isDisabled = false;
                                         if ($es['order'] < $currentOrder) $isDisabled = true;
+                                        if ($es['val'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi) $isDisabled = true;
                                         if ($es['val'] === 'seleksi_tahap2' && !$hasJadwal && $currentOrder < 3) $isDisabled = true;
-                                        if (in_array($es['val'], ['diterima','ditolak']) && !$hasBothScores) $isDisabled = true;
+                                        if ($es['val'] === 'diterima' && !$hasBothScores) $isDisabled = true;
+                                        $disabledTitle = match(true) {
+                                            $es['val'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi => 'Pelamar belum direkomendasikan Kaprodi',
+                                            $es['val'] === 'seleksi_tahap2' && !$hasJadwal => 'Jadwal belum dibuat',
+                                            $es['val'] === 'diterima' && !$hasBothScores => 'Penilaian belum lengkap',
+                                            default => 'Syarat belum terpenuhi',
+                                        };
                                     @endphp
                                     <div class="flex-1 flex flex-col items-center relative">
                                         @if($j > 0)
                                         <div class="absolute top-4 right-1/2 w-full h-0.5 bg-gray-200 -translate-y-1/2 z-0"></div>
                                         @endif
                                         <label class="relative z-10 {{ $isDisabled ? 'cursor-not-allowed' : 'cursor-pointer' }}"
-                                               {{ $isDisabled ? 'title="Syarat belum terpenuhi"' : '' }}>
+                                               {{ $isDisabled ? 'title="' . $disabledTitle . '"' : '' }}>
                                             <input type="radio" name="status" value="{{ $es['val'] }}"
                                                    x-model="selected"
                                                    class="sr-only"
@@ -825,7 +845,7 @@
                                     </button>
                                 </div>
                                 <div class="flex justify-center mt-3" x-show="selected === '{{ $lamaran->status }}'">
-                                    <button type="button" @click="editing = false" class="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+                                    <button type="button" @click="editing = false" class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-xs font-semibold rounded-lg transition-colors">
                                         Tutup
                                     </button>
                                 </div>

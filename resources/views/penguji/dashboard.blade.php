@@ -64,9 +64,9 @@
                                 </td>
                                 <td class="py-3 px-4 text-center">
                                     @if($sudahDinilai)
-                                        <span class="text-sm font-bold text-green-600">Dinilai</span>
+                                        <span class="px-2.5 py-1 rounded-lg text-[0.7rem] font-bold bg-green-800 text-white inline-block">Dinilai</span>
                                     @else
-                                        <span class="text-sm font-bold text-yellow-600">Pending</span>
+                                        <span class="px-2.5 py-1 rounded-lg text-[0.7rem] font-bold bg-red-800 text-white inline-block">Belum dinilai</span>
                                     @endif
                                 </td>
                                 <td class="py-3 px-4 text-center">

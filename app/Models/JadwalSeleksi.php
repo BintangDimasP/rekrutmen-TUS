@@ -36,7 +36,7 @@ class JadwalSeleksi extends Model
     ];
 
     protected $fillable = [
-        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi', 'link_meeting'
+        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi', 'link_meeting', 'jenis_sesi', 'lokasi'
     ];
 
     protected $casts = [
@@ -97,14 +97,22 @@ class JadwalSeleksi extends Model
 
     /**
      * Cek apakah pelamar bebas di slot tertentu.
-     * Sama seperti penguji, pelamar hanya bentrok jika tipe dan sesi sama.
+     * Pelamar bentrok jika sudah ada jadwal APAPUN (MT/WWC, lowongan manapun)
+     * di sesi dan tanggal yang sama — karena 1 sesi = pelamar harus hadir
+     * MT + WWC secara berurutan.
+     *
+     * @param array $excludeIds  ID jadwal yang dikecualikan (untuk mode edit)
      */
-    public static function isPelamarAvailable(string $tanggal, int $pelamarId, string $tipe, int $sesi): bool
+    public static function isPelamarAvailable(string $tanggal, int $pelamarId, int $sesi, array $excludeIds = []): bool
     {
-        return !self::whereDate('tanggal', $tanggal)
+        $q = self::whereDate('tanggal', $tanggal)
             ->where('pelamar_id', $pelamarId)
-            ->where('tipe_seleksi', $tipe)
-            ->where('sesi', $sesi)
-            ->exists();
+            ->where('sesi', $sesi);
+
+        if (!empty($excludeIds)) {
+            $q->whereNotIn('id', $excludeIds);
+        }
+
+        return !$q->exists();
     }
 }

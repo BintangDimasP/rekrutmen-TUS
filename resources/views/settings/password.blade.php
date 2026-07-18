@@ -38,7 +38,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
         {{-- Header --}}
-        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-8 py-8">
+        <div class="bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-8 py-6">
             <div class="flex items-center gap-4">
                 
                 <div>
@@ -100,6 +100,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-600 mb-1.5">Password Lama</label>
                         <input type="password" name="current_password"
+                               value="{{ old('current_password') }}"
                                class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800
                                       focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all
                                       @error('current_password') border-red-400 bg-red-50 @enderror"
@@ -227,10 +228,6 @@
                  x-transition:enter-start="opacity-0 scale-95"
                  x-transition:enter-end="opacity-100 scale-100"
                  class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
-                <button type="button" @click="deletePhotoModal = false"
-                        class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
 
                 <div class="mx-auto mb-5 flex justify-center">
                     <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -247,10 +244,10 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit"
-                                class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Yes</button>
+                                class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 hover:bg-gray-800 hover:text-white rounded-xl transition-all">Iya</button>
                     </form>
                     <button type="button" @click="deletePhotoModal = false"
-                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">No</button>
+                            class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 rounded-xl shadow-md transition-all">Tidak</button>
                 </div>
             </div>
         </div>

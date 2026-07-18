@@ -245,7 +245,7 @@
                 </div>
                 <div class="text-[12px] text-gray-500 mb-6">Data CV, Ijazah, dan KTP akan ditarik otomatis dari profil Anda. Pastikan profil Anda sudah lengkap.</div>
 
-                <form action="{{ route('pelamar.lowongan.storeApply', $lowongan) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                <form action="{{ route('pelamar.lowongan.storeApply', $lowongan) }}" method="POST" enctype="multipart/form-data" class="space-y-6" x-data="{ showConfirmModal: false }">
                     @csrf
 
                     {{-- Surat Lamaran --}}
@@ -310,11 +310,38 @@
 
                     {{-- Form Footer --}}
                     <div class="pt-2 flex justify-center">
-                        <button type="submit" id="btn-kirim-lamaran"
-                                onclick="return validateLamaranForm()"
+                        <button type="button" id="btn-kirim-lamaran"
+                                @click="if(validateLamaranForm()) showConfirmModal = true"
                                 class="btn-kirim w-full sm:w-auto flex-shrink-0 px-8 py-3 bg-[#8b1515] text-white text-[13.5px] font-bold rounded-xl shadow-sm">
                             Ajukan Lamaran
                         </button>
+                    </div>
+
+                    {{-- Modal Konfirmasi --}}
+                    <div x-show="showConfirmModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 !mt-0" @click.self="showConfirmModal = false">
+                        <div x-show="showConfirmModal"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                            
+                            {{-- Warning Icon --}}
+                            <div class="mx-auto mb-5 flex justify-center">
+                                <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                                    <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                                    <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                                    <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                                </svg>
+                            </div>
+                            
+                            <h2 class="text-[1.15rem] font-extrabold text-gray-800 mb-2 leading-tight">Ajukan lamaran?</h2>
+                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Berkas yang sudah dikirim tidak dapat diubah kembali!</p>
+
+                            <div class="grid grid-cols-2 gap-3">
+                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
+                                <button type="button" @click="showConfirmModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
+                            </div>
+                        </div>
                     </div>
 
                 </form>
@@ -379,6 +406,7 @@
                             showLamaranToast('Upload Belum Lengkap', 'Surat Lamaran wajib diunggah sebelum mengirim lamaran. Format file: PDF, maksimal 5MB.', 'error');
                             return false;
                         }
+                        
                         return true;
                     }
 

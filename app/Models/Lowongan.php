@@ -65,7 +65,7 @@ class Lowongan extends Model
     public function getStatusAttribute($value): string
     {
         if ($value === 'aktif') {
-            if ($this->tanggal_tutup && $this->tanggal_tutup->isPast()) {
+            if ($this->tanggal_tutup && $this->tanggal_tutup->endOfDay()->isPast()) {
                 return 'ditutup';
             }
             if ($this->sisa_kuota <= 0) {

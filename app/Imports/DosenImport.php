@@ -28,8 +28,9 @@ class DosenImport implements OnEachRow, WithHeadingRow, WithValidation
         Dosen::create([
             'nama'       => $data['nama'],
             'kode'       => strtoupper($data['kode']),
-            'nip'        => $data['nip'] ?? null,
-            'nidn'       => $data['nidn'] ?? null,
+            // Cast ke string karena Excel membaca kolom angka sebagai integer
+            'nip'        => isset($data['nip'])  && $data['nip']  !== '' ? (string) $data['nip']  : null,
+            'nidn'       => isset($data['nidn']) && $data['nidn'] !== '' ? (string) $data['nidn'] : null,
             'email'      => '-',
             'prodi_id'   => $this->prodi_id,
             'is_kaprodi' => false,
@@ -43,8 +44,9 @@ class DosenImport implements OnEachRow, WithHeadingRow, WithValidation
         return [
             'nama' => 'required|string|max:255',
             'kode' => 'required|string|max:50|unique:dosens,kode',
-            'nip'  => 'nullable|string|max:50',
-            'nidn' => 'nullable|string|max:50',
+            // Tidak pakai rule 'string' karena Excel membaca NIP/NIDN sebagai integer
+            'nip'  => 'nullable|max:50',
+            'nidn' => 'nullable|max:50',
         ];
     }
 }

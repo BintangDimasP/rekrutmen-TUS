@@ -121,8 +121,11 @@ class JadwalSeleksiController extends Controller
                 if (!$pelamar)
                     continue;
 
-                $sesi = (int) ($slotInfo['sesi'] ?? 0);
-                $link = $slotInfo['link'] ?? null;
+                $sesi  = (int) ($slotInfo['sesi'] ?? 0);
+                $jenis = in_array($slotInfo['jenis'] ?? 'online', ['online', 'offline'])
+                    ? ($slotInfo['jenis'] ?? 'online')
+                    : 'online';
+                $lokasi = $slotInfo['lokasi'] ?? null;
 
                 if (!$sesi) continue;
 
@@ -138,6 +141,13 @@ class JadwalSeleksiController extends Controller
                 }
 
                 $anySavedForPelamar = false;
+
+                // Cek ketersediaan pelamar — cek per sesi tanpa filter tipe
+                if (!JadwalSeleksi::isPelamarAvailable($tanggal, $pelamarId, $sesi)) {
+                    $label = JadwalSeleksi::SESSIONS['wawancara'][$sesi]['block_label'] ?? "Sesi {$sesi}";
+                    $errors[] = "{$pelamar->nama}: pelamar sudah terjadwal di {$label}.";
+                    continue;
+                }
 
                 foreach ($tipeMap as $dbTipe => $pengujiIdsRaw) {
                     $pengujiIds = array_filter(array_map('intval', $pengujiIdsRaw));
@@ -168,20 +178,16 @@ class JadwalSeleksiController extends Controller
                             continue;
                         }
 
-                        if (!JadwalSeleksi::isPelamarAvailable($tanggal, $pelamarId, $dbTipe, $sesi)) {
-                            $label = JadwalSeleksi::SESSIONS[$dbTipe][$sesi]['label'] ?? "S{$sesi}";
-                            $errors[] = "{$pelamar->nama} ({$dbTipe}): pelamar bentrok di {$label}.";
-                            continue;
-                        }
-
                         JadwalSeleksi::create([
-                            'tanggal' => $tanggal,
-                            'lowongan_id' => $lowonganId,
-                            'pelamar_id' => $pelamarId,
-                            'penguji_id' => $pengujiId,
+                            'tanggal'      => $tanggal,
+                            'lowongan_id'  => $lowonganId,
+                            'pelamar_id'   => $pelamarId,
+                            'penguji_id'   => $pengujiId,
                             'tipe_seleksi' => $dbTipe,
-                            'sesi' => $sesi,
-                            'link_meeting' => $link ?: null,
+                            'sesi'         => $sesi,
+                            'jenis_sesi'   => $jenis,
+                            'lokasi'       => $lokasi ?: null,
+                            'link_meeting' => ($jenis === 'online') ? ($lokasi ?: null) : null,
                         ]);
 
                         $saved++;
@@ -334,11 +340,9 @@ class JadwalSeleksiController extends Controller
             }
         }
 
-        if (!JadwalSeleksi::isPelamarAvailable($tanggal, $pelamarId, $tipe, $sesi)) {
-            if (!JadwalSeleksi::where('tanggal', $tanggal)->where('pelamar_id', $pelamarId)->where('tipe_seleksi', $tipe)->where('sesi', $sesi)->where('id', '!=', $jadwal->id)->exists()) {
-                $label = JadwalSeleksi::SESSIONS[$tipe][$sesi]['label'] ?? "S{$sesi}";
-                return back()->withErrors(['edit' => "Pelamar sudah terjadwal di {$label} — terjadi bentrok waktu."])->withInput();
-            }
+        if (!JadwalSeleksi::isPelamarAvailable($tanggal, $pelamarId, $sesi, [$jadwal->id])) {
+            $label = JadwalSeleksi::SESSIONS[$tipe][$sesi]['label'] ?? "S{$sesi}";
+            return back()->withErrors(['edit' => "Pelamar sudah terjadwal di {$label} — terjadi bentrok waktu."])->withInput();
         }
 
         $jadwal->update([
@@ -386,7 +390,8 @@ class JadwalSeleksiController extends Controller
             'lowongan_id'    => 'required|exists:lowongans,id',
             'tanggal'        => 'required|date',
             'sesi'           => 'nullable|integer|min:1',
-            'link'           => 'nullable|url',
+            'jenis_sesi'     => 'required|in:online,offline',
+            'lokasi'         => 'required|string',
             'wawancara_penguji_ids'   => 'nullable|array',
             'wawancara_penguji_ids.*' => 'integer|exists:dosens,id',
             'micro_penguji_ids'       => 'nullable|array',
@@ -412,7 +417,9 @@ class JadwalSeleksiController extends Controller
         }
         $tanggal    = $request->tanggal;
         $sesi       = $request->filled('sesi') ? (int) $request->sesi : null;
-        $link       = $request->link;
+        $jenis      = $request->jenis_sesi;
+        $lokasi     = $request->lokasi;
+        $link       = ($jenis === 'online') ? ($lokasi ?: null) : null;
         $newWPengujiIds = $request->input('wawancara_penguji_ids', []);
         $newMPengujiIds = $request->input('micro_penguji_ids', []);
 
@@ -427,7 +434,7 @@ class JadwalSeleksiController extends Controller
 
         $errors = [];
 
-        DB::transaction(function () use ($group, $groupIds, $tanggal, $sesi, $link, $newWPengujiIds, $newMPengujiIds, $pelamarId, $lowonganId, &$errors) {
+        DB::transaction(function () use ($group, $groupIds, $tanggal, $sesi, $jenis, $lokasi, $link, $newWPengujiIds, $newMPengujiIds, $pelamarId, $lowonganId, &$errors) {
 
             if ($sesi !== null) {
                 $valid = array_keys(JadwalSeleksi::SESSIONS['wawancara'] ?? []);
@@ -436,6 +443,12 @@ class JadwalSeleksiController extends Controller
                 } else {
                     $wGroup = $group->where('tipe_seleksi', 'wawancara');
                     $mGroup = $group->where('tipe_seleksi', 'micro_teaching');
+
+                    // Cek ketersediaan pelamar (kecuali jadwal yang sedang diedit)
+                    if (!JadwalSeleksi::isPelamarAvailable($tanggal, $pelamarId, $sesi, $groupIds)) {
+                        $label = JadwalSeleksi::SESSIONS['wawancara'][$sesi]['block_label'] ?? "Sesi {$sesi}";
+                        $errors[] = "Pelamar sudah terjadwal di {$label} pada tanggal tersebut.";
+                    }
 
                     // ── Update Wawancara ──────────────────────────────
                     if (!empty($newWPengujiIds)) {
@@ -460,7 +473,9 @@ class JadwalSeleksiController extends Controller
                                     'penguji_id'    => $pgId,
                                     'tipe_seleksi'  => 'wawancara',
                                     'sesi'          => $sesi,
-                                    'link_meeting'  => $link ?: null,
+                                    'jenis_sesi'    => $jenis,
+                                    'lokasi'        => $lokasi ?: null,
+                                    'link_meeting'  => $link,
                                 ]);
                             }
                         }
@@ -475,7 +490,13 @@ class JadwalSeleksiController extends Controller
                         }
                         if (empty($errors)) {
                             foreach ($wGroup as $jadwal) {
-                                $jadwal->update(['tanggal' => $tanggal, 'sesi' => $sesi, 'link_meeting' => $link]);
+                                $jadwal->update([
+                                    'tanggal'      => $tanggal, 
+                                    'sesi'         => $sesi, 
+                                    'jenis_sesi'   => $jenis,
+                                    'lokasi'       => $lokasi ?: null,
+                                    'link_meeting' => $link
+                                ]);
                             }
                         }
                     }
@@ -503,7 +524,9 @@ class JadwalSeleksiController extends Controller
                                     'penguji_id'    => $pgId,
                                     'tipe_seleksi'  => 'micro_teaching',
                                     'sesi'          => $sesi,
-                                    'link_meeting'  => $link ?: null,
+                                    'jenis_sesi'    => $jenis,
+                                    'lokasi'        => $lokasi ?: null,
+                                    'link_meeting'  => $link,
                                 ]);
                             }
                         }
@@ -518,7 +541,13 @@ class JadwalSeleksiController extends Controller
                         }
                         if (empty($errors)) {
                             foreach ($mGroup as $jadwal) {
-                                $jadwal->update(['tanggal' => $tanggal, 'sesi' => $sesi, 'link_meeting' => $link]);
+                                $jadwal->update([
+                                    'tanggal'      => $tanggal, 
+                                    'sesi'         => $sesi, 
+                                    'jenis_sesi'   => $jenis,
+                                    'lokasi'       => $lokasi ?: null,
+                                    'link_meeting' => $link
+                                ]);
                             }
                         }
                     }
@@ -713,6 +742,45 @@ class JadwalSeleksiController extends Controller
     }
 
     /**
+     * GET /admin/api/sesi-taken-pelamar?tanggal=YYYY-MM-DD&pelamar_ids=1,2,3
+     * Mengembalikan sesi yang sudah terpakai oleh masing-masing pelamar pada tanggal tsb.
+     */
+    public function apiSesiTakenPelamar(Request $request)
+    {
+        $tanggal   = $request->tanggal;
+        $pelamarIds = array_filter(array_map('intval', explode(',', $request->pelamar_ids ?? '')));
+        $excludeLowonganId = $request->exclude_lowongan_id;
+
+        if (!$tanggal || empty($pelamarIds)) {
+            return response()->json([]);
+        }
+
+        $q = JadwalSeleksi::whereDate('tanggal', $tanggal)
+            ->whereIn('pelamar_id', $pelamarIds);
+
+        if ($excludeLowonganId) {
+            $q->where('lowongan_id', '!=', $excludeLowonganId);
+        }
+
+        $rows = $q->get(['pelamar_id', 'sesi']);
+
+        $result = [];
+        foreach ($pelamarIds as $id) {
+            $result[$id] = [];
+        }
+
+        foreach ($rows as $row) {
+            $pid  = (int) $row->pelamar_id;
+            $sesi = (int) $row->sesi;
+            if (isset($result[$pid]) && !in_array($sesi, $result[$pid])) {
+                $result[$pid][] = $sesi;
+            }
+        }
+
+        return response()->json($result);
+    }
+
+    /**
      * GET /admin/api/sesi-tersedia?tanggal=X&penguji_id=Y&tipe=Z
      * (Tetap disediakan untuk kompatibilitas endpoint lama.)
      */
@@ -739,5 +807,22 @@ class JadwalSeleksiController extends Controller
         }
 
         return response()->json(compact('taken', 'available'));
+    }
+
+    /**
+     * Hapus jadwal grup pelamar
+     */
+    public function destroyGroup(Request $request)
+    {
+        $request->validate([
+            'pelamar_id' => 'required|exists:pelamars,id',
+            'lowongan_id' => 'required|exists:lowongans,id',
+        ]);
+
+        JadwalSeleksi::where('pelamar_id', $request->pelamar_id)
+            ->where('lowongan_id', $request->lowongan_id)
+            ->delete();
+
+        return redirect()->route('admin.jadwal.index')->with('success', 'Jadwal seleksi berhasil dihapus.');
     }
 }

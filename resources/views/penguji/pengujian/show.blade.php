@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar')
 
@@ -62,7 +62,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    @if($jadwal->link_meeting)
+                    @if($jadwal->jenis_sesi === 'online' && $jadwal->link_meeting)
                         @if($penilaian)
                             {{-- Zoom disabled after testing --}}
                             <button disabled class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/20 cursor-not-allowed rounded-xl text-sm font-bold text-white/50 whitespace-nowrap backdrop-blur-sm opacity-50">
@@ -75,6 +75,11 @@
                                 Buka Zoom
                             </a>
                         @endif
+                    @elseif($jadwal->jenis_sesi === 'offline' && $jadwal->lokasi)
+                        <div class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/15 border border-white/20 rounded-xl text-sm font-medium text-white whitespace-nowrap backdrop-blur-sm">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            {{ $jadwal->lokasi }}
+                        </div>
                     @endif
                     @if($penilaian)
                         {{-- Sudah dinilai: tombol disabled --}}
@@ -86,7 +91,7 @@
                             
                         </div>
                     @elseif($canEvaluate)
-                        <a href="{{ route('penguji.pengujian.uji', $jadwal->id) }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-100 rounded-xl text-sm font-bold text-[#8b1515] transition-colors whitespace-nowrap shadow-sm">
+                        <a href="{{ route('penguji.pengujian.uji', $jadwal->id) }}" target="_blank" rel="opener" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-gray-100 rounded-xl text-sm font-bold text-[#8b1515] transition-colors whitespace-nowrap shadow-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                             Mulai Uji
                         </a>
@@ -265,37 +270,33 @@
 
                     $microKategoriLabels = [
                         1 => 'PP',
-                        2 => 'PM',
+                        2 => 'PMP',
                         3 => 'Sis',
                         4 => 'PKI',
                         5 => 'SE',
+                        6 => 'MWP',
                     ];
                     $microKategoriTooltips = [
                         1 => 'Perencanaan Pembelajaran',
-                        2 => 'Penguasaan Materi',
+                        2 => 'Penggunaan Media Pembelajaran',
                         3 => 'Sistematika',
                         4 => 'Pengelolaan Kelas & Interaksi',
                         5 => 'Sikap & Etika',
+                        6 => 'Manajemen Waktu Pembelajaran',
                     ];
                     $wawancaraIndikatorLabels = [
                         1 => 'Mot',
-                        2 => 'KMgj',
-                        3 => 'KMKur',
-                        4 => 'KPP',
-                        5 => 'KAbd',
-                        6 => 'KBT',
-                        7 => 'KL',
-                        8 => 'KW',
+                        2 => 'PotKon',
+                        3 => 'KPP',
+                        4 => 'KKom',
+                        5 => 'KonRel',
                     ];
                     $wawancaraIndikatorTooltips = [
-                        1 => 'Motivasi',
-                        2 => 'Kemampuan Mengajar',
-                        3 => 'Kemampuan Mengembangkan Kurikulum',
-                        4 => 'Kemampuan Penelitian & Publikasi',
-                        5 => 'Kemampuan Abdimas',
-                        6 => 'Kemampuan Bekerjasama dengan Tim',
-                        7 => 'Keahlian Lainnya',
-                        8 => 'Komitmen Waktu',
+                        1 => 'motivasi',
+                        2 => 'Potensi Kontribusi terhadap Program Studi dan Institusi',
+                        3 => 'Kemampuan Penelitian & Publikasi',
+                        4 => 'Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat',
+                        5 => 'Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain',
                     ];
 
                     $nilaiAkhirMicro = $microDinilai->count() > 0
@@ -347,7 +348,6 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Kelompok</th>
-                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -374,7 +374,6 @@
                                         </td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->kelompok_keahlian ? ($kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian) : '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -386,7 +385,7 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirMicro }}</span>
                                         </td>
-                                        <td colspan="6"></td>
+                                        <td colspan="5"></td>
                                     </tr>
                                 </tfoot>
                                 @endif
@@ -424,6 +423,7 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -450,6 +450,7 @@
                                             @endif
                                         </td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -461,7 +462,7 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200">
                                             <span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirWawancara }}</span>
                                         </td>
-                                        <td colspan="3" class="border border-gray-200"></td>
+                                        <td colspan="4" class="border border-gray-200"></td>
                                     </tr>
                                 </tfoot>
                                 @endif

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Daftar Pelamar – ' . auth()->user()->prodi?->nama)
 
@@ -36,7 +36,6 @@
                 <button type="button" @click="lowonganOpen = !lowonganOpen"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                         :class="lowongan_id !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                     Lowongan
                     <span x-show="lowongan_id !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                     <svg class="w-3 h-3 ml-0.5 transition-transform" :class="lowonganOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -64,7 +63,6 @@
                 <button type="button" @click="statusOpen = !statusOpen"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                         :class="status !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Status
                     <span x-show="status !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                     <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -123,7 +121,7 @@
     {{-- Tabel Pelamar --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse table-fixed" style="min-width:700px">
+            <table class="w-full text-left border-collapse table-fixed" style="min-width:1000px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
                         <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama Pelamar</th>
@@ -135,7 +133,23 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    <template x-if="paginatedRows.length === 0">
+                    {{-- Loading State --}}
+                    <template x-if="isLoading">
+                        <tr>
+                            <td colspan="6" class="py-16 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-[#8b1515]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <h3 class="text-gray-700 font-semibold text-sm">Memuat Data...</h3>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+
+                    {{-- Empty State --}}
+                    <template x-if="!isLoading && paginatedRows.length === 0">
                         <tr>
                             <td colspan="6" class="py-16 text-center">
                                 <div class="flex flex-col items-center gap-3">
@@ -143,7 +157,7 @@
                                         <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                     </div>
                                     <h3 class="text-gray-700 font-semibold text-sm">Belum Ada Pelamar</h3>
-                                    <p class="text-gray-400 text-xs">Belum ada pelamar yang mendaftar ke lowongan di prodi Anda.</p>
+                                    <p class="text-gray-400 text-xs">Belum ada pelamar yang mendaftar atau cocok dengan pencarian.</p>
                                 </div>
                             </td>
                         </tr>
@@ -154,26 +168,32 @@
                                 <div class="text-sm font-medium text-gray-800 truncate" x-text="lamaran.nama"></div>
                                 <div class="text-xs text-gray-400 font-medium mt-0.5 truncate" x-text="lamaran.email"></div>
                             </td>
-                            <td class="py-3 px-5 max-w-0" :title="(lamaran.jenjang || '-') + ' (' + (lamaran.prodi_pendidikan || '-') + ')'">
-                                <div class="text-sm text-gray-600 font-medium truncate" x-text="lamaran.jenjang || '-'"></div>
+                            <td class="py-3 px-5 max-w-0" :title="(lamaran.jenjang || '-') + ' – ' + (lamaran.instansi || '-') + ' | ' + (lamaran.prodi_pendidikan || '-')">
+                                <div class="text-sm text-gray-600 font-medium truncate" x-text="(lamaran.jenjang || '-') + ' – ' + (lamaran.instansi || '-')"></div>
                                 <div class="text-[0.7rem] text-gray-400 uppercase tracking-widest mt-0.5 truncate" x-text="lamaran.prodi_pendidikan || '-'"></div>
                             </td>
                             <td class="py-3 px-5 max-w-0" :title="lamaran.no_telepon || '-'">
                                 <span class="text-sm text-gray-600 font-medium block truncate" x-text="lamaran.no_telepon || '-'"></span>
                             </td>
                             <td class="py-3 px-5 max-w-0">
-                                <span class="inline-flex items-center gap-1 text-xs text-[#8b1515] font-semibold" :title="lamaran.lowongan_nama">
-                            
-                                    <span class="truncate" x-text="lamaran.lowongan_nama"></span>
-                                </span>
+                                <span class="text-xs text-gray-800 font-semibold block truncate" :title="lamaran.lowongan_nama" x-text="lamaran.lowongan_nama"></span>
                             </td>
-                            <td class="py-3 px-5 text-center">
-                                <template x-if="lamaran.status === 'menunggu'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-gray-100 text-gray-600 border-gray-200">Menunggu</span></template>
-                                <template x-if="lamaran.status === 'seleksi_tahap1'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-blue-50 text-blue-700 border-blue-200">Seleksi Tahap 1</span></template>
-                                <template x-if="lamaran.status === 'seleksi_tahap2'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-indigo-50 text-indigo-700 border-indigo-200">Seleksi Tahap 2</span></template>
-                                <template x-if="lamaran.status === 'diterima'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-green-50 text-green-700 border-green-200">Diterima</span></template>
-                                <template x-if="lamaran.status === 'ditolak'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-red-50 text-red-700 border-red-200">Ditolak</span></template>
-                                <template x-if="lamaran.status === 'mengundurkan_diri'"><span class="inline-flex px-2.5 py-1 rounded-md text-[0.75rem] font-bold border bg-slate-50 text-slate-700 border-slate-200">Mengundurkan Diri</span></template>
+                            <td class="py-3 px-5 max-w-0 text-center">
+                                {{-- Status = menunggu: tampilkan berdasarkan rekomendasi kaprodi --}}
+                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === null">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[0.65rem] text-center font-bold tracking-wide">Menunggu</span>
+                                </template>
+                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === true">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Direkomendasikan</span>
+                                </template>
+                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === false">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tidak Direkomendasikan</span>
+                                </template>
+                                {{-- Status lain --}}
+                                <template x-if="lamaran.status === 'seleksi_tahap1'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Seleksi Tahap 1</span></template>
+                                <template x-if="lamaran.status === 'seleksi_tahap2'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-indigo-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Seleksi Tahap 2</span></template>
+                                <template x-if="lamaran.status === 'diterima'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Diterima</span></template>
+                                <template x-if="lamaran.status === 'ditolak'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Ditolak</span></template>
                             </td>
                             <td class="py-3 px-5 text-center">
                                 <a :href="'/kaprodi/pelamar/' + lamaran.pelamar_id + '?lamaran_id=' + lamaran.id" class="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail">
@@ -210,6 +230,7 @@
 @push('scripts')
 <script>
     window._kaprodiLowongans = @json($lowongans);
+    window._kaprodiInitialLamarans = @json($initialLamarans);
     window._kaprodiInitial = {
         search: @json(request('search', '')),
         lowongan_id: @json(request('lowongan_id', '')),
@@ -224,7 +245,8 @@
             status: window._kaprodiInitial.status,
             currentPage: 1,
             perPage: 10,
-            lamarans: [],
+            lamarans: window._kaprodiInitialLamarans,
+            isLoading: false,
             searchTimeout: null,
             lowongans: window._kaprodiLowongans,
             statusOpen: false,
@@ -232,7 +254,7 @@
 
             init() {
                 var self = this;
-                this.fetchPelamar();
+                // Kita tidak panggil fetchPelamar() di awal karena datanya sudah dilempar langsung dari controller
                 this.$watch('search', function() { self.debouncedSearch(); });
                 this.$watch('lowongan_id', function() { self.resetPage(); self.fetchPelamar(); });
                 this.$watch('status', function() { self.resetPage(); self.fetchPelamar(); });
@@ -240,6 +262,7 @@
 
             async fetchPelamar() {
                 try {
+                    this.isLoading = true;
                     var url = '/kaprodi/pelamar/filter?search=' + encodeURIComponent(this.search) + '&lowongan_id=' + encodeURIComponent(this.lowongan_id) + '&status=' + encodeURIComponent(this.status);
                     var response = await fetch(url);
                     var data = await response.json();
@@ -247,6 +270,8 @@
                     this.currentPage = 1;
                 } catch (error) {
                     console.error('Error fetching pelamar:', error);
+                } finally {
+                    this.isLoading = false;
                 }
             },
 

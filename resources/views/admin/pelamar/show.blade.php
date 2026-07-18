@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Detail Pelamar ' . $pelamar->nama)
+@section('title', 'Detail Pelamar ')
 
 @section('content')
 
@@ -40,7 +40,7 @@
                 {{-- Application Switcher: Custom Glass Dropdown --}}
                 @if($pelamar->lamarans->count() > 0)
                 <div class="w-full md:w-auto" x-data="{ open: false }">
-                    <p class="text-white/50 text-[0.6rem] font-semibold uppercase tracking-widest mb-1.5">Lihat Lamaran</p>
+                    <p class="text-white/50 text-[0.6rem] font-semibold uppercase tracking-widest mb-1.5">Daftar Lamaran</p>
                     <div class="relative w-full md:w-72">
                         {{-- Trigger --}}
                         <button type="button" @click="open = !open" @click.away="open = false"
@@ -323,10 +323,10 @@
             @php
                 $microDinilai     = $micro->filter(fn($j) => $j->penilaian !== null);
                 $wawancaraDinilai = $wawancara->filter(fn($j) => $j->penilaian !== null);
-                $microKategoriLabels = [1=>'PP',2=>'PM',3=>'Sis',4=>'PKI',5=>'SE'];
-                $microKategoriTooltips = [1=>'Perencanaan Pembelajaran',2=>'Penguasaan Materi',3=>'Sistematika',4=>'Pengelolaan Kelas & Interaksi',5=>'Sikap & Etika'];
-                $wawancaraIndikatorLabels = [1=>'Mot',2=>'KMgj',3=>'KMKur',4=>'KPP',5=>'KAbd',6=>'KBT',7=>'KL',8=>'KW'];
-                $wawancaraIndikatorTooltips = [1=>'Motivasi',2=>'Kemampuan Mengajar',3=>'Kemampuan Mengembangkan Kurikulum',4=>'Kemampuan Penelitian & Publikasi',5=>'Kemampuan Abdimas',6=>'Kemampuan Bekerjasama dengan Tim',7=>'Keahlian Lainnya',8=>'Komitmen Waktu'];
+                $microKategoriLabels = [1=>'PP',2=>'PMP',3=>'Sis',4=>'PKI',5=>'SE',6=>'MWP'];
+                $microKategoriTooltips = [1=>'Perencanaan Pembelajaran',2=>'Penggunaan Media Pembelajaran',3=>'Sistematika',4=>'Pengelolaan Kelas & Interaksi',5=>'Sikap & Etika',6=>'Manajemen Waktu Pembelajaran'];
+                $wawancaraIndikatorLabels = [1=>'Mot',2=>'PotKon',3=>'KPP',4=>'KKom',5=>'KonRel'];
+                $wawancaraIndikatorTooltips = [1=>'motivasi',2=>'Potensi Kontribusi terhadap Program Studi dan Institusi',3=>'Kemampuan Penelitian & Publikasi',4=>'Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat',5=>'Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain'];
                 $nilaiAkhirMicro = $microDinilai->count() > 0 ? round($microDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2) : null;
                 $nilaiAkhirWawancara = $wawancaraDinilai->count() > 0 ? round($wawancaraDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2) : null;
             @endphp
@@ -417,6 +417,7 @@
                                     <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
                                     <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                     <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                    <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                     <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                 </tr></thead>
                                 <tbody class="divide-y divide-gray-100 bg-white">
@@ -435,6 +436,7 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200"><span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-xs font-bold rounded">{{ $p->total_nilai }}</span></td>
                                         <td class="px-3 py-2.5 text-center border border-gray-200">@if($rek)<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ $rek['color'] }}">{{ $rek['label'] }}</span>@else<span class="text-gray-400">-</span>@endif</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -443,7 +445,7 @@
                                 <tfoot><tr class="bg-gray-100 border-t border-gray-200">
                                     <td class="px-4 py-2.5 text-xs text-center font-bold text-gray-600 uppercase border border-gray-200" colspan="{{ count($wawancaraIndikatorLabels) + 1 }}">Nilai Akhir</td>
                                     <td class="px-3 py-2.5 text-center border border-gray-200"><span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirWawancara }}</span></td>
-                                    <td colspan="3" class="border border-gray-200"></td>
+                                    <td colspan="4" class="border border-gray-200"></td>
                                 </tr></tfoot>
                                 @endif
                             </table>

@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Prodi')
+@section('title', 'Manajemen Program Studi')
 
 @section('content')
 
@@ -9,7 +9,7 @@
 
         {{-- Existing Prodi Cards --}}
         @foreach($prodis as $prodi)
-            <div x-data="{ openEditModal: false, showDeleteModal: false }" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-200 overflow-hidden relative">
+            <div x-data="{ openEditModal: {{ old('edit_prodi_id') == $prodi->id ? 'true' : 'false' }}, showDeleteModal: false }" class="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col hover:shadow-md transition-shadow duration-200 overflow-hidden relative">
                 
                 {{-- Card Body --}}
                 <div class="p-6 flex flex-col items-center flex-1">
@@ -62,7 +62,8 @@
                 {{-- ── Edit Modal ── --}}
                 <div x-show="openEditModal" x-transition.opacity
                      class="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-                     @click.self="openEditModal = false" style="display: none;">
+                     @click.self="openEditModal = false"
+                     @if(old('edit_prodi_id') != $prodi->id) style="display: none;" @endif>
                     <div x-show="openEditModal"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 scale-95"
@@ -83,6 +84,7 @@
                         <form method="POST" action="{{ route('admin.prodi.update', $prodi) }}" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+                            <input type="hidden" name="edit_prodi_id" value="{{ $prodi->id }}">
 
                             {{-- Body --}}
                             <div class="px-8 py-7 flex items-start gap-7 text-left">
@@ -117,6 +119,7 @@
                                                    }
                                                ">
                                     </label>
+                                    @error('logo') <p class="text-xs text-red-500 mt-1.5 font-medium max-w-[108px] leading-tight text-center">{{ $message }}</p> @enderror
                                 </div>
 
                                 {{-- Fields --}}
@@ -157,13 +160,6 @@
                          x-transition:enter-end="opacity-100 scale-100"
                          class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
                         
-                        {{-- Close Button --}}
-                        <button type="button" @click="showDeleteModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-
                         {{-- Warning Icon --}}
                         <div class="mx-auto mb-5 flex justify-center">
                             <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -180,9 +176,9 @@
                             <form method="POST" action="{{ route('admin.prodi.destroy', $prodi) }}" class="contents">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
                             </form>
-                            <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                            <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">Tidak</button>
                         </div>
                     </div>
                 </div>
@@ -191,7 +187,7 @@
         @endforeach
 
         {{-- Tambah Prodi Card --}}
-        <div x-data="{ openModal: false }">
+        <div x-data="{ openModal: {{ $errors->any() && !old('edit_prodi_id') ? 'true' : 'false' }} }" @open-prodi-modal.window="openModal = true">
             <button @click="openModal = true"
                     class="w-full h-full min-h-[148px] bg-gray-100 hover:bg-gray-200 border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-xl flex flex-col items-center justify-center gap-2 transition-all duration-200 cursor-pointer group">
                 <svg class="w-8 h-8 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -203,7 +199,8 @@
             {{-- Modal Tambah Prodi --}}
             <div x-show="openModal" x-transition.opacity
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-                 @click.self="openModal = false" style="display: none;">
+                 @click.self="openModal = false"
+                 @if(!($errors->any() && !old('edit_prodi_id'))) style="display: none;" @endif>
                 <div x-show="openModal"
                      x-transition:enter="transition ease-out duration-200"
                      x-transition:enter-start="opacity-0 scale-95"
@@ -212,7 +209,7 @@
 
                     {{-- ── Header Merah ── --}}
                     <div class="bg-[#8b1515] px-7 py-5 flex items-center justify-between">
-                        <h2 class="text-2xl font-semibold text-white tracking-tight">Buat Prodi</h2>
+                        <h2 class="text-2xl font-semibold text-white tracking-tight">Tambah Prodi</h2>
                         <button type="button" @click="openModal = false"
                                 class="w-8 h-8 flex items-center justify-center rounded-lg border-2 border-white/60 text-white hover:bg-white/15 hover:border-white transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -257,6 +254,7 @@
                                                }
                                            ">
                                 </label>
+                                @error('logo') <p class="text-xs text-red-500 mt-1.5 font-medium max-w-[108px] leading-tight text-center">{{ $message }}</p> @enderror
                             </div>
 
                             {{-- Fields --}}
@@ -286,7 +284,7 @@
                         <div class="px-8 py-5 flex justify-center">
                             <button type="submit"
                                     class="px-12 py-2.5 bg-[#8b1515] hover:bg-red-900 active:scale-95 text-white text-base font-semibold rounded-xl shadow-md shadow-[#8b1515]/20 transition-all duration-150">
-                                Buat
+                                Buat Prodi
                             </button>
                         </div>
                     </form>

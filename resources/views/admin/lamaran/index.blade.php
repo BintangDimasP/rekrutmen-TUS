@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Daftar Lamaran – ' . $lowongan->nama_posisi)
+@section('title', 'Daftar Lamaran ')
 
 @section('content')
 
@@ -78,7 +78,6 @@
                     <button type="button" @click="statusOpen = !statusOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                             :class="statusFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Status
                         <span x-show="statusFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -92,23 +91,23 @@
                             </button>
                             <button type="button" @click="statusFilter = statusFilter === 'seleksi_tahap1' ? '' : 'seleksi_tahap1'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'seleksi_tahap1' ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'seleksi_tahap1' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'seleksi_tahap1'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-blue-600">Seleksi Tahap 1</span>
+                                <span class="text-sm font-medium text-gray-600">Seleksi Tahap 1</span>
                             </button>
                             <button type="button" @click="statusFilter = statusFilter === 'seleksi_tahap2' ? '' : 'seleksi_tahap2'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'seleksi_tahap2' ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'seleksi_tahap2' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'seleksi_tahap2'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-indigo-600">Seleksi Tahap 2</span>
+                                <span class="text-sm font-medium text-gray-600">Seleksi Tahap 2</span>
                             </button>
                             <button type="button" @click="statusFilter = statusFilter === 'diterima' ? '' : 'diterima'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'diterima' ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'diterima' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'diterima'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-green-600">Diterima</span>
+                                <span class="text-sm font-medium text-gray-600">Diterima</span>
                             </button>
                             <button type="button" @click="statusFilter = statusFilter === 'ditolak' ? '' : 'ditolak'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'ditolak' ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'ditolak' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'ditolak'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-red-600">Ditolak</span>
+                                <span class="text-sm font-medium text-gray-600">Ditolak</span>
                             </button>
                             <button type="button" @click="statusFilter = statusFilter === 'mengundurkan_diri' ? '' : 'mengundurkan_diri'; statusOpen = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left" :class="statusFilter === 'mengundurkan_diri' ? 'bg-gray-50' : ''">
                                 <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="statusFilter === 'mengundurkan_diri' ? 'border-gray-500 bg-gray-600' : 'border-gray-300'"><svg x-show="statusFilter === 'mengundurkan_diri'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg></span>
-                                <span class="text-sm font-medium text-slate-600">Mengundurkan Diri</span>
+                                <span class="text-sm font-medium text-gray-600">Mengundurkan Diri</span>
                             </button>
                         </div>
                     </div>
@@ -158,15 +157,15 @@
     {{-- Table Card --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
+            <table class="w-full text-left border-collapse table-fixed" style="min-width:1000px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[22%]">Nama Pelamar</th>
-                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[18%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[13%]">No Handphone</th>
-                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[18%]">Email</th>
-                        <th class="py-3 px-5 text-sm font-bold leading-tight w-[15%]">Status</th>
-                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[14%]">Aksi</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">Nama </th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">Pendidikan</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">No Telepon</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">Email</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">Status</th>
+                        <th class="py-3 px-5 text-sm font-bold leading-tight text-center w-[15%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -176,31 +175,22 @@
                         data-status="{{ $lamaran->status }}"
                         data-nama="{{ strtolower($lamaran->pelamar->nama) }}">
                         <td class="py-3 px-5 max-w-0">
-                            <div class="text-sm font-medium text-gray-800 truncate" title="{{ $lamaran->pelamar->nama }}">{{ $lamaran->pelamar->nama }}</div>
-                            <div class="text-xs font-medium text-gray-400 mt-0.5 truncate" title="{{ $lamaran->pelamar->user?->email }}">{{ $lamaran->pelamar->user?->email }}</div>
+                            <div class="text-sm font-medium text-gray-800 text-center truncate" title="{{ $lamaran->pelamar->nama }}">{{ $lamaran->pelamar->nama }}</div>
+                            <div class="text-xs font-medium text-gray-400 mt-0.5 text-center truncate" title="{{ $lamaran->pelamar->user?->email }}">{{ $lamaran->pelamar->user?->email }}</div>
                         </td>
                         <td class="py-3 px-5 max-w-0">
-                            <div class="text-sm font-medium text-gray-700 truncate" title="{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->institusi }}">{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->institusi }}</div>
-                            <div class="text-[0.7rem] font-medium text-gray-400 uppercase tracking-widest mt-0.5 truncate" title="{{ $lamaran->pelamar->prodi_pendidikan }}">{{ $lamaran->pelamar->prodi_pendidikan }}</div>
+                            <div class="text-sm font-medium text-gray-700 text-center truncate" title="{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->prodi_pendidikan }}">{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->prodi_pendidikan }}</div>
+                            <div class="text-xs font-medium text-gray-400 mt-0.5 text-center truncate" title="{{ $lamaran->pelamar->institusi }}">{{ $lamaran->pelamar->institusi }}</div>
                         </td>
                         <td class="py-3 px-5 max-w-0">
-                            <div class="text-sm font-medium text-gray-600 truncate" title="{{ $lamaran->pelamar->no_telepon ?? '-' }}">{{ $lamaran->pelamar->no_telepon ?? '-' }}</div>
+                            <div class="text-sm font-medium text-gray-600 text-center truncate" title="{{ $lamaran->pelamar->no_telepon ?? '-' }}">{{ $lamaran->pelamar->no_telepon ?? '-' }}</div>
                         </td>
                         <td class="py-3 px-5 max-w-0">
-                            <div class="text-sm font-medium text-gray-600 truncate" title="{{ $lamaran->pelamar->user?->email ?? '-' }}">{{ $lamaran->pelamar->user?->email ?? '-' }}</div>
+                            <div class="text-sm font-medium text-gray-600 text-center truncate" title="{{ $lamaran->pelamar->user?->email ?? '-' }}">{{ $lamaran->pelamar->user?->email ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-3 align-top">
+                        <td class="py-3 px-5 max-w-0 text-center">
                             @php
-                                $statusColors = [
-                                    'menunggu'       => 'bg-gray-100 text-gray-600 border-gray-200',
-                                    'seleksi_tahap1' => 'bg-blue-50 text-blue-700 border-blue-200',
-                                    'seleksi_tahap2' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
-                                    'diterima'       => 'bg-green-50 text-green-700 border-green-200',
-                                    'ditolak'        => 'bg-red-50 text-red-700 border-red-200',
-                                    'mengundurkan_diri' => 'bg-slate-50 text-slate-700 border-slate-200',
-                                ];
                                 $statusLabels = [
-                                    'menunggu'       => 'Menunggu',
                                     'seleksi_tahap1' => 'Seleksi Tahap 1',
                                     'seleksi_tahap2' => 'Seleksi Tahap 2',
                                     'diterima'       => 'Diterima',
@@ -208,9 +198,36 @@
                                     'mengundurkan_diri'=> 'Mengundurkan Diri',
                                 ];
                             @endphp
-                            <span class="inline-block max-w-full px-2 py-1 rounded-md text-[0.65rem] font-bold border leading-tight text-center [overflow-wrap:anywhere] {{ $statusColors[$lamaran->status] ?? $statusColors['menunggu'] }}">
-                                {{ $statusLabels[$lamaran->status] ?? 'Menunggu' }}
-                            </span>
+                            
+                            @if($lamaran->status === 'menunggu')
+                                @if($lamaran->is_direkomendasikan_kaprodi === true)
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold">
+                                        Direkomendasikan
+                                    </span>
+                                @elseif($lamaran->is_direkomendasikan_kaprodi === false)
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold">
+                                        Tidak Direkomendasi
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[0.65rem] text-center font-bold">
+                                        Menunggu
+                                    </span>
+                                @endif
+                            @else
+                                @php
+                                    $badgeClasses = [
+                                        'seleksi_tahap1'    => 'bg-blue-800 text-white',
+                                        'seleksi_tahap2'    => 'bg-indigo-800 text-white',
+                                        'diterima'          => 'bg-green-800 text-white',
+                                        'ditolak'           => 'bg-red-800 text-white',
+                                        'mengundurkan_diri' => 'bg-gray-800 text-white',
+                                    ];
+                                    $badgeClass = $badgeClasses[$lamaran->status] ?? 'bg-gray-100 text-gray-600 border border-gray-200';
+                                @endphp
+                                <span class="inline-flex items-center px-2 py-1 rounded-lg {{ $badgeClass }} text-[0.65rem] text-center font-bold tracking-wide" title="{{ $statusLabels[$lamaran->status] ?? $lamaran->status }}">
+                                    {{ $statusLabels[$lamaran->status] ?? $lamaran->status }}
+                                </span>
+                            @endif
                         </td>
                         <td class="py-3 px-5">
                             <div class="flex items-center justify-center gap-2">

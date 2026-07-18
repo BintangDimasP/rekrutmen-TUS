@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Detail Pelamar')
 
@@ -24,6 +24,72 @@
                             <span class="text-red-200 text-xs">Terdaftar: {{ $pelamar->created_at->format('d M Y') }}</span>
                             <span class="text-red-300 text-xs">–</span>
                             <span class="text-red-200 text-xs">Melamar: <strong class="text-white">{{ $activeLamaran->lowongan?->nama_posisi ?? '-' }}</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Segmented Control Rekomendasi Kaprodi --}}
+                <div class="flex flex-col items-end gap-1.5"
+                     x-data="{
+                        val: @if(is_null($activeLamaran->is_direkomendasikan_kaprodi)) null @else {{ $activeLamaran->is_direkomendasikan_kaprodi ? 'true' : 'false' }} @endif,
+                        loading: false,
+                        isDisabled: {{ $activeLamaran->status !== 'menunggu' ? 'true' : 'false' }},
+                        async setStatus(newVal) {
+                            if (this.loading || this.isDisabled || this.val === newVal) return;
+                            let oldVal = this.val;
+                            this.loading = true;
+                            this.val = newVal;
+                            try {
+                                const res = await fetch('{{ route('kaprodi.lamaran.toggleRekomendasi', $activeLamaran) }}', {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    },
+                                    body: JSON.stringify({ value: newVal }),
+                                });
+                                const data = await res.json();
+                                if (!data.success) {
+                                    this.val = oldVal;
+                                    if(data.message) alert(data.message);
+                                }
+                            } catch {
+                                this.val = oldVal;
+                            } finally {
+                                this.loading = false;
+                            }
+                        }
+                     }">
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-white uppercase tracking-wider">Rekomendasi Kaprodi</p>
+                        <p class="text-[0.65rem] text-white/60 mt-0.5" x-text="val === null ? 'Belum Direview' : (val === true ? 'Direkomendasikan' : 'Tidak Direkomendasikan')"></p>
+                    </div>
+
+                    {{-- 3-State Switch --}}
+                    <div class="relative w-20 h-8 rounded-full shadow-inner transition-colors duration-300 ring-2 ring-white/10" 
+                         :class="{
+                            'bg-gray-500': val === null,
+                            'bg-red-500': val === false,
+                            'bg-emerald-500': val === true,
+                            'opacity-50 pointer-events-none cursor-not-allowed': loading || isDisabled
+                         }"
+                         :title="isDisabled ? 'Tidak dapat diubah karena lamaran sudah diproses Admin' : ''">
+                        
+                        {{-- Sliding Thumb --}}
+                        <div class="absolute top-1 bottom-1 w-6 bg-white rounded-full shadow-md transition-all duration-300 pointer-events-none" 
+                             :class="{
+                                'left-1': val === false,
+                                'left-1/2 -translate-x-1/2': val === null,
+                                'left-[calc(100%-1.75rem)]': val === true,
+                                'bg-gray-300': isDisabled
+                             }">
+                        </div>
+
+                        {{-- Hitboxes --}}
+                        <div class="absolute inset-0 flex" :class="isDisabled ? 'hidden' : ''">
+                            <button type="button" @click="setStatus(false)" class="flex-1 rounded-l-full focus:outline-none" title="Tidak Direkomendasikan"></button>
+                            <button type="button" @click="setStatus(null)" class="flex-1 focus:outline-none" title="Belum Direview"></button>
+                            <button type="button" @click="setStatus(true)" class="flex-1 rounded-r-full focus:outline-none" title="Direkomendasikan"></button>
                         </div>
                     </div>
                 </div>
@@ -174,10 +240,10 @@
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Hasil Penilaian Seleksi</h3>
                 @php
-                    $microKategoriLabels = [1=>'PP', 2=>'PM', 3=>'Sis', 4=>'PKI', 5=>'SE'];
-                    $microKategoriTooltips = [1=>'Perencanaan Pembelajaran', 2=>'Penguasaan Materi', 3=>'Sistematika', 4=>'Pengelolaan Kelas & Interaksi', 5=>'Sikap & Etika'];
-                    $wawancaraIndikatorLabels = [1=>'Mot', 2=>'KMgj', 3=>'KMKur', 4=>'KPP', 5=>'KAbd', 6=>'KBT', 7=>'KL', 8=>'KW'];
-                    $wawancaraIndikatorTooltips = [1=>'Motivasi', 2=>'Kemampuan Mengajar', 3=>'Kemampuan Mengembangkan Kurikulum', 4=>'Kemampuan Penelitian & Publikasi', 5=>'Kemampuan Abdimas', 6=>'Kemampuan Bekerjasama dengan Tim', 7=>'Keahlian Lainnya', 8=>'Komitmen Waktu'];
+                    $microKategoriLabels = [1=>'PP', 2=>'PMP', 3=>'Sis', 4=>'PKI', 5=>'SE', 6=>'MWP'];
+                    $microKategoriTooltips = [1=>'Perencanaan Pembelajaran', 2=>'Penggunaan Media Pembelajaran', 3=>'Sistematika', 4=>'Pengelolaan Kelas & Interaksi', 5=>'Sikap & Etika', 6=>'Manajemen Waktu Pembelajaran'];
+                    $wawancaraIndikatorLabels = [1=>'Mot', 2=>'PotKon', 3=>'KPP', 4=>'KKom', 5=>'KonRel'];
+                    $wawancaraIndikatorTooltips = [1=>'motivasi', 2=>'Potensi Kontribusi terhadap Program Studi dan Institusi', 3=>'Kemampuan Penelitian & Publikasi', 4=>'Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat', 5=>'Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain'];
                     $rekLabels = ['direkomendasikan'=>['label'=>'Direkomendasikan','color'=>'bg-green-50 text-green-700'], 'tidak_direkomendasikan'=>['label'=>'Tidak Direkomendasikan','color'=>'bg-red-50 text-red-700'], 'perlu_dipertimbangkan'=>['label'=>'Perlu Dipertimbangkan','color'=>'bg-yellow-50 text-yellow-700']];
                     $kkLabels = ['scout'=>'SCoT','ethes'=>'ETHES','riib'=>'RIIB'];
 
@@ -246,7 +312,6 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Kelompok</th>
-                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -262,14 +327,13 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200">@if($rek)<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ $rek['color'] }}">{{ $rek['label'] }}</span>@else<span class="text-gray-400">-</span>@endif</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->kelompok_keahlian ? ($kkLabels[$p->kelompok_keahlian] ?? $p->kelompok_keahlian) : '-' }}</td>
-                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
                                     @foreach($micro->filter(fn($j) => $j->penilaian === null) as $jadwalBelum)
                                     <tr class="bg-yellow-50/40">
                                         <td class="px-4 py-2.5 text-xs text-gray-500 border border-gray-200" title="{{ $jadwalBelum->penguji->nama ?? '' }}">{{ $jadwalBelum->penguji->kode ?? '-' }}</td>
-                                        <td colspan="{{ count($microKategoriLabels) + 7 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
+                                        <td colspan="{{ count($microKategoriLabels) + 6 }}" class="px-3 py-2.5 text-xs text-yellow-600 font-semibold border border-gray-200">Belum menilai</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -314,6 +378,7 @@
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Avg</th>
                                         <th class="px-3 py-2 text-center font-semibold border border-gray-200">Status</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Prodi</th>
+                                        <th class="px-3 py-2 text-left font-semibold border border-gray-200">Bidang</th>
                                         <th class="px-3 py-2 text-left font-semibold border border-gray-200">Catatan</th>
                                     </tr>
                                 </thead>
@@ -328,6 +393,7 @@
                                         <td class="px-3 py-2.5 text-center border border-gray-200"><span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-xs font-bold rounded">{{ $p->total_nilai }}</span></td>
                                         <td class="px-3 py-2.5 text-center border border-gray-200">@if($rek)<span class="inline-block px-2 py-0.5 rounded text-xs font-semibold {{ $rek['color'] }}">{{ $rek['label'] }}</span>@else<span class="text-gray-400">-</span>@endif</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->prodi_tujuan ?: '-' }}</td>
+                                        <td class="px-3 py-2.5 text-xs text-gray-700 border border-gray-200">{{ $p->bidang_keahlian ?: '-' }}</td>
                                         <td class="px-3 py-2.5 text-xs text-gray-600 max-w-xs border border-gray-200">{{ $p->catatan ?: '-' }}</td>
                                     </tr>
                                     @endforeach
@@ -343,7 +409,7 @@
                                     <tr class="bg-gray-100 border-t border-gray-200">
                                         <td class="px-4 py-2.5 text-xs text-center font-bold text-gray-600 uppercase border border-gray-200" colspan="{{ count($wawancaraIndikatorLabels) + 1 }}">Nilai Akhir</td>
                                         <td class="px-3 py-2.5 text-center border border-gray-200"><span class="inline-block px-2 py-0.5 bg-gray-800 text-white text-sm font-black rounded">{{ $nilaiAkhirWawancara }}</span></td>
-                                        <td colspan="3" class="border border-gray-200"></td>
+                                        <td colspan="4" class="border border-gray-200"></td>
                                     </tr>
                                 </tfoot>
                                 @endif

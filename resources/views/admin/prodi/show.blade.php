@@ -1,6 +1,6 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'Dosen Prodi – ' . $prodi->nama)
+@section('title', 'Daftar Dosen – ' . $prodi->nama)
 
 @section('content')
 
@@ -68,7 +68,7 @@
                             {{-- Expanding input --}}
                             <div class="overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)]"
                                  :style="searchOpen ? 'width: min(288px, calc(100vw - 8rem)); opacity: 1' : 'width: 36px; opacity: 0'">
-                                <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama atau kode..."
+                                <input type="text" x-model="search" x-ref="searchInput" placeholder="Cari nama dosen"
                                        @keydown.escape="search = ''; searchOpen = false"
                                        class="w-[min(288px,calc(100vw-8rem))] pl-10 pr-9 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:outline-none focus:border-gray-300 focus:ring-1 focus:ring-gray-200 transition-colors shadow-sm">
                             </div>
@@ -86,7 +86,6 @@
                         <button type="button" @click="statusOpen = !statusOpen"
                                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                                 :class="statusFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                             Status
                             <span x-show="statusFilter !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                             <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -138,12 +137,12 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:700px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[10%]">Kode</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[16%]">NIP/NIDN</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-right w-[12%]">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Kode</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">NIP/NIDN</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[40%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -165,10 +164,10 @@
                                 data-kode="{{ strtolower(addslashes($dosen->kode ?? '')) }}"
                                 data-nip="{{ strtolower(addslashes($dosen->nip ?? '')) }} {{ strtolower(addslashes($dosen->nidn ?? '')) }}"
                                 data-status="{{ $statusStr }}">
-                                <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $dosen->nama }}">{{ $dosen->nama }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $dosen->kode }}">{{ $dosen->kode }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium max-w-0">
+                                <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate text-center max-w-0" title="{{ $dosen->nama }}">{{ $dosen->nama }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate text-center max-w-0" title="{{ $dosen->kode }}">{{ $dosen->kode }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate text-center max-w-0" title="{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-600 font-medium text-center max-w-0">
                                     @php
                                         $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
                                     @endphp
@@ -181,7 +180,7 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-5 text-sm">
-                                    <div class="flex items-center gap-1.5 flex-nowrap">
+                                    <div class="flex justify-center items-center gap-1.5 flex-nowrap">
                                         @if($dosen->is_kaprodi)
                                             <span
                                                 class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 whitespace-nowrap">Kaprodi</span>
@@ -196,7 +195,7 @@
                                     </div>
                                 </td>
                                 <td class="py-3 px-5 text-sm">
-                                    <div class="flex items-center justify-end gap-2">
+                                    <div class="flex items-center justify-center gap-2">
                                         <button type="button" @click="openEditModal = true"
                                             class="text-gray-400 hover:text-amber-600 transition-colors" title="Edit">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
@@ -219,13 +218,6 @@
                                                  x-transition:enter-end="opacity-100 scale-100"
                                                  class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative whitespace-normal">
                                                 
-                                                {{-- Close Button --}}
-                                                <button type="button" @click="showDeleteModal = false" class="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                                                    </svg>
-                                                </button>
-
                                                 {{-- Warning Icon --}}
                                                 <div class="mx-auto mb-5 flex justify-center">
                                                     <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
@@ -242,9 +234,9 @@
                                                     <form method="POST" action="{{ route('admin.dosen.destroy', $dosen) }}" class="contents">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Yes</button>
+                                                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
                                                     </form>
-                                                    <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">No</button>
+                                                    <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">Tidak</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -253,7 +245,8 @@
                                     {{-- -- Edit Modal -- --}}
                                     <div x-show="openEditModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                                         class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-                                        @click.self="openEditModal = false" style="display: none;">
+                                        @click.self="openEditModal = false"
+                                        @if(old('edit_dosen_id') != $dosen->id) style="display: none;" @endif>
                                         <div 
                                             x-transition:enter="transition ease-out duration-200"
                                             x-transition:enter-start="opacity-0 scale-95"
@@ -284,7 +277,7 @@
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Lengkap</label>
                                                         <input type="text" name="nama" value="{{ old('nama', $dosen->nama) }}"
-                                                            required placeholder="Dr. Budi Santoso, M.Kom."
+                                                            required placeholder="John Doe"
                                                             class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('nama') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('nama') }}</p>
@@ -293,7 +286,7 @@
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode Dosen</label>
                                                         <input type="text" name="kode" value="{{ old('kode', $dosen->kode) }}"
-                                                            required placeholder="BDS"
+                                                            required placeholder="JHD"
                                                             class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('kode') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p>
@@ -302,7 +295,7 @@
                                                     <div class="grid grid-cols-2 gap-4">
                                                         <div>
                                                             <label class="block text-sm font-medium text-gray-800 mb-1.5">NIP</label>
-                                                            <input type="text" name="nip" value="{{ old('nip', $dosen->nip) }}" placeholder="19850101202201"
+                                                            <input type="text" name="nip" value="{{ old('nip', $dosen->nip) }}" placeholder="19xxxx"
                                                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                             @if($errors->has('nip') && old('edit_dosen_id') == $dosen->id)
                                                                 <p class="text-xs text-red-500 mt-1">{{ $errors->first('nip') }}</p>
@@ -311,7 +304,7 @@
                                                         <div>
                                                             <label class="block text-sm font-medium text-gray-800 mb-1.5">NIDN</label>
                                                             <input type="text" name="nidn"
-                                                                value="{{ old('nidn', $dosen->nidn) }}" placeholder="0401018503"
+                                                                value="{{ old('nidn', $dosen->nidn) }}" placeholder="04xxxx"
                                                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                             @if($errors->has('nidn') && old('edit_dosen_id') == $dosen->id)
                                                                 <p class="text-xs text-red-500 mt-1">{{ $errors->first('nidn') }}</p>
@@ -320,7 +313,7 @@
                                                     </div>
                                                     <div>
                                                         <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon</label>
-                                                        <input type="text" name="no_telepon" value="{{ old('edit_dosen_id') == $dosen->id ? old('no_telepon', $dosen->no_telepon) : $dosen->no_telepon }}" placeholder="081234567890"
+                                                        <input type="text" name="no_telepon" value="{{ old('edit_dosen_id') == $dosen->id ? old('no_telepon', $dosen->no_telepon) : $dosen->no_telepon }}" placeholder="08xxx"
                                                             class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                                                         @if($errors->has('no_telepon') && old('edit_dosen_id') == $dosen->id)
                                                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('no_telepon') }}</p>
@@ -387,7 +380,8 @@
         {{-- -- Add Modal -- --}}
         <div x-show="openAddModal" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-            @click.self="openAddModal = false" style="display: none;">
+            @click.self="openAddModal = false"
+            @if(!($errors->any() && !old('edit_dosen_id') && !$errors->has('file'))) style="display: none;" @endif>
             <div 
                 x-transition:enter="transition ease-out duration-200"
                 x-transition:enter-start="opacity-0 scale-95" 
@@ -412,14 +406,14 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="nama" value="{{ !old('edit_dosen_id') ? old('nama') : '' }}" required placeholder="Amanda Rachmawati"
+                            <input type="text" name="nama" value="{{ !old('edit_dosen_id') ? old('nama') : '' }}" required placeholder="John Doe"
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('nama') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('nama') }}</p> @endif
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">Kode Dosen</label>
-                            <input type="text" name="kode" value="{{ !old('edit_dosen_id') ? old('kode') : '' }}" required placeholder="ARC"
+                            <input type="text" name="kode" value="{{ !old('edit_dosen_id') ? old('kode') : '' }}" required placeholder="JHD"
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium uppercase text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             @if($errors->has('kode') && !old('edit_dosen_id'))
                             <p class="text-xs text-red-500 mt-1">{{ $errors->first('kode') }}</p> @endif
@@ -427,18 +421,18 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-1.5">NIP</label>
-                                <input type="text" name="nip" value="{{ !old('edit_dosen_id') ? old('nip') : '' }}" placeholder="19850101202201"
+                                <input type="text" name="nip" value="{{ !old('edit_dosen_id') ? old('nip') : '' }}" placeholder="198xxxx"
                                     class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-800 mb-1.5">NIDN</label>
-                                <input type="text" name="nidn" value="{{ !old('edit_dosen_id') ? old('nidn') : '' }}" placeholder="0401018503"
+                                <input type="text" name="nidn" value="{{ !old('edit_dosen_id') ? old('nidn') : '' }}" placeholder="040xxxx"
                                     class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-800 mb-1.5">No. Telepon</label>
-                            <input type="text" name="no_telepon" value="{{ !old('edit_dosen_id') ? old('no_telepon') : '' }}" placeholder="08******"
+                            <input type="text" name="no_telepon" value="{{ !old('edit_dosen_id') ? old('no_telepon') : '' }}" placeholder="08xxxx"
                                 class="w-full px-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm text-gray-800 focus:outline-none focus:bg-white focus:border-[#8b1515] focus:ring-2 focus:ring-[#8b1515]/15 transition-all">
                         </div>
 

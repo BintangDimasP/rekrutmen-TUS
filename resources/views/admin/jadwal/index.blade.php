@@ -1,5 +1,5 @@
-﻿@extends('layouts.admin')
-@section('title', 'Penjadwalan')
+@extends('layouts.admin')
+@section('title', 'Penjadwalan Seleksi')
 @section('content')
 
 <div class="max-w-7xl mx-auto space-y-6" x-data="jadwalIndex()" x-init="$nextTick(() => recalcAll()); $watch('search', () => resetAndRecalc()); $watch('fTanggal', () => resetAndRecalc()); $watch('fProdi', () => resetAndRecalc()); $watch('fStatus', () => resetAndRecalc())">
@@ -47,7 +47,6 @@
                     <button type="button" @click="prodiOpen = !prodiOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                             :class="fProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                         Prodi
                         <span x-show="fProdi !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -75,7 +74,6 @@
                     <button type="button" @click="statusOpen = !statusOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                             :class="fStatus !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         Status
                         <span x-show="fStatus !== ''" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center">1</span>
                         <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -128,14 +126,14 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px; width:100%">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[9%]">Tanggal</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[13%]">Nama Lowongan</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[12%]">Pelamar</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[20%]">Micro Teaching</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[9%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap w-[20%]">Wawancara</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[9%]">Status</th>
-                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[8%]">Aksi</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[10%]">Tanggal</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[15%]">Nama Lowongan</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[15%]">Pelamar</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[15%]">Micro Teaching</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[10%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[15%]">Wawancara</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[10%]">Status</th>
+                        <th class="py-3 px-4 text-xs font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -180,7 +178,7 @@
 
                         {{-- Lowongan --}}
                         <td class="py-4 px-4 align-top">
-                            <div class="text-sm font-bold text-[#8b1515]">{{ $row->lowongan->nama_posisi }}</div>
+                            <div class="text-sm font-bold text-gray-800">{{ $row->lowongan->nama_posisi }}</div>
                             <div class="text-[0.75rem] font-medium text-gray-500 mt-1">{{ $row->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
 
@@ -201,11 +199,20 @@
                                             <span class="block truncate" title="{{ $mj->penguji->nama }}">{{ $mj->penguji->nama }}</span>
                                         @endforeach
                                     </div>
-                                    @if($mFirst->link_meeting)
-                                        <div class="mt-1 flex items-center gap-1 min-w-0">
-                                            <strong class="flex-shrink-0">Link:</strong>
-                                            <a href="{{ $mFirst->link_meeting }}" target="_blank" title="{{ $mFirst->link_meeting }}"
-                                               class="text-blue-600 hover:underline truncate block min-w-0">{{ $mFirst->link_meeting }}</a>
+                                    @if($mFirst->lokasi)
+                                        <div class="mt-1">
+                                            @if($mFirst->jenis_sesi === 'online')
+                                                <div class="flex items-center gap-1 min-w-0">
+                                                    <strong class="flex-shrink-0">Link:</strong>
+                                                    <a href="{{ $mFirst->lokasi }}" target="_blank" title="{{ $mFirst->lokasi }}"
+                                                       class="text-blue-600 hover:underline truncate block min-w-0">{{ $mFirst->lokasi }}</a>
+                                                </div>
+                                            @else
+                                                <div class="flex items-center gap-1 min-w-0">
+                                                    <strong class="flex-shrink-0">Lokasi:</strong>
+                                                    <span class="truncate block min-w-0" title="{{ $mFirst->lokasi }}">{{ $mFirst->lokasi }}</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -225,9 +232,9 @@
                                     $mStatus = ($mTotal > 0 && $mDone === $mTotal) ? 'Done' : 'Pending';
                                 @endphp
                                 @if($mStatus === 'Done')
-                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Done</span>
+                                    <span class="px-2.5 py-1 bg-green-800 text-white rounded-lg text-[0.7rem] font-bold inline-block mt-1">Dinilai</span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-orange-100 text-orange-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Pending</span>
+                                    <span class="px-2.5 py-1 bg-red-800 text-white rounded-lg text-[0.65rem] font-bold inline-block mt-1 leading-tight">Belum<br>Dinilai</span>
                                 @endif
                             @else
                                 <div class="text-gray-300 text-xs italic mt-1">-</div>
@@ -245,11 +252,20 @@
                                             <span class="block truncate" title="{{ $wj->penguji->nama }}">{{ $wj->penguji->nama }}</span>
                                         @endforeach
                                     </div>
-                                    @if($wFirst->link_meeting)
-                                        <div class="mt-1 flex items-center gap-1 min-w-0">
-                                            <strong class="flex-shrink-0">Link:</strong>
-                                            <a href="{{ $wFirst->link_meeting }}" target="_blank" title="{{ $wFirst->link_meeting }}"
-                                               class="text-blue-600 hover:underline truncate block min-w-0">{{ $wFirst->link_meeting }}</a>
+                                    @if($wFirst->lokasi)
+                                        <div class="mt-1">
+                                            @if($wFirst->jenis_sesi === 'online')
+                                                <div class="flex items-center gap-1 min-w-0">
+                                                    <strong class="flex-shrink-0">Link:</strong>
+                                                    <a href="{{ $wFirst->lokasi }}" target="_blank" title="{{ $wFirst->lokasi }}"
+                                                       class="text-blue-600 hover:underline truncate block min-w-0">{{ $wFirst->lokasi }}</a>
+                                                </div>
+                                            @else
+                                                <div class="flex items-center gap-1 min-w-0">
+                                                    <strong class="flex-shrink-0">Lokasi:</strong>
+                                                    <span class="truncate block min-w-0" title="{{ $wFirst->lokasi }}">{{ $wFirst->lokasi }}</span>
+                                                </div>
+                                            @endif
                                         </div>
                                     @endif
                                 </div>
@@ -269,9 +285,9 @@
                                     $wStatus = ($wTotal > 0 && $wDone === $wTotal) ? 'Done' : 'Pending';
                                 @endphp
                                 @if($wStatus === 'Done')
-                                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Done</span>
+                                    <span class="px-2.5 py-1 bg-green-800 text-white rounded-lg text-[0.7rem] font-bold inline-block mt-1">Dinilai</span>
                                 @else
-                                    <span class="px-2.5 py-1 bg-orange-100 text-orange-700 rounded-lg text-[0.7rem] font-bold inline-block mt-1">Pending</span>
+                                    <span class="px-2.5 py-1 bg-red-800 text-white rounded-lg text-[0.65rem] font-bold inline-block mt-1 leading-tight">Belum<br>Dinilai</span>
                                 @endif
                             @else
                                 <div class="text-gray-300 text-xs italic mt-1">-</div>
@@ -284,31 +300,41 @@
                                 $anyDone = ($row->micro->isNotEmpty() && $row->micro->whereNotNull('penilaian')->count() > 0)
                                         || ($row->wawancara->isNotEmpty() && $row->wawancara->whereNotNull('penilaian')->count() > 0);
                             @endphp
-                            <button type="button"
-                                @click="openEdit({
-                                    pelamarId:  {{ $row->pelamar->id }},
-                                    lowonganId: {{ $row->lowongan->id }},
-                                    prodiId:    {{ $row->lowongan->prodi_id ?? 'null' }},
-                                    tanggal:    '{{ $row->tanggal->format('Y-m-d') }}',
-                                    pelamarNama:'{{ addslashes($row->pelamar->nama) }}',
-                                    wSesi:   {{ $wFirst ? $wFirst->sesi : 'null' }},
-                                    mSesi:   {{ $mFirst ? $mFirst->sesi : 'null' }},
-                                    wLink:   '{!! $wFirst ? addslashes($wFirst->link_meeting ?? '') : '' !!}',
-                                    mLink:   '{!! $mFirst ? addslashes($mFirst->link_meeting ?? '') : '' !!}',
-                                    hasW:    {{ $row->wawancara->isNotEmpty() ? 'true' : 'false' }},
-                                    hasM:    {{ $row->micro->isNotEmpty() ? 'true' : 'false' }},
-                                    pengujiW: {{ $pengujiW }},
-                                    pengujiM: {{ $pengujiM }},
-                                    allPgIds: {{ $allPgIds }},
-                                    pengujiData: {{ $pengujiDataJson }},
-                                    readOnly: {{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'true' : 'false' }},
-                                })"
-                                class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                                title="{{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'Lihat jadwal (read only)' : 'Edit jadwal' }}">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                            </button>
+                            <div class="flex items-center justify-center gap-1">
+                                <button type="button"
+                                    @click="openEdit({
+                                        pelamarId:  {{ $row->pelamar->id }},
+                                        lowonganId: {{ $row->lowongan->id }},
+                                        prodiId:    {{ $row->lowongan->prodi_id ?? 'null' }},
+                                        tanggal:    '{{ $row->tanggal->format('Y-m-d') }}',
+                                        pelamarNama:'{{ addslashes($row->pelamar->nama) }}',
+                                        wSesi:   {{ $wFirst ? $wFirst->sesi : 'null' }},
+                                        mSesi:   {{ $mFirst ? $mFirst->sesi : 'null' }},
+                                        jenis:   '{{ $mFirst ? $mFirst->jenis_sesi : 'online' }}',
+                                        lokasi:  '{!! $mFirst ? addslashes($mFirst->lokasi ?? '') : '' !!}',
+                                        hasW:    {{ $row->wawancara->isNotEmpty() ? 'true' : 'false' }},
+                                        hasM:    {{ $row->micro->isNotEmpty() ? 'true' : 'false' }},
+                                        pengujiW: {{ $pengujiW }},
+                                        pengujiM: {{ $pengujiM }},
+                                        allPgIds: {{ $allPgIds }},
+                                        pengujiData: {{ $pengujiDataJson }},
+                                        readOnly: {{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'true' : 'false' }},
+                                    })"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors shrink-0"
+                                    title="{{ ($anyDone || $row->lamaran?->status === 'mengundurkan_diri') ? 'Lihat jadwal (read only)' : 'Edit jadwal' }}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                    </svg>
+                                </button>
+                                <button type="button" x-show="!({{ ($row->lamaran?->status === 'mengundurkan_diri') ? 'true' : 'false' }})"
+                                    @click="openDeleteModal = true; delPelamarId = {{ $row->pelamar->id }}; delLowonganId = {{ $row->lowongan->id }}; delPelamarNama = '{{ addslashes($row->pelamar->nama) }}'"
+                                    class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors shrink-0"
+                                    title="Hapus jadwal">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
                         </td>
 
                     </tr>
@@ -333,13 +359,16 @@
         </div>
 
         {{-- Empty state for filter --}}
+        @if($rows->count() > 0)
         <div x-show="totalFiltered === 0" class="py-14 text-center" style="display: none;">
             <svg class="w-12 h-12 text-gray-200 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
             <h3 class="text-sm font-medium text-gray-600 mb-1">Belum ada data jadwal</h3>
             <p class="text-xs text-gray-400">Tidak ada jadwal yang cocok dengan pencarian atau filter.</p>
         </div>
+        @endif
 
         {{-- Pagination --}}
+        @if($rows->count() > 0)
         <div class="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <span>Menampilkan <strong x-text="totalFiltered === 0 ? 0 : paginatedStart + 1"></strong>–<strong x-text="Math.min(paginatedEnd, totalFiltered)"></strong> dari <strong x-text="totalFiltered"></strong> data</span>
             <div class="flex items-center gap-1">
@@ -362,6 +391,7 @@
                         class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
             </div>
         </div>
+        @endif
     </div>
 
 {{-- -- MODAL EDIT -- --}}
@@ -568,18 +598,54 @@
                 </template>
             </div>
 
-            {{-- Link Meeting --}}
+            {{-- Jenis & Lokasi --}}
             <div>
-                <label class="block text-xs font-semibold text-gray-700 mb-1.5">Link Meeting</label>
+                <label class="block text-xs font-semibold text-gray-700 mb-1.5">Jenis & Lokasi</label>
                 <template x-if="modal.readOnly">
-                    <p class="text-sm px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
-                        <a x-show="modal.wLink" :href="modal.wLink" target="_blank" x-text="modal.wLink" class="text-blue-600 hover:underline break-all text-xs"></a>
-                        <span x-show="!modal.wLink" class="text-gray-400 italic">-</span>
-                    </p>
+                    <div class="space-y-2">
+                        <div class="inline-flex rounded-lg p-1 bg-gray-100/80 border border-gray-200">
+                            <span class="px-4 py-1.5 text-xs font-bold rounded-md"
+                                :class="modal.jenis === 'online' ? 'bg-white shadow-sm text-[#8b1515]' : 'text-gray-500'">Online</span>
+                            <span class="px-4 py-1.5 text-xs font-bold rounded-md"
+                                :class="modal.jenis === 'offline' ? 'bg-white shadow-sm text-[#8b1515]' : 'text-gray-500'">Offline</span>
+                        </div>
+                        <p class="text-sm px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+                            <template x-if="modal.jenis === 'online'">
+                                <a x-show="modal.lokasi" :href="modal.lokasi" target="_blank" x-text="modal.lokasi" class="text-blue-600 hover:underline break-all text-xs"></a>
+                            </template>
+                            <template x-if="modal.jenis === 'offline'">
+                                <span x-text="modal.lokasi" class="text-gray-800 text-sm"></span>
+                            </template>
+                            <span x-show="!modal.lokasi" class="text-gray-400 italic">-</span>
+                        </p>
+                    </div>
                 </template>
                 <template x-if="!modal.readOnly">
-                    <input type="url" name="link" x-model="modal.wLink" placeholder="https://meet.google.com/..."
-                           class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                    <div class="space-y-2">
+                        {{-- Toggle Jenis --}}
+                        <div class="inline-flex rounded-lg p-1 bg-gray-100/80 border border-gray-200">
+                            <button type="button" @click="modal.jenis = 'online'; modal.lokasi = ''"
+                                class="px-4 py-1.5 text-xs font-bold rounded-md transition-all duration-200"
+                                :class="modal.jenis === 'online' ? 'bg-white shadow-sm text-[#8b1515]' : 'text-gray-500 hover:text-gray-700'">
+                                Online (Zoom)
+                            </button>
+                            <button type="button" @click="modal.jenis = 'offline'; modal.lokasi = ''"
+                                class="px-4 py-1.5 text-xs font-bold rounded-md transition-all duration-200"
+                                :class="modal.jenis === 'offline' ? 'bg-white shadow-sm text-[#8b1515]' : 'text-gray-500 hover:text-gray-700'">
+                                Offline (Kampus)
+                            </button>
+                        </div>
+                        {{-- Input Lokasi --}}
+                        <input type="hidden" name="jenis_sesi" :value="modal.jenis">
+                        <template x-if="modal.jenis === 'online'">
+                            <input type="url" name="lokasi" x-model="modal.lokasi" placeholder="https://meet.google.com/..."
+                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                        </template>
+                        <template x-if="modal.jenis === 'offline'">
+                            <input type="text" name="lokasi" x-model="modal.lokasi" placeholder="Ruang Kelas x.xx"
+                                class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                        </template>
+                    </div>
                 </template>
             </div>
 
@@ -597,8 +663,47 @@
             </div>
         </form>
     </div>
+    </div>
+</div>
+</template>{{-- Delete Modal --}}
+<template x-teleport="body">
+<div x-show="openDeleteModal" x-transition.opacity
+    class="fixed inset-0 z-[110] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 !mt-0"
+    style="display: none;">
+    <div x-show="openDeleteModal" x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
+        @click.outside="openDeleteModal = false"
+        class="bg-white rounded-[24px] shadow-2xl w-full max-w-[360px] overflow-hidden text-center p-8 relative">
+
+        <div class="mx-auto mb-5 flex justify-center">
+            <svg width="68" height="68" viewBox="0 0 24 24" fill="none" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                <path fill-rule="evenodd" fill="#8b1515" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 01-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 01-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 01-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.89-.777.89-2.038 0-2.815zM12 18.75a1.125 1.125 0 100-2.25 1.125 1.125 0 000 2.25z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+
+        <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus Jadwal?</h2>
+        <p class="text-[0.85rem] font-medium text-gray-500 mb-8">
+            Seluruh jadwal seleksi untuk <strong class="text-gray-700" x-text="delPelamarNama"></strong> akan dihapus permanen.
+        </p>
+
+        <div class="grid grid-cols-2 gap-3">
+            <form method="POST" action="{{ route('admin.jadwal.destroyGroup') }}" class="contents">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="pelamar_id" :value="delPelamarId">
+                <input type="hidden" name="lowongan_id" :value="delLowonganId">
+                <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">
+                    Iya
+                </button>
+            </form>
+            <button type="button" @click="openDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">
+                Tidak
+            </button>
+        </div>
+    </div>
 </div>
 </template>
+
 </div>
 
 <script>
@@ -619,6 +724,10 @@ function jadwalIndex() {
         currentPage: 1,
         perPage: 10,
         totalFiltered: 0,
+        openDeleteModal: false,
+        delPelamarId: null,
+        delLowonganId: null,
+        delPelamarNama: '',
 
         get hasFilters() { return this.fTanggal !== '' || this.fProdi !== '' || this.fStatus !== ''; },
         get paginatedStart() { return (this.currentPage - 1) * this.perPage; },
@@ -674,11 +783,11 @@ function jadwalIndex() {
             readOnly: false,
             pelamarId: null, lowonganId: null, prodiId: null, pelamarNama: '',
             tanggal: '', wSesi: '', mSesi: '',
-            wLink: '', mLink: '',
+            jenis: 'online', lokasi: '',
             origW: null, origM: null,
             hasW: false, hasM: false,
             pengujiW: [], pengujiM: [], allPgIds: [],
-            takenMap: {}, loadingTaken: false,
+            takenMap: {}, takenPelamarMap: {}, loadingTaken: false,
             availablePengujis: [], loadingPengujis: false,
             selectedWPenguji: [], selectedMPenguji: [],
             pengujiDataMap: {}, // Menyimpan data penguji dengan key ID
@@ -696,8 +805,8 @@ function jadwalIndex() {
             this.modal.tanggal     = d.tanggal;
             this.modal.wSesi       = d.wSesi !== null ? String(d.wSesi) : '';
             this.modal.mSesi       = d.mSesi !== null ? String(d.mSesi) : '';
-            this.modal.wLink       = d.wLink || '';
-            this.modal.mLink       = d.mLink || '';
+            this.modal.jenis       = d.jenis || 'online';
+            this.modal.lokasi      = d.lokasi || '';
             this.modal.origW       = d.wSesi;
             this.modal.origM       = d.mSesi;
             this.modal.hasW        = d.hasW;
@@ -706,6 +815,7 @@ function jadwalIndex() {
             this.modal.pengujiM    = d.pengujiM;
             this.modal.allPgIds    = d.allPgIds;
             this.modal.takenMap    = {};
+            this.modal.takenPelamarMap = {};
             this.modal.selectedWPenguji = [...d.pengujiW];
             this.modal.selectedMPenguji = [...d.pengujiM];
             
@@ -776,13 +886,21 @@ function jadwalIndex() {
         },
 
         async loadTaken() {
-            const { tanggal, allPgIds } = this.modal;
+            const { tanggal, allPgIds, pelamarId } = this.modal;
             if (!tanggal || !allPgIds.length) return;
             this.modal.loadingTaken = true;
             try {
                 const res = await fetch(`${_base}/admin/api/sesi-taken-all?tanggal=${tanggal}&penguji_ids=${allPgIds.join(',')}`);
                 this.modal.takenMap = res.ok ? await res.json() : {};
-            } catch { this.modal.takenMap = {}; }
+
+                if (pelamarId) {
+                    const res2 = await fetch(`${_base}/admin/api/sesi-taken-pelamar?tanggal=${tanggal}&pelamar_ids=${pelamarId}&exclude_lowongan_id=${this.modal.lowonganId}`);
+                    this.modal.takenPelamarMap = res2.ok ? await res2.json() : {};
+                }
+            } catch { 
+                this.modal.takenMap = {}; 
+                this.modal.takenPelamarMap = {};
+            }
             this.modal.loadingTaken = false;
         },
 
@@ -807,8 +925,11 @@ function jadwalIndex() {
         hasConflict() {
             if (this.modal.wSesi && this.isSesiBlocked(parseInt(this.modal.wSesi))) return true;
             
-            // Link validation
-            if (this.modal.wSesi && !this.isValidUrl(this.modal.wLink)) return true;
+            // Lokasi validation
+            const lokasiOk = this.modal.jenis === 'online'
+                ? this.isValidUrl(this.modal.lokasi)
+                : this.modal.lokasi.trim() !== '';
+            if (this.modal.wSesi && !lokasiOk) return true;
 
             // Penguji harus dipilih minimal 1 untuk masing-masing
             if (this.modal.selectedMPenguji.length === 0) return true;
@@ -822,12 +943,16 @@ function jadwalIndex() {
 
         sesiLabel(key, info, isBlocked) {
             const base = info.block_label || `Sesi ${key}`;
-            return isBlocked ? base + ' ?' : base;
+            return isBlocked ? base + ' (Bentrok)' : base;
         },
 
         // Unified sesi check: cek bentrok untuk SEMUA penguji (micro + wawancara) pada sesi ini
         isSesiBlocked(sesiNum) {
             const orig = this.modal.origW; // sesi asli sebelum edit
+
+            // Cek pelamar (konflik di lowongan lain)
+            const pelamarTaken = this.modal.takenPelamarMap?.[String(this.modal.pelamarId)] || [];
+            if (pelamarTaken.map(Number).includes(sesiNum)) return true;
 
             // Cek penguji micro
             for (const pgId of this.modal.selectedMPenguji) {

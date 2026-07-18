@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.admin', ['hideSidebar' => true])
 
 @section('title', 'Form Penilaian Wawancara')
 
@@ -13,18 +13,15 @@
     $penilaian = $jadwal->penilaian;
     $detailNilai = $penilaian->detail_nilai ?? [];
 
-    // 8 indikator wawancara — masing-masing 1 item (k1_item_1 s/d k1_item_8)
+    // 5 indikator wawancara — masing-masing 1 item (k1_item_1 s/d k1_item_5)
     $indikators = [
         1 => 'Motivasi',
-        2 => 'Kemampuan Mengajar',
-        3 => 'Kemampuan Mengembangkan Kurikulum Pengajaran',
-        4 => 'Kemampuan Penelitian & Publikasi',
-        5 => 'Kemampuan Abdimas (Pengabdian Masyarakat)',
-        6 => 'Kemampuan Bekerjasama dengan Tim',
-        7 => 'Keahlian Lainnya',
-        8 => 'Komitmen Waktu dan Kesediaan Melakukan Hal di Luar Tugas Pokok',
+        2 => 'Potensi Kontribusi terhadap Program Studi dan Institusi',
+        3 => 'Kemampuan Penelitian & Publikasi',
+        4 => 'Kemampuan Komunikasi, Terutama Menjawab Pertanyaan Dengan Cepat dan Tepat',
+        5 => 'Kontribusi yang Pernah Dilakukan / Memiliki Link Relasi Dengan Pihak Lain',
     ];
-    $totalItems = count($indikators); // 8
+    $totalItems = count($indikators); // 5
 
     $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
@@ -125,7 +122,7 @@
             </a>
         </div>
     @else
-        <form id="wawancaraForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST">
+        <form id="wawancaraForm" action="{{ route('penguji.pengujian.storeNilai', $jadwal->id) }}" method="POST" @submit.prevent="submitForm">
             @csrf
 
             {{-- ── INDIKATOR PENILAIAN ── --}}
@@ -193,45 +190,58 @@
                         @enderror
                     </div>
 
-                    {{-- Rekomendasi Prodi Tujuan --}}
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
-                        <select name="prodi_tujuan" x-model="prodiTujuan"
-                            class="w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
-                            <option value="">-- Pilih Prodi --</option>
-                            @foreach($prodis as $prodi)
-                                <option value="{{ $prodi->nama }}" {{ old('prodi_tujuan') === $prodi->nama ? 'selected' : '' }}>
-                                    {{ $prodi->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('prodi_tujuan')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {{-- Bidang Keahlian --}}
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Bidang Keahlian <span class="text-red-500">*</span></label>
+                            <input type="text" name="bidang_keahlian" x-model="bidangKeahlian"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white"
+                                placeholder="Ketikkan bidang keahlian...">
+                            @error('bidang_keahlian')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    {{-- Status Rekrutmen (muncul jika S2 atau S3) --}}
-                    @if(!empty($statusRekrutmenOptions))
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">
-                            Status Rekrutmen
-                            <span class="text-red-500">*</span>
-                            <span class="ml-2 text-xs font-normal text-gray-400">(Terdeteksi jenjang {{ $hasS3 ? 'S3' : 'S2' }})</span>
-                        </label>
-                        <select name="status_rekrutmen" x-model="statusRekrutmen"
-                            class="w-full sm:w-80 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
-                            <option value="">-- Pilih Status --</option>
-                            @foreach($statusRekrutmenOptions as $val => $label)
-                                <option value="{{ $val }}" {{ old('status_rekrutmen', $penilaian->status_rekrutmen ?? '') === $val ? 'selected' : '' }}>
-                                    {{ $label }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('status_rekrutmen')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        {{-- Rekomendasi Prodi Tujuan --}}
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
+                            <select name="prodi_tujuan" x-model="prodiTujuan"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                                <option value="">-- Pilih Prodi --</option>
+                                @foreach($prodis as $prodi)
+                                    <option value="{{ $prodi->nama }}" {{ old('prodi_tujuan') === $prodi->nama ? 'selected' : '' }}>
+                                        {{ $prodi->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('prodi_tujuan')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        {{-- Status Rekrutmen (muncul jika S2 atau S3) --}}
+                        @if(!empty($statusRekrutmenOptions))
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">
+                                Status Rekrutmen
+                                <span class="text-red-500">*</span>
+                                <span class="ml-2 text-xs font-normal text-gray-400">(Terdeteksi jenjang {{ $hasS3 ? 'S3' : 'S2' }})</span>
+                            </label>
+                            <select name="status_rekrutmen" x-model="statusRekrutmen"
+                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                                <option value="">-- Pilih Status --</option>
+                                @foreach($statusRekrutmenOptions as $val => $label)
+                                    <option value="{{ $val }}" {{ old('status_rekrutmen', $penilaian->status_rekrutmen ?? '') === $val ? 'selected' : '' }}>
+                                        {{ $label }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('status_rekrutmen')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        @endif
                     </div>
-                    @endif
 
                     {{-- Catatan --}}
                     <div>
@@ -261,34 +271,36 @@
             {{-- ── SUMMARY & SUBMIT ── --}}
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row mb-6">
                 {{-- Rincian per indikator --}}
-                <div class="flex-1 p-6 md:p-8 md:border-r border-gray-100">
-                    <h3 class="text-sm font-extrabold text-gray-800 mb-5 flex items-center gap-2.5">
-                        <svg class="w-5 h-5 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                        Rincian Skor per Indikator
-                    </h3>
-                    <div class="space-y-2">
-                        @foreach($indikators as $itemIdx => $label)
-                        @php $fieldName = "k1_item_{$itemIdx}"; @endphp
-                        <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-3">
-                            <div class="flex items-center gap-2.5 min-w-0">
-                                <div class="w-6 h-6 rounded-md bg-red-50 text-[#8b1515] font-bold text-xs flex items-center justify-center flex-shrink-0">{{ $itemIdx }}</div>
-                                <span class="text-xs font-semibold text-gray-700 truncate">{{ $label }}</span>
-                            </div>
-                            <div class="flex items-center gap-3 flex-shrink-0">
-                                <div class="hidden sm:block w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                                    <div class="h-full bg-gradient-to-r from-[#8b1515] to-red-500 transition-all duration-500"
-                                        :style="'width: ' + (scores['{{ $fieldName }}'] ? (scores['{{ $fieldName }}'] / 5 * 100) : 0) + '%'"></div>
+                <div class="flex-1 p-6 md:p-8 md:border-r border-gray-100 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-sm font-extrabold text-gray-800 mb-5 flex items-center gap-2.5">
+                            <svg class="w-5 h-5 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            Rincian Skor per Indikator
+                        </h3>
+                        <div class="space-y-2.5">
+                            @foreach($indikators as $itemIdx => $label)
+                            @php $fieldName = "k1_item_{$itemIdx}"; @endphp
+                            <div class="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors gap-3">
+                                <div class="flex items-center gap-2.5 min-w-0 flex-1">
+                                    <div class="w-6 h-6 rounded-md bg-red-50 text-[#8b1515] font-bold text-xs flex items-center justify-center flex-shrink-0">{{ $itemIdx }}</div>
+                                    <span class="text-xs font-semibold text-gray-700 leading-snug break-words">{{ $label }}</span>
                                 </div>
-                                <span class="font-extrabold text-sm text-[#8b1515] w-8 text-right"
-                                    x-text="scores['{{ $fieldName }}'] ?? '-'"></span>
+                                <div class="flex items-center gap-3 flex-shrink-0">
+                                    <div class="hidden sm:block w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-[#8b1515] to-red-500 transition-all duration-500"
+                                            :style="'width: ' + (scores['{{ $fieldName }}'] ? (scores['{{ $fieldName }}'] / 5 * 100) : 0) + '%'"></div>
+                                    </div>
+                                    <span class="font-extrabold text-sm text-[#8b1515] w-8 text-right"
+                                        x-text="scores['{{ $fieldName }}'] ?? '-'"></span>
+                                </div>
                             </div>
+                            @endforeach
                         </div>
-                        @endforeach
                     </div>
                 </div>
 
                 {{-- Score + Submit --}}
-                <div class="w-full md:w-72 lg:w-80 bg-gradient-to-br from-[#7a1111] to-[#8b1515] p-6 md:p-8 flex flex-col justify-between text-white relative overflow-hidden flex-shrink-0">
+                <div class="w-full md:w-80 lg:w-96 bg-gradient-to-br from-[#7a1111] to-[#8b1515] p-6 md:p-8 flex flex-col justify-between text-white relative overflow-hidden flex-shrink-0">
                     <div class="absolute top-0 right-0 w-40 h-40 bg-white rounded-full opacity-[0.03] -mr-10 -mt-10 pointer-events-none"></div>
                     <div class="absolute bottom-0 left-0 w-32 h-32 bg-black rounded-full opacity-[0.08] -ml-12 -mb-12 pointer-events-none"></div>
 
@@ -303,9 +315,9 @@
 
                         <div class="mb-10">
                             <span class="text-red-200 text-xs font-bold uppercase tracking-widest block mb-3">Rata-rata Nilai</span>
-                            <div class="flex items-end gap-3">
+                            <div class="flex flex-wrap items-end gap-3">
                                 <span class="text-6xl font-black leading-none tracking-tighter" x-text="totalScore()"></span>
-                                <span class="text-xs font-bold px-2.5 py-1.5 rounded bg-white/20 text-white backdrop-blur-sm mb-1.5 shadow-sm border border-white/20"
+                                <span class="text-xs font-bold px-2.5 py-1.5 rounded bg-white/20 text-white backdrop-blur-sm mb-1.5 shadow-sm border border-white/20 whitespace-nowrap"
                                     x-text="totalLabel()" x-show="isComplete()" style="display: none;"></span>
                             </div>
                         </div>
@@ -322,19 +334,49 @@
             </div>
 
         </form>
+
+        {{-- Custom Confirm Modal --}}
+        <div x-show="showConfirmModal" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" @click.self="showConfirmModal = false">
+            <div x-show="showConfirmModal"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+                
+                <div class="mx-auto mb-5 flex justify-center">
+                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Simpan penilaian?</h2>
+                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Nilai yang telah disimpan tidak dapat diubah.</p>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" @click="processSubmit()" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
+                    <button type="button" @click="showConfirmModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
+                </div>
+            </div>
+        </div>
+
     @endif
 </div>
 
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.data('wawancaraForm', () => ({
+        showConfirmModal: false,
+        formEvent: null,
         scores: {
-            @for($i = 1; $i <= 8; $i++)
+            @for($i = 1; $i <= $totalItems; $i++)
                 'k1_item_{{ $i }}': {{ $detailNilai["k1_item_{$i}"] ?? 'null' }},
             @endfor
         },
         rekomendasi: '{{ old('rekomendasi', '') }}',
         prodiTujuan: '{{ old('prodi_tujuan', '') }}',
+        bidangKeahlian: '{{ old('bidang_keahlian', $penilaian->bidang_keahlian ?? '') }}',
         statusRekrutmen: '{{ old('status_rekrutmen', '') }}',
         hasStatusRekrutmen: {{ !empty($statusRekrutmenOptions) ? 'true' : 'false' }},
 
@@ -344,20 +386,21 @@ document.addEventListener('alpine:init', () => {
 
         filledCount() {
             let c = 0;
-            for (let i = 1; i <= 8; i++) {
+            for (let i = 1; i <= {{ $totalItems }}; i++) {
                 if (this.scores['k1_item_' + i] !== null) c++;
             }
             return c;
         },
 
         isComplete() {
-            return this.filledCount() === 8;
+            return this.filledCount() === {{ $totalItems }};
         },
 
         canSubmit() {
             if (!this.isComplete()) return false;
             if (this.rekomendasi === '') return false;
             if (this.prodiTujuan === '') return false;
+            if (this.bidangKeahlian.trim() === '') return false;
             if (this.hasStatusRekrutmen && this.statusRekrutmen === '') return false;
             return true;
         },
@@ -365,10 +408,10 @@ document.addEventListener('alpine:init', () => {
         totalScore() {
             if (!this.isComplete()) return '-';
             let sum = 0;
-            for (let i = 1; i <= 8; i++) {
+            for (let i = 1; i <= {{ $totalItems }}; i++) {
                 sum += Number(this.scores['k1_item_' + i]) || 0;
             }
-            return (sum / 8).toFixed(2);
+            return (sum / {{ $totalItems }}).toFixed(2);
         },
 
         totalLabel() {
@@ -380,6 +423,49 @@ document.addEventListener('alpine:init', () => {
             if (s >= 2.5) return 'Cukup';
             if (s >= 1.5) return 'Kurang';
             return 'Sangat Kurang';
+        },
+
+        submitForm(e) {
+            this.formEvent = e.target;
+            this.showConfirmModal = true;
+        },
+
+        async processSubmit() {
+            if (!this.formEvent) return;
+            const form = this.formEvent;
+            const submitBtn = form.querySelector('button[type="submit"]');
+
+            this.showConfirmModal = false;
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'MENYIMPAN...';
+
+            try {
+                const formData = new FormData(form);
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    if (window.opener && !window.opener.closed) {
+                        window.opener.location.reload();
+                    }
+                    window.close();
+                    // Fallback if window.close() is blocked
+                    window.location.href = "{{ route('penguji.pengujian.show', $jadwal->id) }}";
+                } else {
+                    throw new Error('Terjadi kesalahan saat menyimpan data.');
+                }
+            } catch (error) {
+                Swal.fire('Error', error.message, 'error');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'SIMPAN PENILAIAN';
+            }
         }
     }))
 })

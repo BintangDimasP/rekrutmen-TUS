@@ -47,8 +47,7 @@ function wawancaraPayload(): array
         'prodi_tujuan'     => 'Teknik Informatika',
         'status_rekrutmen' => 'profesional_full_time',
         'k1_item_1' => 4, 'k1_item_2' => 5, 'k1_item_3' => 4,
-        'k1_item_4' => 3, 'k1_item_5' => 5, 'k1_item_6' => 4,
-        'k1_item_7' => 5, 'k1_item_8' => 4,
+        'k1_item_4' => 3, 'k1_item_5' => 5,
     ];
 }
 

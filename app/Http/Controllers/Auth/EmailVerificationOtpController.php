@@ -70,7 +70,12 @@ class EmailVerificationOtpController extends Controller
         } catch (\Throwable $e) {
             DB::table('email_verification_otps')->where('email', $email)->delete();
 
-            return response()->json(['message' => 'Gagal mengirim email OTP. Silakan coba lagi.'], 500);
+            \Log::error('EmailOTP send failed', [
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile() . ':' . $e->getLine(),
+            ]);
+
+            return response()->json(['message' => 'Gagal mengirim email OTP: ' . $e->getMessage()], 500);
         }
 
         return response()->json(['message' => 'OTP berhasil dikirim ke email Anda.']);
