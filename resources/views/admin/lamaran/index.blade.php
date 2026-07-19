@@ -9,6 +9,9 @@
          search: '',
          statusFilter: '',
          statusOpen: false,
+         deleteModalOpen: false,
+         deleteActionUrl: '',
+         deleteNama: '',
          currentPage: 1,
          perPage: 10,
          get filteredRows() {
@@ -237,14 +240,11 @@
                                 <a href="{{ route('admin.lamaran.cetak', $lamaran) }}" target="_blank" title="Cetak" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
                                 </a>
-                                <form method="POST" action="{{ route('admin.lamaran.destroy', $lamaran) }}"
-                                      onsubmit="return confirm('Hapus lamaran atas nama {{ addslashes($lamaran->pelamar->nama) }}?')" class="inline m-0">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" title="Hapus" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-700 hover:bg-red-50 rounded transition-colors">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </form>
+                                <button type="button" 
+                                        @click="deleteModalOpen = true; deleteActionUrl = '{{ route('admin.lamaran.destroy', $lamaran) }}'; deleteNama = '{{ addslashes($lamaran->pelamar->nama) }}'"
+                                        title="Hapus" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-700 hover:bg-red-50 rounded transition-colors inline m-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -281,6 +281,37 @@
                 <button type="button" @click="nextPage()" :disabled="currentPage >= totalPages"
                         :class="currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white border border-gray-200 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515]'"
                         class="px-3 py-1.5 rounded-lg font-medium transition">Next</button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Delete Modal --}}
+    <div x-show="deleteModalOpen" style="display: none;" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 !m-0" @click.self="deleteModalOpen = false">
+        <div x-show="deleteModalOpen"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative">
+            
+            {{-- Warning Icon --}}
+            <div class="mx-auto mb-5 flex justify-center">
+                <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                    <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                    <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                </svg>
+            </div>
+            
+            <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Yakin ingin menghapus?</h2>
+            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Hapus lamaran atas nama <br><strong x-text="deleteNama" class="text-gray-700"></strong>?</p>
+
+            <div class="grid grid-cols-2 gap-3">
+                <form method="POST" :action="deleteActionUrl" class="contents">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
+                </form>
+                <button type="button" @click="deleteModalOpen = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">Tidak</button>
             </div>
         </div>
     </div>

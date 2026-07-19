@@ -101,13 +101,13 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Persyaratan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Persyaratan</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Kuota</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Tenggat</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[12%]">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[14%]">Aksi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Tenggat</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -153,7 +153,7 @@
                                         {{ $lowongan->lamarans->whereNotIn('status', ['mengundurkan_diri'])->count() }}
                                     </span>
                                 </td>
-                                <td class="py-3 px-5 text-sm font-medium text-gray-600 whitespace-nowrap">
+                                <td class="py-3 px-5 text-sm font-medium text-center text-gray-600 whitespace-nowrap">
                                     {{ $lowongan->tanggal_tutup->format('d M Y') }}
                                     @if($lowongan->tanggal_tutup->endOfDay()->isPast())
                                         <div class="text-[0.65rem] text-red-500 font-medium">Sudah lewat</div>
@@ -162,7 +162,7 @@
                                             {{ $lowongan->tanggal_tutup->diffForHumans() }}</div>
                                     @endif
                                 </td>
-                                <td class="py-3 px-5">
+                                <td class="py-3 px-5 text-center">
                                     @if($lowongan->status === 'aktif')
                                         <span
                                             class="inline-flex items-center px-2.5 py-1 rounded-lg text-[0.7rem] font-semibold bg-green-800 text-white">

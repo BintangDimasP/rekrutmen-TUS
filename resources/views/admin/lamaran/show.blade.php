@@ -129,14 +129,14 @@
                             <div class="pl-4 border-l-[3px] border-[#8b1515]/40 py-1">
                                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang }}</p></div>
-                                    <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi ?: '-' }}</p></div>
+                                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p></div>
                                     
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $pelamar->jenjang }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                                         @if($pelamar->file_ijazah)
                                             <a href="{{ asset('storage/' . $pelamar->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -144,7 +144,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $pelamar->jenjang }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                                         @if($pelamar->file_transkrip)
                                             <a href="{{ asset('storage/' . $pelamar->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -159,14 +159,14 @@
                             <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_2 }}</p></div>
-                                    <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi_2 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_2 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?: '-' }}</p></div>
                                     
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $pelamar->jenjang_2 }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                                         @if($pelamar->file_ijazah_2)
                                             <a href="{{ asset('storage/' . $pelamar->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -174,7 +174,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $pelamar->jenjang_2 }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                                         @if($pelamar->file_transkrip_2)
                                             <a href="{{ asset('storage/' . $pelamar->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -189,14 +189,14 @@
                             <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                                 <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $pelamar->jenjang_3 }}</p></div>
-                                    <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi_3 ?: '-' }}</p></div>
+                                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->institusi_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->prodi_pendidikan_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->akreditas_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->no_ijazah_3 ?: '-' }}</p></div>
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?: '-' }}</p></div>
                                     
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $pelamar->jenjang_3 }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                                         @if($pelamar->file_ijazah_3)
                                             <a href="{{ asset('storage/' . $pelamar->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -204,7 +204,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $pelamar->jenjang_3 }}</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                                         @if($pelamar->file_transkrip_3)
                                             <a href="{{ asset('storage/' . $pelamar->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -236,7 +236,7 @@
                                 @endif
                             </div>
                             <div>
-                                <p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto</p>
+                                <p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto Formal</p>
                                 @if($pelamar->file_pas_foto)
                                     <a href="{{ asset('storage/' . $pelamar->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
@@ -244,7 +244,7 @@
                                 @endif
                             </div>
                             <div>
-                                <p class="text-[0.55rem] font-black text-gray-400 uppercase">KTP</p>
+                                <p class="text-[0.55rem] font-black text-gray-400 uppercase">Scan KTP</p>
                                 @if($pelamar->file_ktp)
                                     <a href="{{ asset('storage/' . $pelamar->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
@@ -293,8 +293,8 @@
                             Sertifikat Bahasa Inggris
                         </h3>
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jenis_tes_bahasa ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->jenis_tes_bahasa ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor Bahasa</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_tes_bahasa ? $pelamar->tanggal_tes_bahasa->format('d M Y') : '-' }}</p></div>
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>
@@ -349,19 +349,13 @@
                             ];
                             $hasHomebaseDocs = collect($homebaseDocs)->contains(fn($d) => $d['file']);
                         @endphp
-                        @if($hasHomebaseDocs)
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                             @foreach($homebaseDocs as $doc)
-                                @if($doc['file'])
-                                <a href="{{ asset('storage/' . $doc['file']) }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 rounded-lg transition-colors group">
-                                    <span class="text-xs font-bold text-gray-600 group-hover:text-blue-700 truncate">{{ $doc['label'] }}</span>
-                                </a>
-                                @endif
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
+                                @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                            </div>
                             @endforeach
                         </div>
-                        @else
-                            <p class="text-sm text-gray-400 italic">-</p>
-                        @endif
                     </div>
                     @endif
 

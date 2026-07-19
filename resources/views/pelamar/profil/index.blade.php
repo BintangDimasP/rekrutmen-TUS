@@ -614,12 +614,12 @@
                         </div>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah" accept=".pdf" class="profil-file-input">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                             @error('file_ijazah')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
                         <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip" accept=".pdf" class="profil-file-input">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                             @error('file_transkrip')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
                     </div>
@@ -696,11 +696,11 @@
                         </div>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_2" accept=".pdf" class="profil-file-input">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_2" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                         <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_2" accept=".pdf" class="profil-file-input">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_2" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                     </div>
 
@@ -776,11 +776,11 @@
                         </div>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_3" accept=".pdf" class="profil-file-input">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_3" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                         <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                             <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
-                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_3" accept=".pdf" class="profil-file-input">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
+                            <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_3" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                     </div>
                     
@@ -845,14 +845,14 @@
                         <div>
                             <label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Pas Foto Formal</label>
                             <div class="mt-1">
-                                <input type="file" name="file_pas_foto" accept=".jpg,.jpeg" class="profil-file-input">
+                                <input type="file" name="file_pas_foto" accept=".jpg,.jpeg,.png" class="profil-file-input">
                                 @if($pelamar->file_pas_foto)<a href="{{ asset('storage/'.$pelamar->file_pas_foto) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif
                             </div>
                         </div>
                         <div>
                             <label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Scan KTP</label>
                             <div class="mt-1">
-                                <input type="file" name="file_ktp" accept=".jpg,.jpeg" class="profil-file-input">
+                                <input type="file" name="file_ktp" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">
                                 @if($pelamar->file_ktp)<a href="{{ asset('storage/'.$pelamar->file_ktp) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif
                             </div>
                         </div>
@@ -886,7 +886,7 @@
                         <div>
                             <label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Profesi</label>
                             <div class="mt-1">
-                                <input type="file" name="file_sertifikat" accept=".pdf" class="profil-file-input">
+                                <input type="file" name="file_sertifikat" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">
                                 @if($pelamar->file_sertifikat)<a href="{{ asset('storage/'.$pelamar->file_sertifikat) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif
                             </div>
                         </div>
@@ -946,7 +946,7 @@
                             <input type="date" name="tanggal_tes_bahasa" value="{{ old('tanggal_tes_bahasa',$pelamar->tanggal_tes_bahasa?->format('Y-m-d')) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
                         <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Bahasa</label>
-                            <div class="mt-1"><input type="file" name="file_sertifikat_bahasa" accept=".pdf" class="profil-file-input">@if($pelamar->file_sertifikat_bahasa)<a href="{{ asset('storage/'.$pelamar->file_sertifikat_bahasa) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                            <div class="mt-1"><input type="file" name="file_sertifikat_bahasa" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_sertifikat_bahasa)<a href="{{ asset('storage/'.$pelamar->file_sertifikat_bahasa) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                         </div>
                     </div>
                 </div>
@@ -1044,28 +1044,28 @@
                 {{-- Edit Mode --}}
                 <div x-show="isEditing" x-cloak class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">SK Jabatan Akademik (JAD)</label>
-                        <div class="mt-1"><input type="file" name="file_jad" accept=".pdf" class="profil-file-input">@if($pelamar->file_jad)<a href="{{ asset('storage/'.$pelamar->file_jad) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_jad" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_jad)<a href="{{ asset('storage/'.$pelamar->file_jad) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">SK Angka Kredit (PAK)</label>
-                        <div class="mt-1"><input type="file" name="file_pak" accept=".pdf" class="profil-file-input">@if($pelamar->file_pak)<a href="{{ asset('storage/'.$pelamar->file_pak) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_pak" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_pak)<a href="{{ asset('storage/'.$pelamar->file_pak) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Kartu Dosen</label>
-                        <div class="mt-1"><input type="file" name="file_kartu_dosen" accept=".pdf" class="profil-file-input">@if($pelamar->file_kartu_dosen)<a href="{{ asset('storage/'.$pelamar->file_kartu_dosen) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_kartu_dosen" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_kartu_dosen)<a href="{{ asset('storage/'.$pelamar->file_kartu_dosen) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Bukti Registrasi Dosen</label>
-                        <div class="mt-1"><input type="file" name="file_registrasi_dosen" accept=".pdf" class="profil-file-input">@if($pelamar->file_registrasi_dosen)<a href="{{ asset('storage/'.$pelamar->file_registrasi_dosen) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_registrasi_dosen" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_registrasi_dosen)<a href="{{ asset('storage/'.$pelamar->file_registrasi_dosen) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">SK Inpassing</label>
-                        <div class="mt-1"><input type="file" name="file_inpassing" accept=".pdf" class="profil-file-input">@if($pelamar->file_inpassing)<a href="{{ asset('storage/'.$pelamar->file_inpassing) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_inpassing" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_inpassing)<a href="{{ asset('storage/'.$pelamar->file_inpassing) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Pendidik (Serdik)</label>
-                        <div class="mt-1"><input type="file" name="file_serdik" accept=".pdf" class="profil-file-input">@if($pelamar->file_serdik)<a href="{{ asset('storage/'.$pelamar->file_serdik) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_serdik" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_serdik)<a href="{{ asset('storage/'.$pelamar->file_serdik) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">SKPP Serdos</label>
-                        <div class="mt-1"><input type="file" name="file_skpp_serdos" accept=".pdf" class="profil-file-input">@if($pelamar->file_skpp_serdos)<a href="{{ asset('storage/'.$pelamar->file_skpp_serdos) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_skpp_serdos" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_skpp_serdos)<a href="{{ asset('storage/'.$pelamar->file_skpp_serdos) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                     <div><label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Surat Pernyataan Lolos Butuh</label>
-                        <div class="mt-1"><input type="file" name="file_pernyataan_lolos_butuh" accept=".pdf" class="profil-file-input">@if($pelamar->file_pernyataan_lolos_butuh)<a href="{{ asset('storage/'.$pelamar->file_pernyataan_lolos_butuh) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
+                        <div class="mt-1"><input type="file" name="file_pernyataan_lolos_butuh" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_pernyataan_lolos_butuh)<a href="{{ asset('storage/'.$pelamar->file_pernyataan_lolos_butuh) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif</div>
                     </div>
                 </div>
             </div>

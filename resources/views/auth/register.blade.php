@@ -659,8 +659,8 @@
                         <label for="ijazah" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / JPG</p>
-                                <p class="text-xs text-gray-400">Maks. 5MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / Gambar</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
                         <input type="file" id="ijazah" name="ijazah" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'ijazah-name')">
@@ -676,8 +676,8 @@
                         <label for="transkrip" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / JPG</p>
-                                <p class="text-xs text-gray-400">Maks. 5MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / Gambar</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
                         <input type="file" id="transkrip" name="transkrip" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'transkrip-name')">
@@ -727,7 +727,7 @@
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                             <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload CV (PDF)</p>
-                                <p class="text-xs text-gray-400">Maks. 5MB</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
                         <input type="file" id="cv" name="cv" class="hidden" accept=".pdf" onchange="showFileName(this,'cv-name')">
@@ -743,7 +743,7 @@
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <div class="file-label">
                                 <p class="text-sm font-semibold text-gray-700">Upload Foto (JPG/PNG)</p>
-                                <p class="text-xs text-gray-400">Latar putih, maks. 2MB</p>
+                                <p class="text-xs text-gray-400">Latar putih, maks. 10MB</p>
                             </div>
                         </label>
                         <input type="file" id="pas_foto" name="pas_foto" class="hidden" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'foto-name')">
@@ -758,8 +758,8 @@
                         <label for="ktp" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload Scan KTP (PDF / JPG)</p>
-                                <p class="text-xs text-gray-400">Maks. 2MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Upload Scan KTP (PDF / Gambar)</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
                         <input type="file" id="ktp" name="ktp" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'ktp-name')">
@@ -809,11 +809,11 @@
                         <label for="sertifikat_kompetensi" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload PDF</p>
-                                <p class="text-xs text-gray-400">Maks. 5MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
-                        <input type="file" id="sertifikat_kompetensi" name="sertifikat_kompetensi" class="hidden" accept=".pdf" onchange="showFileName(this,'sertif-name')">
+                        <input type="file" id="sertifikat_kompetensi" name="sertifikat_kompetensi" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'sertif-name')">
                         <p class="text-xs text-red-600 min-h-[16px]" id="sertif-name"></p>
                     </div>
 
@@ -879,11 +879,11 @@
                         <label for="sertifikat_bahasa" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload PDF</p>
-                                <p class="text-xs text-gray-400">Maks. 5MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
-                        <input type="file" id="sertifikat_bahasa" name="sertifikat_bahasa" class="hidden" accept=".pdf" onchange="showFileName(this,'bahasa-name')">
+                        <input type="file" id="sertifikat_bahasa" name="sertifikat_bahasa" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'bahasa-name')">
                         <p class="text-xs text-red-600 min-h-[16px]" id="bahasa-name"></p>
                     </div>
                 </div>
@@ -1004,11 +1004,11 @@
                         <label for="kartu_dosen" class="file-upload-area">
                             <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload Foto (JPG / PNG)</p>
-                                <p class="text-xs text-gray-400">Maks. 2MB</p>
+                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
+                                <p class="text-xs text-gray-400">Maks. 10MB</p>
                             </div>
                         </label>
-                        <input type="file" id="kartu_dosen" name="kartu_dosen" class="hidden" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'kartu-name')">
+                        <input type="file" id="kartu_dosen" name="kartu_dosen" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'kartu-name')">
                         <p class="text-xs text-red-600 min-h-[16px]" id="kartu-name"></p>
                     </div>
                 </div>

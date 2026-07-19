@@ -190,6 +190,14 @@ class LamaranController extends Controller
      */
     public function destroyWithdrawn(Lowongan $lowongan)
     {
+        $pelamarIds = $lowongan->lamarans()->where('status', 'mengundurkan_diri')->pluck('pelamar_id');
+
+        if ($pelamarIds->isNotEmpty()) {
+            \App\Models\JadwalSeleksi::where('lowongan_id', $lowongan->id)
+                ->whereIn('pelamar_id', $pelamarIds)
+                ->delete();
+        }
+
         $deleted = $lowongan->lamarans()
             ->where('status', 'mengundurkan_diri')
             ->delete();
@@ -203,6 +211,12 @@ class LamaranController extends Controller
     public function destroy(Lamaran $lamaran)
     {
         $lowongan_id = $lamaran->lowongan_id;
+        $pelamar_id = $lamaran->pelamar_id;
+
+        \App\Models\JadwalSeleksi::where('lowongan_id', $lowongan_id)
+            ->where('pelamar_id', $pelamar_id)
+            ->delete();
+
         $lamaran->delete();
 
         $adminNama = auth()->user()->name ?? 'Admin';

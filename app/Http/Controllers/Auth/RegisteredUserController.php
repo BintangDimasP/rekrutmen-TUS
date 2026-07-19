@@ -73,19 +73,19 @@ class RegisteredUserController extends Controller
             'akreditas' => ['nullable', 'in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi'],
             'no_ijazah' => ['nullable', 'string', 'max:255'],
             'ipk' => ['nullable', 'numeric', 'min:0', 'max:4'],
-            'ijazah' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
-            'transkrip' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'ijazah' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
+            'transkrip' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
 
             // Step 4
-            'cv' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
-            'pas_foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:2048'],
-            'ktp' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            'cv' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
+            'pas_foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
+            'ktp' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
             'kategori_sertifikat' => ['nullable', 'in:kompetensi,keahlian_khusus'],
-            'sertifikat_kompetensi' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'sertifikat_kompetensi' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
             'jenis_tes_bahasa' => ['nullable', 'in:PBT,TOEFL_ITP,EPrT,CBT,IBT,IELTS,AcEPT'],
             'skor_bahasa' => ['nullable', 'numeric'],
             'tanggal_tes_bahasa' => ['nullable', 'date'],
-            'sertifikat_bahasa' => ['nullable', 'file', 'mimes:pdf', 'max:5120'],
+            'sertifikat_bahasa' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
 
             // Step 5
             'nidn' => ['nullable', 'string', 'digits_between:1,10'],
@@ -93,7 +93,7 @@ class RegisteredUserController extends Controller
             'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan'],
             'minat_riset' => ['nullable', 'string'],
             'h_index' => ['nullable', 'integer', 'min:0'],
-            'kartu_dosen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
+            'kartu_dosen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
         ]);
 
         $user = User::create([

@@ -55,8 +55,8 @@ class ProfilController extends Controller
             'akreditas' => 'nullable|in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi',
             'no_ijazah' => 'nullable|string|max:255',
             'ipk' => 'nullable|numeric|min:0|max:4',
-            'file_ijazah' => 'nullable|file|mimes:pdf|max:5120',
-            'file_transkrip' => 'nullable|file|mimes:pdf|max:5120',
+            'file_ijazah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_transkrip' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
 
             // Pendidikan Level 2
             'jenjang_2' => 'nullable|in:S1,S2,S3',
@@ -65,8 +65,8 @@ class ProfilController extends Controller
             'akreditas_2' => 'nullable|in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi',
             'no_ijazah_2' => 'nullable|string|max:255',
             'ipk_2' => 'nullable|numeric|min:0|max:4',
-            'file_ijazah_2' => 'nullable|file|mimes:pdf|max:5120',
-            'file_transkrip_2' => 'nullable|file|mimes:pdf|max:5120',
+            'file_ijazah_2' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_transkrip_2' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
 
             // Pendidikan Level 3
             'jenjang_3' => 'nullable|in:S1,S2,S3',
@@ -75,19 +75,19 @@ class ProfilController extends Controller
             'akreditas_3' => 'nullable|in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi',
             'no_ijazah_3' => 'nullable|string|max:255',
             'ipk_3' => 'nullable|numeric|min:0|max:4',
-            'file_ijazah_3' => 'nullable|file|mimes:pdf|max:5120',
-            'file_transkrip_3' => 'nullable|file|mimes:pdf|max:5120',
+            'file_ijazah_3' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_transkrip_3' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
 
             // Dokumen Pendukung
-            'file_cv' => 'nullable|file|mimes:pdf|max:5120',
-            'file_pas_foto' => 'nullable|file|mimes:jpg,jpeg|max:2048',
-            'file_ktp' => 'nullable|file|mimes:jpg,jpeg|max:2048',
+            'file_cv' => 'nullable|file|mimes:pdf|max:10240',
+            'file_pas_foto' => 'nullable|file|mimes:jpg,jpeg,png|max:10240',
+            'file_ktp' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'kategori_sertifikat' => 'nullable|in:kompetensi,keahlian_khusus',
-            'file_sertifikat' => 'nullable|file|mimes:pdf|max:5120',
+            'file_sertifikat' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'jenis_tes_bahasa' => 'nullable|in:PBT,TOEFL_ITP,EPrT,CBT,IBT,IELTS,AcEPT',
             'skor_bahasa' => 'nullable|numeric',
             'tanggal_tes_bahasa' => 'nullable|date',
-            'file_sertifikat_bahasa' => 'nullable|file|mimes:pdf|max:5120',
+            'file_sertifikat_bahasa' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
 
             // Riwayat Akademik Dasar
             'nidn' => 'nullable|string|max:10',
@@ -95,16 +95,16 @@ class ProfilController extends Controller
             'jabatan_akademik' => 'nullable|in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan',
             'minat_riset' => 'nullable|string',
             'h_index' => 'nullable|integer|min:0',
-            'file_kartu_dosen' => 'nullable|file|mimes:pdf|max:5120',
+            'file_kartu_dosen' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
 
             // Dokumen Homebase Tambahan
-            'file_jad' => 'nullable|file|mimes:pdf|max:5120',
-            'file_pak' => 'nullable|file|mimes:pdf|max:5120',
-            'file_registrasi_dosen' => 'nullable|file|mimes:pdf|max:2048',
-            'file_inpassing' => 'nullable|file|mimes:pdf|max:5120',
-            'file_serdik' => 'nullable|file|mimes:pdf|max:5120',
-            'file_skpp_serdos' => 'nullable|file|mimes:pdf|max:5120',
-            'file_pernyataan_lolos_butuh' => 'nullable|file|mimes:pdf|max:2048',
+            'file_jad' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_pak' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_registrasi_dosen' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_inpassing' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_serdik' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_skpp_serdos' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
+            'file_pernyataan_lolos_butuh' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
 
         $data = $request->except([

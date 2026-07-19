@@ -354,7 +354,7 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                                     <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[0.65rem] font-bold rounded">.xlsx</span>
                                     <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[0.65rem] font-bold rounded">.xls</span>
                                     <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[0.65rem] font-bold rounded">.csv</span>
-                                    <span class="text-[0.65rem] text-gray-400">Max 5MB</span>
+                                    <span class="text-[0.65rem] text-gray-400">Max 10MB</span>
                                 </div>
                             </div>
 
@@ -386,7 +386,6 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                                 class="px-8 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2">
                             <template x-if="!isLoading">
                                 <span class="flex items-center gap-2">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
                                     Import Data
                                 </span>
                             </template>

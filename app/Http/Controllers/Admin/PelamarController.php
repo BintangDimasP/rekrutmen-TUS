@@ -67,7 +67,7 @@ class PelamarController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120',
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
         ], [
             'file.required' => 'File harus dipilih.',
             'file.mimes' => 'File harus berformat Excel (.xlsx, .xls) atau CSV.',

@@ -488,87 +488,119 @@
             class="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none"
             style="display: none;">
 
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden pointer-events-auto">
+            <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden pointer-events-auto" x-data="{ fileName: '', fileSize: '', isLoading: false, dragOver: false }">
 
                 {{-- Header --}}
-                <div class="flex items-center justify-between px-6 py-4" style="background: #8b1515;">
-                    <div>
-                        <h2 class="text-base font-semibold text-white">Import Data Dosen</h2>
-                       
-                    </div>
-                    <button type="button" @click="openImportModal = false"
-                        class="w-7 h-7 flex items-center justify-center rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-all"
-                        style="border: 1.5px solid rgba(255,255,255,0.3);">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <div class="relative bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-6 py-5">
+                    <div class="absolute inset-0 opacity-10">
+                        <svg class="w-full h-full" viewBox="0 0 400 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="350" cy="10" r="60" fill="white" opacity="0.1"/>
+                            <circle cx="50" cy="70" r="40" fill="white" opacity="0.05"/>
                         </svg>
-                    </button>
+                    </div>
+                    <div class="relative flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div>
+                                <h2 id="modal-title" class="text-lg font-bold text-white">Import Data Dosen</h2>
+                            </div>
+                        </div>
+                        <button @click="openImportModal = false" class="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Body --}}
-                <form method="POST" action="{{ route('admin.dosen.import', $prodi) }}" enctype="multipart/form-data"
-                      x-data="{ fileName: '', fileSize: '' }"
-                >
-                    @csrf
-                    <div class="p-5">
+                <div class="p-6">
+                    {{-- Download Template Link --}}
+                    <p class="mb-5 text-sm text-gray-500">
+                        Belum punya template? <a href="{{ asset('templates/dosen_template.xlsx') }}" download class="text-[#8b1515] font-semibold hover:underline">Download template di sini</a>
+                    </p>
+
+                    <form action="{{ route('admin.dosen.import', $prodi) }}" method="POST" enctype="multipart/form-data" @submit="isLoading = true">
+                        @csrf
                         
-
-                        {{-- Download Template Link --}}
-                        <p class="mb-4 text-sm text-gray-500">
-                            Belum punya template? <a href="{{ asset('templates/dosen_template.xlsx') }}" download class="text-[#8b1515] font-semibold hover:underline">Download template di sini</a>
-                        </p>
-
-                        <label class="flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-7 cursor-pointer transition-colors"
-                               :class="fileName ? 'border-[#8b1515]/40 bg-[#8b1515]/5' : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-[#8b1515]/30'">
-                            {{-- Icon when no file selected --}}
-                            <template x-if="!fileName">
-                                <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m.75 12l3 3m0 0l3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                                </svg>
-                            </template>
-                            {{-- Icon when file is selected --}}
-                            <template x-if="fileName">
-                                <svg class="w-8 h-8 text-[#8b1515]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </template>
-                            <template x-if="!fileName">
-                                <span class="text-sm font-medium text-gray-500">Klik untuk pilih file</span>
-                            </template>
-                            <template x-if="fileName">
-                                <div class="text-center">
-                                    <span class="text-sm font-semibold text-gray-700" x-text="fileName"></span>
-                                    <p class="text-xs text-gray-400 mt-0.5" x-text="fileSize"></p>
+                        {{-- Drag & Drop Upload Area --}}
+                        <div class="relative"
+                             @dragover.prevent="dragOver = true"
+                             @dragleave.prevent="dragOver = false"
+                             @drop.prevent="dragOver = false; $refs.fileInput.files = $event.dataTransfer.files; fileName = $event.dataTransfer.files[0]?.name || ''; fileSize = $event.dataTransfer.files[0] ? (($event.dataTransfer.files[0].size / 1024 / 1024).toFixed(2) + ' MB') : ''">
+                            <input type="file" 
+                                   name="file" 
+                                   accept=".xlsx,.xls,.csv"
+                                   @change="fileName = $event.target.files[0]?.name || ''; fileSize = $event.target.files[0] ? (($event.target.files[0].size / 1024 / 1024).toFixed(2) + ' MB') : ''"
+                                   x-ref="fileInput"
+                                   class="hidden"
+                                   required>
+                            
+                            <div @click="$refs.fileInput.click()"
+                                 :class="dragOver ? 'border-[#8b1515] bg-red-50/50 scale-[1.02]' : (fileName ? 'border-[#8b1515]/40 bg-red-50/30' : 'border-gray-200 hover:border-[#8b1515]/60 hover:bg-gray-50')"
+                                 class="w-full p-8 border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer group">
+                                
+                                {{-- Empty state --}}
+                                <div x-show="!fileName" class="flex flex-col items-center gap-3">
+                                    <div class="w-14 h-14 bg-gray-100 group-hover:bg-[#8b1515]/10 rounded-2xl flex items-center justify-center transition-colors">
+                                        <svg class="w-7 h-7 text-gray-400 group-hover:text-[#8b1515] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                                        </svg>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-sm font-semibold text-gray-700">Drag & drop file di sini</p>
+                                        <p class="text-xs text-gray-400 mt-1">atau <span class="text-[#8b1515] font-semibold">klik untuk memilih file</span></p>
+                                    </div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[0.65rem] font-bold rounded">.xlsx</span>
+                                        <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[0.65rem] font-bold rounded">.xls</span>
+                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-[0.65rem] font-bold rounded">.csv</span>
+                                        <span class="text-[0.65rem] text-gray-400">Max 10MB</span>
+                                    </div>
                                 </div>
-                            </template>
-                            <template x-if="!fileName">
-                                <span class="text-xs text-gray-400">.xlsx &nbsp;/&nbsp; .xls &nbsp;/&nbsp; .csv</span>
-                            </template>
-                            <template x-if="fileName">
-                                <span class="text-xs text-[#8b1515]/60 mt-1">Klik untuk ganti file</span>
-                            </template>
-                            <input type="file" name="file" accept=".xlsx,.xls,.csv" required class="hidden"
-                                   @change="if($event.target.files.length) { 
-                                       fileName = $event.target.files[0].name; 
-                                       let size = $event.target.files[0].size;
-                                       fileSize = size < 1024 ? size + ' B' : size < 1048576 ? (size/1024).toFixed(1) + ' KB' : (size/1048576).toFixed(1) + ' MB';
-                                   }" />
-                        </label>
+
+                                {{-- File selected state --}}
+                                <div x-show="fileName" class="flex items-center gap-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-semibold text-gray-800 truncate" x-text="fileName"></p>
+                                        <p class="text-xs text-gray-500 mt-0.5" x-text="fileSize"></p>
+                                    </div>
+                                    <button type="button" @click.stop="fileName = ''; fileSize = ''; $refs.fileInput.value = ''" class="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         @if($errors->has('file'))
                             <p class="text-xs text-red-500 mt-2">{!! $errors->first('file') !!}</p>
                         @endif
-                    </div>
 
-                    {{-- Footer --}}
-                    <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-center">
-                        <button type="submit"
-                            class="px-10 py-2.5 text-sm font-semibold text-white rounded-xl transition-all hover:opacity-90 active:scale-95 shadow-md"
-                            style="background: #8b1515;">
-                            Import Data
-                        </button>
-                    </div>
-                </form>
-
+                        {{-- Action Buttons --}}
+                        <div class="flex justify-center mt-6 pt-5 border-t border-gray-100">
+                            <button type="submit" 
+                                    :disabled="!fileName || isLoading"
+                                    :class="(!fileName || isLoading) ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-[#8b1515] hover:bg-[#6e1010] text-white shadow-lg shadow-red-500/20 hover:shadow-red-500/30'"
+                                    class="px-8 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2">
+                                <template x-if="!isLoading">
+                                    <span class="flex items-center gap-2">
+                                        Import Data
+                                    </span>
+                                </template>
+                                <template x-if="isLoading">
+                                    <span class="flex items-center gap-2">
+                                        <svg class="w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Mengimpor...
+                                    </span>
+                                </template>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 

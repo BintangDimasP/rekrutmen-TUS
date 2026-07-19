@@ -192,7 +192,7 @@ return [
         'display_type'             => 'tipe tampilan',
         'district'                 => 'daerah',
         'duration'                 => 'durasi',
-        'email'                    => 'surel',
+        'email'                    => 'email',
         'excerpt'                  => 'kutipan',
         'filter'                   => 'filter',
         'finished_at'              => 'selesai pada',

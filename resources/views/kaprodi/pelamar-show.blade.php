@@ -180,8 +180,8 @@
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Dokumen Pendukung</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>@if($data->file_cv)<a href="{{ asset('storage/' . $data->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
-                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto</p>@if($data->file_pas_foto)<a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
-                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">KTP</p>@if($data->file_ktp)<a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto Formal</p>@if($data->file_pas_foto)<a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Scan KTP</p>@if($data->file_ktp)<a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $data->kategori_sertifikat ?: 'Sertifikat' }}</p>@if($data->file_sertifikat)<a href="{{ asset('storage/' . $data->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                 </div>
             </div>
@@ -189,8 +189,8 @@
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Sertifikat Bahasa Inggris</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
-                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_tes_bahasa ?: '-' }}</p></div>
-                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->skor_bahasa ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenis Tes Bahasa</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jenis_tes_bahasa ?: '-' }}</p></div>
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor Bahasa</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->skor_bahasa ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->tanggal_tes_bahasa ? \Carbon\Carbon::parse($data->tanggal_tes_bahasa)->format('d M Y') : '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>@if($data->file_sertifikat_bahasa)<a href="{{ asset('storage/' . $data->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif</div>
                 </div>
@@ -201,10 +201,19 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-x-4 gap-y-4">
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">NIDN</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->nidn ?: '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Homebase</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->homebase ?: '-' }}</p></div>
-                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jabatan Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jabatan_akademik ? ucwords(str_replace('_', ' ', $data->jabatan_akademik)) : '-' }}</p></div>
+                    @php
+                        $jfaLabels = [
+                            'guru_besar' => 'Guru Besar (GB)',
+                            'lektor_kepala' => 'Lektor Kepala (LK)',
+                            'lektor' => 'Lektor (L)',
+                            'asisten_ahli' => 'Asisten Ahli (AA)',
+                            'non_jabatan' => 'Non Jabatan (NJAD)',
+                        ];
+                    @endphp
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jabatan Fungsional Akademik</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->jabatan_akademik ? ($jfaLabels[$data->jabatan_akademik] ?? ucwords(str_replace('_', ' ', $data->jabatan_akademik))) : '-' }}</p></div>
                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">H-Index</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->h_index ?: '-' }}</p></div>
                 </div>
-                <div class="mt-3"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Minat Riset</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->minat_riset ?: '-' }}</p></div>
+                <div class="mt-3"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Minat Riset & Keahlian</p><p class="text-sm text-gray-700 mt-0.5 leading-relaxed">{{ $data->minat_riset ?: '-' }}</p></div>
             </div>
 
             @if($data->nidn || $data->homebase)
@@ -221,20 +230,16 @@
                 ];
                 $hasHomebaseDocs = collect($homebaseDocs)->contains(fn($d) => $d['file']);
             @endphp
-            @if($hasHomebaseDocs)
             <div>
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Dokumen Pelamar Ber-Homebase</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                     @foreach($homebaseDocs as $doc)
-                        @if($doc['file'])
-                        <a href="{{ asset('storage/' . $doc['file']) }}" target="_blank" class="flex items-center gap-2 px-3 py-2.5 bg-gray-50 hover:bg-blue-50 border border-gray-100 hover:border-blue-200 rounded-lg transition-colors group">
-                            <span class="text-xs font-bold text-gray-600 group-hover:text-blue-700 truncate">{{ $doc['label'] }}</span>
-                        </a>
-                        @endif
+                    <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
+                        @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                    </div>
                     @endforeach
                 </div>
             </div>
-            @endif
             @endif
 
             <div>

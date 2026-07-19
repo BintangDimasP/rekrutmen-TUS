@@ -40,20 +40,23 @@
 
         <div class="bg-white rounded-3xl border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse table-fixed" style="min-width:560px">
+                <table class="w-full text-left border-collapse table-fixed" style="min-width:560px;">
                     <thead>
                         <tr class="bg-[#8b1515]">
-                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[40%]">Posisi & Prodi</th>
-                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[28%]">Tanggal</th>
-                            <th class="py-4 px-4 text-[0.65rem] font-bold text-red-200 uppercase tracking-widest whitespace-nowrap w-[32%]">Status</th>
+                            <th class="py-4 px-4 text-xs font-bold text-white uppercase tracking-widest whitespace-nowrap w-[20%]">Program Studi</th>
+                            <th class="py-4 px-4 text-xs font-bold text-white uppercase tracking-widest whitespace-nowrap w-[30%]">Nama Posisi</th>
+                            <th class="py-4 px-4 text-xs font-bold text-white uppercase tracking-widest whitespace-nowrap w-[20%]">Tanggal</th>
+                            <th class="py-4 px-4 text-xs font-bold text-white uppercase tracking-widest whitespace-nowrap w-[20%]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($recentLamarans as $lamaran)
                         <tr class="hover:bg-gray-50/50 transition-colors">
                             <td class="py-5 px-4">
-                                <div class="text-sm font-bold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</div>
-                                <div class="text-xs text-gray-500 mt-1">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
+                                <div class="text-sm font-bold text-gray-800">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
+                            </td>
+                            <td class="py-5 px-4">
+                                <div class="text-sm font-semibold text-gray-700">{{ $lamaran->lowongan->nama_posisi }}</div>
                             </td>
                             <td class="py-5 px-4">
                                 <div class="text-sm font-semibold text-gray-700 whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>

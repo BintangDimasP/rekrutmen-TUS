@@ -225,7 +225,7 @@ class DosenController extends Controller
     public function import(Request $request, Prodi $prodi)
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:2048'],
+            'file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:10240'],
         ]);
 
         try {
