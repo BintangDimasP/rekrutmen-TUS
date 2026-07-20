@@ -96,6 +96,20 @@ class Notifikasi extends Model
     }
 
     /**
+     * Kirim notifikasi aksi kaprodi (rekomendasi/tidak rekomendasi) - tanpa WhatsApp
+     */
+    public static function kirimKaprodi(int $userId, string $judul, string $pesan): void
+    {
+        static::create([
+            'user_id' => $userId,
+            'judul'   => $judul,
+            'pesan'   => $pesan,
+            'tipe'    => 'kaprodi',
+            'dibaca'  => false,
+        ]);
+    }
+
+    /**
      * Kirim pesan WhatsApp via Wappin template.
      */
     private static function kirimWhatsApp(int $userId, string $templateName, array $params, string $url = '-'): void

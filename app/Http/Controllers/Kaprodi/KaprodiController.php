@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Kaprodi;
 
 use App\Http\Controllers\Controller;
 use App\Models\Lamaran;
+use App\Models\Notifikasi;
 use App\Models\Pelamar;
 use App\Models\Lowongan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -229,6 +231,30 @@ class KaprodiController extends Controller
         }
         
         $lamaran->update(['is_direkomendasikan_kaprodi' => $nilai]);
+
+        // Kirim notifikasi ke semua admin
+        $lamaran->load(['pelamar', 'lowongan']);
+        $kaprodi = Auth::user()->dosen->nama ?? Auth::user()->name ?? 'Kaprodi';
+        $namaP   = $lamaran->pelamar->nama ?? '-';
+        $posisi  = $lamaran->lowongan->nama_posisi ?? '-';
+
+        if ($nilai === true) {
+            $judul = 'Rekomendasi Kaprodi';
+            $pesan = "Kaprodi {$kaprodi} merekomendasikan pelamar {$namaP} untuk lowongan {$posisi}.";
+        } elseif ($nilai === false) {
+            $judul = 'Tidak Direkomendasikan';
+            $pesan = "Kaprodi {$kaprodi} tidak merekomendasikan pelamar {$namaP} untuk lowongan {$posisi}.";
+        } else {
+            // null = reset rekomendasi, tidak perlu notif
+            $judul = null;
+            $pesan = null;
+        }
+
+        if ($judul) {
+            User::where('role', 'admin')->each(fn($u) =>
+                Notifikasi::kirimKaprodi($u->id, $judul, $pesan)
+            );
+        }
 
         return response()->json([
             'success' => true,

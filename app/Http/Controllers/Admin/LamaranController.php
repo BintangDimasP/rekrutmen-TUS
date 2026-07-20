@@ -30,12 +30,6 @@ class LamaranController extends Controller
     {
         $filename = 'Lamaran_' . str_replace(' ', '_', $lowongan->nama_posisi) . '_' . now()->format('Ymd') . '.xlsx';
 
-        $adminNama = auth()->user()->name ?? 'Admin';
-        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $waktu) {
-            \App\Models\Notifikasi::kirimSistem($u->id, 'Export Data Pelamar', "Admin {$adminNama} mengexport data pelamar lowongan {$lowongan->nama_posisi} pada {$waktu}.");
-        });
-
         return Excel::download(new LamaranExport($lowongan), $filename);
     }
 
@@ -45,12 +39,6 @@ class LamaranController extends Controller
     public function exportNilai(Lowongan $lowongan)
     {
         $filename = 'Nilai_' . str_replace(' ', '_', $lowongan->nama_posisi) . '_' . now()->format('Ymd') . '.xlsx';
-
-        $adminNama = auth()->user()->name ?? 'Admin';
-        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $waktu) {
-            \App\Models\Notifikasi::kirimSistem($u->id, 'Export Rekap Nilai', "Admin {$adminNama} mengexport rekap nilai lowongan {$lowongan->nama_posisi} pada {$waktu}.");
-        });
 
         return Excel::download(new LamaranNilaiExport($lowongan), $filename);
     }
@@ -84,14 +72,6 @@ class LamaranController extends Controller
 
         $wawancara = $jadwals->where('tipe_seleksi', 'wawancara')->values();
         $micro     = $jadwals->where('tipe_seleksi', 'micro_teaching')->values();
-
-        $adminNama = auth()->user()->name ?? 'Admin';
-        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-        $namaP = $lamaran->pelamar->nama ?? '-';
-        $posisiLog = $lamaran->lowongan->nama_posisi ?? '-';
-        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $namaP, $posisiLog, $waktu) {
-            \App\Models\Notifikasi::kirimSistem($u->id, 'Cetak Lamaran', "Admin {$adminNama} mencetak berkas lamaran {$namaP} untuk lowongan {$posisiLog} pada {$waktu}.");
-        });
 
         return view('admin.lamaran.cetak', compact('lamaran', 'wawancara', 'micro'));
     }
@@ -173,13 +153,6 @@ class LamaranController extends Controller
                 }
             }
 
-            // Admin sistem log
-            $adminNama = auth()->user()->name ?? 'Admin';
-            $namaP = $lamaran->pelamar->nama ?? '-';
-            $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-            \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $namaP, $posisi, $labelBaru, $waktu) {
-                \App\Models\Notifikasi::kirimSistem($u->id, 'Status Lamaran Diubah', "Admin {$adminNama} mengubah status lamaran {$namaP} untuk lowongan {$posisi} menjadi {$labelBaru} pada {$waktu}.");
-            });
         }
 
         return back()->with('success', 'Data lamaran berhasil diperbarui.');
@@ -218,12 +191,6 @@ class LamaranController extends Controller
             ->delete();
 
         $lamaran->delete();
-
-        $adminNama = auth()->user()->name ?? 'Admin';
-        $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-        \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $waktu) {
-            \App\Models\Notifikasi::kirimSistem($u->id, 'Lamaran Dihapus', "Admin {$adminNama} menghapus data lamaran pada {$waktu}.");
-        });
 
         return redirect()->route('admin.lamaran.index', $lowongan_id)->with('success', 'Data lamaran berhasil dihapus.');
     }

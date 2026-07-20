@@ -58,7 +58,9 @@
           notifLoading: false,
           get filteredNotifs() {
               const role = '{{ auth()->user()->role }}';
-              const allowed = role === 'admin' ? ['sistem', 'pelamar'] : (role === 'kaprodi' ? ['pelamar'] : null);
+              const allowed = role === 'admin' ? ['kaprodi', 'pelamar'] 
+                            : (role === 'kaprodi' ? ['pelamar'] 
+                            : (role === 'penguji' ? ['jadwal'] : null));
               if (this.notifTab === 'all') {
                   return allowed ? this.notifList.filter(n => allowed.includes(n.tipe)) : this.notifList;
               }
@@ -66,27 +68,31 @@
           },
           countByTab(tab) {
               const role = '{{ auth()->user()->role }}';
-              const allowed = role === 'admin' ? ['sistem', 'pelamar'] : (role === 'kaprodi' ? ['pelamar'] : null);
+              const allowed = role === 'admin' ? ['kaprodi', 'pelamar'] 
+                            : (role === 'kaprodi' ? ['pelamar'] 
+                            : (role === 'penguji' ? ['jadwal'] : null));
               const base = allowed ? this.notifList.filter(n => allowed.includes(n.tipe)) : this.notifList;
               const items = tab === 'all' ? base : this.notifList.filter(n => n.tipe === tab);
               return items.filter(n => !n.dibaca).length;
           },
-          async fetchNotif() {
-              this.notifLoading = true;
+          async fetchNotif(silent = false) {
+              if (!silent) this.notifLoading = true;
               try {
                   const res = await fetch('{{ route('notifikasi.index') }}', { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
                   const data = await res.json();
                   this.notifList = data.notifikasis;
                   const roleCheck = '{{ auth()->user()->role }}';
                   if (roleCheck === 'admin') {
-                      this.belumDibaca = data.notifikasis.filter(n => (n.tipe === 'sistem' || n.tipe === 'pelamar') && !n.dibaca).length;
+                      this.belumDibaca = data.notifikasis.filter(n => (n.tipe === 'kaprodi' || n.tipe === 'pelamar') && !n.dibaca).length;
                   } else if (roleCheck === 'kaprodi') {
                       this.belumDibaca = data.notifikasis.filter(n => n.tipe === 'pelamar' && !n.dibaca).length;
+                  } else if (roleCheck === 'penguji') {
+                      this.belumDibaca = data.notifikasis.filter(n => n.tipe === 'jadwal' && !n.dibaca).length;
                   } else {
                       this.belumDibaca = data.belum_dibaca;
                   }
               } catch(e) {}
-              this.notifLoading = false;
+              if (!silent) this.notifLoading = false;
           },
           async toggleNotif() {
               this.notifOpen = !this.notifOpen;
@@ -116,7 +122,7 @@
               return 'info';
           }
       }"
-      x-init="fetchNotif()">
+      x-init="fetchNotif(); setInterval(() => fetchNotif(true), 15000);">
 @include('partials.loading-screen')<div class="flex h-screen overflow-hidden">
 
     @empty($hideSidebar)
@@ -371,18 +377,20 @@
                         </div>
 
                         {{-- Filter Tabs — segmented pill --}}
+                        @php
+                            $role = auth()->user()->role;
+                            if ($role === 'admin') {
+                                $tabs = [['key'=>'all','label'=>'Semua'],['key'=>'kaprodi','label'=>'Kaprodi'],['key'=>'pelamar','label'=>'Pelamar']];
+                            } elseif ($role === 'pelamar') {
+                                $tabs = [['key'=>'all','label'=>'Semua'],['key'=>'jadwal','label'=>'Jadwal'],['key'=>'status','label'=>'Status']];
+                            } else {
+                                $tabs = []; // Kaprodi dan Penguji tidak butuh tab filter karena masing-masing hanya 1 kondisi
+                            }
+                        @endphp
+                        
+                        @if(count($tabs) > 0)
                         <div class="px-4 py-3 border-b border-gray-100">
                             <div class="flex items-center bg-gray-100 rounded-lg p-0.5 gap-0.5">
-                                @php
-                                    $role = auth()->user()->role;
-                                    if ($role === 'admin') {
-                                        $tabs = [['key'=>'all','label'=>'Semua'],['key'=>'sistem','label'=>'Sistem'],['key'=>'pelamar','label'=>'Pelamar']];
-                                    } elseif ($role === 'kaprodi') {
-                                        $tabs = [['key'=>'all','label'=>'Semua'],['key'=>'pelamar','label'=>'Pelamar']];
-                                    } else {
-                                        $tabs = [['key'=>'all','label'=>'Semua'],['key'=>'jadwal','label'=>'Jadwal'],['key'=>'status','label'=>'Status']];
-                                    }
-                                @endphp
                                 @foreach($tabs as $tab)
                                 <button type="button" @click="notifTab = '{{ $tab['key'] }}'"
                                         class="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded-md text-[0.7rem] font-semibold transition-all duration-150 whitespace-nowrap"
@@ -396,6 +404,7 @@
                                 @endforeach
                             </div>
                         </div>
+                        @endif
 
                         {{-- List --}}
                         <div class="max-h-[340px] overflow-y-auto">
@@ -451,7 +460,7 @@
 
                                                 {{-- Type icon --}}
                                                 <div class="w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center mt-0.5"
-                                                     :class="notif.tipe === 'jadwal' ? 'bg-blue-100' : notif.tipe === 'status' ? 'bg-green-100' : notif.tipe === 'sistem' ? 'bg-gray-100' : notif.tipe === 'pelamar' ? 'bg-orange-100' : 'bg-gray-100'">
+                                                     :class="notif.tipe === 'jadwal' ? 'bg-blue-100' : notif.tipe === 'status' ? 'bg-green-100' : notif.tipe === 'kaprodi' ? 'bg-purple-100' : notif.tipe === 'pelamar' ? 'bg-orange-100' : 'bg-gray-100'">
                                                     <template x-if="notif.tipe === 'jadwal'">
                                                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -462,9 +471,9 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                         </svg>
                                                     </template>
-                                                    <template x-if="notif.tipe === 'sistem'">
-                                                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                                    <template x-if="notif.tipe === 'kaprodi'">
+                                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
                                                         </svg>
                                                     </template>
                                                     <template x-if="notif.tipe === 'pelamar'">
@@ -472,7 +481,7 @@
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                                         </svg>
                                                     </template>
-                                                    <template x-if="notif.tipe !== 'jadwal' && notif.tipe !== 'status' && notif.tipe !== 'sistem' && notif.tipe !== 'pelamar'">
+                                                    <template x-if="notif.tipe !== 'jadwal' && notif.tipe !== 'status' && notif.tipe !== 'kaprodi' && notif.tipe !== 'pelamar'">
                                                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                                         </svg>
