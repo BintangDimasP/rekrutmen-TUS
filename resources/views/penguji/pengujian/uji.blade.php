@@ -205,15 +205,38 @@
                         {{-- Rekomendasi Prodi Tujuan --}}
                         <div>
                             <label class="block text-sm font-bold text-gray-700 mb-2">Rekomendasi Prodi Tujuan <span class="text-red-500">*</span></label>
-                            <select name="prodi_tujuan" x-model="prodiTujuan"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                            <select name="prodi_tujuan" id="prodi_tujuan" x-model="prodiTujuan" class="hidden">
                                 <option value="">-- Pilih Prodi --</option>
                                 @foreach($prodis as $prodi)
-                                    <option value="{{ $prodi->nama }}" {{ old('prodi_tujuan') === $prodi->nama ? 'selected' : '' }}>
-                                        {{ $prodi->nama }}
-                                    </option>
+                                    <option value="{{ $prodi->nama }}">{{ $prodi->nama }}</option>
                                 @endforeach
                             </select>
+                            <div x-data="{
+                                    open: false,
+                                    opts: [
+                                        { v: '', l: '-- Pilih Prodi --' },
+                                        @foreach($prodis as $prodi){ v: '{{ addslashes($prodi->nama) }}', l: '{{ addslashes($prodi->nama) }}' },@endforeach
+                                    ],
+                                    get label() { return this.opts.find(o => o.v === prodiTujuan)?.l ?? '-- Pilih Prodi --'; }
+                                 }" @click.outside="open = false" class="relative">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-all focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]"
+                                    :class="prodiTujuan ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate"></span>
+                                    <svg class="w-4 h-4 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180 text-[#8b1515]' : 'text-gray-400'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <template x-for="opt in opts" :key="opt.v">
+                                            <button type="button" @click="prodiTujuan = opt.v; open = false;"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                                :class="prodiTujuan === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                                <span x-text="opt.l"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
                             @error('prodi_tujuan')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -227,15 +250,38 @@
                                 <span class="text-red-500">*</span>
                                 <span class="ml-2 text-xs font-normal text-gray-400">(Terdeteksi jenjang {{ $hasS3 ? 'S3' : 'S2' }})</span>
                             </label>
-                            <select name="status_rekrutmen" x-model="statusRekrutmen"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition bg-white appearance-none cursor-pointer">
+                            <select name="status_rekrutmen" id="status_rekrutmen" x-model="statusRekrutmen" class="hidden">
                                 <option value="">-- Pilih Status --</option>
                                 @foreach($statusRekrutmenOptions as $val => $label)
-                                    <option value="{{ $val }}" {{ old('status_rekrutmen', $penilaian->status_rekrutmen ?? '') === $val ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
+                                    <option value="{{ $val }}">{{ $label }}</option>
                                 @endforeach
                             </select>
+                            <div x-data="{
+                                    open: false,
+                                    opts: [
+                                        { v: '', l: '-- Pilih Status --' },
+                                        @foreach($statusRekrutmenOptions as $val => $label){ v: '{{ addslashes($val) }}', l: '{{ addslashes($label) }}' },@endforeach
+                                    ],
+                                    get label() { return this.opts.find(o => o.v === statusRekrutmen)?.l ?? '-- Pilih Status --'; }
+                                 }" @click.outside="open = false" class="relative">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm transition-all focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515]"
+                                    :class="statusRekrutmen ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate"></span>
+                                    <svg class="w-4 h-4 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180 text-[#8b1515]' : 'text-gray-400'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <template x-for="opt in opts" :key="opt.v">
+                                            <button type="button" @click="statusRekrutmen = opt.v; open = false;"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                                :class="statusRekrutmen === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                                <span x-text="opt.l"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
                             @error('status_rekrutmen')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror

@@ -51,7 +51,7 @@
                                 @if($activeLamaran)
                                     {{ $activeLamaran->lowongan?->nama_posisi ?? '–' }} – {{ \App\Models\Lamaran::STATUS_LABELS[$activeLamaran->status] ?? $activeLamaran->status }}
                                 @else
-                                    Pilih Lamaran
+                                    Data Diri Terkini (Pilih Lamaran)
                                 @endif
                             </span>
                             <svg class="w-3.5 h-3.5 text-white/60 flex-shrink-0 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -61,6 +61,11 @@
                         <div x-show="open" x-transition:enter="transition ease-out duration-150" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
                              style="background: rgba(100,10,10,0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.25); border-top: 1px solid rgba(255,255,255,0.1);"
                              class="absolute top-full left-0 right-0 rounded-b-xl overflow-hidden z-50" style="display:none;">
+                            <a href="{{ route('admin.pelamar.show', $pelamar) }}"
+                               class="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm transition-all {{ !$activeLamaran ? 'bg-white/20' : 'hover:bg-white/10' }}"
+                               style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <span class="truncate font-medium">Data Diri Terkini (Profil)</span>
+                            </a>
                             @foreach($pelamar->lamarans as $lmr)
                                 @php $isActive = $activeLamaran && $activeLamaran->id === $lmr->id; @endphp
                                 <a href="{{ route('admin.pelamar.show', [$pelamar, 'lamaran_id' => $lmr->id]) }}"

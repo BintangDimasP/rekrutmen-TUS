@@ -109,11 +109,13 @@ class JadwalSeleksiController extends Controller
         $lowonganId = (int) $request->lowongan_id;
         $schedule = $request->input('schedule', []);
 
+        $lowongan = Lowongan::find($lowonganId);
+
         $saved = 0;
         $savedPelamars = 0; // jumlah pelamar yang berhasil dijadwalkan
         $errors = [];
 
-        DB::transaction(function () use ($tanggal, $lowonganId, $schedule, &$saved, &$savedPelamars, &$errors) {
+        DB::transaction(function () use ($tanggal, $lowonganId, $lowongan, $schedule, &$saved, &$savedPelamars, &$errors) {
 
             foreach ($schedule as $pelamarIdRaw => $slotInfo) {
                 $pelamarId = (int) $pelamarIdRaw;
@@ -197,10 +199,27 @@ class JadwalSeleksiController extends Controller
 
                 if ($anySavedForPelamar) {
                     $savedPelamars++;
-                    Lamaran::where('pelamar_id', $pelamarId)
+                    
+                    $lamaranToUpdate = Lamaran::where('pelamar_id', $pelamarId)
                         ->where('lowongan_id', $lowonganId)
                         ->whereIn('status', ['menunggu', 'seleksi_tahap1'])
-                        ->update(['status' => 'seleksi_tahap2']);
+                        ->first();
+                        
+                    if ($lamaranToUpdate) {
+                        $lamaranToUpdate->update(['status' => 'seleksi_tahap2']);
+                        
+                        $pelamarUser = $pelamar->user;
+                        if ($pelamarUser) {
+                            $posisi = $lowongan->nama_posisi ?? 'Lowongan';
+                            $statusLabel = Lamaran::STATUS_LABELS['seleksi_tahap2'] ?? 'Seleksi Tahap 2';
+                            
+                            \App\Models\Notifikasi::kirimStatusPelamar(
+                                $pelamarUser->id,
+                                'Status Lamaran Diperbarui',
+                                "Status lamaran Anda untuk posisi {$posisi} telah diubah menjadi: {$statusLabel}."
+                            );
+                        }
+                    }
                 }
             }
         });

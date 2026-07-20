@@ -36,9 +36,7 @@ class PelamarController extends Controller
             $activeLamaran = $pelamar->lamarans->firstWhere('id', $activeLamaranId);
         }
 
-        if (!$activeLamaran) {
-            $activeLamaran = $pelamar->lamarans->first();
-        }
+        // Default: tidak ada lamaran yang diaktifkan (menampilkan profil pelamar saat ini)
 
         $snapshot = null;
         if ($activeLamaran) {
