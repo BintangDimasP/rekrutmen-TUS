@@ -116,19 +116,21 @@ class DosenController extends Controller
                 if ($user) {
                     $this->deactivateKaprodiRole($user);
                 }
-            } elseif ($isKaprodi && $wasKaprodi) {
-                // Tetap kaprodi — update nama/email jika nama berubah
-                $user = $dosen->user;
-                if ($user && $oldNama !== $request->nama) {
+            }
+            
+            // Selalu sinkronkan data User (nama & email) jika dosen punya akun
+            // (baik sebagai kaprodi, penguji, maupun keduanya)
+            $user = $dosen->fresh()->user;
+            if ($user) {
+                if ($oldNama !== $request->nama) {
                     $user->update([
                         'name'  => $dosen->fresh()->nama,
                         'email' => $dosen->fresh()->generateUniqueEmail($user->id),
                     ]);
-                } elseif ($user && $oldNama === $request->nama) {
+                } else {
                     $user->update(['name' => $dosen->fresh()->nama]);
                 }
             }
-            // Kalau dosen biasa (bukan kaprodi, bukan penguji) → tidak ada user, tidak ada update
         });
 
         $adminNama = auth()->user()->name ?? 'Admin';
