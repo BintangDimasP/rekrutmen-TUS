@@ -29,9 +29,23 @@ class PengujiController extends Controller
 
         $jadwals = JadwalSeleksi::where('penguji_id', $dosen->id)->with('penilaian')->get();
         
-        $totalDiuji = $jadwals->count();
-        $totalDinilai = $jadwals->whereNotNull('penilaian')->count();
-        $totalBelumDinilai = $totalDiuji - $totalDinilai;
+        // Kelompokkan jadwal berdasarkan pelamar untuk menghitung jumlah individu secara unik
+        $groupedByPelamar = $jadwals->groupBy('pelamar_id');
+        
+        $totalDiuji = $groupedByPelamar->count();
+        $totalDinilai = 0;
+        $totalBelumDinilai = 0;
+
+        foreach ($groupedByPelamar as $pelamarJadwals) {
+            // Pelamar dianggap 'Selesai Dinilai' JIKA SEMUA sesinya (MT & Wawancara) sudah dinilai
+            $isFullyGraded = $pelamarJadwals->every(fn($jadwal) => $jadwal->penilaian !== null);
+            
+            if ($isFullyGraded) {
+                $totalDinilai++;
+            } else {
+                $totalBelumDinilai++;
+            }
+        }
 
         $upcomingJadwals = JadwalSeleksi::where('penguji_id', $dosen->id)
             ->whereBetween('tanggal', [now()->startOfDay(), now()->addDays(7)->endOfDay()])

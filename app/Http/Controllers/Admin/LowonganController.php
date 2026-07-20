@@ -48,11 +48,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         $prodis            = Prodi::orderBy('nama')->get();
         $defaultDeskripsi  = self::DEFAULT_DESKRIPSI;
 
-        $prodiPrioritasOptions = [
-            'Sistem Informasi', 'Teknik Informatika', 'Teknik Elektro',
-            'Teknik Industri', 'Manajemen', 'Akuntansi', 'Desain Komunikasi Visual',
-            'Ilmu Komunikasi', 'Administrasi Bisnis', 'Teknik Telekomunikasi',
-        ];
+        $prodiPrioritasOptions = $prodis->pluck('nama')->toArray();
 
         $skillOptions = [
             'IoT (Internet of Things)', 'Machine Learning', 'Deep Learning',
@@ -132,11 +128,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $prodis = Prodi::orderBy('nama')->get();
 
-        $prodiPrioritasOptions = [
-            'Sistem Informasi', 'Teknik Informatika', 'Teknik Elektro',
-            'Teknik Industri', 'Manajemen', 'Akuntansi', 'Desain Komunikasi Visual',
-            'Ilmu Komunikasi', 'Administrasi Bisnis', 'Teknik Telekomunikasi',
-        ];
+        $prodiPrioritasOptions = $prodis->pluck('nama')->toArray();
 
         $skillOptions = [
             'IoT (Internet of Things)', 'Machine Learning', 'Deep Learning',
