@@ -80,11 +80,19 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="py-16 px-6 text-center">
-                                <p class="text-gray-400 text-sm font-medium mb-5">Belum ada aktivitas lamaran.</p>
-                                <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex px-6 py-3 bg-[#8b1515] text-white font-bold text-sm rounded-xl hover:bg-[#7a1111] transition-colors shadow-sm">
-                                    Cari Lowongan
-                                </a>
+                            <td colspan="4" class="py-16 text-center">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-gray-700 font-semibold text-sm">Belum ada aktivitas lamaran</h3>
+                                    <p class="text-gray-400 text-xs mb-3">Silakan cari lowongan yang tersedia dan mulai melamar.</p>
+                                    <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex px-5 py-2.5 bg-[#8b1515] text-white font-bold text-xs rounded-xl hover:bg-[#7a1111] transition-colors shadow-sm">
+                                        Cari Lowongan
+                                    </a>
+                                </div>
                             </td>
                         </tr>
                         @endforelse

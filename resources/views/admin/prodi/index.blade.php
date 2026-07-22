@@ -170,7 +170,7 @@
                         </div>
                         
                         <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus prodi ini?</h2>
-                        <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Data yang dihapus tidak dapat<br>dikembalikan!</p>
+                        <p class="text-[0.85rem] font-medium text-gray-500 mb-8"><strong class="text-gray-800 block mb-1">{{ $prodi->nama }}</strong>Data yang dihapus tidak dapat dikembalikan!</p>
 
                         <div class="grid grid-cols-2 gap-3">
                             <form method="POST" action="{{ route('admin.prodi.destroy', $prodi) }}" class="contents">

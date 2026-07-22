@@ -141,37 +141,34 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">Prodi</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[18%]">NIP/NIDN</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[14%]">Status</th>
+                            <th class="sticky left-0 z-10 bg-[#8b1515] py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[15%]">Prodi</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[10%]">Status</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                         @forelse($pengujis as $penguji)
-                        <tr class="hover:bg-gray-50 transition-colors h-[52px]"
+                        <tr class="group hover:bg-gray-50 transition-colors h-[52px]"
                             data-row
                             data-name="{{ strtolower(addslashes($penguji->nama)) }}"
                             data-kode="{{ strtolower(addslashes($penguji->kode)) }}"
                             data-prodi="{{ $penguji->prodi_id }}"
                             data-status="{{ $penguji->is_kaprodi ? 'rangkap' : 'penguji' }}">
-                            <td class="py-3 px-5 max-w-0" title="{{ $penguji->nama }} ({{ $penguji->kode }})">
+                            <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-5 max-w-0" title="{{ $penguji->nama }} ({{ $penguji->kode }})">
                                 <div class="text-sm text-gray-800 font-medium truncate">{{ $penguji->nama }}</div>
                                 <div class="text-xs font-medium text-gray-500 truncate">{{ $penguji->kode }}</div>
                             </td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $penguji->prodi?->nama ?? '-' }}">{{ $penguji->prodi?->nama ?? '-' }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}">{{ $penguji->nip ?? '-' }} / {{ $penguji->nidn ?? '-' }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $pengujiEmails[$penguji->id] ?? '-' }}">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
-                            <td class="py-3 px-5 text-sm font-medium">
-                                <span class="text-sm text-gray-800 font-medium">
+                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $penguji->prodi?->nama ?? '-' }}">{{ $penguji->prodi?->nama ?? '-' }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $pengujiEmails[$penguji->id] ?? '-' }}">{{ $pengujiEmails[$penguji->id] ?? '-' }}</td>
+                            <td class="py-3 px-5 text-sm">
+                                <div class="flex items-center gap-1.5 flex-nowrap">
                                     @if($penguji->is_kaprodi)
-                                        Kaprodi & Penguji
-                                    @else
-                                        Penguji
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-purple-800 whitespace-nowrap">Kaprodi</span>
                                     @endif
-                                </span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-blue-800 whitespace-nowrap">Penguji</span>
+                                </div>
                             </td>
                             <td class="py-3 px-5 text-sm">
                                 <div class="flex items-center justify-center gap-2">
@@ -184,13 +181,13 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="py-12 px-5 text-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            <td colspan="5" class="py-12 px-5 text-center">
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                                     </div>
-                                    <h3 class="text-gray-800 font-medium text-sm">Belum ada penguji</h3>
-                                    <p class="text-gray-400 text-xs mt-1">Gunakan tombol "Tunjuk Penguji" untuk mulai.</p>
+                                    <h3 class="text-gray-700 font-semibold text-sm">Belum ada penguji</h3>
+                                    <p class="text-gray-400 text-xs">Belum ada dosen yang ditunjuk.</p>
                                 </div>
                             </td>
                         </tr>

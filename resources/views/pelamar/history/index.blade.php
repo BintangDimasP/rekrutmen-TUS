@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 
-@section('title', 'Histori Lamaran')
+@section('title', 'Riwayat Lamaran')
 
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6"
@@ -69,7 +69,6 @@
                 <button type="button" @click="prodiOpen = !prodiOpen"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                         :class="prodiFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                     Prodi
                     <span x-show="prodiFilter.length > 0" x-text="prodiFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
                     <svg class="w-3 h-3 ml-0.5 transition-transform" :class="prodiOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -97,7 +96,6 @@
                 <button type="button" @click="statusOpen = !statusOpen"
                         class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                         :class="statusFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                     Status
                     <span x-show="statusFilter.length > 0" x-text="statusFilter.length" class="ml-0.5 w-5 h-5 rounded-full bg-white/20 text-[0.65rem] font-bold flex items-center justify-center"></span>
                     <svg class="w-3 h-3 ml-0.5 transition-transform" :class="statusOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
@@ -168,11 +166,11 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:680px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[26%]">Posisi</th>
-                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[20%]">Prodi</th>
-                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[18%]">Tanggal Melamar</th>
-                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[24%]">Status</th>
-                        <th class="py-3 px-3 text-sm font-bold whitespace-nowrap text-center w-[12%]">Aksi</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-left w-[30%]">Posisi</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-left w-[20%]">Prodi</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-left w-[15%]">Tanggal Melamar</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-left w-[15%]">Status</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tbody">
@@ -182,16 +180,16 @@
                         data-status="{{ $lamaran->status }}"
                         data-prodi="{{ $lamaran->lowongan->prodi->nama ?? '' }}"
                         data-posisi="{{ strtolower($lamaran->lowongan->nama_posisi) }}">
-                        <td class="py-3 px-3">
-                            <div class="text-sm font-semibold text-gray-600 text-center">{{ $lamaran->lowongan->nama_posisi }}</div>
+                        <td class="py-3.5 px-4">
+                            <div class="text-sm font-semibold text-gray-700 text-left">{{ $lamaran->lowongan->nama_posisi }}</div>
                         </td>
-                        <td class="py-3 px-3">
-                            <div class="text-sm text-gray-600 text-center">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
+                        <td class="py-3.5 px-4">
+                            <div class="text-sm text-gray-600 text-left">{{ $lamaran->lowongan->prodi->nama ?? '-' }}</div>
                         </td>
-                        <td class="py-3 px-3">
-                            <div class="text-sm text-gray-600 text-center whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>
+                        <td class="py-3.5 px-4">
+                            <div class="text-sm text-gray-600 text-left whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>
                         </td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3.5 px-4 text-left">
                             @php
                                 $statusColors = [
                                     'menunggu'          => 'bg-gray-100 text-gray-500 border-gray-200',
@@ -207,7 +205,7 @@
                                 {{ $lamaran->status_label }}
                             </span>
                         </td>
-                        <td class="py-3 px-3">
+                        <td class="py-3.5 px-4">
                             <div class="flex items-center justify-center">
                                 <a href="{{ route('pelamar.history.show', $lamaran->id) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail Lamaran">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -217,12 +215,16 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-20 text-center space-y-4">
-                            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto text-gray-200">
-                                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <td colspan="5" class="py-16 text-center">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-gray-700 font-semibold text-sm">Belum ada riwayat lamaran</h3>
+                                <p class="text-gray-400 text-xs">Belum ada data riwayat lamaran yang terdaftar.</p>
                             </div>
-                            <div class="text-sm font-bold text-gray-400">Belum ada histori pendaftaran</div>
-                            <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex items-center gap-2 px-6 py-2 bg-[#8b1515] text-white text-xs font-bold rounded-xl shadow-md shadow-[#8b1515]/20">Ayo Mulai Melamar</a>
                         </td>
                     </tr>
                     @endforelse

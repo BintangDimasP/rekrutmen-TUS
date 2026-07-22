@@ -68,15 +68,17 @@
                             </a>
                             @foreach($pelamar->lamarans as $lmr)
                                 @php $isActive = $activeLamaran && $activeLamaran->id === $lmr->id; @endphp
-                                <a href="{{ route('admin.pelamar.show', [$pelamar, 'lamaran_id' => $lmr->id]) }}"
-                                   class="flex items-center justify-between gap-3 px-3.5 py-2.5 text-sm transition-all {{ $isActive ? 'bg-white/20' : 'hover:bg-white/10' }}"
-                                   style="color: white; {{ !$loop->last ? 'border-bottom: 1px solid rgba(255,255,255,0.1);' : '' }}">
-                                    <span class="truncate font-medium">{{ $lmr->lowongan?->nama_posisi ?? '–' }}</span>
-                                    <span class="text-[0.6rem] font-bold flex-shrink-0 px-2 py-0.5 rounded-md"
-                                          style="background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.85);">
-                                        {{ \App\Models\Lamaran::STATUS_LABELS[$lmr->status] ?? $lmr->status }}
-                                    </span>
-                                </a>
+                                <div class="flex items-center justify-between gap-2 px-3.5 py-2.5 text-sm transition-all {{ $isActive ? 'bg-white/20' : 'hover:bg-white/10' }}"
+                                     style="color: white; {{ !$loop->last ? 'border-bottom: 1px solid rgba(255,255,255,0.1);' : '' }}">
+                                    <a href="{{ route('admin.pelamar.show', [$pelamar, 'lamaran_id' => $lmr->id]) }}" class="flex-1 truncate font-medium hover:underline" title="Lihat Snapshot Lamaran Ini">
+                                        {{ $lmr->lowongan?->nama_posisi ?? '–' }}
+                                    </a>
+                                    <a href="{{ route('admin.lamaran.show', $lmr) }}" title="Buka Halaman Detail Lamaran" class="text-[0.65rem] font-bold flex-shrink-0 px-2 py-1 rounded-md hover:bg-white/30 transition-all flex items-center gap-1"
+                                          style="background: rgba(255,255,255,0.2); color: white;">
+                                        <span>{{ \App\Models\Lamaran::STATUS_LABELS[$lmr->status] ?? $lmr->status }}</span>
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                    </a>
+                                </div>
                             @endforeach
                         </div>
                     </div>
@@ -325,6 +327,7 @@
             @endif
 
             {{-- 6. JADWAL & PENILAIAN SELEKSI --}}
+            @if($activeLamaran)
             @php
                 $microDinilai     = $micro->filter(fn($j) => $j->penilaian !== null);
                 $wawancaraDinilai = $wawancara->filter(fn($j) => $j->penilaian !== null);
@@ -336,7 +339,13 @@
                 $nilaiAkhirWawancara = $wawancaraDinilai->count() > 0 ? round($wawancaraDinilai->avg(fn($j) => $j->penilaian->total_nilai), 2) : null;
             @endphp
             <div class="pt-6 border-t border-gray-100">
-                <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">Jadwal & Penilaian Seleksi</h3>
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                    <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">Jadwal & Penilaian Seleksi</h3>
+                    <a href="{{ route('admin.lamaran.show', $activeLamaran) }}" class="text-xs font-bold text-[#8b1515] hover:underline flex items-center gap-1">
+                        Buka Halaman Detail Lamaran
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
 
                 @if(($wawancara && $wawancara->count() > 0) || ($micro && $micro->count() > 0))
                 <div class="space-y-6">
@@ -525,9 +534,7 @@
                     <p class="text-sm text-gray-500 italic bg-gray-50 p-4 rounded-xl border border-gray-100">Belum ada jadwal & penilaian seleksi untuk lamaran ini.</p>
                 @endif
             </div>
-
-
-
+            @endif
         </div>
     </div>
 </div>

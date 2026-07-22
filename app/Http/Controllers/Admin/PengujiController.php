@@ -13,13 +13,13 @@ class PengujiController extends Controller
 {
     public function index(Request $request)
     {
-        $pengujis = Dosen::with(['prodi', 'user'])->where('is_penguji', true)->get();
+        $pengujis = Dosen::with(['prodi', 'user'])->where('is_penguji', true)->orderBy('nama', 'asc')->get();
 
         $pengujiEmails = $pengujis
             ->mapWithKeys(fn($d) => [$d->id => $d->user?->email])
             ->filter();
 
-        $calonPengujis = Dosen::with('prodi')->where('is_penguji', false)->get();
+        $calonPengujis = Dosen::with('prodi')->where('is_penguji', false)->orderBy('nama', 'asc')->get();
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
         return view('admin.penguji.index', compact('pengujis', 'pengujiEmails', 'calonPengujis', 'prodis'));

@@ -147,10 +147,10 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:600px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[25%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[30%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Role</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
+                            <th class="sticky left-0 z-10 bg-[#8b1515] py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[30%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[12%]">Role</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100" x-ref="tableBody">
@@ -161,25 +161,28 @@
                             $matchPenguji = $user->is_penguji ? '1' : '0';
                         @endphp
                         <tr x-data="{ openEditModal: false, openDeleteModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" 
-                            class="hover:bg-gray-50 transition-colors h-[52px]"
+                            class="group hover:bg-gray-50 transition-colors h-[52px]"
                             data-row
                             data-name="{{ strtolower(addslashes($user->name)) }}"
                             data-email="{{ strtolower(addslashes($user->email)) }}"
                             data-role="{{ $user->role }}"
                             data-is-penguji="{{ $matchPenguji }}">
-                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->name }}">{{ $user->name }}</td>
-                            <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate max-w-0" title="{{ $user->email }}">{{ $user->email }}</td>
-                            <td class="py-3 px-5 text-sm font-medium text-center">
+                            <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->name }}">{{ $user->name }}</td>
+                            <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->email }}">{{ $user->email }}</td>
+                            <td class="py-3 px-5 text-sm font-medium">
                                 @if($isMulti)
-                                    <span class="text-sm text-gray-800 font-medium">Kaprodi & Penguji</span>
+                                    <div class="flex items-center gap-1.5 flex-wrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-purple-800">Kaprodi</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-blue-800">Penguji</span>
+                                    </div>
                                 @elseif($user->role === 'admin')
-                                    <span class="text-sm text-gray-800 font-medium">Admin</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-red-800">Admin</span>
                                 @elseif($user->role === 'pelamar')
-                                    <span class="text-sm text-gray-800 font-medium">Pelamar</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-green-800">Pelamar</span>
                                 @elseif($user->role === 'penguji')
-                                    <span class="text-sm text-gray-800 font-medium">Penguji</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-blue-800">Penguji</span>
                                 @elseif($user->role === 'kaprodi')
-                                    <span class="text-sm text-gray-800 font-medium">Kaprodi</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-purple-800">Kaprodi</span>
                                 @endif
                             </td>
                             <td class="py-3 px-5 text-sm">
@@ -266,13 +269,13 @@
                                         
                                         @if($user->role === 'admin')
                                             <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus admin ini?</h2>
-                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Akun admin akan dihapus<br>secara permanen!</p>
+                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8"><strong class="text-gray-800 block mb-1">{{ $user->name }}</strong>Akun admin akan dihapus secara permanen!</p>
                                         @elseif($user->role === 'pelamar')
                                             <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus akun ini?</h2>
-                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Seluruh data pelamar akan<br>dihapus permanen!</p>
+                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8"><strong class="text-gray-800 block mb-1">{{ $user->name }}</strong>Seluruh data pelamar akan dihapus permanen!</p>
                                         @else
                                             <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Cabut role dosen ini?</h2>
-                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Role akan dicabut, dosen kembali<br>tanpa akses. Data tetap aman.</p>
+                                            <p class="text-[0.85rem] font-medium text-gray-500 mb-8"><strong class="text-gray-800 block mb-1">{{ $user->name }}</strong>Role akan dicabut, dosen kembali tanpa akses. Data tetap aman.</p>
                                         @endif
 
                                         <div class="grid grid-cols-2 gap-3">
@@ -291,7 +294,13 @@
                         @empty
                         <tr>
                             <td colspan="4" class="py-12 px-5 text-center">
-                                <span class="text-gray-400 text-sm">Tidak ada user terdaftar.</span>
+                                <div class="flex flex-col items-center gap-2">
+                                    <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                    </div>
+                                    <h3 class="text-gray-700 font-semibold text-sm">Belum ada pengguna</h3>
+                                    <p class="text-gray-400 text-xs">Belum ada data pengguna yang terdaftar.</p>
+                                </div>
                             </td>
                         </tr>
                         @endforelse

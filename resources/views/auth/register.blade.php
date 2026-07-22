@@ -213,16 +213,29 @@
                         </label>
                         <input type="password" id="password" name="password" oninput="checkPasswordStrength(this.value)"
                             class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Min. 8 karakter">
+                            placeholder="********">
                         
-                        {{-- Password Strength --}}
-                        <div class="mt-1 flex gap-1 h-1.5 w-full">
-                            <div id="pb-1" class="h-full w-1/4 rounded bg-gray-200 transition-colors duration-300"></div>
-                            <div id="pb-2" class="h-full w-1/4 rounded bg-gray-200 transition-colors duration-300"></div>
-                            <div id="pb-3" class="h-full w-1/4 rounded bg-gray-200 transition-colors duration-300"></div>
-                            <div id="pb-4" class="h-full w-1/4 rounded bg-gray-200 transition-colors duration-300"></div>
+                        {{-- Password Requirements Checklist --}}
+                        <div class="mt-1 bg-white border border-gray-100 rounded-lg p-3 shadow-sm">
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[0.7rem]">
+                                <li id="req-length" class="flex items-center gap-2 text-gray-400 transition-colors">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Minimal 8 karakter</span>
+                                </li>
+                                <li id="req-lower" class="flex items-center gap-2 text-gray-400 transition-colors">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Huruf kecil (a-z)</span>
+                                </li>
+                                <li id="req-upper" class="flex items-center gap-2 text-gray-400 transition-colors">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Huruf besar (A-Z)</span>
+                                </li>
+                                <li id="req-number" class="flex items-center gap-2 text-gray-400 transition-colors">
+                                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                    <span>Angka (0-9)</span>
+                                </li>
+                            </ul>
                         </div>
-                        <span id="password-text" class="text-[0.65rem] text-gray-500 font-medium">Kekuatan password...</span>
                     </div>
                 </div>
             </div>
@@ -1255,51 +1268,26 @@
     }
 
     function checkPasswordStrength(password) {
-        let strength = 0;
-        if (password.length >= 8) strength++;
-        if (password.match(/[a-z]+/)) strength++;
-        if (password.match(/[A-Z]+/)) strength++;
-        if (password.match(/[0-9]+/)) strength++;
-        if (password.match(/[$@#&!]+/)) strength++;
-        
-        const bars = [
-            document.getElementById('pb-1'),
-            document.getElementById('pb-2'),
-            document.getElementById('pb-3'),
-            document.getElementById('pb-4')
-        ];
-        const text = document.getElementById('password-text');
+        // Cek syarat individual untuk checklist
+        const reqs = {
+            length: password.length >= 8,
+            lower: /[a-z]+/.test(password),
+            upper: /[A-Z]+/.test(password),
+            number: /[0-9]+/.test(password)
+        };
 
-        bars.forEach(b => b.className = 'h-full w-1/4 rounded bg-gray-200 transition-colors duration-300');
-
-        if (password.length === 0) {
-            text.innerText = 'Kekuatan password...';
-            text.className = 'text-[0.65rem] text-gray-500 font-medium';
-            return;
-        }
-
-        if (strength <= 2) {
-            bars[0].classList.replace('bg-gray-200', 'bg-red-500');
-            text.innerText = 'Lemah';
-            text.className = 'text-[0.65rem] text-red-500 font-medium';
-        } else if (strength === 3) {
-            bars[0].classList.replace('bg-gray-200', 'bg-yellow-400');
-            bars[1].classList.replace('bg-gray-200', 'bg-yellow-400');
-            text.innerText = 'Sedang';
-            text.className = 'text-[0.65rem] text-yellow-500 font-medium';
-        } else if (strength === 4) {
-            bars[0].classList.replace('bg-gray-200', 'bg-green-400');
-            bars[1].classList.replace('bg-gray-200', 'bg-green-400');
-            bars[2].classList.replace('bg-gray-200', 'bg-green-400');
-            text.innerText = 'Kuat';
-            text.className = 'text-[0.65rem] text-green-500 font-medium';
-        } else if (strength >= 5) {
-            bars[0].classList.replace('bg-gray-200', 'bg-green-600');
-            bars[1].classList.replace('bg-gray-200', 'bg-green-600');
-            bars[2].classList.replace('bg-gray-200', 'bg-green-600');
-            bars[3].classList.replace('bg-gray-200', 'bg-green-600');
-            text.innerText = 'Sangat Kuat';
-            text.className = 'text-[0.65rem] text-green-600 font-medium';
+        // Update UI Checklist
+        for (const [key, isValid] of Object.entries(reqs)) {
+            const el = document.getElementById('req-' + key);
+            if (el) {
+                if (isValid) {
+                    el.classList.remove('text-gray-400');
+                    el.classList.add('text-green-600', 'font-medium');
+                } else {
+                    el.classList.remove('text-green-600', 'font-medium');
+                    el.classList.add('text-gray-400');
+                }
+            }
         }
     }
 

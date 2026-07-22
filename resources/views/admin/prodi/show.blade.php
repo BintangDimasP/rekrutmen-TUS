@@ -137,11 +137,10 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:700px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Kode</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">NIP/NIDN</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[40%]">Email</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Status</th>
+                            <th class="sticky left-0 z-10 bg-[#8b1515] py-3 px-5 text-sm font-bold whitespace-nowrap w-[30%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[20%]">NIP/NIDN</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[25%]">Email</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[15%]">Status</th>
                             <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                         </tr>
                     </thead>
@@ -158,16 +157,20 @@
                                 }
                             @endphp
                             <tr x-data="{ showDeleteModal: false, openEditModal: false {{ $errors->any() && old('edit_dosen_id') == $dosen->id ? ', openEditModal: true' : '' }} }"
-                                class="hover:bg-gray-50 transition-colors"
+                                class="group hover:bg-gray-50 transition-colors"
                                 data-row
                                 data-name="{{ strtolower(addslashes($dosen->nama)) }}"
                                 data-kode="{{ strtolower(addslashes($dosen->kode ?? '')) }}"
                                 data-nip="{{ strtolower(addslashes($dosen->nip ?? '')) }} {{ strtolower(addslashes($dosen->nidn ?? '')) }}"
                                 data-status="{{ $statusStr }}">
-                                <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate text-center max-w-0" title="{{ $dosen->nama }}">{{ $dosen->nama }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate text-center max-w-0" title="{{ $dosen->kode }}">{{ $dosen->kode }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium truncate text-center max-w-0" title="{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}</td>
-                                <td class="py-3 px-5 text-sm text-gray-600 font-medium text-center max-w-0">
+                                <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-5 max-w-0" title="{{ $dosen->nama }} ({{ $dosen->kode ?? '-' }})">
+                                    <div class="text-sm text-gray-800 font-medium truncate">{{ $dosen->nama }}</div>
+                                    @if($dosen->kode)
+                                        <div class="text-xs font-medium text-gray-500 truncate">{{ $dosen->kode }}</div>
+                                    @endif
+                                </td>
+                                <td class="py-3 px-5 text-xs text-gray-600 font-medium truncate max-w-0" title="{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}">{{ $dosen->nip ?? '-' }}/{{ $dosen->nidn ?? '-' }}</td>
+                                <td class="py-3 px-5 text-sm text-gray-800 font-medium max-w-0">
                                     @php
                                         $userEmails = \App\Models\User::where('dosen_id', $dosen->id)->pluck('email', 'role');
                                     @endphp
@@ -180,14 +183,14 @@
                                     @endif
                                 </td>
                                 <td class="py-3 px-5 text-sm">
-                                    <div class="flex justify-center items-center gap-1.5 flex-nowrap">
+                                    <div class="flex items-center gap-1.5 flex-nowrap">
                                         @if($dosen->is_kaprodi)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-amber-100 text-amber-800 whitespace-nowrap">Kaprodi</span>
+                                                class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-purple-800 whitespace-nowrap">Kaprodi</span>
                                         @endif
                                         @if($dosen->is_penguji)
                                             <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-[0.7rem] font-medium bg-blue-100 text-blue-800 whitespace-nowrap">Penguji</span>
+                                                class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-semibold text-white bg-blue-800 whitespace-nowrap">Penguji</span>
                                         @endif
                                         @if(!$dosen->is_kaprodi && !$dosen->is_penguji)
                                             <span class="text-gray-400">-</span>
@@ -228,7 +231,7 @@
                                                 </div>
                                                 
                                                 <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus dosen ini?</h2>
-                                                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">Data yang dihapus tidak dapat dikembalikan!</p>
+                                                <p class="text-[0.85rem] font-medium text-gray-500 mb-8"><strong class="text-gray-800 block mb-1">{{ $dosen->nama }}</strong>Data yang dihapus tidak dapat dikembalikan!</p>
 
                                                 <div class="grid grid-cols-2 gap-3">
                                                     <form method="POST" action="{{ route('admin.dosen.destroy', $dosen) }}" class="contents">
@@ -352,17 +355,15 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-12 px-5 text-center">
-                                    <div class="flex flex-col items-center">
-                                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-3">
-                                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor"
-                                                stroke-width="1.5" viewBox="0 0 24 24">
+                                <td colspan="5" class="py-12 px-5 text-center">
+                                    <div class="flex flex-col items-center gap-2">
+                                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-gray-800 font-medium text-sm">Tidak ada dosen</h3>
-                                        <p class="text-gray-400 text-xs mt-1">Belum ada dosen terdaftar di program studi ini.
-                                        </p>
+                                        <h3 class="text-gray-700 font-semibold text-sm">Belum ada dosen</h3>
+                                        <p class="text-gray-400 text-xs">Belum ada dosen yang ditunjuk.</p>
                                     </div>
                                 </td>
                             </tr>

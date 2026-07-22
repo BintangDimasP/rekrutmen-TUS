@@ -65,7 +65,7 @@ class ProdiController extends Controller
     public function show(Prodi $prodi, Request $request)
     {
         $prodi->load(['kaprodi', 'pengujis']);
-        $dosens = $prodi->dosens()->paginate(10)->appends($request->query());
+        $dosens = $prodi->dosens()->orderBy('nama', 'asc')->paginate(10)->appends($request->query());
 
         return view('admin.prodi.show', compact('prodi', 'dosens'));
     }

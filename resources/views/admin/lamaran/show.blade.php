@@ -136,7 +136,7 @@
                                     <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p></div>
                                     
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $pelamar->jenjang }}</p>
                                         @if($pelamar->file_ijazah)
                                             <a href="{{ asset('storage/' . $pelamar->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
@@ -144,7 +144,7 @@
                                         @endif
                                     </div>
                                     <div>
-                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
+                                        <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $pelamar->jenjang }}</p>
                                         @if($pelamar->file_transkrip)
                                             <a href="{{ asset('storage/' . $pelamar->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else

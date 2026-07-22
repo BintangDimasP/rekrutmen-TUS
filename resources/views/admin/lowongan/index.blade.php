@@ -271,21 +271,14 @@
                         @empty
                             <tr>
                                 <td colspan="7" class="py-16 text-center">
-                                    <div class="flex flex-col items-center gap-3">
-                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
-                                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor"
-                                                stroke-width="1.5" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706" />
+                                    <div class="flex flex-col items-center gap-2">
+                                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706" />
                                             </svg>
                                         </div>
                                         <h3 class="text-gray-700 font-semibold text-sm">Belum ada lowongan</h3>
-                                        <p class="text-gray-400 text-xs">Buat lowongan pertama dengan menekan tombol "Tambah
-                                            Lowongan".</p>
-                                        <a href="{{ route('admin.lowongan.create') }}"
-                                            class="mt-1 px-4 py-2 bg-[#8b1515] text-white text-xs font-semibold rounded-lg hover:bg-red-900 transition-colors">
-                                            Tambah Lowongan
-                                        </a>
+                                        <p class="text-gray-400 text-xs">Belum ada lowongan yang dibuat.</p>
                                     </div>
                                 </td>
                             </tr>

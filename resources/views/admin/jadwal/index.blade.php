@@ -341,15 +341,12 @@
                     @empty
                     <tr>
                         <td colspan="8" class="py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 </div>
-                                <h3 class="text-gray-700 font-semibold text-sm">Belum Ada Jadwal</h3>
-                                <p class="text-gray-400 text-xs">Buat jadwal seleksi pertama.</p>
-                                <a href="{{ route('admin.jadwal.create') }}" class="mt-1 px-4 py-2 bg-[#8b1515] text-white text-xs font-semibold rounded-lg hover:bg-red-900 transition-colors">
-                                    + Jadwalkan Sekarang
-                                </a>
+                                <h3 class="text-gray-700 font-semibold text-sm">Belum ada jadwal</h3>
+                                <p class="text-gray-400 text-xs">Belum ada jadwal seleksi yang dibuat.</p>
                             </div>
                         </td>
                     </tr>

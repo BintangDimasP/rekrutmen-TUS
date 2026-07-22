@@ -52,13 +52,13 @@
     white-space: nowrap;
 }
 .profil-preview-link {
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: #6b7280;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #8b1515;
     text-decoration: underline;
     text-underline-offset: 2px;
 }
-.profil-preview-link:hover { color: #374151; }
+.profil-preview-link:hover { color: #6b1111; }
 </style>
 
 <div class="space-y-6" x-data="{
@@ -106,11 +106,16 @@
         .then(res => res.json().then(data => ({ status: res.status, body: data })))
         .then(res => {
             this.isLoadingOtp = false;
-            if (res.status === 200) {
+            if (res.status === 200 || res.status === 429) {
                 this.otpMode = true;
                 this.otpCode = '';
-                if(window.showProfilToast) window.showProfilToast('OTP Terkirim', res.body.message, 'success');
-                this.startCountdown();
+                this.$nextTick(() => { if (this.$refs.emailOtpInput) this.$refs.emailOtpInput.focus(); });
+                if (res.status === 200) {
+                    if(window.showProfilToast) window.showProfilToast('OTP Terkirim', res.body.message, 'success');
+                    this.startCountdown();
+                } else {
+                    if(window.showProfilToast) window.showProfilToast('Info OTP', res.body.message, 'warning');
+                }
             } else {
                 if(window.showProfilToast) window.showProfilToast('Gagal', res.body.message, 'error');
             }
@@ -182,13 +187,17 @@
         .then(res => res.json().then(data => ({ status: res.status, body: data })))
         .then(res => {
             this.isLoadingPhoneOtp = false;
-            if (res.status === 200) {
+            if (res.status === 200 || res.status === 429) {
                 this.phoneOtpSent = true;
                 this.phoneOtpCode = '';
                 this.phoneOtpModal = true;
-                this.startPhoneCountdown();
-                // Tampilkan toast notifikasi OTP terkirim
-                if(window.showProfilToast) window.showProfilToast('OTP Terkirim', res.body.message || 'Kode OTP telah dikirim ke WhatsApp Anda.', 'success');
+                this.$nextTick(() => { if (this.$refs.phoneOtpInput) this.$refs.phoneOtpInput.focus(); });
+                if (res.status === 200) {
+                    this.startPhoneCountdown();
+                    if(window.showProfilToast) window.showProfilToast('OTP Terkirim', res.body.message || 'Kode OTP telah dikirim ke WhatsApp Anda.', 'success');
+                } else {
+                    if(window.showProfilToast) window.showProfilToast('Info OTP', res.body.message, 'warning');
+                }
             } else {
                 if(window.showProfilToast) window.showProfilToast('Gagal', res.body.message, 'error');
             }
@@ -234,7 +243,10 @@
         if (!file) return;
         this.fotoFileName = file.name;
         const reader = new FileReader();
-        reader.onload = (ev) => { this.fotoPreview = ev.target.result; };
+        reader.onload = (ev) => { 
+            this.fotoPreview = ev.target.result; 
+            this.fotoModal = true;
+        };
         reader.readAsDataURL(file);
     },
     resetFotoForm() {
@@ -265,7 +277,7 @@
                             @endif
                         </div>
                         <button type="button"
-                                @click="fotoModal = true"
+                                @click="openFotoFile()"
                                 class="absolute -bottom-1 -right-1 w-7 h-7 bg-white text-[#8b1515] hover:bg-gray-100 rounded-full shadow-md flex items-center justify-center transition-all ring-2 ring-[#8b1515]/30"
                                 title="Ubah Foto Profil">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -453,7 +465,7 @@
                                 @if(!auth()->user()->hasVerifiedEmail())
                                     <button type="button" @click="sendOtp" :disabled="isLoadingOtp"
                                         class="text-[0.65rem] font-bold text-white bg-amber-600 hover:bg-amber-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap disabled:opacity-50 flex-shrink-0">
-                                        <span x-text="isLoadingOtp ? 'Mengirim...' : 'Verifikasi Sekarang'"></span>
+                                        <span x-text="isLoadingOtp ? 'Mengirim...' : 'Verifikasi'"></span>
                                     </button>
                                 @endif
                             </div>
@@ -612,13 +624,13 @@
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk" value="{{ old('ipk',$pelamar->ipk) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
-                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah <span x-text="jenjang1"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah)<a href="{{ asset('storage/'.$pelamar->file_ijazah) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                             @error('file_ijazah')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
-                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip <span x-text="jenjang1"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip)<a href="{{ asset('storage/'.$pelamar->file_transkrip) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                             @error('file_transkrip')<span class="text-xs text-red-500">{{ $message }}</span>@enderror
                         </div>
@@ -694,12 +706,12 @@
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_2 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk_2" value="{{ old('ipk_2',$pelamar->ipk_2) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
-                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah <span x-text="jenjang2"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_2" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah_2)<a href="{{ asset('storage/'.$pelamar->file_ijazah_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
-                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip <span x-text="jenjang2"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_2" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip_2)<a href="{{ asset('storage/'.$pelamar->file_transkrip_2) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                     </div>
@@ -774,12 +786,12 @@
                             <p x-show="!isEditing" class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->ipk_3 ?: '-' }}</p>
                             <input x-show="isEditing" x-cloak type="number" step="0.01" name="ipk_3" value="{{ old('ipk_3',$pelamar->ipk_3) }}" class="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition-all mt-1">
                         </div>
-                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah <span x-text="jenjang3"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_ijazah_3" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_ijazah_3)<a href="{{ asset('storage/'.$pelamar->file_ijazah_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
-                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
-                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-gray-500 hover:text-gray-800 underline text-xs font-semibold">Preview</a>@else-@endif</p>
+                        <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip <span x-text="jenjang3"></span></p>
+                            <p x-show="!isEditing" class="text-sm text-gray-700 mt-0.5">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline inline-block">Preview</a>@else-@endif</p>
                             <div x-show="isEditing" x-cloak class="mt-1"><input type="file" name="file_transkrip_3" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">@if($pelamar->file_transkrip_3)<a href="{{ asset('storage/'.$pelamar->file_transkrip_3) }}" target="_blank" class="profil-preview-link">Preview</a>@endif</div>
                         </div>
                     </div>
@@ -800,7 +812,7 @@
                         <div>
                             <p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>
                             @if($pelamar->file_cv)
-                                <a href="{{ asset('storage/' . $pelamar->file_cv) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                                <a href="{{ asset('storage/' . $pelamar->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
                             @else
                                 <p class="text-sm text-gray-700 mt-0.5">-</p>
                             @endif
@@ -808,7 +820,7 @@
                         <div>
                             <p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto Formal</p>
                             @if($pelamar->file_pas_foto)
-                                <a href="{{ asset('storage/' . $pelamar->file_pas_foto) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                                <a href="{{ asset('storage/' . $pelamar->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
                             @else
                                 <p class="text-sm text-gray-700 mt-0.5">-</p>
                             @endif
@@ -816,7 +828,7 @@
                         <div>
                             <p class="text-[0.55rem] font-black text-gray-400 uppercase">Scan KTP</p>
                             @if($pelamar->file_ktp)
-                                <a href="{{ asset('storage/' . $pelamar->file_ktp) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                                <a href="{{ asset('storage/' . $pelamar->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
                             @else
                                 <p class="text-sm text-gray-700 mt-0.5">-</p>
                             @endif
@@ -824,7 +836,7 @@
                         <div>
                             <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $pelamar->kategori_sertifikat ?: 'Sertifikat' }}</p>
                             @if($pelamar->file_sertifikat)
-                                <a href="{{ asset('storage/' . $pelamar->file_sertifikat) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
+                                <a href="{{ asset('storage/' . $pelamar->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
                             @else
                                 <p class="text-sm text-gray-700 mt-0.5">-</p>
                             @endif
@@ -884,7 +896,7 @@
                             </div>
                         </div>
                         <div>
-                            <label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">Sertifikat Profesi</label>
+                            <label class="text-[0.55rem] font-black text-gray-400 uppercase mb-0.5 block">File Sertifikat</label>
                             <div class="mt-1">
                                 <input type="file" name="file_sertifikat" accept=".pdf,.jpg,.jpeg,.png" class="profil-file-input">
                                 @if($pelamar->file_sertifikat)<a href="{{ asset('storage/'.$pelamar->file_sertifikat) }}" target="_blank" class="profil-preview-link ml-1">Preview</a>@endif
@@ -907,7 +919,7 @@
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Skor Bahasa</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $pelamar->skor_bahasa ?: '-' }}</p></div>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Tanggal Tes</p><p class="text-sm text-gray-700 mt-0.5">{{ $pelamar->tanggal_tes_bahasa ? $pelamar->tanggal_tes_bahasa->format('d M Y') : '-' }}</p></div>
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>
-                            @if($pelamar->file_sertifikat_bahasa)<a href="{{ asset('storage/'.$pelamar->file_sertifikat_bahasa) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                            @if($pelamar->file_sertifikat_bahasa)<a href="{{ asset('storage/'.$pelamar->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
                         </div>
                     </div>
                 </div>
@@ -1035,7 +1047,7 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                         @foreach($homebaseDocs as $doc)
                         <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
-                            @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                            @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
                         </div>
                         @endforeach
                     </div>
@@ -1084,7 +1096,7 @@
     <template x-teleport="body">
         <div x-show="phoneOtpModal" x-transition.opacity
              class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-             @click.self="phoneOtpModal = false; if(phoneOtpTimer) clearInterval(phoneOtpTimer);" style="display: none;">
+             style="display: none;">
             <div x-show="phoneOtpModal"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
@@ -1144,8 +1156,8 @@
     <template x-teleport="body">
         <div x-show="otpMode" x-transition.opacity
              class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-             @click.self="otpMode = false; if(otpTimer) clearInterval(otpTimer);" style="display: none;">
-            <div x-show="otpMode"
+             style="display: none;">
+            <div x-show="otpMode" @click.stop
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100"
@@ -1170,7 +1182,7 @@
                 <div>
                     <div class="flex items-center justify-center gap-3 mb-4">
                         <div class="relative flex items-center gap-1 flex-shrink-0">
-                            <input type="text" x-model="otpCode" @input="verifyOtp()" maxlength="6"
+                            <input type="text" x-ref="emailOtpInput" x-model="otpCode" @input="verifyOtp()" maxlength="6"
                                 class="absolute inset-0 w-full h-full opacity-0 cursor-text z-10"
                                 :disabled="isLoadingOtp" autocomplete="one-time-code" inputmode="numeric">
                             <template x-for="i in 6">

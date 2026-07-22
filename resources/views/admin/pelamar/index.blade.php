@@ -137,35 +137,35 @@
             <table class="w-full text-left border-collapse table-fixed" style="min-width:780px">
                 <thead>
                     <tr class="bg-[#8b1515] text-white">
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama Pelamar</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Jenjang Pendidikan</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">No Handphone</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Lamaran Diajukan</th>
-                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[15%]">Aksi</th>
+                        <th class="sticky left-0 z-10 bg-[#8b1515] py-3 px-4 text-sm font-bold whitespace-nowrap w-[20%]">Nama Pelamar</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[25%]">Jenjang Pendidikan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[15%]">No Handphone</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap w-[25%]">Lamaran Diajukan</th>
+                        <th class="py-3 px-4 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100" x-ref="tableBody">
                     @forelse($pelamars as $pelamar)
-                    <tr class="hover:bg-gray-50 transition-colors h-[52px]"
+                    <tr class="group hover:bg-gray-50 transition-colors h-[52px]"
                         data-row
                         data-name="{{ strtolower(addslashes($pelamar->nama)) }}"
                         data-phone="{{ strtolower(addslashes($pelamar->no_telepon)) }}"
                         data-prodis="{{ $pelamar->lamarans->pluck('lowongan.prodi_id')->filter()->unique()->implode(',') }}">
-                        <td class="py-3 px-4 max-w-0" title="{{ $pelamar->nama }}">
-                            <div class="text-sm font-medium text-gray-800 text-center truncate">{{ $pelamar->nama }}</div>
+                        <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-4 max-w-0" title="{{ $pelamar->nama }}">
+                            <div class="text-sm font-medium text-gray-800 truncate">{{ $pelamar->nama }}</div>
                         </td>
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
-                            <div class="text-sm text-gray-800 font-medium text-center truncate">{{ $pelamar->jenjang ?? '-' }} - {{ $pelamar->institusi ?? '-'}}</div>
-                            <div class="text-[0.7rem] text-gray-400 uppercase text-center truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
+                            <div class="text-sm text-gray-800 font-medium truncate">{{ $pelamar->jenjang ?? '-' }} - {{ $pelamar->institusi ?? '-'}}</div>
+                            <div class="text-[0.6rem] text-gray-400  truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
                         </td>
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
-                            <span class="text-sm text-gray-800 font-medium text-center truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
+                            <span class="text-sm text-gray-800 font-medium truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
                         </td>
                         <td class="py-3 px-4 max-w-0">
                             @if($pelamar->lamarans->count() > 0)
                                 <div class="flex flex-col gap-1">
                                     @foreach($pelamar->lamarans->take(2) as $lamaran)
-                                        <span class="inline-flex text-sm text-gray-800 font-medium text-center " title="{{ $lamaran->lowongan->nama_posisi ?? '-' }}">
+                                        <span class="inline-flex text-sm text-gray-800 font-medium" title="{{ $lamaran->lowongan->nama_posisi ?? '-' }}">
                                             <span class="truncate">{{ $lamaran->lowongan->nama_posisi ?? '-' }}</span>
                                         </span>
                                     @endforeach
@@ -181,8 +181,8 @@
                         </td>
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-2">
-                                <a href="{{ route('admin.pelamar.show', $pelamar) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Detail & Edit Pelamar">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                <a href="{{ route('admin.pelamar.show', $pelamar) }}" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Detail Pelamar">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </a>
                             </div>
                         </td>
@@ -190,14 +190,14 @@
                     @empty
                     <tr>
                         <td colspan="5" class="py-16 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
-                                    <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-gray-700 font-semibold text-sm">Belum Ada Pelamar Terdaftar</h3>
-                                <p class="text-gray-400 text-xs">Semua pelamar yang telah melakukan registrasi akan muncul di sini.</p>
+                                <h3 class="text-gray-700 font-semibold text-sm">Belum ada pelamar</h3>
+                                <p class="text-gray-400 text-xs">Belum ada pelamar yang terdaftar.</p>
                             </div>
                         </td>
                     </tr>
@@ -250,30 +250,21 @@
 }"
 @open-import-modal.window="showModal = true"
 x-show="showModal"
-x-transition:enter="transition ease-out duration-300"
-x-transition:enter-start="opacity-0"
-x-transition:enter-end="opacity-100"
-x-transition:leave="transition ease-in duration-200"
-x-transition:leave-start="opacity-100"
-x-transition:leave-end="opacity-0"
+x-transition.opacity.duration.200ms
 x-cloak
-class="fixed inset-0 z-50 overflow-y-auto"
+class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+@click.self="showModal = false"
+style="display: none;"
 aria-labelledby="modal-title" role="dialog" aria-modal="true">
 
-    {{-- Backdrop with blur --}}
-    <div class="fixed inset-0 bg-black/60 backdrop-blur-sm" @click="showModal = false"></div>
-
-    {{-- Modal positioning --}}
-    <div class="fixed inset-0 flex items-center justify-center p-4">
-        <div x-show="showModal"
-             x-transition:enter="transition ease-out duration-300"
-             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
-             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
-             x-transition:leave="transition ease-in duration-200"
-             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-             x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-             @click.away="showModal = false"
-             class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <div x-show="showModal"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
             
             {{-- Header --}}
             <div class="relative bg-gradient-to-r from-[#7a1111] via-[#8b1515] to-[#6e1010] px-6 py-5">
@@ -403,7 +394,6 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                 </form>
             </div>
         </div>
-    </div>
 </div>
 
 @endsection
