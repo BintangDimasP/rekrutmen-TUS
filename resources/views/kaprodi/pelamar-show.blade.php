@@ -33,7 +33,7 @@
                      x-data="{
                         val: @if(is_null($activeLamaran->is_direkomendasikan_kaprodi)) null @else {{ $activeLamaran->is_direkomendasikan_kaprodi ? 'true' : 'false' }} @endif,
                         loading: false,
-                        isDisabled: {{ $activeLamaran->status !== 'menunggu' ? 'true' : 'false' }},
+                        isDisabled: {{ $activeLamaran->status !== 'seleksi_tahap1' ? 'true' : 'false' }},
                         async setStatus(newVal) {
                             if (this.loading || this.isDisabled || this.val === newVal) return;
                             let oldVal = this.val;
@@ -73,7 +73,7 @@
                             'bg-emerald-500': val === true,
                             'opacity-50 pointer-events-none cursor-not-allowed': loading || isDisabled
                          }"
-                         :title="isDisabled ? 'Tidak dapat diubah karena lamaran sudah diproses Admin' : ''">
+                         :title="isDisabled ? 'Rekomendasi hanya dapat diberikan saat pelamar berada di Seleksi Tahap 1' : ''">
                         
                         {{-- Sliding Thumb --}}
                         <div class="absolute top-1 bottom-1 w-6 bg-white rounded-full shadow-md transition-all duration-300 pointer-events-none" 

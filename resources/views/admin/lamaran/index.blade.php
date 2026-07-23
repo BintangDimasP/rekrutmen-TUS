@@ -203,17 +203,21 @@
                             @endphp
                             
                             @if($lamaran->status === 'menunggu')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[0.65rem] text-center font-bold">
+                                    Menunggu
+                                </span>
+                            @elseif($lamaran->status === 'seleksi_tahap1')
                                 @if($lamaran->is_direkomendasikan_kaprodi === true)
                                     <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold">
-                                        Direkomendasikan
+                                        Tahap 1 – Direkomendasikan
                                     </span>
                                 @elseif($lamaran->is_direkomendasikan_kaprodi === false)
                                     <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold">
-                                        Tidak Direkomendasi
+                                        Tahap 1 – Tidak Direkomendasikan
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[0.65rem] text-center font-bold">
-                                        Menunggu
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-blue-800 text-white text-[0.65rem] text-center font-bold">
+                                        Tahap 1 – Menunggu Rekom
                                     </span>
                                 @endif
                             @else

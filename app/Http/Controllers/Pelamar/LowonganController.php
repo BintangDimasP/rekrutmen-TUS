@@ -139,10 +139,16 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek nomor WhatsApp sudah diisi (wajib untuk notifikasi)
+        // Cek nomor WhatsApp sudah diisi
         if (empty($pelamar->no_telepon)) {
             return redirect()->route('pelamar.profil.index')
-                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.');
+                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu.');
+        }
+
+        // Cek verifikasi OTP WhatsApp
+        if (!$pelamar->phone_verified_at) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Nomor WhatsApp Anda belum diverifikasi. Lakukan verifikasi OTP WA di menu Profil terlebih dahulu sebelum melamar.');
         }
 
         return view('pelamar.lowongan.apply', compact('lowongan', 'pelamar'));
@@ -215,10 +221,16 @@ class LowonganController extends Controller
                 ->with('warning', 'Verifikasi email Anda terlebih dahulu sebelum melamar.');
         }
 
-        // Cek nomor WhatsApp sudah diisi (wajib untuk notifikasi)
+        // Cek nomor WhatsApp sudah diisi
         if (empty($pelamar->no_telepon)) {
             return redirect()->route('pelamar.profil.index')
-                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu untuk menerima notifikasi.');
+                ->with('warning', 'Lengkapi nomor WhatsApp Anda terlebih dahulu.');
+        }
+
+        // Cek verifikasi OTP WhatsApp
+        if (!$pelamar->phone_verified_at) {
+            return redirect()->route('pelamar.profil.index')
+                ->with('warning', 'Nomor WhatsApp Anda belum diverifikasi. Lakukan verifikasi OTP WA di menu Profil terlebih dahulu sebelum melamar.');
         }
 
         $request->validate([

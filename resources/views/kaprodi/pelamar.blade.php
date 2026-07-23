@@ -179,18 +179,17 @@
                                 <span class="text-xs text-gray-800 font-semibold block truncate" :title="lamaran.lowongan_nama" x-text="lamaran.lowongan_nama"></span>
                             </td>
                             <td class="py-3 px-5 max-w-0 text-center">
-                                {{-- Status = menunggu: tampilkan berdasarkan rekomendasi kaprodi --}}
-                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === null">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 text-[0.65rem] text-center font-bold tracking-wide">Menunggu</span>
+                                {{-- Status seleksi_tahap1: tampilkan berdasarkan rekomendasi kaprodi --}}
+                                <template x-if="lamaran.status === 'seleksi_tahap1' && lamaran.is_direkomendasikan_kaprodi === null">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tahap 1 – Menunggu Rekom</span>
                                 </template>
-                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === true">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Direkomendasikan</span>
+                                <template x-if="lamaran.status === 'seleksi_tahap1' && lamaran.is_direkomendasikan_kaprodi === true">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tahap 1 – Direkomendasikan</span>
                                 </template>
-                                <template x-if="lamaran.status === 'menunggu' && lamaran.is_direkomendasikan_kaprodi === false">
-                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tidak Direkomendasikan</span>
+                                <template x-if="lamaran.status === 'seleksi_tahap1' && lamaran.is_direkomendasikan_kaprodi === false">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tahap 1 – Tidak Direkomendasikan</span>
                                 </template>
                                 {{-- Status lain --}}
-                                <template x-if="lamaran.status === 'seleksi_tahap1'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Seleksi Tahap 1</span></template>
                                 <template x-if="lamaran.status === 'seleksi_tahap2'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-indigo-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Seleksi Tahap 2</span></template>
                                 <template x-if="lamaran.status === 'diterima'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Diterima</span></template>
                                 <template x-if="lamaran.status === 'ditolak'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Ditolak</span></template>

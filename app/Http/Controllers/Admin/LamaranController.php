@@ -90,12 +90,52 @@ class LamaranController extends Controller
 
         $statusLama = $lamaran->status;
 
-        // VALIDASI WAJIB: Admin tidak bisa loloskan ke Tahap 1 tanpa rekomendasi Kaprodi
-        if ($validated['status'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi) {
-            return back()->withErrors([
-                'status' => 'Pelamar ini belum mendapatkan rekomendasi dari Kaprodi. Lolos Tahap 1 tidak dapat diproses.',
-            ])->withInput();
+        // ── GOLDEN RULES: validasi alur workflow rekrutmen ─────────────────
+        //
+        // Rule 2: Ke seleksi_tahap2 → wajib sudah di tahap1, direkomendasikan, dan SUDAH ADA JADWAL
+        if ($validated['status'] === 'seleksi_tahap2') {
+            if ($lamaran->status !== 'seleksi_tahap1') {
+                return back()->withErrors([
+                    'status' => 'Pelamar harus berada di Seleksi Tahap 1 sebelum dapat dijadwalkan ke Tahap 2.',
+                ])->withInput();
+            }
+            if (!$lamaran->is_direkomendasikan_kaprodi) {
+                return back()->withErrors([
+                    'status' => 'Pelamar belum mendapatkan rekomendasi dari Kaprodi. Penjadwalan Seleksi Tahap 2 tidak dapat diproses.',
+                ])->withInput();
+            }
+            
+            $jadwals = JadwalSeleksi::where('pelamar_id', $lamaran->pelamar_id)
+                ->where('lowongan_id', $lamaran->lowongan_id)
+                ->get();
+            if ($jadwals->isEmpty()) {
+                return back()->withErrors([
+                    'status' => 'Jadwal belum dibuat. Status akan otomatis menjadi Tahap 2 setelah Admin membuat Jadwal Seleksi.',
+                ])->withInput();
+            }
         }
+
+        // Rule 3: Ke diterima → wajib sudah ada jadwal dan SEMUA jadwal sudah dinilai
+        if ($validated['status'] === 'diterima') {
+            $jadwals = JadwalSeleksi::where('pelamar_id', $lamaran->pelamar_id)
+                ->where('lowongan_id', $lamaran->lowongan_id)
+                ->with('penilaian')
+                ->get();
+
+            if ($jadwals->isEmpty()) {
+                return back()->withErrors([
+                    'status' => 'Pelamar belum dijadwalkan untuk Seleksi Tahap 2. Status diterima tidak dapat diproses.',
+                ])->withInput();
+            }
+
+            $belumDinilai = $jadwals->filter(fn($j) => $j->penilaian === null)->count();
+            if ($belumDinilai > 0) {
+                return back()->withErrors([
+                    'status' => "Masih ada {$belumDinilai} sesi yang belum dinilai oleh Penguji. Status diterima tidak dapat diproses.",
+                ])->withInput();
+            }
+        }
+        // ──────────────────────────────────────────────────────────────────
 
         $lamaran->update($validated);
 
@@ -113,14 +153,7 @@ class LamaranController extends Controller
             $userId    = $lamaran->pelamar?->user?->id;
             $posisi    = $lamaran->lowongan?->nama_posisi ?? 'Lowongan';
 
-            $statusLabels = [
-                'menunggu'       => 'Menunggu',
-                'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)',
-                'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)',
-                'diterima'       => 'Diterima',
-                'ditolak'        => 'Ditolak',
-            ];
-            $labelBaru = $statusLabels[$validated['status']] ?? $validated['status'];
+            $labelBaru = \App\Models\Lamaran::NOTIF_LABELS[$validated['status']] ?? $validated['status'];
 
             if ($userId) {
                 Notifikasi::kirim(
@@ -134,16 +167,23 @@ class LamaranController extends Controller
                 );
             }
 
-            // Notify kaprodi when status changes to diterima or ditolak
-            if (in_array($validated['status'], ['diterima', 'ditolak'])) {
+            // Notify kaprodi when status changes to seleksi_tahap1, diterima, or ditolak
+            if (in_array($validated['status'], ['seleksi_tahap1', 'diterima', 'ditolak'])) {
                 $lamaran->load(['lowongan.prodi']);
                 $namaP = $lamaran->pelamar->nama ?? '-';
                 $posisiLog = $lamaran->lowongan->nama_posisi ?? '-';
                 $prodiNama = $lamaran->lowongan->prodi->nama ?? '-';
                 $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
-                $statusTeks = $validated['status'] === 'diterima' ? 'diterima' : 'ditolak';
-                $msgLog = "Pelamar {$namaP} telah {$statusTeks} pada lowongan {$posisiLog} ({$prodiNama}) pada {$waktu}.";
-                $judulLog = $validated['status'] === 'diterima' ? 'Pelamar Diterima' : 'Pelamar Ditolak';
+                
+                if ($validated['status'] === 'seleksi_tahap1') {
+                    $judulLog = 'Pelamar Memasuki Tahap 1';
+                    $msgLog = "Pelamar {$namaP} telah diproses ke Seleksi Tahap 1 untuk lowongan {$posisiLog}. Harap segera lakukan review dan berikan rekomendasi.";
+                } else {
+                    $statusTeks = $validated['status'] === 'diterima' ? 'diterima' : 'ditolak';
+                    $judulLog = $validated['status'] === 'diterima' ? 'Pelamar Diterima' : 'Pelamar Ditolak';
+                    $msgLog = "Pelamar {$namaP} telah {$statusTeks} pada lowongan {$posisiLog} ({$prodiNama}) pada {$waktu}.";
+                }
+
                 // Notify kaprodi of that prodi
                 $prodiId = $lamaran->lowongan->prodi_id ?? null;
                 if ($prodiId) {

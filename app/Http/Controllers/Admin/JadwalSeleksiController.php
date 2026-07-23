@@ -211,12 +211,15 @@ class JadwalSeleksiController extends Controller
                         $pelamarUser = $pelamar->user;
                         if ($pelamarUser) {
                             $posisi = $lowongan->nama_posisi ?? 'Lowongan';
-                            $statusLabel = Lamaran::STATUS_LABELS['seleksi_tahap2'] ?? 'Seleksi Tahap 2';
+                            $statusLabel = Lamaran::NOTIF_LABELS['seleksi_tahap2'] ?? 'Seleksi Tahap 2 (Micro Teaching & Wawancara)';
                             
-                            \App\Models\Notifikasi::kirimStatusPelamar(
+                            \App\Models\Notifikasi::kirim(
                                 $pelamarUser->id,
                                 'Status Lamaran Diperbarui',
-                                "Status lamaran Anda untuk posisi {$posisi} telah diubah menjadi: {$statusLabel}."
+                                "Status lamaran Anda untuk posisi \"{$posisi}\" telah diubah menjadi: {$statusLabel}.",
+                                'status',
+                                'rekrutmen_informasi_status_pelamar',
+                                [$posisi, $statusLabel, '-']
                             );
                         }
                     }
@@ -695,7 +698,8 @@ class JadwalSeleksiController extends Controller
 
     /**
      * GET /admin/api/pelamar-by-lowongan?lowongan_id=X
-     * Hanya pelamar berstatus seleksi_tahap1 yang tampil.
+     * Hanya pelamar berstatus seleksi_tahap1 DAN sudah direkomendasikan Kaprodi yang tampil.
+     * Ini memastikan penjadwalan hanya dapat dilakukan untuk kandidat yang layak.
      */
     public function apiPelamar(Request $request)
     {
@@ -703,15 +707,16 @@ class JadwalSeleksiController extends Controller
 
         $pelamars = Pelamar::whereHas('lamarans', function ($q) use ($lowonganId) {
             $q->where('lowongan_id', $lowonganId)
-                ->where('status', 'seleksi_tahap1');
+                ->where('status', 'seleksi_tahap1')
+                ->where('is_direkomendasikan_kaprodi', true); // Wajib sudah direkomendasikan Kaprodi
         })
             ->with(['user'])
             ->orderBy('nama')
             ->get()
             ->map(fn($p) => [
-                'id' => $p->id,
-                'nama' => $p->nama,
-                'email' => $p->user?->email ?? '-',
+                'id'     => $p->id,
+                'nama'   => $p->nama,
+                'email'  => $p->user?->email ?? '-',
                 'jenjang' => $p->jenjang ?? '-',
             ]);
 

@@ -64,14 +64,14 @@ trait NotificationMessage
             }
 
             // Tambah button copy_code untuk template Authentication (OTP)
-            // Tombol "Salin Kode" butuh parameter copy_code dengan nilai OTP
+            // Tombol "Salin Kode" (Authentication Template) biasanya menggunakan sub_type "url" dan "text" pada Graph API
             if (!empty($params[0]) && $templateName === 'rekrutmen_informasi_send_otp') {
                 $components[] = [
                     "type" => "button",
-                    "sub_type" => "copy_code",
+                    "sub_type" => "url",
                     "index" => "0",
                     "parameters" => [
-                        ["type" => "coupon_code", "coupon_code" => $params[0]]
+                        ["type" => "text", "text" => $params[0]]
                     ]
                 ];
             }

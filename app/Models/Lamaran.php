@@ -18,6 +18,15 @@ class Lamaran extends Model
         'mengundurkan_diri' => 'Mengundurkan Diri',
     ];
 
+    const NOTIF_LABELS = [
+        'menunggu'       => 'Menunggu',
+        'seleksi_tahap1' => 'Seleksi Tahap 1 (Administrasi)',
+        'seleksi_tahap2' => 'Seleksi Tahap 2 (Micro Teaching & Wawancara)',
+        'diterima'       => 'Diterima',
+        'ditolak'        => 'Ditolak',
+        'mengundurkan_diri' => 'Mengundurkan Diri',
+    ];
+
     protected $fillable = [
         'pelamar_id',
         'lowongan_id',

@@ -791,13 +791,16 @@
                                     @foreach($editSteps as $j => $es)
                                     @php
                                         $isDisabled = false;
+                                        // Rule: tidak bisa kembali ke status sebelumnya
                                         if ($es['order'] < $currentOrder) $isDisabled = true;
-                                        if ($es['val'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi) $isDisabled = true;
-                                        if ($es['val'] === 'seleksi_tahap2' && !$hasJadwal && $currentOrder < 3) $isDisabled = true;
+                                        // Rule 2: ke Tahap 2 → wajib sudah di Tahap 1, direkomendasikan Kaprodi, DAN sudah ada jadwal!
+                                        if ($es['val'] === 'seleksi_tahap2' && (!$lamaran->is_direkomendasikan_kaprodi || $lamaran->status !== 'seleksi_tahap1' || !$hasJadwal)) $isDisabled = true;
+                                        // Rule 3: ke diterima → wajib semua nilai sudah masuk
                                         if ($es['val'] === 'diterima' && !$hasBothScores) $isDisabled = true;
                                         $disabledTitle = match(true) {
-                                            $es['val'] === 'seleksi_tahap1' && !$lamaran->is_direkomendasikan_kaprodi => 'Pelamar belum direkomendasikan Kaprodi',
-                                            $es['val'] === 'seleksi_tahap2' && !$hasJadwal => 'Jadwal belum dibuat',
+                                            $es['val'] === 'seleksi_tahap2' && !$lamaran->is_direkomendasikan_kaprodi => 'Pelamar belum direkomendasikan Kaprodi',
+                                            $es['val'] === 'seleksi_tahap2' && $lamaran->status !== 'seleksi_tahap1' => 'Pelamar harus berada di Seleksi Tahap 1 terlebih dahulu',
+                                            $es['val'] === 'seleksi_tahap2' && !$hasJadwal => 'Jadwal belum dibuat. Status ini akan terupdate OTOMATIS saat jadwal dibuat.',
                                             $es['val'] === 'diterima' && !$hasBothScores => 'Penilaian belum lengkap',
                                             default => 'Syarat belum terpenuhi',
                                         };

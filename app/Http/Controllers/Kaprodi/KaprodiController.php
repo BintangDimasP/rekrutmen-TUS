@@ -70,7 +70,8 @@ class KaprodiController extends Controller
         $lowonganIds = Lowongan::where('prodi_id', $prodiId)->pluck('id');
 
         $query = Lamaran::with(['pelamar.user', 'lowongan'])
-            ->whereIn('lowongan_id', $lowonganIds);
+            ->whereIn('lowongan_id', $lowonganIds)
+            ->where('status', 'seleksi_tahap1'); // Kaprodi hanya melihat pelamar yg sudah lolos pemberkasan
 
         // Search by nama atau no telepon
         if ($request->filled('search')) {
@@ -129,6 +130,7 @@ class KaprodiController extends Controller
 
         $lamarans = Lamaran::with(['pelamar.user', 'lowongan'])
             ->whereIn('lowongan_id', $lowonganIds)
+            ->where('status', 'seleksi_tahap1') // Kaprodi hanya melihat pelamar yg sudah lolos pemberkasan
             ->get()
             ->filter(function ($lamaran) use ($search, $lowongan_id, $status) {
                 $matchSearch = empty($search) || 
@@ -221,8 +223,8 @@ class KaprodiController extends Controller
             return response()->json(['success' => false, 'message' => 'Unauthorized.'], 403);
         }
 
-        if ($lamaran->status !== 'menunggu') {
-            return response()->json(['success' => false, 'message' => 'Status lamaran sudah diproses oleh Admin.'], 403);
+        if ($lamaran->status !== 'seleksi_tahap1') {
+            return response()->json(['success' => false, 'message' => 'Rekomendasi hanya dapat diberikan untuk pelamar yang berada di Seleksi Tahap 1 (Pemberkasan).'], 403);
         }
 
         $nilai = $request->input('value');
