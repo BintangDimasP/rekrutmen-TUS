@@ -233,10 +233,14 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $lowongan->load(['prodi', 'lamarans.pelamar']);
 
-        // Ambil hanya pelamar yang diterima atau ditolak
+        // Ambil hanya pelamar yang diterima saja (berdasarkan permintaan user)
         $lamaranList = $lowongan->lamarans
-            ->whereIn('status', ['diterima', 'ditolak'])
+            ->where('status', 'diterima')
             ->values();
+
+        if ($lamaranList->isEmpty()) {
+            return redirect()->back()->with('error', 'Belum ada kandidat yang berstatus Diterima pada lowongan ini.');
+        }
 
         $now = now();
 

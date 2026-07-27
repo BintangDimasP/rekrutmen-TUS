@@ -444,14 +444,9 @@
                                 </span>
                             @elseif(!$pelamar->phone_verified_at)
                                 <button type="button" @click="sendPhoneOtp" :disabled="isLoadingPhoneOtp"
-                                    class="text-[0.65rem] font-bold text-white bg-green-600 hover:bg-green-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap disabled:opacity-50 flex-shrink-0">
-                                    <span x-text="isLoadingPhoneOtp ? 'Mengirim...' : 'Verifikasi WA'"></span>
+                                    class="text-[0.65rem] font-bold text-white bg-green-800 hover:bg-green-700 px-3 py-1 rounded-md transition-colors shadow-sm whitespace-nowrap disabled:opacity-50 flex-shrink-0">
+                                    <span x-text="isLoadingPhoneOtp ? 'Mengirim...' : 'Verifikasi'"></span>
                                 </button>
-                            @else
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-50 border border-green-200 text-[0.6rem] font-bold text-green-700">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                                    Terverifikasi
-                                </span>
                             @endif
                         </div>
                         <input x-show="isEditing" x-cloak type="text" name="no_telepon"
@@ -844,7 +839,13 @@
                             @endif
                         </div>
                         <div>
-                            <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $pelamar->kategori_sertifikat ?: 'Sertifikat' }}</p>
+                            @php
+                                $katSertifikat = $pelamar->kategori_sertifikat;
+                                $labelSertifikat = 'Sertifikat';
+                                if ($katSertifikat === 'kompetensi') $labelSertifikat = 'Sertifikat Kompetensi';
+                                elseif ($katSertifikat === 'keahlian_khusus') $labelSertifikat = 'Sertifikat Keahlian Khusus';
+                            @endphp
+                            <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $labelSertifikat }}</p>
                             @if($pelamar->file_sertifikat)
                                 <a href="{{ asset('storage/' . $pelamar->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>
                             @else

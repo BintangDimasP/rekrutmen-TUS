@@ -47,25 +47,29 @@
                         @forelse($lamaranTerbaru as $lamaran)
                             @php
                                 $statusColors = [
-                                    'menunggu'       => 'text-gray-500',
-                                    'seleksi_tahap1' => 'text-blue-600',
-                                    'seleksi_tahap2' => 'text-indigo-600',
-                                    'diterima'       => 'text-green-600',
-                                    'ditolak'        => 'text-red-600',
+                                    'menunggu'       => 'bg-gray-50 border border-gray-200 text-gray-500',
+                                    'seleksi_tahap1' => 'bg-blue-800 text-white',
+                                    'seleksi_tahap2' => 'bg-indigo-800 text-white',
+                                    'diterima'       => 'bg-green-800 text-white',
+                                    'ditolak'        => 'bg-red-800 text-white',
                                 ];
-                                $color = $statusColors[$lamaran->status] ?? 'text-gray-500';
+                                $colorClass = $statusColors[$lamaran->status] ?? 'bg-gray-50 border border-gray-200 text-gray-500';
                             @endphp
                             <tr class="hover:bg-gray-50/50 transition-colors">
                                 <td class="py-3 px-5">
                                     <div class="text-sm font-semibold text-gray-800">{{ $lamaran->pelamar->nama }}</div>
-                                    <div class="text-xs text-gray-400 font-medium mt-0.5 truncate">{{ $lamaran->pelamar->user?->email }}</div>
+                                    <div class="text-[0.65rem] text-gray-500 mt-0.5">{{ $lamaran->pelamar->user->email ?? '-' }}</div>
                                 </td>
                                 <td class="py-3 px-5">
                                     <div class="text-sm font-semibold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</div>
                                 </td>
-                                <td class="py-3 px-5 text-sm text-gray-600">{{ $lamaran->created_at->format('d M Y') }}</td>
+                                <td class="py-3 px-5 text-sm font-semibold text-gray-700">
+                                    {{ $lamaran->created_at->format('d/m/Y') }}
+                                </td>
                                 <td class="py-3 px-5 text-center">
-                                    <span class="text-sm font-bold {{ $color }}">{{ $lamaran->status_label }}</span>
+                                    <span class="inline-flex px-2 py-1 rounded-lg text-[0.65rem] font-bold uppercase tracking-wide {{ $colorClass }}">
+                                        {{ str_replace('_', ' ', $lamaran->status) }}
+                                    </span>
                                 </td>
                             </tr>
                         @empty

@@ -151,10 +151,20 @@
         </div>
 
         {{-- Print Berita Acara button (outside card, flush right) --}}
-        <a href="{{ route('admin.lowongan.beritaAcara', $lowongan) }}" target="_blank"
-           class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Cetak Berita Acara">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-        </a>
+        @php
+            $hasDiterima = $lowongan->lamarans->where('status', 'diterima')->count() > 0;
+        @endphp
+        @if($hasDiterima)
+            <a href="{{ route('admin.lowongan.beritaAcara', $lowongan) }}" target="_blank"
+               class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Cetak Berita Acara">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            </a>
+        @else
+            <button type="button" @click.prevent="if(window.showAdminToast) window.showAdminToast('Gagal', 'Belum ada kandidat yang berstatus Diterima pada lowongan ini.', 'error')"
+               class="absolute top-0 right-0 h-full w-14 flex items-center justify-center bg-[#8b1515] text-white rounded-r-2xl hover:bg-red-900 transition-colors" title="Cetak Berita Acara">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+            </button>
+        @endif
     </div>
 
     {{-- Table Card --}}
@@ -241,9 +251,15 @@
                                 <a href="{{ route('admin.lamaran.show', $lamaran) }}" title="Detail" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                 </a>
-                                <a href="{{ route('admin.lamaran.cetak', $lamaran) }}" target="_blank" title="Cetak" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-                                </a>
+                                @if(in_array($lamaran->status, ['diterima', 'ditolak']))
+                                    <a href="{{ route('admin.lamaran.cetak', $lamaran) }}" target="_blank" title="Cetak" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                    </a>
+                                @else
+                                    <button type="button" @click.prevent="if(window.showAdminToast) window.showAdminToast('Gagal', 'Cetak Berita Acara Personal hanya bisa dilakukan untuk pelamar yang sudah berstatus Diterima atau Ditolak.', 'error')" title="Cetak" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                    </button>
+                                @endif
                                 <button type="button" 
                                         @click="deleteModalOpen = true; deleteActionUrl = '{{ route('admin.lamaran.destroy', $lamaran) }}'; deleteNama = '{{ addslashes($lamaran->pelamar->nama) }}'"
                                         title="Hapus" class="flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-700 hover:bg-red-50 rounded transition-colors inline m-0">
@@ -322,3 +338,40 @@
 
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    window.showAdminToast = function(title, message, type) {
+        var existing = document.getElementById('admin-local-toast');
+        if(existing) existing.remove();
+        
+        var toast = document.createElement('div');
+        toast.id = 'admin-local-toast';
+        toast.style.cssText = 'position:fixed;top:24px;right:24px;z-index:99999;display:flex;align-items:center;gap:12px;min-width:320px;max-width:420px;background:white;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.12);border:1px solid #e5e7eb;overflow:hidden;animation:toastSlideIn 0.3s ease forwards;';
+        
+        var color = type === 'error' ? '#ef4444' : (type === 'success' ? '#22c55e' : '#f59e0b');
+        var icon = type === 'error' 
+            ? '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>'
+            : '<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>';
+            
+        toast.innerHTML = 
+            '<div class="w-[5px] self-stretch flex-shrink-0" style="background:'+color+'"></div>' +
+            '<div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 my-3 ml-1" style="background:'+color+'">' + icon + '</div>' +
+            '<div class="flex-1 py-3 pr-2">' +
+                '<h4 class="text-sm font-bold text-gray-800">' + title + '</h4>' +
+                '<p class="text-xs text-gray-500 mt-0.5 leading-relaxed">' + message + '</p>' +
+            '</div>' +
+            '<button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-gray-600 p-2 mr-2 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>';
+            
+        if (!document.getElementById('toast-anim-style')) {
+            var style = document.createElement('style');
+            style.id = 'toast-anim-style';
+            style.textContent = '@keyframes toastSlideIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}';
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(toast);
+        setTimeout(function() { if (toast.parentElement) toast.remove(); }, 6000);
+    };
+</script>
+@endpush

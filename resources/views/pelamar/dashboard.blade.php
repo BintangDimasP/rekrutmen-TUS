@@ -65,15 +65,16 @@
                             <td class="py-5 px-4">
                                 @php
                                     $statusColors = [
-                                        'menunggu'       => 'bg-gray-50 text-gray-600 border-gray-200',
-                                        'seleksi_tahap1' => 'bg-blue-50 text-blue-700 border-blue-100',
-                                        'seleksi_tahap2' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
-                                        'diterima'       => 'bg-green-50 text-green-700 border-green-100',
-                                        'ditolak'        => 'bg-red-50 text-red-700 border-red-100',
+                                        'menunggu'       => 'bg-gray-50 text-gray-500 border border-gray-200',
+                                        'seleksi_tahap1' => 'bg-blue-800 text-white',
+                                        'seleksi_tahap2' => 'bg-indigo-800 text-white',
+                                        'diterima'       => 'bg-green-800 text-white',
+                                        'ditolak'        => 'bg-red-800 text-white',
+                                        'mengundurkan_diri'=> 'bg-gray-800 text-white',
                                     ];
-                                    $colorClass = $statusColors[$lamaran->status] ?? 'bg-gray-50 text-gray-600 border-gray-200';
+                                    $colorClass = $statusColors[$lamaran->status] ?? 'bg-gray-50 text-gray-500 border border-gray-200';
                                 @endphp
-                                <span class="inline-flex px-2 py-1 rounded-lg border text-[0.6rem] font-bold uppercase tracking-wide {{ $colorClass }}">
+                                <span class="inline-flex px-2 py-1 rounded-lg text-[0.6rem] font-bold uppercase tracking-wide {{ $colorClass }}">
                                     {{ $lamaran->status_label }}
                                 </span>
                             </td>

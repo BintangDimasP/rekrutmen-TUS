@@ -63,6 +63,10 @@ class LamaranController extends Controller
 
     public function cetak(Lamaran $lamaran)
     {
+        if (!in_array($lamaran->status, ['diterima', 'ditolak'])) {
+            return redirect()->back()->with('error', 'Cetak Berita Acara Personal hanya bisa dilakukan untuk pelamar yang sudah berstatus Diterima atau Ditolak.');
+        }
+
         $lamaran->load(['pelamar.user', 'lowongan.prodi']);
 
         $jadwals = JadwalSeleksi::with(['penguji', 'penilaian'])

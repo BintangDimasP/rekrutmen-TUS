@@ -190,20 +190,20 @@
                             <div class="text-sm text-gray-600 text-left whitespace-nowrap">{{ $lamaran->created_at->format('d M Y') }}</div>
                         </td>
                         <td class="py-3.5 px-4 text-left">
-                            @php
-                                $statusColors = [
-                                    'menunggu'          => 'bg-gray-100 text-gray-500 border-gray-200',
-                                    'seleksi_tahap1'    => 'bg-blue-50 text-blue-600 border-blue-100',
-                                    'seleksi_tahap2'    => 'bg-indigo-50 text-indigo-600 border-indigo-100',
-                                    'diterima'          => 'bg-green-50 text-green-600 border-green-100',
-                                    'ditolak'           => 'bg-red-50 text-red-600 border-red-100',
-                                    'mengundurkan_diri' => 'bg-slate-50 text-slate-600 border-slate-200',
-                                ];
-                                $colorClass = $statusColors[$lamaran->status] ?? $statusColors['menunggu'];
-                            @endphp
-                            <span class="inline-flex px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-wider border {{ $colorClass }}">
-                                {{ $lamaran->status_label }}
-                            </span>
+                                @php
+                                    $statusColors = [
+                                        'menunggu'          => 'bg-gray-50 border border-gray-200 text-gray-500',
+                                        'seleksi_tahap1'    => 'bg-blue-800 text-white',
+                                        'seleksi_tahap2'    => 'bg-indigo-800 text-white',
+                                        'diterima'          => 'bg-green-800 text-white',
+                                        'ditolak'           => 'bg-red-800 text-white',
+                                        'mengundurkan_diri' => 'bg-gray-800 text-white',
+                                    ];
+                                    $colorClass = $statusColors[$lamaran->status] ?? $statusColors['menunggu'];
+                                @endphp
+                                <span class="inline-flex px-2 py-1 rounded-lg text-[0.6rem] font-black uppercase tracking-wider {{ $colorClass }}">
+                                    {{ $lamaran->status_label }}
+                                </span>
                         </td>
                         <td class="py-3.5 px-4">
                             <div class="flex items-center justify-center">
