@@ -12,7 +12,7 @@ class LandingController extends Controller
     {
         // Ambil 6 lowongan terbaru yang masih aktif
         $lowongans = Lowongan::where('status', 'aktif')
-            ->where('tanggal_tutup', '>=', now())
+            ->whereDate('tanggal_tutup', '>=', now())
             ->with('prodi')
             ->orderBy('created_at', 'desc')
             ->take(6)

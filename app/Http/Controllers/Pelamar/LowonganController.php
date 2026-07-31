@@ -25,7 +25,7 @@ class LowonganController extends Controller
 
         $allLowongans = Lowongan::with('prodi')
             ->where('status', 'aktif')
-            ->where('tanggal_tutup', '>=', now())
+            ->whereDate('tanggal_tutup', '>=', now())
             ->latest()
             ->get();
 

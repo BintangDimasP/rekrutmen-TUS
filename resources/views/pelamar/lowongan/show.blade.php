@@ -231,7 +231,7 @@
                 </a>
             </div>
 
-            @elseif($lowongan->tanggal_tutup < now())
+            @elseif($lowongan->tanggal_tutup->endOfDay()->isPast())
             <div class="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
                 <div class="text-lg font-bold text-[#8b1515] mb-1">Pendaftaran Ditutup</div>
                 <p class="text-sm text-red-400">Batas waktu pendaftaran untuk posisi ini telah berakhir.</p>

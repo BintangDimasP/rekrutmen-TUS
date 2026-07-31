@@ -159,7 +159,7 @@
                                         <div class="text-[0.65rem] text-red-500 font-medium">Sudah lewat</div>
                                     @else
                                         <div class="text-[0.65rem] text-green-600 font-medium">
-                                            {{ $lowongan->tanggal_tutup->diffForHumans() }}</div>
+                                            {{ $lowongan->tanggal_tutup->endOfDay()->diffForHumans() }}</div>
                                     @endif
                                 </td>
                                 <td class="py-3 px-5 text-center">
