@@ -37,10 +37,11 @@
                 <table class="w-full text-left border-collapse table-fixed" style="min-width:550px">
                     <thead class="bg-[#8b1515] text-white">
                         <tr>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[28%]">Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Tanggal Lamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[22%]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Nama</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[24%]">Jenjang Pendidikan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[16%]">No. Telepon</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap w-[22%]">Posisi Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[16%]">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -61,10 +62,18 @@
                                     <div class="text-[0.65rem] text-gray-500 mt-0.5">{{ $lamaran->pelamar->user->email ?? '-' }}</div>
                                 </td>
                                 <td class="py-3 px-5">
-                                    <div class="text-sm font-semibold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</div>
+                                    <div class="text-sm text-gray-700 font-medium">
+                                        {{ $lamaran->pelamar->jenjang ?: '-' }} @if($lamaran->pelamar->institusi) – {{ $lamaran->pelamar->institusi }} @endif
+                                    </div>
+                                    @if($lamaran->pelamar->prodi_pendidikan)
+                                        <div class="text-[0.65rem] text-gray-400 uppercase tracking-widest mt-0.5">{{ $lamaran->pelamar->prodi_pendidikan }}</div>
+                                    @endif
                                 </td>
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-700">
-                                    {{ $lamaran->created_at->format('d/m/Y') }}
+                                    {{ $lamaran->pelamar->no_telepon ?: '-' }}
+                                </td>
+                                <td class="py-3 px-5">
+                                    <div class="text-sm font-semibold text-gray-800">{{ $lamaran->lowongan->nama_posisi }}</div>
                                 </td>
                                 <td class="py-3 px-5 text-center">
                                     <span class="inline-flex px-2 py-1 rounded-lg text-[0.65rem] font-bold uppercase tracking-wide {{ $colorClass }}">
@@ -74,7 +83,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="py-16 text-center">
+                                <td colspan="5" class="py-16 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center">
                                             <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">

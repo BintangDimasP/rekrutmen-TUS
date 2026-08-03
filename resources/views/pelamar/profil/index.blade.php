@@ -62,7 +62,7 @@
 </style>
 
 <div class="space-y-6" x-data="{
-    isEditing: {{ ($errors->any() || empty($pelamar->nik)) ? 'true' : 'false' }},
+    isEditing: {{ $errors->any() ? 'true' : 'false' }},
     showEdu2: {{ old('jenjang_2', $pelamar->jenjang_2) ? 'true' : 'false' }},
     showEdu3: {{ old('jenjang_3', $pelamar->jenjang_3) ? 'true' : 'false' }},
     jenjang1: '{{ old('jenjang', $pelamar->jenjang) }}',

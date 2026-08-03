@@ -252,7 +252,6 @@
             <div class="flex justify-center pt-2">
                 <button type="button" @click="showWithdrawModal = true"
                     class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-semibold transition-all shadow-md shadow-[#8b1515]/20">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Mengundurkan Diri
                 </button>
             </div>
