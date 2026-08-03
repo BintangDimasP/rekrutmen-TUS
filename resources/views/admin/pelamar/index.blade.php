@@ -242,7 +242,7 @@
 
 {{-- Import Modal (di luar container utama agar backdrop full-screen) --}}
 <div x-data="{ 
-    showModal: false,
+    showModal: {{ ($errors->has('import') || $errors->has('file')) ? 'true' : 'false' }},
     isLoading: false,
     fileName: '',
     fileSize: '',
@@ -291,22 +291,24 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
             {{-- Body --}}
             <div class="p-6">
                 {{-- Error Messages --}}
-                @if ($errors->has('import'))
+                @if ($errors->has('import') || $errors->has('file'))
                     <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2">
                         <svg class="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-sm text-red-700 font-medium">{{ $errors->first('import') }}</p>
+                        <div class="flex-1">
+                            <p class="text-sm text-red-700 font-medium">
+                                @if($errors->has('file'))
+                                    {{ $errors->first('file') }}
+                                @else
+                                    {{ $errors->first('import') }}
+                                @endif
+                            </p>
+                        </div>
                     </div>
                 @endif
 
-                @if (session('success'))
-                    <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl flex items-start gap-2">
-                        <svg class="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-sm text-green-700 font-medium">{{ session('success') }}</p>
-                    </div>
-                @endif
 
                 {{-- Download Template Link --}}
-                <p class="mb-5 text-sm text-gray-500">
+                <p class="mb-4 text-sm text-gray-500">
                     Belum punya template? <a href="{{ asset('templates/pelamar_template.xlsx') }}" download class="text-[#8b1515] font-semibold hover:underline">Download template di sini</a>
                 </p>
 

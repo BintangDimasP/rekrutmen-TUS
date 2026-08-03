@@ -152,7 +152,7 @@
         </div>
 
         {{-- User Card --}}
-        @php $isRangkap = auth()->check() && auth()->user()->is_penguji && auth()->user()->is_kaprodi; @endphp
+        @php $isRangkap = auth()->check() && auth()->user()->is_penguji && auth()->user()->is_kaprodi && in_array(auth()->user()->role, ['kaprodi', 'penguji']); @endphp
         <div class="px-4 py-5 border-b border-white/10"
              @if($isRangkap) x-data="{ open: false }" @click.outside="open = false" @endif>
 

@@ -12,17 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (DB::getDriverName() === 'mysql') {
-            // Modify column type to VARCHAR first
-            DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi VARCHAR(50)");
-        } else {
-            // SQLite — change via Schema builder
-            Schema::table('jadwal_seleksis', function (Blueprint $table) {
-                $table->string('tipe_seleksi', 50)->change();
-            });
-        }
+        // Modify column type to VARCHAR first
+        DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi VARCHAR(50)");
 
-        // Update existing data (cross-driver compatible)
+        // Update existing data
         DB::table('jadwal_seleksis')->where('tipe_seleksi', 'tahap1')->update(['tipe_seleksi' => 'wawancara']);
         DB::table('jadwal_seleksis')->where('tipe_seleksi', 'tahap2')->update(['tipe_seleksi' => 'micro_teaching']);
     }
@@ -36,13 +29,7 @@ return new class extends Migration
         DB::table('jadwal_seleksis')->where('tipe_seleksi', 'wawancara')->update(['tipe_seleksi' => 'tahap1']);
         DB::table('jadwal_seleksis')->where('tipe_seleksi', 'micro_teaching')->update(['tipe_seleksi' => 'tahap2']);
 
-        if (DB::getDriverName() === 'mysql') {
-            // Revert column type to ENUM
-            DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi ENUM('tahap1', 'tahap2')");
-        } else {
-            Schema::table('jadwal_seleksis', function (Blueprint $table) {
-                $table->string('tipe_seleksi', 50)->change();
-            });
-        }
+        // Revert column type to ENUM
+        DB::statement("ALTER TABLE jadwal_seleksis MODIFY tipe_seleksi ENUM('tahap1', 'tahap2')");
     }
 };

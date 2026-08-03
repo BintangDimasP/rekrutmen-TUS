@@ -49,10 +49,7 @@ class DashboardController extends Controller
         // 4. Monthly Chart Data
         $currentYear = Carbon::now()->year;
         
-        // Cross-driver: MySQL uses MONTH(), SQLite uses strftime
-        $monthExpr = DB::getDriverName() === 'sqlite'
-            ? "cast(strftime('%m', created_at) as integer)"
-            : 'MONTH(created_at)';
+        $monthExpr = 'MONTH(created_at)';
 
         $monthlyLamaran = Lamaran::select(
                 DB::raw("$monthExpr as month"),

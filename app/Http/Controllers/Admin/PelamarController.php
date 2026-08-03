@@ -64,15 +64,15 @@ class PelamarController extends Controller
      */
     public function import(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-        ], [
-            'file.required' => 'File harus dipilih.',
-            'file.mimes' => 'File harus berformat Excel (.xlsx, .xls) atau CSV.',
-            'file.max' => 'Ukuran file maksimal 5MB.',
-        ]);
-
         try {
+            $request->validate([
+                'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
+            ], [
+                'file.required' => 'File harus dipilih.',
+                'file.mimes'   => 'File harus berformat Excel (.xlsx, .xls) atau CSV.',
+                'file.max'     => 'Ukuran file maksimal 10MB.',
+            ]);
+
             Excel::import(new PelamarImport(), $request->file('file'));
 
             $adminNama = auth()->user()->name ?? 'Admin';
@@ -82,15 +82,20 @@ class PelamarController extends Controller
             });
 
             return back()->with('success', 'Data pelamar berhasil diimpor dari Excel.');
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Redirect validation errors ke bag 'import' agar modal auto-buka kembali
+            $allErrors = collect($e->errors())->flatten()->implode(' | ');
+            return back()->withErrors(['import' => $allErrors]);
+
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
             $errorMessages = [];
-            
             foreach ($failures as $failure) {
                 $errorMessages[] = "Baris {$failure->row()}: " . implode(', ', $failure->errors());
             }
-            
             return back()->withErrors(['import' => implode(' | ', $errorMessages)]);
+
         } catch (\Exception $e) {
             return back()->withErrors(['import' => 'Terjadi kesalahan saat mengimpor: ' . $e->getMessage()]);
         }

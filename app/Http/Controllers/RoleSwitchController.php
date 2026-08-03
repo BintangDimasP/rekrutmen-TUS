@@ -19,6 +19,11 @@ class RoleSwitchController extends Controller
         $user = Auth::user();
         $target = $request->role;
 
+        // Hanya role kaprodi dan penguji yang boleh melakukan switch role
+        if (!in_array($user->role, ['kaprodi', 'penguji'])) {
+            return back()->withErrors(['role' => 'Fitur ganti akses (switch role) hanya diperbolehkan untuk Kaprodi.']);
+        }
+
         // Hanya boleh pindah ke role yang dimiliki
         if ($target === 'penguji' && !$user->is_penguji) {
             return back()->withErrors(['role' => 'Anda tidak memiliki akses penguji.']);
