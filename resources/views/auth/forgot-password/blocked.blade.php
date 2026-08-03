@@ -36,14 +36,8 @@
             </a>
 
             <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
-                <div class="mb-14 flex items-center justify-center gap-2.5">
-                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
-                </div>
-
-                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-                    </svg>
+                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm shadow-sm">
+                    <img src="{{ asset('images/logo3.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
                 </div>
 
                 <h1 class="text-3xl font-bold mb-1 tracking-tight">Akses</h1>
@@ -59,14 +53,7 @@
         <div class="w-full lg:w-[55%] flex items-center justify-center p-6 sm:p-12 lg:p-24 bg-white relative">
             <div class="w-full max-w-[420px]">
 
-                {{-- Icon --}}
-                <div class="flex justify-center mb-6">
-                    <div class="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-[#b91c1c]" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
-                        </svg>
-                    </div>
-                </div>
+
 
                 <h3 class="text-xl font-bold text-gray-900 text-center mb-3">Mohon Maaf</h3>
 
@@ -77,7 +64,6 @@
                 {{-- Action --}}
                 <a href="{{ route('login') }}"
                    class="w-full flex items-center justify-center gap-2 bg-[#b91c1c] hover:bg-red-800 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-red-200/50 transition-all text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Kembali ke Login
                 </a>
             </div>

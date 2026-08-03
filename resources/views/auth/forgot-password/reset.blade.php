@@ -52,13 +52,8 @@
             <div class="blob blob-3"></div>
 
             <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
-                <div class="mb-14">
-                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="h-10 object-contain">
-                </div>
-                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
+                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm shadow-sm">
+                    <img src="{{ asset('images/logo3.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
                 </div>
                 <h1 class="text-3xl font-bold mb-1 tracking-tight">Buat</h1>
                 <h2 class="text-[2.2rem] font-serif-italic mb-6 font-medium italic">Password Baru</h2>

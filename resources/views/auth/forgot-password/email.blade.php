@@ -39,14 +39,8 @@
             </a>
 
             <div class="z-10 flex flex-col items-center max-w-[360px] text-center w-full">
-                <div class="mb-14 flex items-center justify-center gap-2.5">
-                    <img src="{{ asset('images/logo2.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
-                </div>
-
-                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
-                    </svg>
+                <div class="w-20 h-20 rounded-full border border-white/30 flex items-center justify-center mb-8 bg-white/5 backdrop-blur-sm shadow-sm">
+                    <img src="{{ asset('images/logo3.png') }}" alt="Telkom University Logo" class="w-full h-10 object-contain">
                 </div>
 
                 <h1 class="text-3xl font-bold mb-1 tracking-tight">Lupa</h1>

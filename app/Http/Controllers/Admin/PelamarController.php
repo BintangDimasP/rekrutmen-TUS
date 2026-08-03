@@ -16,7 +16,7 @@ class PelamarController extends Controller
      */
     public function index(Request $request)
     {
-        $pelamars = Pelamar::with(['user', 'lamarans.lowongan'])->latest()->get();
+        $pelamars = Pelamar::with(['user', 'lamarans.lowongan'])->orderBy('nama', 'asc')->get();
         $prodis = \App\Models\Prodi::orderBy('nama')->get();
 
         return view('admin.pelamar.index', compact('pelamars', 'prodis'));
