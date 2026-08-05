@@ -34,7 +34,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
 - Surat Pernyataan bersedia untuk mengurus Surat Lolos Butuh
 (Format pada link: bit.ly/Surat-Pernyataan-Lolos-Butuh)";
 
-    /** Daftar lowongan */
+    /** [CONTEKAN] READ: Menampilkan halaman utama daftar lowongan (mengambil data dari database dengan fungsi pagination) */
     public function index()
     {
         $lowongans = Lowongan::with('prodi')->latest()->paginate(10);
@@ -42,7 +42,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         return view('admin.lowongan.index', compact('lowongans', 'prodis'));
     }
 
-    /** Form buat lowongan baru */
+    /** [CONTEKAN] FORM: Menampilkan halaman form HTML untuk menambah/create lowongan baru */
     public function create()
     {
         $prodis            = Prodi::orderBy('nama')->get();
@@ -63,7 +63,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         ));
     }
 
-    /** Simpan lowongan baru */
+    /** [CONTEKAN] CREATE/STORE: Memproses submit dan menyimpan data form lowongan baru ke dalam database */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -117,13 +117,13 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                          ->with('success', 'Lowongan berhasil ditambahkan.');
     }
 
-    /** Detail lowongan — redirect ke daftar lamaran */
+    /** [CONTEKAN] READ DETAIL: Mengarahkan (redirect) ke halaman detail lamaran berdasarkan lowongan yang dipilih */
     public function show(Lowongan $lowongan)
     {
         return redirect()->route('admin.lamaran.index', $lowongan);
     }
 
-    /** Form edit lowongan */
+    /** [CONTEKAN] FORM EDIT: Menampilkan halaman form HTML untuk mengubah data lowongan yang sudah ada */
     public function edit(Lowongan $lowongan)
     {
         $prodis = Prodi::orderBy('nama')->get();
@@ -141,7 +141,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         return view('admin.lowongan.edit', compact('lowongan', 'prodis', 'prodiPrioritasOptions', 'skillOptions'));
     }
 
-    /** Update lowongan */
+    /** [CONTEKAN] UPDATE: Memproses submit dan menyimpan perubahan (edit) data lowongan ke dalam database */
     public function update(Request $request, Lowongan $lowongan)
     {
         $validated = $request->validate([
@@ -184,7 +184,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                          ->with('success', 'Lowongan berhasil diperbarui.');
     }
 
-    /** Toggle status lowongan */
+    /** [CONTEKAN] UPDATE (Specific): Mengubah hanya kolom status lowongan (aktif/ditutup) di database tanpa mengubah data lain */
     public function toggleStatus(Lowongan $lowongan)
     {
         $currentStatus = $lowongan->status; // Use computed status
@@ -212,7 +212,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
         return redirect()->route('admin.lowongan.index')->with('success', $message);
     }
 
-    /** Hapus lowongan */
+    /** [CONTEKAN] DELETE: Menghapus data lowongan secara permanen dari database */
     public function destroy(Lowongan $lowongan)
     {
         $nama = $lowongan->nama_posisi;
@@ -228,7 +228,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
                          ->with('success', 'Lowongan berhasil dihapus.');
     }
 
-    /** Cetak Berita Acara Penetapan Hasil Akhir Microteaching & Wawancara */
+    /** [CONTEKAN] FEATURE: Memproses data kandidat yang diterima untuk diexport/dicetak menjadi PDF Berita Acara */
     public function beritaAcara(Lowongan $lowongan)
     {
         $lowongan->load(['prodi', 'lamarans.pelamar']);

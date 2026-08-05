@@ -14,17 +14,17 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. Quick Stats
+        // menampilkan jumlah data
         $totalLowongan = Lowongan::count();
         $totalPelamar = Pelamar::count();
         $totalDiterima = Lamaran::where('status', 'diterima')->count();
 
-        // 2. Ringkasan Cepat
+        // data statistik lowongan : pelamar diterima
         $activeLowongan = Lowongan::all()->filter(fn($l) => $l->status === 'aktif')->count();
         $totalLamaran = Lamaran::count();
         $acceptanceRate = $totalLamaran > 0 ? round(($totalDiterima / $totalLamaran) * 100, 1) : 0;
 
-        // 3. Status Distribution (Donut Chart)
+        // data pie chart status
         $statusCounts = Lamaran::select('status', DB::raw('count(*) as total'))
             ->groupBy('status')
             ->get()
@@ -46,7 +46,7 @@ class DashboardController extends Controller
             'mengundurkan' => $countMengundurkan,
         ];
 
-        // 4. Monthly Chart Data
+        // data bar chart/grafik
         $currentYear = Carbon::now()->year;
         
         $monthExpr = 'MONTH(created_at)';
@@ -73,10 +73,8 @@ class DashboardController extends Controller
         $months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agt', 'Sep', 'Okt', 'Nov', 'Des'];
         
         $chartData = [];
-        $maxChartValue = 1; // Prevent division by zero
+        $maxChartValue = 1;
         
-        // Find max value up to current month (or all 12 if you prefer, but usually showing up to current month or all 12 is fine)
-        // We will show 8 months starting from a few months back, or just all 12. Let's do 12.
         for ($i = 1; $i <= 12; $i++) {
             $lamaranCount = $monthlyLamaran[$i] ?? 0;
             $diterimaCount = $monthlyDiterima[$i] ?? 0;
@@ -92,8 +90,6 @@ class DashboardController extends Controller
             ];
         }
 
-        // Set minimal batas atas 10 agar perubahan visual batang grafik terlihat jelas
-        // saat jumlah data pelamar masih tergolong sedikit.
         $maxChartValue = max(10, $maxChartValue);
 
         return view('admin.dashboard', compact(

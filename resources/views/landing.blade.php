@@ -3,31 +3,26 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {{-- Paksa tampilan light agar tidak digelapkan otomatis oleh "Force Dark Mode" browser HP --}}
     <meta name="color-scheme" content="light">
     <title>Rekrutmen Dosen — Telkom University</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Leaflet (peta + pin point) -->
+    <!-- alamat/map -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
           integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
           crossorigin=""/>
 
-    <!-- Styles / Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body { font-family: 'Inter', sans-serif; }
-
-        /* Kunci skema warna ke light: cegah browser HP menggelapkan halaman */
+        /* StyleLightt */
         html { color-scheme: light; }
 
-        /* ─── Animations (cannot be done purely in Tailwind) ─── */
         @keyframes slideInFromLeft {
             from { opacity: 0; transform: translateX(-60px); }
             to { opacity: 1; transform: translateX(0); }
@@ -38,7 +33,7 @@
         .animate-hero-2 { animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s forwards; opacity: 0; }
         .animate-hero-3 { animation: slideInFromLeft 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards; opacity: 0; }
 
-        /* Scroll reveal */
+        /* animasiscroll */
         .animate-on-scroll {
             opacity: 0;
             transform: translateY(30px);
@@ -50,7 +45,6 @@
         .animate-on-scroll.fade-scale { transform: scale(0.92) translateY(20px); }
         .animate-on-scroll.fade-scale.in-view { transform: scale(1) translateY(0); }
 
-        /* ─── Navbar scroll state (JS toggled) ─── */
         #navbar { transition: background-color 0.35s ease, box-shadow 0.35s ease; }
         #navbar.scrolled { background: #8b1515; box-shadow: 0 2px 16px rgba(0,0,0,0.15); }
         #navbar.scrolled .nav-link { color: #fff; }
@@ -60,10 +54,9 @@
         #navbar.scrolled .btn-daftar:hover { background: #f3f4f6; }
         #navbar.scrolled .logo-normal { opacity: 0; }
         #navbar.scrolled .logo-scrolled { opacity: 1; }
-        /* Mobile menu background always white regardless of scroll */
+        /* mobilee */
         #navbar .mobile-menu { background: #fff; }
-
-        /* ─── Panduan Card Hover Effects ─── */
+        /* Hovercard */
         .panduan-card {
             transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
         }
@@ -74,7 +67,6 @@
             box-shadow: 0 20px 48px rgba(0,0,0,0.18), 0 6px 16px rgba(0,0,0,0.10);
         }
 
-        /* Angka "01"–"04": snap hilang saat hover */
         .panduan-num {
             transition: none;
         }
@@ -89,7 +81,6 @@
             opacity: 0;
         }
 
-        /* Bubble angka besar: animasi pop dari bawah saat hover */
         .panduan-hover-num {
             transition:
                 opacity 0.25s ease,
@@ -102,13 +93,11 @@
             transform: translateX(-50%) translateY(0) scale(1);
         }
 
-        /* Judul & deskripsi: instant */
         .panduan-title { transition: none; }
         .panduan-desc  { transition: none; }
         .panduan-card:hover .panduan-title { color: #fff; }
         .panduan-card:hover .panduan-desc  { color: rgba(255,255,255,0.82); }
 
-        /* Dissolve masuk saat scroll reveal */
         .panduan-num-dissolve {
             opacity: 0;
             transform: translateY(12px);
@@ -123,7 +112,6 @@
         .panduan-card:nth-child(3) .panduan-num-dissolve { transition-delay: 0.41s; }
         .panduan-card:nth-child(4) .panduan-num-dissolve { transition-delay: 0.54s; }
 
-        /* ─── Lowongan Card ─── */
         .lowongan-card { transition: all 0.3s ease; }
         .lowongan-card::before {
             content: '';
@@ -153,7 +141,7 @@
                 </div>
             </a>
 
-            {{-- Desktop nav links --}}
+            <!-- Desktopnav -->
             <div class="hidden md:flex items-center gap-8">
                 <a href="#hero" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Beranda</a>
                 <a href="#panduan" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Panduan</a>
@@ -161,7 +149,7 @@
                 <a href="#lokasi" class="nav-link text-sm font-medium text-gray-900 no-underline transition-colors duration-300 hover:opacity-80">Lokasi</a>
             </div>
 
-            {{-- Desktop auth buttons --}}
+            <!-- desktoptombolauth -->
             <div class="hidden md:flex items-center gap-3">
                 @if (Route::has('login'))
                     @auth
@@ -178,7 +166,7 @@
                 @endif
             </div>
 
-            {{-- Mobile: auth + hamburger --}}
+            <!-- mobiletombolauth -->
             <div class="flex md:hidden items-center gap-2">
                 @if (Route::has('login'))
                     @auth
@@ -190,7 +178,7 @@
                         @endif
                     @endauth
                 @endif
-                {{-- Hamburger button --}}
+
                 <button @click="mobileOpen = !mobileOpen" type="button"
                         class="btn-masuk w-9 h-9 flex items-center justify-center rounded-md transition-all duration-300 hover:bg-black/5 focus:outline-none"
                         aria-label="Toggle menu">
@@ -204,7 +192,7 @@
             </div>
         </div>
 
-        {{-- Mobile dropdown menu --}}
+        <!-- mobiledropdown -->
         <div x-show="mobileOpen"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 -translate-y-2"
@@ -223,11 +211,9 @@
         </div>
     </nav>
 
-    {{-- ========================= HERO ========================= --}}
-    {{-- Desktop: background image kanan (versi asli). Mobile: foto & tulisan berdampingan --}}
+    <!-- tampilandesktop -->
     <section id="hero" class="relative overflow-hidden bg-white">
 
-        {{-- ── DESKTOP layout (md ke atas): persis seperti versi semula ── --}}
         <div class="hidden md:flex items-center min-h-screen"
              style="background: #fff url('{{ asset('images/hero-bg.png') }}') no-repeat center right / cover;">
             <div class="max-w-[1200px] mx-auto px-8 pt-[100px] pb-[60px] w-full">
@@ -250,12 +236,10 @@
             </div>
         </div>
 
-        {{-- ── MOBILE layout (di bawah md): foto & tulisan berdampingan ── --}}
+        <!-- tampilanmobile -->
         <div class="md:hidden relative overflow-hidden min-h-[100svh] flex items-center">
-            {{-- Background foto di kanan --}}
             <div class="absolute inset-0 bg-no-repeat bg-cover bg-right"
                  style="background-image: url('{{ asset('images/hero-bg.png') }}');"></div>
-            {{-- Overlay gradien putih agar teks tetap terbaca --}}
             <div class="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-white/20"></div>
 
             <div class="relative z-10 px-5 pt-[88px] pb-10 w-full">
@@ -280,7 +264,7 @@
 
     </section>
 
-    {{-- ========================= PANDUAN ========================= --}}
+    <!-- sectionpanduan -->
     <section id="panduan" class="bg-gray-50 py-12 sm:py-16 px-5 sm:px-8">
         <div class="max-w-[1200px] mx-auto text-center mb-16 animate-on-scroll slide-bottom">
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
@@ -334,7 +318,7 @@
         </div>
     </section>
 
-    {{-- ========================= LOWONGAN ========================= --}}
+    <!-- sectionlowongan -->
     <section id="lowongan" class="py-12 sm:py-16 px-5 sm:px-8 bg-white">
         <div class="max-w-[1200px] mx-auto text-center mb-16
          animate-on-scroll slide-bottom">
@@ -367,7 +351,7 @@
                     </div>
                 </div>
 
-                {{-- Meta: lokasi + deadline --}}
+                <!-- lokasideadline -->
                 <div class="flex items-center gap-4 mb-4">
                     <div class="flex items-center gap-1.5 text-xs text-gray-500">
                         <svg class="w-3.5 h-3.5 shrink-0 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -417,7 +401,6 @@
             @endforelse
         </div>
 
-        {{-- Footer Actions --}}
         @if($lowongans->count() > 0)
         <div class="max-w-[1200px] mx-auto flex items-center justify-center animate-on-scroll slide-bottom">
             @auth
@@ -442,7 +425,7 @@
         @endif
     </section>
 
-    {{-- ========================= LOKASI ========================= --}}
+    <!-- sectionlokasi -->
     <section id="lokasi" class="bg-gray-50 py-12 sm:py-16 px-5 sm:px-8">
         <div class="max-w-[1200px] mx-auto">
 
@@ -461,15 +444,10 @@
                 </div>
             </div>
 
-            {{-- Peta interaktif dengan pin point (Leaflet + OpenStreetMap) --}}
             <div id="map-telu-surabaya" class="w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm animate-on-scroll fade-scale mb-10" style="height: 400px; z-index: 0;"></div>
-
-            {{-- Info bar bawah --}}
             <div class="flex flex-col md:flex-row md:items-stretch md:gap-8 gap-6 animate-on-scroll slide-bottom">
 
-                {{-- Foto gedung --}}
                 <div class="shrink-0 w-full md:w-[200px] h-[130px] rounded-xl overflow-hidden shadow-sm">
-                    {{-- Simpan foto gedung di: storage/app/public/images/telu-surabaya.jpg --}}
                     @if(file_exists(public_path('images/telu-surabaya.jpg')))
                         <img src="{{ asset('images/telu-surabaya.jpg') }}"
                              alt="Gedung Telkom University Surabaya"
@@ -486,7 +464,6 @@
                     @endif
                 </div>
 
-                {{-- Alamat --}}
                 <div class="flex-1 min-w-0 md:border-l md:border-gray-200 md:pl-8">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-4 h-4 text-[#8b1515] shrink-0" fill="currentColor" viewBox="0 0 24 24">
@@ -501,7 +478,6 @@
                     </p>
                 </div>
 
-                {{-- Kontak --}}
                 <div class="flex-1 min-w-0 md:border-l md:border-gray-200 md:pl-8">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-4 h-4 text-[#8b1515] shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -513,7 +489,6 @@
                     <p class="text-sm text-gray-600 leading-relaxed">rekrutmen@telkomuniversity.ac.id</p>
                 </div>
 
-                {{-- Tombol Get Directions --}}
                 <div class="shrink-0 self-start md:self-center">
                     <a href="https://www.google.com/maps/search/?api=1&query=-7.314908,112.726939"
                        target="_blank"
@@ -527,15 +502,13 @@
         </div>
     </section>
 
-    {{-- ========================= FOOTER ========================= --}}
+    <!-- sectionbawahfooter -->
     <footer class="bg-[#1a1a1a] text-gray-400 text-sm">
         <div class="max-w-[1200px] mx-auto px-5 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
-            {{-- Logo --}}
             <div>
                 <img src="{{ asset('images/logo2.png') }}" alt="Telkom University" class="h-12 object-contain mb-4">
             </div>
 
-            {{-- Kontak Kami --}}
             <div>
                 <h4 class="text-base font-bold text-white mb-4">Kontak Kami</h4>
                 <p class="text-sm font-semibold text-[#8b1515] mb-1">Untuk Perusahaan</p>
@@ -544,14 +517,12 @@
                 <p class="text-xs text-gray-400 leading-relaxed">Admin 081298678038 Chat Only (For Jobseeker)</p>
             </div>
 
-            {{-- Lokasi --}}
             <div>
                 <h4 class="text-base font-bold text-white mb-4">Lokasi</h4>
                 <p class="text-sm font-semibold text-[#8b1515] mb-1">Gedung Bangkit (Rektorat)</p>
                 <p class="text-xs text-gray-400 leading-relaxed">Gedung Bangkit Lantai 3, Jl. Telekomunikasi Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257</p>
             </div>
 
-            {{-- Fitur --}}
             <div>
                 <h4 class="text-base font-bold text-white mb-4">Fitur</h4>
                 <a href="#lowongan" class="block text-xs text-gray-400 no-underline mb-2 hover:text-white transition-colors">Lowongan</a>
@@ -559,9 +530,8 @@
             </div>
         </div>
 
-        {{-- Bottom Bar --}}
         <div class="bg-[#8b1515] px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 flex-wrap">
-            <p class="text-white text-xs m-0">Don't forget to follow Tel-U Career's official social media:</p>
+            <p class="text-white text-xs m-0">Don't forget to follow us on social media:</p>
             <div class="flex items-center gap-4">
                 <a href="#" aria-label="Instagram" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
@@ -583,7 +553,6 @@
     </footer>
 
     <script>
-        // ─── Scroll handler: transparent → red navbar ───
         const navbar = document.getElementById('navbar');
         const scrollThreshold = 60;
 
@@ -597,7 +566,6 @@
         window.addEventListener('scroll', onScroll, { passive: true });
         onScroll();
 
-        // ─── Intersection Observer untuk animasi scroll ───
         const observerOptions = {
             threshold: 0.15,
             rootMargin: '0px 0px -50px 0px'
@@ -617,13 +585,11 @@
             document.querySelectorAll('.animate-on-scroll').forEach(el => {
                 observer.observe(el);
             });
-            // Observe panduan-card secara terpisah untuk dissolve angka
             document.querySelectorAll('.panduan-card').forEach(el => {
                 observer.observe(el);
             });
         });
 
-        // ─── Smooth scroll for anchor links ───
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 const targetId = this.getAttribute('href').slice(1);
@@ -636,7 +602,7 @@
         });
     </script>
 
-    {{-- Leaflet untuk peta lokasi --}}
+    <!-- scriptleaflet -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
@@ -645,7 +611,7 @@
             const mapEl = document.getElementById('map-telu-surabaya');
             if (!mapEl || typeof L === 'undefined') return;
 
-            // Koordinat Telkom University Surabaya — Jl. Ketintang No.156
+            // koordinat
             const lat = -7.314908;
             const lng = 112.726939;
 
@@ -660,7 +626,6 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>'
             }).addTo(map);
 
-            // Pin point custom warna merah Telkom
             const pinIcon = L.divIcon({
                 className: 'telu-pin',
                 html: `
@@ -691,7 +656,6 @@
                 `)
                 .openPopup();
 
-            // Aktifkan scroll wheel zoom hanya saat user klik peta dulu
             map.on('focus', () => map.scrollWheelZoom.enable());
             map.on('blur', () => map.scrollWheelZoom.disable());
         });

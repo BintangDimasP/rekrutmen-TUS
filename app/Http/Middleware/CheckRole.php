@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class CheckRole
 {
     /**
-     * Cek role aktif user untuk akses area.
+     * 
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */

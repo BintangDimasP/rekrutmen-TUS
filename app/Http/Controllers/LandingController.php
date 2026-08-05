@@ -10,7 +10,7 @@ class LandingController extends Controller
 {
     public function index()
     {
-        // Ambil 6 lowongan terbaru yang masih aktif
+        // ambil data lowongan
         $lowongans = Lowongan::where('status', 'aktif')
             ->whereDate('tanggal_tutup', '>=', now())
             ->with('prodi')
@@ -18,7 +18,7 @@ class LandingController extends Controller
             ->take(6)
             ->get();
 
-        // Hitung total pendaftar
+        // hitung pelamar
         $totalPendaftar = Pelamar::count();
 
         return view('landing', compact('lowongans', 'totalPendaftar'));

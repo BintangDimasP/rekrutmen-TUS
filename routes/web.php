@@ -3,13 +3,10 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-// Default landing page
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('landing');
 
-// Autentikasi group
 Route::middleware(['auth'])->group(function () {
 
-    // Smart redirect: /dashboard akan otomatis mengarahkan ke dashboard yang sesuai rolenya
     Route::get('/dashboard', function () {
         $role = auth()->user()->role;
 
@@ -74,7 +71,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('admin/pelamar/import', [\App\Http\Controllers\Admin\PelamarController::class, 'import'])->name('admin.pelamar.import');
         Route::get('admin/pelamar/{pelamar}', [\App\Http\Controllers\Admin\PelamarController::class, 'show'])->name('admin.pelamar.show');
 
-        // Jadwal Seleksi Management
+        // Jadwal Seleksi Manajemen
         Route::get('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'index'])->name('admin.jadwal.index');
         Route::get('admin/jadwal/create', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'create'])->name('admin.jadwal.create');
         Route::post('admin/jadwal', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'store'])->name('admin.jadwal.store');
@@ -83,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('admin/jadwal-group', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroyGroup'])->name('admin.jadwal.destroyGroup');
         Route::delete('admin/jadwal/{jadwal}', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'destroy'])->name('admin.jadwal.destroy');
 
-        // API Endpoints (JSON - untuk AJAX di form penjadwalan)
+        // API Endpoints (penjadwalan)
         Route::get('admin/api/lowongan-by-prodi', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiLowongan'])->name('admin.api.lowongan');
         Route::get('admin/api/penguji-by-prodi', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPenguji'])->name('admin.api.penguji');
         Route::get('admin/api/pelamar-by-lowongan', [\App\Http\Controllers\Admin\JadwalSeleksiController::class, 'apiPelamar'])->name('admin.api.pelamar');
@@ -134,7 +131,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/notifikasi/{notifikasi}/baca', [\App\Http\Controllers\NotifikasiController::class, 'markRead'])->name('notifikasi.baca');
     Route::post('/notifikasi/baca-semua', [\App\Http\Controllers\NotifikasiController::class, 'markAllRead'])->name('notifikasi.baca.semua');
 
-    // Switch role (untuk dosen rangkap penguji + kaprodi)
+    // Switch role
     Route::post('/role/switch', [\App\Http\Controllers\RoleSwitchController::class, 'switch'])->name('role.switch');
 
     // Pengaturan akun (semua role: admin, pelamar, penguji, kaprodi)
@@ -144,7 +141,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/settings/foto', [\App\Http\Controllers\SettingController::class, 'deleteFoto'])->name('settings.foto.delete');
 });
 
-// Profile Management (Breeze default)
+// Profile Management
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
