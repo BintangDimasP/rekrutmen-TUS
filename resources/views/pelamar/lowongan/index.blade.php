@@ -175,9 +175,9 @@
                             </div>
                         @if($lowongan->prodi && $lowongan->prodi->logo)
                             <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}"
-                                class="w-[60px] h-[60px] rounded-full object-cover bg-white border border-gray-100 flex-shrink-0">
+                                class="w-14 h-14 rounded-full object-cover bg-white border border-gray-100 flex-shrink-0" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; max-width: 56px; max-height: 56px; object-fit: cover;">
                         @else
-                            <div class="w-[60px] h-[60px] rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm">
+                            <div class="w-14 h-14 rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;">
                                 <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                             </div>
                         @endif
@@ -265,9 +265,9 @@
                                 </div>
                                 @if($lowongan->prodi && $lowongan->prodi->logo)
                                     <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}"
-                                        class="w-[60px] h-[60px] rounded-full object-contain bg-white border border-gray-200 p-1 flex-shrink-0 grayscale">
+                                        class="w-14 h-14 rounded-full object-cover bg-white border border-gray-200 p-1 flex-shrink-0 grayscale" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px; max-width: 56px; max-height: 56px; object-fit: cover;">
                                 @else
-                                    <div class="w-[60px] h-[60px] rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm grayscale">
+                                    <div class="w-14 h-14 rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm grayscale" style="width: 56px; height: 56px; min-width: 56px; min-height: 56px;">
                                         <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                                     </div>
                                 @endif

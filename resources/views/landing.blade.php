@@ -338,9 +338,9 @@
                 <div class="flex items-start gap-4 mb-4">
                     <div class="shrink-0 mt-1">
                         @if($lowongan->prodi && $lowongan->prodi->logo)
-                            <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}" class="w-[48px] h-[48px] rounded-full object-cover bg-white border border-gray-100 shadow-sm">
+                            <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}" class="w-12 h-12 rounded-full object-cover bg-white border border-gray-100 shadow-sm shrink-0" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px; max-width: 48px; max-height: 48px; object-fit: cover;">
                         @else
-                            <div class="w-[48px] h-[48px] rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm p-1">
+                            <div class="w-12 h-12 rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm p-1 shrink-0" style="width: 48px; height: 48px; min-width: 48px; min-height: 48px;">
                                 <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                             </div>
                         @endif

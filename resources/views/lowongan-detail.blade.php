@@ -155,9 +155,9 @@
                     <div class="relative z-10 shrink-0">
                         @if($lowongan->prodi && $lowongan->prodi->logo)
                             <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}"
-                                class="w-[72px] h-[72px] rounded-full object-cover bg-white border-2 border-white/30 shadow-md">
+                                class="w-16 h-16 rounded-full object-cover bg-white border-2 border-white/30 shadow-md shrink-0" style="width: 64px; height: 64px; min-width: 64px; min-height: 64px; max-width: 64px; max-height: 64px; object-fit: cover;">
                         @else
-                            <div class="w-[72px] h-[72px] rounded-full bg-white border-2 border-white/30 flex items-center justify-center shadow-md p-1.5">
+                            <div class="w-16 h-16 rounded-full bg-white border-2 border-white/30 flex items-center justify-center shadow-md p-1.5 shrink-0" style="width: 64px; height: 64px; min-width: 64px; min-height: 64px;">
                                 <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                             </div>
                         @endif

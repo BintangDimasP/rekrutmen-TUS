@@ -15,9 +15,9 @@
                 <div class="p-6 flex flex-col items-center flex-1">
                     {{-- Logo --}}
                     @if($prodi->logo)
-                        <img src="{{ asset('storage/' . $prodi->logo) }}" alt="Logo {{ $prodi->nama }}" class="w-[84px] h-[84px] rounded-full object-cover border-4 border-gray-50 shadow-sm mb-4">
+                        <img src="{{ asset('storage/' . $prodi->logo) }}" alt="Logo {{ $prodi->nama }}" class="w-20 h-20 rounded-full object-cover border-4 border-gray-50 shadow-sm mb-4 shrink-0" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px; max-width: 80px; max-height: 80px; object-fit: cover;">
                     @else
-                        <div class="w-[84px] h-[84px] rounded-full bg-white border-4 border-gray-50 shadow-sm flex items-center justify-center p-2 mb-4">
+                        <div class="w-20 h-20 rounded-full bg-white border-4 border-gray-50 shadow-sm flex items-center justify-center p-2 mb-4 shrink-0" style="width: 80px; height: 80px; min-width: 80px; min-height: 80px;">
                             <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                         </div>
                     @endif
