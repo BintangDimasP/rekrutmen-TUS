@@ -11,6 +11,7 @@ class Lowongan extends Model
 
     protected $fillable = [
         'nama_posisi',
+        'kategori',
         'prodi_id',
         'jenjang_minimal',
         'minimal_ipk',
@@ -19,6 +20,7 @@ class Lowongan extends Model
         'kuota',
         'tanggal_tutup',
         'deskripsi',
+        'materi_micro_teaching',
         'status',
     ];
 
@@ -81,5 +83,16 @@ class Lowongan extends Model
     public function isFull(): bool
     {
         return $this->sisa_kuota <= 0;
+    }
+
+    /**
+     * URL logo lowongan (mengikuti logo prodi, fallback ke logo Telkom).
+     */
+    public function getLogoUrlAttribute(): string
+    {
+        if ($this->prodi && $this->prodi->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->prodi->logo)) {
+            return asset('storage/' . $this->prodi->logo);
+        }
+        return asset('images/logo-icon.png');
     }
 }

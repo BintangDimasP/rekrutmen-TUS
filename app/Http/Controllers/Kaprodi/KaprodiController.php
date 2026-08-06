@@ -70,8 +70,7 @@ class KaprodiController extends Controller
         $lowonganIds = Lowongan::where('prodi_id', $prodiId)->pluck('id');
 
         $query = Lamaran::with(['pelamar.user', 'lowongan'])
-            ->whereIn('lowongan_id', $lowonganIds)
-            ->where('status', 'seleksi_tahap1'); // Kaprodi hanya melihat pelamar yg sudah lolos pemberkasan
+            ->whereIn('lowongan_id', $lowonganIds);
 
         // Search by nama atau no telepon
         if ($request->filled('search')) {
@@ -94,12 +93,16 @@ class KaprodiController extends Controller
 
         $lamaransQuery = $query->latest()->get();
         $initialLamarans = $lamaransQuery->map(function ($lamaran) {
+            $p = $lamaran->pelamar;
+            $dispJenjang = $p?->jenjang_3 ? 'S3' : ($p?->jenjang_2 ? 'S2' : ($p?->jenjang ?? '-'));
+            $dispInstitusi = $p?->institusi_3 ?? $p?->institusi_2 ?? $p?->institusi;
+            $dispProdi = $p?->prodi_pendidikan_3 ?? $p?->prodi_pendidikan_2 ?? $p?->prodi_pendidikan;
             return [
                 'id' => $lamaran->id,
                 'pelamar_id' => $lamaran->pelamar_id,
                 'nama' => $lamaran->pelamar->nama,
-                'jenjang' => $lamaran->pelamar->jenjang,
-                'prodi_pendidikan' => $lamaran->pelamar->prodi_pendidikan,
+                'jenjang' => $dispJenjang,
+                'prodi_pendidikan' => $dispProdi,
                 'no_telepon' => $lamaran->pelamar->no_telepon,
                 'email' => $lamaran->pelamar->user?->email,
                 'lowongan_id' => $lamaran->lowongan_id,
@@ -107,7 +110,7 @@ class KaprodiController extends Controller
                 'status' => $lamaran->status,
                 'status_label' => $lamaran->status_label,
                 'is_direkomendasikan_kaprodi' => $lamaran->is_direkomendasikan_kaprodi,
-                'instansi' => $lamaran->pelamar->institusi,
+                'instansi' => $dispInstitusi,
             ];
         });
 
@@ -146,12 +149,16 @@ class KaprodiController extends Controller
 
         return response()->json([
             'lamarans' => $lamarans->map(function ($lamaran) {
+                $p = $lamaran->pelamar;
+                $dispJenjang = $p?->jenjang_3 ? 'S3' : ($p?->jenjang_2 ? 'S2' : ($p?->jenjang ?? '-'));
+                $dispInstitusi = $p?->institusi_3 ?? $p?->institusi_2 ?? $p?->institusi;
+                $dispProdi = $p?->prodi_pendidikan_3 ?? $p?->prodi_pendidikan_2 ?? $p?->prodi_pendidikan;
                 return [
                     'id' => $lamaran->id,
                     'pelamar_id' => $lamaran->pelamar_id,
                     'nama' => $lamaran->pelamar->nama,
-                    'jenjang' => $lamaran->pelamar->jenjang,
-                    'prodi_pendidikan' => $lamaran->pelamar->prodi_pendidikan,
+                    'jenjang' => $dispJenjang,
+                    'prodi_pendidikan' => $dispProdi,
                     'no_telepon' => $lamaran->pelamar->no_telepon,
                     'email' => $lamaran->pelamar->user?->email,
                     'lowongan_id' => $lamaran->lowongan_id,
@@ -159,7 +166,7 @@ class KaprodiController extends Controller
                     'status' => $lamaran->status,
                     'status_label' => $lamaran->status_label,
                     'is_direkomendasikan_kaprodi' => $lamaran->is_direkomendasikan_kaprodi,
-                    'instansi' => $lamaran->pelamar->institusi,
+                    'instansi' => $dispInstitusi,
                 ];
             }),
         ]);

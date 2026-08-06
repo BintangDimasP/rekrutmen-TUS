@@ -33,7 +33,7 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            // Step 1
+            // Step 1 — Akun
             'email' => [
                 'required', 'string', 'lowercase', 'email', 'max:255',
                 'unique:'.User::class,
@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
             ],
             'password' => ['required', Rules\Password::defaults()],
 
-            // Step 2
+            // Step 2 — Data Diri
             'nik'               => [
                 'required', 'string', 'digits:16',
                 // Validasi unique via PHP karena kolom dienkripsi di DB
@@ -65,35 +65,6 @@ class RegisteredUserController extends Controller
             'status_pernikahan' => ['required', 'string', 'max:255'],
             'alamat_domisili'   => ['required', 'string'],
             'alamat_ktp'        => ['required', 'string'],
-            
-            // Step 3
-            'jenjang' => ['nullable', 'in:S1,S2,S3'],
-            'institusi' => ['nullable', 'string', 'max:255'],
-            'prodi_pendidikan' => ['nullable', 'string', 'max:255'],
-            'akreditas' => ['nullable', 'in:A,B,C,Unggul,Baik Sekali,Baik,Tidak Terakreditasi'],
-            'no_ijazah' => ['nullable', 'string', 'max:255'],
-            'ipk' => ['nullable', 'numeric', 'min:0', 'max:4'],
-            'ijazah' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-            'transkrip' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-
-            // Step 4
-            'cv' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
-            'pas_foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:10240'],
-            'ktp' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-            'kategori_sertifikat' => ['nullable', 'in:kompetensi,keahlian_khusus'],
-            'sertifikat_kompetensi' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-            'jenis_tes_bahasa' => ['nullable', 'in:PBT,TOEFL_ITP,EPrT,CBT,IBT,IELTS,AcEPT'],
-            'skor_bahasa' => ['nullable', 'numeric'],
-            'tanggal_tes_bahasa' => ['nullable', 'date'],
-            'sertifikat_bahasa' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-
-            // Step 5
-            'nidn' => ['nullable', 'string', 'digits_between:1,10'],
-            'homebase' => ['nullable', 'string', 'max:255'],
-            'jabatan_akademik' => ['nullable', 'in:asisten_ahli,lektor,lektor_kepala,guru_besar,non_jabatan'],
-            'minat_riset' => ['nullable', 'string'],
-            'h_index' => ['nullable', 'integer', 'min:0'],
-            'kartu_dosen' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
         ]);
 
         $user = User::create([
@@ -105,31 +76,10 @@ class RegisteredUserController extends Controller
 
         $pelamarData = $request->only([
             'nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 
-            'kewarganegaraan', 'status_pernikahan', 'alamat_domisili', 'alamat_ktp',
-            'jenjang', 'institusi', 'prodi_pendidikan', 'akreditas', 'no_ijazah', 'ipk',
-            'kategori_sertifikat', 'jenis_tes_bahasa', 'skor_bahasa', 'tanggal_tes_bahasa',
-            'nidn', 'homebase', 'jabatan_akademik', 'minat_riset', 'h_index'
+            'kewarganegaraan', 'status_pernikahan', 'alamat_domisili', 'alamat_ktp'
         ]);
 
         $pelamarData['user_id'] = $user->id;
-
-        // Process file uploads
-        $fileFields = [
-            'ijazah' => 'file_ijazah',
-            'transkrip' => 'file_transkrip',
-            'cv' => 'file_cv',
-            'pas_foto' => 'file_pas_foto',
-            'ktp' => 'file_ktp',
-            'sertifikat_kompetensi' => 'file_sertifikat',
-            'sertifikat_bahasa' => 'file_sertifikat_bahasa',
-            'kartu_dosen' => 'file_kartu_dosen'
-        ];
-
-        foreach ($fileFields as $requestKey => $dbKey) {
-            if ($request->hasFile($requestKey)) {
-                $pelamarData[$dbKey] = $request->file($requestKey)->store("pelamar/{$user->id}", 'public');
-            }
-        }
 
         \App\Models\Pelamar::create($pelamarData);
 

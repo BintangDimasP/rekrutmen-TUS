@@ -154,9 +154,14 @@
                         <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-4 max-w-0" title="{{ $pelamar->nama }}">
                             <div class="text-sm font-medium text-gray-800 truncate">{{ $pelamar->nama }}</div>
                         </td>
-                        <td class="py-3 px-4 max-w-0" title="{{ $pelamar->jenjang ?? '-' }} ({{ $pelamar->prodi_pendidikan ?? '-' }})">
-                            <div class="text-sm text-gray-800 font-medium truncate">{{ $pelamar->jenjang ?? '-' }} - {{ $pelamar->institusi ?? '-'}}</div>
-                            <div class="text-[0.6rem] text-gray-400  truncate">{{ $pelamar->prodi_pendidikan ?? '-' }}</div>
+                        @php
+                            $dispJenjang = $pelamar->jenjang_3 ? 'S3' : ($pelamar->jenjang_2 ? 'S2' : ($pelamar->jenjang ?? '-'));
+                            $dispInstitusi = $pelamar->institusi_3 ?? $pelamar->institusi_2 ?? $pelamar->institusi ?? '-';
+                            $dispProdi = $pelamar->prodi_pendidikan_3 ?? $pelamar->prodi_pendidikan_2 ?? $pelamar->prodi_pendidikan ?? '-';
+                        @endphp
+                        <td class="py-3 px-4 max-w-0" title="{{ $dispJenjang }} ({{ $dispProdi }})">
+                            <div class="text-sm text-gray-800 font-medium truncate">{{ $dispJenjang }} - {{ $dispInstitusi }}</div>
+                            <div class="text-[0.6rem] text-gray-400  truncate">{{ $dispProdi }}</div>
                         </td>
                         <td class="py-3 px-4 max-w-0" title="{{ $pelamar->no_telepon ?? '-' }}">
                             <span class="text-sm text-gray-800 font-medium truncate block">{{ $pelamar->no_telepon ?? '-' }}</span>
@@ -369,7 +374,7 @@ aria-labelledby="modal-title" role="dialog" aria-modal="true">
                         </div>
                     </div>
 
-                    
+
 
                     {{-- Action Buttons --}}
                     <div class="flex justify-center mt-6 pt-5 border-t border-gray-100">

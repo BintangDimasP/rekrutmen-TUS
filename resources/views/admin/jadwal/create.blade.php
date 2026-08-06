@@ -390,6 +390,16 @@
                                                     placeholder="Ruang Kelas..."
                                                     class="w-full px-2 py-1.5 rounded-lg border border-gray-200 text-xs text-gray-700 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition bg-gray-50 placeholder-gray-400">
                                             </template>
+
+                                            {{-- Materi Micro Teaching --}}
+                                            <div class="pt-1 mt-1 border-t border-gray-100">
+                                                <label class="block text-[0.62rem] font-bold text-gray-500 uppercase tracking-wider mb-0.5">Materi Micro</label>
+                                                <textarea :name="`schedule[${p.id}][materi_micro_teaching]`"
+                                                          x-model="assignments[p.id].materi_micro_teaching"
+                                                          rows="2"
+                                                          placeholder="Materi Micro Teaching..."
+                                                          class="w-full px-2 py-1 rounded-lg border border-gray-200 text-[0.7rem] text-gray-700 focus:outline-none focus:border-red-800 focus:ring-1 focus:ring-red-800 transition bg-white placeholder-gray-400 resize-y leading-tight"></textarea>
+                                            </div>
                                         </div>
                                     </td>
 
@@ -523,6 +533,7 @@
                             sesi: '',
                             jenis: 'online',
                             lokasi: '',
+                            materi_micro_teaching: '',
                         };
                     }
                 },

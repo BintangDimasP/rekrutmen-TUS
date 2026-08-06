@@ -179,6 +179,10 @@
                                 <span class="text-xs text-gray-800 font-semibold block truncate" :title="lamaran.lowongan_nama" x-text="lamaran.lowongan_nama"></span>
                             </td>
                             <td class="py-3 px-5 max-w-0 text-center">
+                                {{-- Status menunggu --}}
+                                <template x-if="lamaran.status === 'menunggu'">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-100 border border-gray-300 text-gray-600 text-[0.65rem] text-center font-bold tracking-wide">Menunggu</span>
+                                </template>
                                 {{-- Status seleksi_tahap1: tampilkan berdasarkan rekomendasi kaprodi --}}
                                 <template x-if="lamaran.status === 'seleksi_tahap1' && lamaran.is_direkomendasikan_kaprodi === null">
                                     <span class="inline-flex items-center px-2 py-1 rounded-lg bg-blue-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Tahap 1 – Menunggu Rekom</span>
@@ -193,6 +197,7 @@
                                 <template x-if="lamaran.status === 'seleksi_tahap2'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-indigo-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Seleksi Tahap 2</span></template>
                                 <template x-if="lamaran.status === 'diterima'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-green-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Diterima</span></template>
                                 <template x-if="lamaran.status === 'ditolak'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-red-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Ditolak</span></template>
+                                <template x-if="lamaran.status === 'mengundurkan_diri'"><span class="inline-flex items-center px-2 py-1 rounded-lg bg-gray-800 text-white text-[0.65rem] text-center font-bold tracking-wide">Mengundurkan Diri</span></template>
                             </td>
                             <td class="py-3 px-5 text-center">
                                 <a :href="'/kaprodi/pelamar/' + lamaran.pelamar_id + '?lamaran_id=' + lamaran.id" class="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors" title="Lihat Detail">

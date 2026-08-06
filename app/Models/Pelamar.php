@@ -124,4 +124,18 @@ class Pelamar extends Model
         return $this->belongsToMany(Lowongan::class, 'saved_lowongans')
             ->withTimestamps();
     }
+    /**
+     * Helper untuk mendapatkan URL file (lokal storage atau external link Google Drive/URL).
+     */
+    public function fileUrl(?string $columnOrPath): ?string
+    {
+        if (!$columnOrPath) return null;
+        $path = $this->{$columnOrPath} ?? $columnOrPath;
+        if (!$path) return null;
+        $path = trim((string)$path);
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+        return asset('storage/' . $path);
+    }
 }

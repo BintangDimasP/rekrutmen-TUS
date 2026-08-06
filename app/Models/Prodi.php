@@ -45,8 +45,14 @@ class Prodi extends Model
      * Placeholder relasi lowongan (tabel belum dibuat).
      * Diaktifkan saat model Lowongan & tabel tersedia.
      */
-    // public function lowongans(): HasMany
-    // {
-    //     return $this->hasMany(Lowongan::class, 'prodi_id');
-    // }
+    /**
+     * URL logo prodi. Jika logo tidak diisi/diunggah, fallback ke logo Telkom University.
+     */
+    public function getLogoUrlAttribute(): string
+    {
+        if ($this->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->logo)) {
+            return asset('storage/' . $this->logo);
+        }
+        return asset('images/logo-icon.png');
+    }
 }

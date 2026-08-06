@@ -28,7 +28,26 @@
 
         <!-- CONTENT -->
         <div class="px-6 pb-6 pt-0 md:px-8 md:pb-8 md:pt-0">
-            <form method="POST" action="{{ route('admin.lowongan.store') }}" class="space-y-8">
+            <form method="POST" action="{{ route('admin.lowongan.store') }}" class="space-y-8"
+                  x-data="{
+                      kategori: '{{ old('kategori', 'Dosen') }}',
+                      get isTendik() { return this.kategori === 'Tenaga Kependidikan'; },
+                      defaultDosen: {{ \Illuminate\Support\Js::from($defaultDeskripsi) }},
+                      defaultTendik: {{ \Illuminate\Support\Js::from($defaultDeskripsiTendik) }},
+                      deskripsi: {{ \Illuminate\Support\Js::from(old('deskripsi', '')) }},
+                      init() {
+                          if (!this.deskripsi) {
+                              this.deskripsi = this.isTendik ? this.defaultTendik : this.defaultDosen;
+                          }
+                          this.$watch('kategori', val => {
+                              if (val === 'Tenaga Kependidikan' && this.deskripsi === this.defaultDosen) {
+                                  this.deskripsi = this.defaultTendik;
+                              } else if (val === 'Dosen' && this.deskripsi === this.defaultTendik) {
+                                  this.deskripsi = this.defaultDosen;
+                              }
+                          });
+                      }
+                  }">
                 @csrf
 
                 {{-- 1. INFORMASI DASAR --}}
@@ -37,7 +56,27 @@
                         Informasi Dasar
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                        {{-- Kategori --}}
                         <div class="md:col-span-2">
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-3">Kategori Lowongan <span class="text-red-500">*</span></label>
+                            <div class="flex items-center gap-3 flex-wrap">
+                                <label class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border cursor-pointer transition-all"
+                                       :class="kategori === 'Dosen' ? 'bg-[#8b1515]/5 border-[#8b1515] text-[#8b1515]' : 'border-gray-200 text-gray-600 hover:border-gray-300'">
+                                    <input type="radio" name="kategori" value="Dosen" x-model="kategori" class="hidden">
+                                    <span class="text-sm font-semibold">Dosen</span>
+                                </label>
+                                <label class="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border cursor-pointer transition-all"
+                                       :class="kategori === 'Tenaga Kependidikan' ? 'bg-blue-50 border-blue-500 text-blue-600' : 'border-gray-200 text-gray-600 hover:border-gray-300'">
+                                    <input type="radio" name="kategori" value="Tenaga Kependidikan" x-model="kategori" class="hidden">
+                                    <span class="text-sm font-semibold">Tenaga Kependidikan</span>
+                                </label>
+                            </div>
+                            @error('kategori') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- Prodi (hanya untuk Dosen) --}}
+                        <div class="md:col-span-2" x-show="!isTendik" x-transition>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Program Studi <span class="text-red-500">*</span></label>
                             {{-- hidden select tetap ada untuk JS listener & submit --}}
                             <select name="prodi_id" id="prodi_id"
@@ -83,12 +122,63 @@
                             @error('prodi_id') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
+                        {{-- Nama Lowongan (Dosen: readonly, auto dari JS) / Unit (Tendik: dropdown hardcode) --}}
+                        {{-- Single hidden input yang selalu di-submit --}}
+                        <input type="hidden" name="nama_posisi" id="nama_posisi_submit" value="{{ old('nama_posisi') }}">
+
                         <div class="md:col-span-2">
-                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Nama Lowongan <span class="text-red-500">*</span></label>
-                            <input type="text" name="nama_posisi" id="nama_posisi" value="{{ old('nama_posisi') }}" placeholder="Dosen Tetap" readonly
-                                   class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
+                            <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">
+                                <span x-text="isTendik ? 'Unit' : 'Nama Lowongan'"></span>
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            {{-- Untuk DOSEN: readonly display input (tidak di-submit, hanya tampilan) --}}
+                            <div x-show="!isTendik">
+                                <input type="text" id="nama_posisi" value="{{ old('nama_posisi') }}" placeholder="Dosen Tetap" readonly
+                                       class="w-full px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-gray-50 text-sm font-medium text-gray-700 cursor-not-allowed focus:outline-none transition">
+                            </div>
+
+                            {{-- Untuk TENDIK: dropdown Unit (hardcoded) --}}
+                            <div x-show="isTendik" class="relative" x-data="{
+                                open: false,
+                                val: '{{ old('nama_posisi') }}',
+                                units: [
+                                    'Logistik dan Aset',
+                                    'Keuangan',
+                                    'Sumber Daya Manusia',
+                                    'Pusat Teknologi Informasi',
+                                    'Pemasaran & Admisi',
+                                    'Pengembangan Karir, Alumni, & Endowment',
+                                    'Kemahasiswaan',
+                                ],
+                                get label() { return this.val || '— Pilih Unit —'; },
+                                pick(u) {
+                                    this.val = u;
+                                    this.open = false;
+                                    document.getElementById('nama_posisi_submit').value = u;
+                                }
+                            }" @click.outside="open = false" style="display:none;">
+                                <button type="button" @click="open = !open"
+                                    class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border @error('nama_posisi') border-red-400 @else border-gray-200 @enderror bg-white text-sm transition-all"
+                                    :class="val ? 'text-gray-800' : 'text-gray-400'">
+                                    <span x-text="label" class="truncate"></span>
+                                    <svg class="w-4 h-4 text-gray-400 ml-2 flex-shrink-0 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div x-show="open" x-transition class="absolute z-30 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden mt-1" style="display:none;">
+                                    <div class="p-1 space-y-0.5 max-h-52 overflow-y-auto">
+                                        <template x-for="u in units" :key="u">
+                                            <button type="button" @click="pick(u)"
+                                                class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
+                                                :class="val === u ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
+                                                <span x-text="u"></span>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
                             @error('nama_posisi') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
+
                       
                         <div>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Tanggal Penutupan<span class="text-red-500">*</span></label>
@@ -117,8 +207,12 @@
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Jenjang Pendidikan Minimal <span class="text-red-500">*</span></label>
                             <div x-data="{
                                     open: false,
-                                    val: '{{ old('jenjang_minimal') }}',
-                                    opts: [{ v: '', l: '— Pilih Jenjang —' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }],
+                                    val: '{{ old('jenjang_minimal', 'S1') }}',
+                                    get opts() {
+                                        return isTendik
+                                            ? [{ v: '', l: '— Pilih Jenjang —' }, { v: 'SMA/SMK', l: 'SMA/SMK' }, { v: 'D3', l: 'D3' }, { v: 'D4', l: 'D4' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }]
+                                            : [{ v: '', l: '— Pilih Jenjang —' }, { v: 'D3', l: 'D3' }, { v: 'S1', l: 'S1' }, { v: 'S2', l: 'S2' }, { v: 'S3', l: 'S3' }];
+                                    },
                                     get label() { return this.opts.find(o => o.v === this.val)?.l ?? '— Pilih Jenjang —'; }
                                  }" @click.outside="open = false" class="relative">
                                 <input type="hidden" name="jenjang_minimal" :value="val">
@@ -143,20 +237,25 @@
                             @error('jenjang_minimal') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+                        <div x-show="!isTendik" x-transition>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Minimal IPK <span class="text-red-500">*</span></label>
                             <input type="number" name="minimal_ipk" value="{{ old('minimal_ipk', '3.00') }}"
                                    step="0.01" min="0" max="4" placeholder="cth: 3.00"
                                    oninput="if(parseFloat(this.value)>4){this.value='4'}"
-                                   class="w-full px-4 py-2.5 rounded-lg border @error('minimal_ipk') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition">
+                                   :disabled="isTendik"
+                                   class="w-full px-4 py-2.5 rounded-lg border @error('minimal_ipk') border-red-400 @else border-gray-200 @enderror bg-white text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition disabled:bg-gray-100">
                             @error('minimal_ipk') <p class="text-xs text-red-500 mt-1 font-medium">{{ $message }}</p> @enderror
                         </div>
 
-                        <div>
+                        <div x-show="!isTendik" x-transition>
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Prodi yang Diprioritaskan</label>
                             <div x-data="{
                                     open: false,
-                                    selected: {{ \Illuminate\Support\Js::from(array_values(array_filter((array) old('prodi_prioritas', [])))) }},
+                                    selected: {{ \Illuminate\Support\Js::from(
+                                        old('prodi_prioritas')
+                                            ? array_values(array_filter(explode('||', old('prodi_prioritas'))))
+                                            : []
+                                    ) }},
                                     allOpts: {{ \Illuminate\Support\Js::from($prodiPrioritasOptions) }},
                                     get label() {
                                         return this.selected.length === 0 ? '— Tidak ada prioritas khusus —' : this.selected.join(', ');
@@ -181,8 +280,8 @@
                                  @set-prodi-pembuka.window="setFirst($event.detail)"
                                  class="relative">
 
-                                {{-- Satu hidden input, nilai dipisah '||', di-split di server --}}
-                                <input type="hidden" name="prodi_prioritas" :value="joined">
+                                {{-- Satu hidden input, nilai dipisah '||', di-split di server (hanya jika Dosen) --}}
+                                <input type="hidden" name="prodi_prioritas" :value="joined" :disabled="isTendik">
 
                                 <button type="button" @click="open = !open"
                                     class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-sm transition-all"
@@ -221,7 +320,14 @@
                             <label class="block text-[0.7rem] font-bold text-gray-500 uppercase tracking-widest mb-2">Keahlian / Skill yang Dibutuhkan</label>
                             <div x-data="{
                                     open: false,
-                                    selected: {{ \Illuminate\Support\Js::from(array_values(array_filter((array) old('skill_dibutuhkan', [])))) }},
+                                    selected: {{ \Illuminate\Support\Js::from(
+                                        old('skill_dibutuhkan')
+                                            ? array_values(array_filter(explode('||', old('skill_dibutuhkan'))))
+                                            : []
+                                    ) }},
+                                    allOptsDosen: {{ \Illuminate\Support\Js::from($skillOptions) }},
+                                    allOptsTendik: {{ \Illuminate\Support\Js::from($skillOptionsTendik ?? []) }},
+                                    get activeOpts() { return isTendik ? this.allOptsTendik : this.allOptsDosen; },
                                     get label() {
                                         return this.selected.length === 0 ? '— Tidak ada skill spesifik —' : this.selected.join(', ');
                                     },
@@ -251,16 +357,16 @@
                                             :class="selected.length === 0 ? 'text-gray-900 font-semibold bg-gray-100' : 'text-gray-500'">
                                             — Tidak ada skill spesifik —
                                         </button>
-                                        @foreach($skillOptions as $opt)
-                                        <button type="button" @click="toggle({{ \Illuminate\Support\Js::from($opt) }})"
-                                            class="w-full flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100 text-gray-700">
+                                        <template x-for="opt in activeOpts" :key="opt">
+                                        <button type="button" @click="toggle(opt)"
+                                            class="w-full min-w-0 flex items-center gap-2.5 px-3 py-2.5 text-sm rounded-lg transition-colors hover:bg-gray-100 text-gray-700 text-left">
                                             <span class="w-4 h-4 rounded border-2 flex-shrink-0 flex items-center justify-center transition-colors"
-                                                  :class="isChecked({{ \Illuminate\Support\Js::from($opt) }}) ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
-                                                <svg x-show="isChecked({{ \Illuminate\Support\Js::from($opt) }})" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                                  :class="isChecked(opt) ? 'border-gray-500 bg-gray-600' : 'border-gray-300'">
+                                                <svg x-show="isChecked(opt)" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                             </span>
-                                            <span>{{ $opt }}</span>
+                                            <span x-text="opt" class="min-w-0 break-words"></span>
                                         </button>
-                                        @endforeach
+                                        </template>
                                     </div>
                                 </div>
                             </div>
@@ -271,14 +377,16 @@
                 </div>
 
                 {{-- 3. DESKRIPSI & DOKUMEN --}}
-                <div>
-                    <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
-                        <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">
-                            Deskripsi & Dokumen Persyaratan
-                        </h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                            <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest">
+                                Deskripsi & Dokumen Persyaratan
+                            </h3>
+                        </div>
+                        <textarea name="deskripsi" rows="12" x-model="deskripsi"
+                                  class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium leading-relaxed focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y"></textarea>
                     </div>
-                    <textarea name="deskripsi" rows="12"
-                              class="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-sm font-medium leading-relaxed focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y">{{ old('deskripsi', $defaultDeskripsi) }}</textarea>
                 </div>
 
                 {{-- ACTIONS --}}
@@ -296,7 +404,8 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const prodiSelect = document.getElementById('prodi_id');
-        const namaPosisiInput = document.getElementById('nama_posisi');
+        const namaPosisiDisplay = document.getElementById('nama_posisi');
+        const namaPosisiSubmit = document.getElementById('nama_posisi_submit');
 
         function setProdiPembuka(prodiNama, isUserChange = false) {
             if (!prodiNama) return;
@@ -307,10 +416,13 @@
             const opt = this.options[this.selectedIndex];
             const prodiNama = opt.getAttribute('data-nama');
             if (prodiNama) {
-                namaPosisiInput.value = 'Dosen Tetap S1 ' + prodiNama;
+                const val = 'Dosen Tetap S1 ' + prodiNama;
+                if (namaPosisiDisplay) namaPosisiDisplay.value = val;
+                if (namaPosisiSubmit) namaPosisiSubmit.value = val;
                 setProdiPembuka(prodiNama, true);
             } else {
-                namaPosisiInput.value = '';
+                if (namaPosisiDisplay) namaPosisiDisplay.value = '';
+                if (namaPosisiSubmit) namaPosisiSubmit.value = '';
             }
         });
 
@@ -319,6 +431,9 @@
             const opt = prodiSelect.options[prodiSelect.selectedIndex];
             const nama = opt?.getAttribute('data-nama');
             if (nama) {
+                const val = 'Dosen Tetap S1 ' + nama;
+                if (namaPosisiDisplay) namaPosisiDisplay.value = val;
+                if (namaPosisiSubmit) namaPosisiSubmit.value = val;
                 // Tunggu Alpine init
                 setTimeout(() => setProdiPembuka(nama, false), 50);
             }

@@ -7,6 +7,7 @@
     <div class="max-w-6xl mx-auto space-y-6" x-data="{
         search: '',
         filterProdi: '',
+        filterKategori: '',
         totalFiltered: 0,
         updateRows() {
             const rows = document.querySelectorAll('tr[data-row]');
@@ -14,14 +15,15 @@
             rows.forEach(row => {
                 const matchProdi = this.filterProdi === '' || row.dataset.prodi === this.filterProdi;
                 const matchSearch = this.search === '' || row.dataset.posisi.includes(this.search.toLowerCase());
-                const visible = matchProdi && matchSearch;
+                const matchKategori = this.filterKategori === '' || row.dataset.kategori === this.filterKategori;
+                const visible = matchProdi && matchSearch && matchKategori;
                 row.style.display = visible ? '' : 'none';
                 if (visible) count++;
             });
             this.totalFiltered = count;
         }
     }"
-    x-init="$nextTick(() => updateRows()); $watch('search', () => updateRows()); $watch('filterProdi', () => updateRows())">
+    x-init="$nextTick(() => updateRows()); $watch('search', () => updateRows()); $watch('filterProdi', () => updateRows()); $watch('filterKategori', val => { if (val !== 'Dosen') filterProdi = ''; updateRows(); })">
 
         {{-- Filter & Action (with attached + button) --}}
         <div class="relative">
@@ -48,8 +50,38 @@
                         </button>
                     </div>
 
-                    {{-- Prodi Chip --}}
-                    <div class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
+                    {{-- Filter Kategori --}}
+                    <div class="relative" x-data="{ katOpen: false }" @click.outside="katOpen = false">
+                        <button type="button" @click="katOpen = !katOpen"
+                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                                :class="filterKategori !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                            Kategori
+                            <svg class="w-3 h-3 ml-0.5 transition-transform" :class="katOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                        </button>
+                        <div x-show="katOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                            <div class="p-3 space-y-1">
+                                <button type="button" @click="filterKategori = filterKategori === 'Dosen' ? '' : 'Dosen'; katOpen = false"
+                                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                                        :class="filterKategori === 'Dosen' ? 'bg-gray-50' : ''">
+                                    <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterKategori === 'Dosen' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
+                                        <svg x-show="filterKategori === 'Dosen'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-gray-700">Dosen</span>
+                                </button>
+                                <button type="button" @click="filterKategori = filterKategori === 'Tenaga Kependidikan' ? '' : 'Tenaga Kependidikan'; katOpen = false"
+                                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                                        :class="filterKategori === 'Tenaga Kependidikan' ? 'bg-gray-50' : ''">
+                                    <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="filterKategori === 'Tenaga Kependidikan' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'">
+                                        <svg x-show="filterKategori === 'Tenaga Kependidikan'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </span>
+                                    <span class="text-sm font-medium text-gray-700">Tenaga Kependidikan</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Prodi Chip — hanya tampil jika filter Dosen aktif --}}
+                    <div x-show="filterKategori === 'Dosen'" x-transition class="relative" x-data="{ prodiOpen: false }" @click.outside="prodiOpen = false">
                         <button type="button" @click="prodiOpen = !prodiOpen"
                                 class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                                 :class="filterProdi !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
@@ -73,16 +105,15 @@
                         </div>
                     </div>
 
-                    {{-- Active tag --}}
+                    {{-- Active prodi tag — hanya jika Dosen aktif --}}
                     @foreach($prodis as $prodi)
-                    <span x-show="filterProdi === '{{ $prodi->id }}'" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
+                    <span x-show="filterKategori === 'Dosen' && filterProdi === '{{ $prodi->id }}'" x-transition class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-gray-100 border border-gray-300 text-xs font-semibold text-gray-700">
                         {{ $prodi->nama }}
                         <button type="button" @click="filterProdi = ''" class="ml-0.5 hover:text-gray-900"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
                     </span>
                     @endforeach
 
-                    {{-- Clear --}}
-                    <button x-show="filterProdi !== '' || search !== ''" x-transition type="button" @click="filterProdi = ''; search = ''" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
+                    <button x-show="filterProdi !== '' || search !== '' || filterKategori !== ''" x-transition type="button" @click="filterProdi = ''; search = ''; filterKategori = ''" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-700 transition-colors">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg> Clear
                     </button>
                 </div>
@@ -98,27 +129,30 @@
         {{-- Table Card --}}
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse table-fixed" style="min-width:750px">
+                <table class="w-full text-left border-collapse table-fixed" style="min-width:1150px">
                     <thead>
                         <tr class="bg-[#8b1515] text-white">
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Nama Lowongan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Persyaratan</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Kuota</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Pelamar</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[15%]">Tenggat</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Status</th>
-                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[10%]">Aksi</th>
+                            <th class="sticky left-0 z-20 bg-[#8b1515] py-3 px-5 text-sm font-bold whitespace-nowrap text-left w-[300px]">Nama Lowongan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[220px]">Persyaratan</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[110px]">Kuota</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[100px]">Pelamar</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[160px]">Tenggat</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[120px]">Status</th>
+                            <th class="py-3 px-5 text-sm font-bold whitespace-nowrap text-center w-[140px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse($lowongans as $lowongan)
-                            <tr x-data="{ showToggleModal: false }" class="hover:bg-gray-50 transition-colors"
+                            <tr x-data="{ showToggleModal: false, showDeleteModal: false }" class="group hover:bg-gray-50 transition-colors"
                                 data-row
                                 data-prodi="{{ $lowongan->prodi_id }}"
-                                data-posisi="{{ strtolower($lowongan->nama_posisi) }}">
-                                <td class="py-3 px-5 max-w-0">
-                                    <div class="text-sm font-medium text-gray-800 truncate" title="{{ $lowongan->nama_posisi }}">{{ $lowongan->nama_posisi }}</div>
-                                    <div class="text-xs font-medium text-gray-500 mt-0.5 truncate" title="{{ $lowongan->prodi->nama ?? '-' }}">{{ $lowongan->prodi->nama ?? '-' }}</div>
+                                data-posisi="{{ strtolower($lowongan->nama_posisi) }}"
+                                data-kategori="{{ $lowongan->kategori }}">
+                                <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3.5 px-5 max-w-0 border-r border-gray-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+                                    <div class="text-sm font-semibold text-gray-900 leading-snug whitespace-normal" title="{{ $lowongan->nama_posisi }}">{{ $lowongan->nama_posisi }}</div>
+                                    <div class="mt-1 flex items-center gap-2">
+                                        <span class="text-xs text-gray-400 font-medium">{{ $lowongan->prodi->nama ?? $lowongan->kategori }}</span>
+                                    </div>
                                 </td>
                                 <td class="py-3 px-5 max-w-0">
                                     <div class="flex flex-wrap gap-1">
@@ -219,6 +253,12 @@
                                                 </svg>
                                             </button>
                                         @endif
+                                        <button type="button" @click="showDeleteModal = true" title="Hapus Lowongan"
+                                            class="flex items-center justify-center p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                            </svg>
+                                        </button>
 
                                         {{-- Toggle Modal --}}
                                         <div x-show="showToggleModal" x-transition.opacity
@@ -262,6 +302,41 @@
                                                         class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all border-2 border-[#8b1515]">
                                                         Tidak
                                                     </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {{-- Delete Modal --}}
+                                        <div x-show="showDeleteModal" x-transition.opacity
+                                            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+                                            @click.self="showDeleteModal = false" style="display: none;" x-cloak>
+                                            <div x-show="showDeleteModal" x-transition:enter="transition ease-out duration-200"
+                                                x-transition:enter-start="opacity-0 scale-95"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                class="bg-white rounded-[24px] shadow-2xl w-full max-w-[340px] overflow-hidden text-center p-8 relative whitespace-normal">
+
+                                                {{-- Warning Icon --}}
+                                                <div class="mx-auto mb-5 flex justify-center">
+                                                    <svg width="68" height="68" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_8px_12px_rgba(140,10,10,0.25)]">
+                                                        <path d="M10.29 3.86L1.82 18A2 2 0 003.54 21h16.92a2 2 0 001.72-3L13.71 3.86a2 2 0 00-3.42 0z" fill="#8b1515"/>
+                                                        <path d="M12 9v4" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                                                        <circle cx="12" cy="16.5" r="1.5" fill="white"/>
+                                                    </svg>
+                                                </div>
+
+                                                <h2 class="text-xl font-extrabold text-gray-800 mb-2 leading-tight">Hapus lowongan ini?</h2>
+                                                <p class="text-[0.85rem] font-medium text-gray-500 mb-8">
+                                                    <strong class="text-gray-800 block mb-1">{{ $lowongan->nama_posisi }}</strong>
+                                                    Data yang dihapus tidak dapat dikembalikan!
+                                                </p>
+
+                                                <div class="grid grid-cols-2 gap-3">
+                                                    <form method="POST" action="{{ route('admin.lowongan.destroy', $lowongan) }}" class="contents">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="w-full px-5 py-3 text-sm font-bold text-gray-600 border-2 border-gray-600 bg-transparent hover:bg-gray-800 hover:text-white active:scale-95 rounded-xl transition-all">Iya</button>
+                                                    </form>
+                                                    <button type="button" @click="showDeleteModal = false" class="w-full px-5 py-3 text-sm font-bold text-white bg-[#8b1515] hover:bg-red-800 active:scale-95 rounded-xl shadow-md transition-all">Tidak</button>
                                                 </div>
                                             </div>
                                         </div>

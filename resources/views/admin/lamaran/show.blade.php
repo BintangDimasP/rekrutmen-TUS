@@ -138,7 +138,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $pelamar->jenjang }}</p>
                                         @if($pelamar->file_ijazah)
-                                            <a href="{{ asset('storage/' . $pelamar->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -146,7 +146,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $pelamar->jenjang }}</p>
                                         @if($pelamar->file_transkrip)
-                                            <a href="{{ asset('storage/' . $pelamar->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -168,7 +168,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                                         @if($pelamar->file_ijazah_2)
-                                            <a href="{{ asset('storage/' . $pelamar->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -176,7 +176,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                                         @if($pelamar->file_transkrip_2)
-                                            <a href="{{ asset('storage/' . $pelamar->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -198,7 +198,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah</p>
                                         @if($pelamar->file_ijazah_3)
-                                            <a href="{{ asset('storage/' . $pelamar->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -206,7 +206,7 @@
                                     <div>
                                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip</p>
                                         @if($pelamar->file_transkrip_3)
-                                            <a href="{{ asset('storage/' . $pelamar->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                            <a href="{{ file_url($pelamar->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                         @else
                                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                                         @endif
@@ -215,7 +215,7 @@
                             </div>
                             @endif
 
-                            @if(!$pelamar->jenjang)
+                            @if(!$pelamar->jenjang && !$pelamar->jenjang_2 && !$pelamar->jenjang_3)
                                 <p class="text-sm text-gray-400 italic">-</p>
                             @endif
                         </div>
@@ -230,7 +230,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>
                                 @if($pelamar->file_cv)
-                                    <a href="{{ asset('storage/' . $pelamar->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($pelamar->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -238,7 +238,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto Formal</p>
                                 @if($pelamar->file_pas_foto)
-                                    <a href="{{ asset('storage/' . $pelamar->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($pelamar->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -246,7 +246,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Scan KTP</p>
                                 @if($pelamar->file_ktp)
-                                    <a href="{{ asset('storage/' . $pelamar->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($pelamar->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -255,7 +255,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $pelamar->kategori_sertifikat ?: 'Sertifikat' }}</p>
                                 @if($pelamar->file_sertifikat)
-                                    <a href="{{ asset('storage/' . $pelamar->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($pelamar->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -263,7 +263,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Surat Lamaran</p>
                                 @if($lamaran->file_surat_lamaran)
-                                    <a href="{{ asset('storage/' . $lamaran->file_surat_lamaran) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($lamaran->file_surat_lamaran) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -271,7 +271,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">SK Penyetaraan <span class="normal-case font-medium text-gray-300">(Lulusan LN)</span></p>
                                 @if($lamaran->file_sk_penyetaraan)
-                                    <a href="{{ asset('storage/' . $lamaran->file_sk_penyetaraan) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($lamaran->file_sk_penyetaraan) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -279,7 +279,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Surat Pemberhentian <span class="normal-case font-medium text-gray-300">(Instansi Lain)</span></p>
                                 @if($lamaran->file_surat_pemberhentian)
-                                    <a href="{{ asset('storage/' . $lamaran->file_surat_pemberhentian) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($lamaran->file_surat_pemberhentian) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -299,7 +299,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>
                                 @if($pelamar->file_sertifikat_bahasa)
-                                    <a href="{{ asset('storage/' . $pelamar->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ $pelamar->fileUrl('file_sertifikat_bahasa') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -352,7 +352,7 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-4">
                             @foreach($homebaseDocs as $doc)
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
-                                @if($doc['file'])<a href="{{ asset('storage/'.$doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
+                                @if($doc['file'])<a href="{{ $pelamar->fileUrl($doc['file']) }}" target="_blank" class="text-sm font-bold text-[#8b1515] hover:underline mt-0.5 inline-block">Preview</a>@else<p class="text-sm text-gray-700 mt-0.5">-</p>@endif
                             </div>
                             @endforeach
                         </div>

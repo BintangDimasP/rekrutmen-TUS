@@ -124,20 +124,25 @@
                 <h3 class="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 pb-2 border-b border-gray-100">
                     Riwayat Pendidikan
                 </h3>
+                @php
+                    $hasAnyEduData = ($data->institusi || $data->prodi_pendidikan || $data->no_ijazah || $data->file_ijazah || $data->ipk)
+                                  || ($data->institusi_2 || $data->prodi_pendidikan_2 || $data->no_ijazah_2 || $data->file_ijazah_2 || $data->ipk_2)
+                                  || ($data->institusi_3 || $data->prodi_pendidikan_3 || $data->no_ijazah_3 || $data->file_ijazah_3 || $data->ipk_3);
+                @endphp
                 <div class="space-y-8">
                     @if($data->jenjang)
                     <div class="pl-4 border-l-[3px] border-[#8b1515]/40 py-1">
                         <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang }}</p></div>
-                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan ?: '-' }}</p></div>
+                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->institusi ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->prodi_pendidikan ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah ?: '-' }}</p></div>
+                            <div class="break-all"><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5 break-all">{{ $data->no_ijazah ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk ?: '-' }}</p></div>
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $data->jenjang }}</p>
                                 @if($data->file_ijazah)
-                                    <a href="{{ asset('storage/' . $data->file_ijazah) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ $data->fileUrl('file_ijazah') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -145,7 +150,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $data->jenjang }}</p>
                                 @if($data->file_transkrip)
-                                    <a href="{{ asset('storage/' . $data->file_transkrip) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ $data->fileUrl('file_transkrip') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -158,15 +163,15 @@
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                         <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_2 }}</p></div>
-                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_2 ?: '-' }}</p></div>
+                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->institusi_2 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->prodi_pendidikan_2 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_2 ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_2 ?: '-' }}</p></div>
+                            <div class="break-all"><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5 break-all">{{ $data->no_ijazah_2 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_2 ?: '-' }}</p></div>
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $data->jenjang_2 }}</p>
                                 @if($data->file_ijazah_2)
-                                    <a href="{{ asset('storage/' . $data->file_ijazah_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ $data->fileUrl('file_ijazah_2') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -174,7 +179,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $data->jenjang_2 }}</p>
                                 @if($data->file_transkrip_2)
-                                    <a href="{{ asset('storage/' . $data->file_transkrip_2) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ $data->fileUrl('file_transkrip_2') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -187,15 +192,15 @@
                     <div class="pl-4 border-l-[3px] border-gray-200 py-1">
                         <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-x-3 gap-y-4">
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Jenjang</p><p class="text-sm font-bold text-[#8b1515] mt-0.5">{{ $data->jenjang_3 }}</p></div>
-                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->institusi_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->prodi_pendidikan_3 ?: '-' }}</p></div>
+                            <div class="col-span-2 md:col-span-1"><p class="text-[0.55rem] font-black text-gray-400 uppercase">Institusi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->institusi_3 ?: '-' }}</p></div>
+                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Prodi</p><p class="text-sm text-gray-700 mt-0.5 break-words">{{ $data->prodi_pendidikan_3 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">Akreditas</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->akreditas_3 ?: '-' }}</p></div>
-                            <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5">{{ $data->no_ijazah_3 ?: '-' }}</p></div>
+                            <div class="break-all"><p class="text-[0.55rem] font-black text-gray-400 uppercase">No. Ijazah</p><p class="text-sm text-gray-700 mt-0.5 break-all">{{ $data->no_ijazah_3 ?: '-' }}</p></div>
                             <div><p class="text-[0.55rem] font-black text-gray-400 uppercase">IPK</p><p class="text-sm font-bold text-gray-800 mt-0.5">{{ $data->ipk_3 ?: '-' }}</p></div>
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Ijazah {{ $data->jenjang_3 }}</p>
                                 @if($data->file_ijazah_3)
-                                    <a href="{{ asset('storage/' . $data->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($data->file_ijazah_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -203,7 +208,7 @@
                             <div>
                                 <p class="text-[0.55rem] font-black text-gray-400 uppercase">Transkrip {{ $data->jenjang_3 }}</p>
                                 @if($data->file_transkrip_3)
-                                    <a href="{{ asset('storage/' . $data->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                                    <a href="{{ file_url($data->file_transkrip_3) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                                 @else
                                     <p class="text-sm text-gray-700 mt-0.5">-</p>
                                 @endif
@@ -212,7 +217,7 @@
                     </div>
                     @endif
 
-                    @if(!$data->jenjang)
+                    @if(!$data->jenjang && !$data->jenjang_2 && !$data->jenjang_3)
                         <p class="text-sm text-gray-400 italic">-</p>
                     @endif
                 </div>
@@ -227,7 +232,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">CV (Resume)</p>
                         @if($data->file_cv)
-                            <a href="{{ asset('storage/' . $data->file_cv) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ $data->fileUrl('file_cv') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif
@@ -235,7 +240,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Pas Foto</p>
                         @if($data->file_pas_foto)
-                            <a href="{{ asset('storage/' . $data->file_pas_foto) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ $data->fileUrl('file_pas_foto') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif
@@ -243,7 +248,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">KTP</p>
                         @if($data->file_ktp)
-                            <a href="{{ asset('storage/' . $data->file_ktp) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ $data->fileUrl('file_ktp') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif
@@ -251,7 +256,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $data->kategori_sertifikat ?: 'Sertifikat' }}</p>
                         @if($data->file_sertifikat)
-                            <a href="{{ asset('storage/' . $data->file_sertifikat) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ $data->fileUrl('file_sertifikat') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif
@@ -271,7 +276,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">Sertifikat Bahasa</p>
                         @if($data->file_sertifikat_bahasa)
-                            <a href="{{ asset('storage/' . $data->file_sertifikat_bahasa) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ $data->fileUrl('file_sertifikat_bahasa') }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif
@@ -316,7 +321,7 @@
                     <div>
                         <p class="text-[0.55rem] font-black text-gray-400 uppercase">{{ $doc['label'] }}</p>
                         @if($doc['file'])
-                            <a href="{{ asset('storage/' . $doc['file']) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
+                            <a href="{{ str_starts_with($doc['file'], 'http') ? $doc['file'] : asset('storage/' . $doc['file']) }}" target="_blank" class="text-xs font-bold text-[#8b1515] hover:underline mt-1 inline-block">Preview</a>
                         @else
                             <p class="text-sm text-gray-700 mt-0.5">-</p>
                         @endif

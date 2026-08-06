@@ -156,6 +156,16 @@
                                         @endforeach
                                     </div>
                                 </div>
+
+                                @php
+                                    $materiMT = $micro[0]->materi_micro_teaching ?: ($lamaran->lowongan->materi_micro_teaching ?? null);
+                                @endphp
+                                @if($materiMT)
+                                <div>
+                                    <p class="text-[0.65rem] text-gray-400 font-bold uppercase tracking-wider mb-1">Materi Micro Teaching</p>
+                                    <p class="font-bold text-gray-800 whitespace-pre-line leading-relaxed">{{ $materiMT }}</p>
+                                </div>
+                                @endif
                             </div>
 
                             @if($micro[0]->lokasi)

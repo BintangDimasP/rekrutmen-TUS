@@ -62,11 +62,17 @@
                                     <div class="text-[0.65rem] text-gray-500 mt-0.5">{{ $lamaran->pelamar->user->email ?? '-' }}</div>
                                 </td>
                                 <td class="py-3 px-5">
+                                    @php
+                                        $p = $lamaran->pelamar;
+                                        $dispJenjang = $p?->jenjang_3 ? 'S3' : ($p?->jenjang_2 ? 'S2' : ($p?->jenjang ?? '-'));
+                                        $dispInstitusi = $p?->institusi_3 ?? $p?->institusi_2 ?? $p?->institusi;
+                                        $dispProdi = $p?->prodi_pendidikan_3 ?? $p?->prodi_pendidikan_2 ?? $p?->prodi_pendidikan;
+                                    @endphp
                                     <div class="text-sm text-gray-700 font-medium">
-                                        {{ $lamaran->pelamar->jenjang ?: '-' }} @if($lamaran->pelamar->institusi) – {{ $lamaran->pelamar->institusi }} @endif
+                                        {{ $dispJenjang }} @if($dispInstitusi) – {{ $dispInstitusi }} @endif
                                     </div>
-                                    @if($lamaran->pelamar->prodi_pendidikan)
-                                        <div class="text-[0.65rem] text-gray-400 uppercase tracking-widest mt-0.5">{{ $lamaran->pelamar->prodi_pendidikan }}</div>
+                                    @if($dispProdi)
+                                        <div class="text-[0.65rem] text-gray-400 uppercase tracking-widest mt-0.5">{{ $dispProdi }}</div>
                                     @endif
                                 </td>
                                 <td class="py-3 px-5 text-sm font-semibold text-gray-700">

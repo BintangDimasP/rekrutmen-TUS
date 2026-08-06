@@ -4,6 +4,8 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [\App\Http\Controllers\LandingController::class, 'index'])->name('landing');
+Route::get('/lowongan', [\App\Http\Controllers\LandingController::class, 'lowonganList'])->name('landing.lowongan.index');
+Route::get('/lowongan/{lowongan}', [\App\Http\Controllers\LandingController::class, 'show'])->name('landing.lowongan.show');
 
 Route::middleware(['auth'])->group(function () {
 

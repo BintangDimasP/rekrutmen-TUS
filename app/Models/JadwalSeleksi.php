@@ -36,7 +36,7 @@ class JadwalSeleksi extends Model
     ];
 
     protected $fillable = [
-        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi', 'link_meeting', 'jenis_sesi', 'lokasi'
+        'tanggal', 'lowongan_id', 'pelamar_id', 'penguji_id', 'tipe_seleksi', 'sesi', 'link_meeting', 'jenis_sesi', 'lokasi', 'materi_micro_teaching'
     ];
 
     protected $casts = [

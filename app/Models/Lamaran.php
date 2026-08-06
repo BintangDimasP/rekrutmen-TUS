@@ -68,17 +68,22 @@ class Lamaran extends Model
      */
     public function getEffectivePelamarAttribute(): object
     {
-        if (!empty($this->snapshot_data)) {
+        if (!empty($this->snapshot_data) && is_array($this->snapshot_data)) {
             $snap = $this->snapshot_data;
-            // Cast date fields agar konsisten
             foreach (['tanggal_lahir', 'tanggal_tes_bahasa'] as $field) {
                 if (!empty($snap[$field])) {
                     $snap[$field] = \Carbon\Carbon::parse($snap[$field]);
                 }
             }
-            return (object) $snap;
+            $p = new Pelamar();
+            $p->forceFill($snap);
+            if (!empty($snap['id'])) {
+                $p->id = $snap['id'];
+            }
+            $p->exists = true;
+            return $p;
         }
-        return $this->pelamar;
+        return $this->pelamar ?? new Pelamar();
     }
 
     protected static function boot()

@@ -88,11 +88,13 @@
         <div class="card-header-red px-8 py-7">
             <h1 class="text-[22px] font-bold text-white leading-snug relative z-10">{{ $lowongan->nama_posisi }}</h1>
             <p class="text-white/70 text-[13.5px] mt-1 mb-5 relative z-10">
-                {{ $lowongan->prodi->nama ?? 'Semua Program Studi' }} — Telkom University Surabaya
+                {{ $lowongan->prodi->nama ?? ($lowongan->kategori === 'Tenaga Kependidikan' ? 'Tenaga Kependidikan' : 'Semua Program Studi') }} — Telkom University Surabaya
             </p>
             <div class="flex flex-wrap gap-2 relative z-10">
                 <span class="px-3 py-1 rounded-full text-[11.5px] font-medium text-white border border-white/20 bg-white/10">{{ $lowongan->jenjang_minimal }}</span>
+                @if($lowongan->kategori !== 'Tenaga Kependidikan')
                 <span class="px-3 py-1 rounded-full text-[11.5px] font-medium text-white border border-white/20 bg-white/10">IPK ≥ {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                @endif
                 <span class="px-3 py-1 rounded-full text-[11.5px] font-medium text-white border border-white/20 bg-white/10">Full-Time</span>
                 <span class="px-3 py-1 rounded-full text-[11.5px] font-medium text-white border border-white/20 bg-white/10">{{ $lowongan->kuota }} Kuota</span>
                 <span class="px-3 py-1 rounded-full text-[11.5px] font-medium text-yellow-200 border border-yellow-200/30 bg-yellow-100/10">
@@ -105,15 +107,19 @@
         <div class="px-8 py-7 space-y-7">
 
             {{-- INFO ROW --}}
-            <div class="info-row-grid">
+            <div class="info-row-grid" style="grid-template-columns: repeat({{ $lowongan->kategori === 'Tenaga Kependidikan' ? '3' : '4' }}, 1fr);">
                 <div class="info-row-cell">
                     <div class="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5">Pendidikan</div>
                     <div class="text-[14.5px] font-semibold text-gray-800">{{ $lowongan->jenjang_minimal }}</div>
                 </div>
+                @if($lowongan->kategori !== 'Tenaga Kependidikan')
                 <div class="info-row-cell">
                     <div class="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5">Minimal IPK</div>
-                    <div class="text-[14.5px] font-semibold text-gray-800">{{ number_format($lowongan->minimal_ipk, 2) }}</div>
+                    <div class="text-[14.5px] font-semibold text-gray-800">
+                        {{ number_format($lowongan->minimal_ipk, 2) }}
+                    </div>
                 </div>
+                @endif
                 <div class="info-row-cell">
                     <div class="text-[10px] font-bold text-gray-300 uppercase tracking-wider mb-1.5">Kuota</div>
                     <div class="text-[14.5px] font-semibold text-gray-800">{{ $lowongan->kuota }} Posisi</div>
@@ -127,7 +133,8 @@
             {{-- KUALIFIKASI KHUSUS --}}
             <div>
                 <div class="text-[11px] font-bold text-[#8b1515] uppercase tracking-wider pb-2.5 border-b border-gray-100 mb-3">Kualifikasi Khusus</div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 @if($lowongan->kategori !== 'Tenaga Kependidikan') md:grid-cols-2 @endif gap-3">
+                    @if($lowongan->kategori !== 'Tenaga Kependidikan')
                     <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
                         <div class="text-[10.5px] font-bold text-gray-300 uppercase tracking-wider mb-2">Prodi Linear / Prioritas</div>
                         @if($lowongan->prodi_prioritas)
@@ -140,6 +147,7 @@
                             <div class="text-[13px] text-gray-500 leading-relaxed">-</div>
                         @endif
                     </div>
+                    @endif
                     <div class="bg-gray-50 border border-gray-100 rounded-xl p-4">
                         <div class="text-[10.5px] font-bold text-gray-300 uppercase tracking-wider mb-2">Skill Utama</div>
                         @if($lowongan->skill_dibutuhkan)

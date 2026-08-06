@@ -56,7 +56,11 @@
             <div class="font-serif text-[13pt] font-bold uppercase tracking-wider leading-tight">TELKOM UNIVERSITY SURABAYA</div>
             <hr class="border-t-4 border-black my-2">
             <div class="font-serif text-[10.5pt] font-bold uppercase leading-normal tracking-wide">
-                PENETAPAN HASIL AKHIR MICROTEACHING DAN WAWANCARA REKRUT DOSEN TENAGA PROFESIONAL<br>
+                @if($lowongan->kategori === 'Tenaga Kependidikan')
+                    PENETAPAN HASIL SELEKSI REKRUT TENAGA KEPENDIDIKAN<br>
+                @else
+                    PENETAPAN HASIL AKHIR MICROTEACHING DAN WAWANCARA REKRUT DOSEN TENAGA PROFESIONAL<br>
+                @endif
                 UNIVERSITAS TELKOM (KAMPUS KOTA SURABAYA)<br>
                 BATCH 1 TAHUN {{ now()->year }}
             </div>
@@ -68,11 +72,52 @@
             Pada hari ini <strong class="font-bold">{{ $hariStr }}</strong> tanggal <strong class="font-bold">{{ $tglStr }}</strong>
             bulan <strong class="font-bold">{{ $bulanStr }}</strong> tahun <strong class="font-bold">{{ $tahunStr }}</strong>,
             bertempat di Ruang Rapat Universitas Telkom (Kampus Kota Surabaya), telah ditetapkan Hasil
-            Akhir Microteaching dan Wawancara Rekrut Dosen Tenaga Profesional Universitas Telkom (Kampus Kota Surabaya)
-            Batch 1 tahun {{ now()->year }} untuk dapat ditindak lanjuti dalam proses psikotest dengan rincian sebagai berikut :
+            @if($lowongan->kategori === 'Tenaga Kependidikan')
+                Seleksi Rekrut Tenaga Kependidikan Universitas Telkom (Kampus Kota Surabaya)
+                Batch 1 tahun {{ now()->year }} untuk dapat ditindak lanjuti dengan rincian sebagai berikut :
+            @else
+                Akhir Microteaching dan Wawancara Rekrut Dosen Tenaga Profesional Universitas Telkom (Kampus Kota Surabaya)
+                Batch 1 tahun {{ now()->year }} untuk dapat ditindak lanjuti dalam proses psikotest dengan rincian sebagai berikut :
+            @endif
         </p>
 
         {{-- TABEL UTAMA --}}
+        @if($lowongan->kategori === 'Tenaga Kependidikan')
+        {{-- Tabel Tendik: Sederhana --}}
+        <table class="w-full border-collapse border border-black font-serif text-[8.5pt] mb-3">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[22px]">No</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[100px]">Nama</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[60px]">Pendidikan</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[80px]">Nilai Wawancara</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[60px]">Nilai Akhir</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt]">Catatan</th>
+                    <th class="border border-black p-1 font-bold text-center text-[8pt] w-[80px]">Rekomendasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($kandidats as $i => $k)
+                <tr class="hover:bg-gray-50">
+                    <td class="border border-black p-1 text-center">{{ $i + 1 }}</td>
+                    <td class="border border-black p-1 text-left font-semibold">{{ $k->nama }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->jenjangDisplay }}</td>
+                    <td class="border border-black p-1 text-center">{{ $k->avgWawancara ?? '-' }}</td>
+                    <td class="border border-black p-1 text-center font-bold">{{ $k->avgWawancara ?? '-' }}</td>
+                    <td class="border border-black p-1 text-justify text-[8pt] leading-normal">{{ $k->catatan ?: '-' }}</td>
+                    <td class="border border-black p-1 text-center font-bold">{{ $k->rekomendasi }}</td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="7" class="border border-black p-3 text-center italic text-gray-500">
+                        Belum ada kandidat yang ditetapkan.
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+        @else
+        {{-- Tabel Dosen: Lengkap --}}
         <table class="w-full border-collapse border border-black font-serif text-[8.5pt] mb-3">
             <thead>
                 <tr class="bg-gray-100">
@@ -118,6 +163,7 @@
                 @endforelse
             </tbody>
         </table>
+        @endif
 
         {{-- TANDA TANGAN --}}
         <div class="text-center font-serif text-[10pt] mb-1">{{ $tanggalFormatted }}</div>

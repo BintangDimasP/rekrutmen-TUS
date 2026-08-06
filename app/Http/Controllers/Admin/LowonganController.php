@@ -34,6 +34,17 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
 - Surat Pernyataan bersedia untuk mengurus Surat Lolos Butuh
 (Format pada link: bit.ly/Surat-Pernyataan-Lolos-Butuh)";
 
+    private const DEFAULT_DESKRIPSI_TENDIK = "Dokumen yang perlu dipersiapkan :
+- Pas Photo Formal Berwarna Berlatar Abu-Abu
+- Scan KTP
+- Surat Lamaran dan Curiculum Vitae/Resume/Riwayat Hidup
+- Scan Ijazah dan Transkrip Nilai Terakhir
+- SKCK (Surat Keterangan Catatan Kepolisian)
+- Sertifikat Kompetensi/Keahlian yang relevan (apabila ada)
+- Surat Keterangan Pengalaman Kerja (apabila ada)
+- Surat Pernyataan bersedia untuk mengurus Surat Pemberhentian apabila bekerja di Instansi Lain
+(Format pada link: tel-u.ac.id/suratpernyataanpemberhentian)";
+
     /** [CONTEKAN] READ: Menampilkan halaman utama daftar lowongan (mengambil data dari database dengan fungsi pagination) */
     public function index()
     {
@@ -47,6 +58,7 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $prodis            = Prodi::orderBy('nama')->get();
         $defaultDeskripsi  = self::DEFAULT_DESKRIPSI;
+        $defaultDeskripsiTendik = self::DEFAULT_DESKRIPSI_TENDIK;
 
         $prodiPrioritasOptions = $prodis->pluck('nama')->toArray();
 
@@ -58,8 +70,14 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'Business Intelligence', 'UI/UX Design',
         ];
 
+        $skillOptionsTendik = [
+            'Microsoft Office (Word, Excel, PowerPoint)', 'SAP / ERP', 'Administrasi Perkantoran',
+            'Pelayanan Prima (Service Excellence)', 'Komunikasi Publik', 'Manajemen Waktu',
+            'Pengolahan Data', 'Desain Grafis Dasar', 'Problem Solving', 'Teamwork',
+        ];
+
         return view('admin.lowongan.create', compact(
-            'prodis', 'defaultDeskripsi', 'prodiPrioritasOptions', 'skillOptions'
+            'prodis', 'defaultDeskripsi', 'defaultDeskripsiTendik', 'prodiPrioritasOptions', 'skillOptions', 'skillOptionsTendik'
         ));
     }
 
@@ -68,17 +86,20 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $validated = $request->validate([
             'nama_posisi'      => 'required|string|max:255',
-            'prodi_id'         => 'required|exists:prodis,id',
-            'jenjang_minimal'  => 'required|in:D3,S1,S2,S3',
-            'minimal_ipk'      => 'required|numeric|min:0|max:4',
+            'kategori'         => 'required|in:Dosen,Tenaga Kependidikan',
+            'prodi_id'         => 'required_if:kategori,Dosen|nullable|exists:prodis,id',
+            'jenjang_minimal'  => 'required|in:SMA/SMK,D3,D4,S1,S2,S3',
+            'minimal_ipk'      => 'required_if:kategori,Dosen|nullable|numeric|min:0|max:4',
             'prodi_prioritas'  => 'nullable',
             'skill_dibutuhkan' => 'nullable',
             'kuota'            => 'required|integer|min:1',
-            'tanggal_tutup'    => 'required|date|after:today',
-            'deskripsi'        => 'nullable|string',
-            'status'           => 'required|in:aktif,ditutup,draft',
+            'tanggal_tutup'         => 'required|date|after:today',
+            'deskripsi'             => 'nullable|string',
+            'materi_micro_teaching' => 'nullable|string',
+            'status'                => 'required|in:aktif,ditutup,draft',
         ], [
-            'tanggal_tutup.after' => 'Tanggal penutupan harus berisi tanggal setelah hari ini.',
+            'tanggal_tutup.after'        => 'Tanggal penutupan harus berisi tanggal setelah hari ini.',
+            'prodi_id.required_if'       => 'Program Studi wajib dipilih untuk lowongan Dosen.',
         ]);
 
         // Prodi prioritas: nilai dipisah '||' dari multi-select → simpan dengan ', '
@@ -99,11 +120,24 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             $validated['skill_dibutuhkan'] = null;
         }
 
+        // Jika deskripsi kosong, isi dengan default sesuai kategori
+        if (empty($validated['deskripsi'])) {
+            $validated['deskripsi'] = ($validated['kategori'] === 'Tenaga Kependidikan')
+                ? self::DEFAULT_DESKRIPSI_TENDIK
+                : self::DEFAULT_DESKRIPSI;
+        }
+
+        // Jika kategori Tendik, kosongkan prodi_id dan field khusus dosen
+        if ($validated['kategori'] === 'Tenaga Kependidikan') {
+            $validated['prodi_id']        = null;
+            $validated['prodi_prioritas'] = null;
+        }
+
         $lowongan = Lowongan::create($validated);
         $lowongan->load('prodi');
 
         $adminNama = auth()->user()->name ?? 'Admin';
-        $prodiNama = $lowongan->prodi->nama ?? '-';
+        $prodiNama = $lowongan->prodi->nama ?? 'Tenaga Kependidikan';
         $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
         \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $prodiNama, $waktu) {
             \App\Models\Notifikasi::kirimSistem(
@@ -138,7 +172,15 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             'Business Intelligence', 'UI/UX Design',
         ];
 
-        return view('admin.lowongan.edit', compact('lowongan', 'prodis', 'prodiPrioritasOptions', 'skillOptions'));
+        $skillOptionsTendik = [
+            'Microsoft Office (Word, Excel, PowerPoint)', 'SAP / ERP', 'Administrasi Perkantoran',
+            'Pelayanan Prima (Service Excellence)', 'Komunikasi Publik', 'Manajemen Waktu',
+            'Pengolahan Data', 'Desain Grafis Dasar', 'Problem Solving', 'Teamwork',
+        ];
+
+        return view('admin.lowongan.edit', compact(
+            'lowongan', 'prodis', 'prodiPrioritasOptions', 'skillOptions', 'skillOptionsTendik'
+        ));
     }
 
     /** [CONTEKAN] UPDATE: Memproses submit dan menyimpan perubahan (edit) data lowongan ke dalam database */
@@ -146,17 +188,20 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
     {
         $validated = $request->validate([
             'nama_posisi'      => 'required|string|max:255',
-            'prodi_id'         => 'required|exists:prodis,id',
-            'jenjang_minimal'  => 'required|in:D3,S1,S2,S3',
-            'minimal_ipk'      => 'required|numeric|min:0|max:4',
+            'kategori'         => 'required|in:Dosen,Tenaga Kependidikan',
+            'prodi_id'         => 'required_if:kategori,Dosen|nullable|exists:prodis,id',
+            'jenjang_minimal'  => 'required|in:SMA/SMK,D3,D4,S1,S2,S3',
+            'minimal_ipk'      => 'required_if:kategori,Dosen|nullable|numeric|min:0|max:4',
             'prodi_prioritas'  => 'nullable',
             'skill_dibutuhkan' => 'nullable',
             'kuota'            => 'required|integer|min:1',
-            'tanggal_tutup'    => 'required|date|after_or_equal:today',
-            'deskripsi'        => 'nullable|string',
-            'status'           => 'required|in:aktif,ditutup,draft',
+            'tanggal_tutup'         => 'required|date|after_or_equal:today',
+            'deskripsi'             => 'nullable|string',
+            'materi_micro_teaching' => 'nullable|string',
+            'status'                => 'required|in:aktif,ditutup,draft',
         ], [
             'tanggal_tutup.after_or_equal' => 'Tanggal penutupan tidak boleh sebelum hari ini.',
+            'prodi_id.required_if'         => 'Program Studi wajib dipilih untuk lowongan Dosen.',
         ]);
 
         // Normalisasi multi-select (dipisah '||') → simpan dengan ', '
@@ -170,11 +215,17 @@ Dokumen tambahan bagi pelamar yang sudah memiliki homebase:
             }
         }
 
+        // Jika kategori Tendik, kosongkan prodi_id dan field khusus dosen
+        if ($validated['kategori'] === 'Tenaga Kependidikan') {
+            $validated['prodi_id']        = null;
+            $validated['prodi_prioritas'] = null;
+        }
+
         $lowongan->update($validated);
 
         $lowongan->load('prodi');
         $adminNama = auth()->user()->name ?? 'Admin';
-        $prodiNama = $lowongan->prodi->nama ?? '-';
+        $prodiNama = $lowongan->prodi->nama ?? 'Tenaga Kependidikan';
         $waktu = now()->translatedFormat('d F Y \p\u\k\u\l H:i');
         \App\Models\User::where('role', 'admin')->each(function($u) use ($adminNama, $lowongan, $prodiNama, $waktu) {
             \App\Models\Notifikasi::kirimSistem($u->id, 'Lowongan Diperbarui', "Admin {$adminNama} memperbarui lowongan {$lowongan->nama_posisi} pada prodi {$prodiNama} pada {$waktu}.");

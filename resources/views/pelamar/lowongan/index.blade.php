@@ -34,8 +34,36 @@
                     </div>
                 </div>
 
-                {{-- Prodi Chip --}}
-                <div class="relative" @click.outside="prodiOpen = false">
+                {{-- Kategori Chip --}}
+                <div class="relative" @click.outside="kategoriOpen = false">
+                    <button type="button" @click="kategoriOpen = !kategoriOpen"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
+                            :class="kategoriFilter !== '' ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
+                        Kategori
+                        <svg class="w-3 h-3 ml-0.5 transition-transform" :class="kategoriOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="kategoriOpen" x-transition class="absolute top-full left-0 mt-2 w-56 bg-white border border-gray-200 rounded-xl shadow-xl z-50 overflow-hidden" style="display:none;">
+                        <div class="p-3 space-y-1">
+                            <button type="button" @click="kategoriFilter = kategoriFilter === 'Dosen' ? '' : 'Dosen'; if(kategoriFilter !== 'Dosen') prodiFilter = []; kategoriOpen = false"
+                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left" :class="kategoriFilter === 'Dosen' ? 'bg-gray-50' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="kategoriFilter === 'Dosen' ? 'border-[#8b1515] bg-[#8b1515]' : 'border-gray-300'">
+                                    <svg x-show="kategoriFilter === 'Dosen'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">Dosen</span>
+                            </button>
+                            <button type="button" @click="kategoriFilter = kategoriFilter === 'Tenaga Kependidikan' ? '' : 'Tenaga Kependidikan'; if(kategoriFilter !== 'Dosen') prodiFilter = []; kategoriOpen = false"
+                                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 transition-colors text-left" :class="kategoriFilter === 'Tenaga Kependidikan' ? 'bg-gray-50' : ''">
+                                <span class="w-4 h-4 rounded border-2 flex items-center justify-center" :class="kategoriFilter === 'Tenaga Kependidikan' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'">
+                                    <svg x-show="kategoriFilter === 'Tenaga Kependidikan'" class="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                </span>
+                                <span class="text-sm font-medium text-gray-700">Tenaga Kependidikan</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Prodi Chip — hanya muncul saat filter Dosen aktif --}}
+                <div class="relative" x-show="kategoriFilter === 'Dosen'" x-transition @click.outside="prodiOpen = false">
                     <button type="button" @click="prodiOpen = !prodiOpen"
                             class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium border transition-all"
                             :class="prodiFilter.length > 0 ? 'bg-[#8b1515] text-white border-[#8b1515]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'">
@@ -136,22 +164,21 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($availableLowongans as $lowongan)
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col p-6 relative"
-                     x-show="isCardVisible({{ $lowongan->id }}, '{{ $lowongan->prodi->nama ?? '' }}', '{{ $lowongan->jenjang_minimal }}', '{{ addslashes($lowongan->nama_posisi) }}')"
+                     x-show="isCardVisible({{ $lowongan->id }}, '{{ $lowongan->prodi->nama ?? '' }}', '{{ $lowongan->jenjang_minimal }}', '{{ addslashes($lowongan->nama_posisi) }}', '{{ $lowongan->kategori }}')"
                      x-transition>
 
                     {{-- Header: Title & Logo --}}
                     <div class="flex items-start justify-between gap-4 mb-5">
                         <div class="flex-1 pt-1">
-                            <h3 class="text-base font-bold text-gray-800 leading-tight">{{ $lowongan->nama_posisi }}</h3>
-                            <p class="text-sm text-gray-500 mt-1">{{ $lowongan->prodi->nama ?? 'Semua Prodi' }}</p>
-                        </div>
+                                <h3 class="text-base font-bold text-gray-800 leading-tight">{{ $lowongan->nama_posisi }}</h3>
+                                <p class="text-sm text-gray-500 mt-1">{{ $lowongan->prodi->nama ?? ($lowongan->kategori === 'Tenaga Kependidikan' ? 'Tenaga Kependidikan' : 'Semua Prodi') }}</p>
+                            </div>
                         @if($lowongan->prodi && $lowongan->prodi->logo)
                             <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}"
-                                class="w-[60px] h-[60px] rounded-full object-contain bg-white border border-gray-100 p-1 flex-shrink-0">
+                                class="w-[60px] h-[60px] rounded-full object-cover bg-white border border-gray-100 flex-shrink-0">
                         @else
-                            <div
-                                class="w-[60px] h-[60px] rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-gray-500 font-bold text-2xl">
-                                {{ substr($lowongan->nama_posisi, 0, 1) }}
+                            <div class="w-[60px] h-[60px] rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm">
+                                <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                             </div>
                         @endif
                     </div>
@@ -181,8 +208,10 @@
                     <div class="flex flex-wrap gap-3 mb-8">
                         <span
                             class="px-4 py-2 bg-gray-100 text-black text-sm font-medium rounded-xl">{{ $lowongan->jenjang_minimal }}</span>
+                        @if($lowongan->kategori !== 'Tenaga Kependidikan')
                         <span class="px-4 py-2 bg-gray-100 text-black text-sm font-medium rounded-xl">>
                             {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                        @endif
                         <span class="px-4 py-2 bg-gray-100 text-black text-sm font-medium rounded-xl">Full-Time</span>
                     </div>
 
@@ -238,9 +267,8 @@
                                     <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}"
                                         class="w-[60px] h-[60px] rounded-full object-contain bg-white border border-gray-200 p-1 flex-shrink-0 grayscale">
                                 @else
-                                    <div
-                                        class="w-[60px] h-[60px] rounded-full bg-gray-300 flex-shrink-0 flex items-center justify-center text-gray-500 font-bold text-2xl">
-                                        {{ substr($lowongan->nama_posisi, 0, 1) }}
+                                    <div class="w-[60px] h-[60px] rounded-full bg-white border border-gray-200 flex-shrink-0 flex items-center justify-center p-1.5 shadow-sm grayscale">
+                                        <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
                                     </div>
                                 @endif
                             </div>
@@ -271,8 +299,10 @@
                             <div class="flex flex-wrap gap-3 mb-8">
                                 <span
                                     class="px-4 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-xl">{{ $lowongan->jenjang_minimal }}</span>
+                                @if($lowongan->kategori !== 'Tenaga Kependidikan')
                                 <span class="px-4 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-xl">>
                                     {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                                @endif
                                 <span class="px-4 py-2 bg-gray-200 text-gray-500 text-sm font-medium rounded-xl">Full-Time</span>
                             </div>
 
@@ -301,7 +331,7 @@
     @push('scripts')
         @php
             $lowonganData = $availableLowongans->map(function($l) {
-                return ['id' => $l->id, 'prodi' => $l->prodi->nama ?? '', 'jenjang' => $l->jenjang_minimal, 'nama' => $l->nama_posisi];
+                return ['id' => $l->id, 'prodi' => $l->prodi->nama ?? '', 'jenjang' => $l->jenjang_minimal, 'nama' => $l->nama_posisi, 'kategori' => $l->kategori];
             });
         @endphp
         <script>
@@ -312,29 +342,32 @@
                     showOnlySaved: false,
                     prodiFilter: [],
                     jenjangFilter: [],
+                    kategoriFilter: '',
                     search: '',
                     prodiOpen: false,
                     jenjangOpen: false,
+                    kategoriOpen: false,
 
-                    get hasFilters() { return this.prodiFilter.length > 0 || this.jenjangFilter.length > 0 || this.showOnlySaved || this.search !== ''; },
+                    get hasFilters() { return this.prodiFilter.length > 0 || this.jenjangFilter.length > 0 || this.showOnlySaved || this.search !== '' || this.kategoriFilter !== ''; },
 
                     get visibleCount() {
                         const all = window._lowonganData;
-                        return all.filter(l => this.isCardVisibleRaw(l.id, l.prodi, l.jenjang, l.nama)).length;
+                        return all.filter(l => this.isCardVisibleRaw(l.id, l.prodi, l.jenjang, l.nama, l.kategori)).length;
                     },
 
-                    clearAll() { this.prodiFilter = []; this.jenjangFilter = []; this.showOnlySaved = false; this.search = ''; },
+                    clearAll() { this.prodiFilter = []; this.jenjangFilter = []; this.showOnlySaved = false; this.search = ''; this.kategoriFilter = ''; },
 
                     isSaved(id) {
                         return this.savedIds.includes(id);
                     },
 
-                    isCardVisible(id, prodi, jenjang, nama) {
-                        return this.isCardVisibleRaw(id, prodi, jenjang, nama);
+                    isCardVisible(id, prodi, jenjang, nama, kategori) {
+                        return this.isCardVisibleRaw(id, prodi, jenjang, nama, kategori);
                     },
 
-                    isCardVisibleRaw(id, prodi, jenjang, nama) {
+                    isCardVisibleRaw(id, prodi, jenjang, nama, kategori) {
                         if (this.showOnlySaved && !this.savedIds.includes(id)) return false;
+                        if (this.kategoriFilter !== '' && kategori !== this.kategoriFilter) return false;
                         if (this.prodiFilter.length > 0 && !this.prodiFilter.includes(prodi)) return false;
                         if (this.jenjangFilter.length > 0 && !this.jenjangFilter.includes(jenjang)) return false;
                         if (this.search !== '' && !nama.toLowerCase().includes(this.search.toLowerCase())) return false;

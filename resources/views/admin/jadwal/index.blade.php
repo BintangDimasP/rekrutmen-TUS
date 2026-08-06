@@ -215,6 +215,16 @@
                                             @endif
                                         </div>
                                     @endif
+
+                                    @php
+                                        $materiMT = $mFirst->materi_micro_teaching ?? null;
+                                    @endphp
+                                    @if($materiMT)
+                                        <div class="mt-1.5 pt-1.5 border-t border-gray-100">
+                                            <strong class="flex-shrink-0 text-amber-800 text-[0.65rem] uppercase block">Materi:</strong>
+                                            <span class="text-xs text-gray-700 block line-clamp-2" title="{{ $materiMT }}">{{ $materiMT }}</span>
+                                        </div>
+                                    @endif
                                 </div>
                             @else
                                 <div class="text-gray-400 text-xs italic">-</div>
@@ -312,6 +322,7 @@
                                         mSesi:   {{ $mFirst ? $mFirst->sesi : 'null' }},
                                         jenis:   '{{ $mFirst ? $mFirst->jenis_sesi : 'online' }}',
                                         lokasi:  '{!! $mFirst ? addslashes($mFirst->lokasi ?? '') : '' !!}',
+                                        materiMicro: '{!! addslashes($mFirst?->materi_micro_teaching ?? '') !!}',
                                         hasW:    {{ $row->wawancara->isNotEmpty() ? 'true' : 'false' }},
                                         hasM:    {{ $row->micro->isNotEmpty() ? 'true' : 'false' }},
                                         pengujiW: {{ $pengujiW }},
@@ -646,6 +657,19 @@
                 </template>
             </div>
 
+            {{-- Materi Micro Teaching --}}
+            <div>
+                <label class="block text-xs font-semibold text-gray-700 mb-1.5">Materi Micro Teaching</label>
+                <template x-if="modal.readOnly">
+                    <p class="text-xs text-gray-700 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg whitespace-pre-line" x-text="modal.materiMicro || '-'"></p>
+                </template>
+                <template x-if="!modal.readOnly">
+                    <textarea name="materi_micro_teaching" x-model="modal.materiMicro" rows="2"
+                              placeholder="Persiapkan slide & materi 15 menit..."
+                              class="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:border-[#8b1515] focus:ring-1 focus:ring-[#8b1515] transition resize-y"></textarea>
+                </template>
+            </div>
+
             </div>
 
             {{-- Buttons --}}
@@ -780,7 +804,7 @@ function jadwalIndex() {
             readOnly: false,
             pelamarId: null, lowonganId: null, prodiId: null, pelamarNama: '',
             tanggal: '', wSesi: '', mSesi: '',
-            jenis: 'online', lokasi: '',
+            jenis: 'online', lokasi: '', materiMicro: '',
             origW: null, origM: null,
             hasW: false, hasM: false,
             pengujiW: [], pengujiM: [], allPgIds: [],
@@ -804,6 +828,7 @@ function jadwalIndex() {
             this.modal.mSesi       = d.mSesi !== null ? String(d.mSesi) : '';
             this.modal.jenis       = d.jenis || 'online';
             this.modal.lokasi      = d.lokasi || '';
+            this.modal.materiMicro = d.materiMicro || '';
             this.modal.origW       = d.wSesi;
             this.modal.origM       = d.mSesi;
             this.modal.hasW        = d.hasW;

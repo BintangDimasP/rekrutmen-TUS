@@ -22,7 +22,8 @@
                         email.includes(this.search.toLowerCase());
                     const matchRole = this.roleFilter === '' || 
                         role === this.roleFilter ||
-                        (this.roleFilter === 'penguji' && row.dataset.isPenguji === '1');
+                        (this.roleFilter === 'penguji' && row.dataset.isPenguji === '1') ||
+                        (this.roleFilter === 'kaprodi' && row.dataset.isKaprodi === '1');
                     return matchSearch && matchRole;
                 });
             },
@@ -158,7 +159,8 @@
                         @php
                             $isMulti = $user->is_penguji && $user->is_kaprodi;
                             // Untuk filter: dosen rangkap match baik 'penguji' maupun 'kaprodi'
-                            $matchPenguji = $user->is_penguji ? '1' : '0';
+                            $matchPenguji = ($user->is_penguji || $user->role === 'penguji') ? '1' : '0';
+                            $matchKaprodi = ($user->is_kaprodi || $user->role === 'kaprodi') ? '1' : '0';
                         @endphp
                         <tr x-data="{ openEditModal: false, openDeleteModal: false {{ $errors->any() && old('edit_user_id') == $user->id ? ', openEditModal: true' : '' }} }" 
                             class="group hover:bg-gray-50 transition-colors h-[52px]"
@@ -166,7 +168,8 @@
                             data-name="{{ strtolower(addslashes($user->name)) }}"
                             data-email="{{ strtolower(addslashes($user->email)) }}"
                             data-role="{{ $user->role }}"
-                            data-is-penguji="{{ $matchPenguji }}">
+                            data-is-penguji="{{ $matchPenguji }}"
+                            data-is-kaprodi="{{ $matchKaprodi }}">
                             <td class="sticky left-0 z-10 bg-white group-hover:bg-gray-50 py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->name }}">{{ $user->name }}</td>
                             <td class="py-3 px-5 text-sm text-gray-800 font-medium truncate max-w-0" title="{{ $user->email }}">{{ $user->email }}</td>
                             <td class="py-3 px-5 text-sm font-medium">

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
-    <title>Rekrutmen Dosen — Telkom University</title>
+    <title>Rekrutmen Pegawai — Telkom University</title>
     <link rel="icon" type="image/png" href="{{ asset('images/logo-icon.png') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -302,7 +302,7 @@
                 <div class="p-8 pt-8 pb-6 flex-1 flex flex-col">
                     <div class="panduan-num panduan-num-dissolve text-2xl font-bold text-[#8b1515] mb-1 w-fit relative after:content-[''] after:block after:w-full after:h-[3px] after:bg-[#8b1515] after:mt-1 after:rounded">03</div>
                     <div class="panduan-title text-base font-bold text-gray-900 mb-2 mt-3 leading-snug">Pilih Posisi Lowongan</div>
-                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Cari dan pilih posisi dosen yang sesuai dengan bidang keahlian Anda.</p>
+                    <p class="panduan-desc text-sm text-gray-500 leading-relaxed flex-1">Cari dan pilih posisi yang sesuai dengan bidang keahlian Anda.</p>
                 </div>
             </div>
 
@@ -324,7 +324,7 @@
          animate-on-scroll slide-bottom">
             
             <h2 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
-                Posisi <span class="text-[#8b1515]">Lowongan Dosen</span> Terbaru
+                Posisi <span class="text-[#8b1515]">Lowongan Pegawai</span> Terbaru
             </h2>
            
             <p class="text-gray-500 max-w-2xl mx-auto text-base md:text-lg leading-relaxed">
@@ -336,18 +336,18 @@
             @forelse($lowongans as $index => $lowongan)
             <div class="lowongan-card relative overflow-hidden bg-white border-[1.5px] border-gray-200 rounded-2xl p-6 flex flex-col animate-on-scroll fade-scale" style="transition-delay: {{ ($index * 0.1) + 0.1 }}s">
                 <div class="flex items-start gap-4 mb-4">
-                    <div class="shrink-0">
-                        <div class="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
-                            @if($lowongan->prodi && $lowongan->prodi->logo)
-                                <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}" class="w-full h-full object-contain p-1">
-                            @else
-                                <span class="text-xl font-bold text-gray-400">{{ substr($lowongan->nama_posisi, 0, 1) }}</span>
-                            @endif
-                        </div>
+                    <div class="shrink-0 mt-1">
+                        @if($lowongan->prodi && $lowongan->prodi->logo)
+                            <img src="{{ asset('storage/' . $lowongan->prodi->logo) }}" alt="Logo {{ $lowongan->prodi->nama }}" class="w-[48px] h-[48px] rounded-full object-cover bg-white border border-gray-100 shadow-sm">
+                        @else
+                            <div class="w-[48px] h-[48px] rounded-full bg-white border border-gray-200 flex items-center justify-center shadow-sm p-1">
+                                <img src="{{ asset('images/logo-icon.png') }}" alt="Telkom University" class="w-full h-full object-contain">
+                            </div>
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="text-base font-bold text-gray-900 leading-snug mb-1">{{ $lowongan->nama_posisi }}</div>
-                        <div class="text-xs text-gray-400 font-medium">{{ $lowongan->prodi->nama ?? 'Semua Prodi' }}</div>
+                        <div class="text-base font-bold text-gray-900 leading-snug mb-0.5">{{ $lowongan->nama_posisi }}</div>
+                        <div class="text-xs text-gray-400 font-medium">{{ $lowongan->prodi->nama ?? ($lowongan->kategori === 'Tenaga Kependidikan' ? 'Tenaga Kependidikan' : 'Semua Prodi') }}</div>
                     </div>
                 </div>
 
@@ -369,29 +369,19 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap gap-1.5 mb-5">
+                <div class="flex flex-wrap gap-1.5 mb-4">
                     <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">{{ $lowongan->jenjang_minimal }}</span>
+                    @if($lowongan->kategori !== 'Tenaga Kependidikan')
                     <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">IPK > {{ number_format($lowongan->minimal_ipk, 2) }}</span>
+                    @endif
                     <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">{{ $lowongan->kuota }} Kuota</span>
                     <span class="px-2.5 py-1 bg-gray-100 rounded-md text-[0.7rem] font-semibold text-gray-600">Full-Time</span>
                 </div>
 
-                <div class="mt-auto pt-4 border-t border-gray-100">
-                    @auth
-                        @if(auth()->user()->role === 'pelamar')
-                            <a href="{{ route('pelamar.lowongan.show', $lowongan) }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full group">
-                                Detail
-                            </a>
-                        @else
-                            <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
-                                Detail
-                            </a>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2.5 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full">
-                            Detail
-                        </a>
-                    @endauth
+                <div class="mt-auto pt-3 border-t border-gray-100">
+                    <a href="{{ route('landing.lowongan.show', $lowongan) }}" class="inline-flex items-center justify-center gap-2 no-underline bg-white border-[1.5px] border-[#8b1515] rounded-lg py-2 px-4 text-sm font-semibold text-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:text-white hover:-translate-y-0.5 hover:shadow-lg w-full group">
+                        Detail
+                    </a>
                 </div>
             </div>
             @empty
@@ -403,24 +393,9 @@
 
         @if($lowongans->count() > 0)
         <div class="max-w-[1200px] mx-auto flex items-center justify-center animate-on-scroll slide-bottom">
-            @auth
-                @if(auth()->user()->role === 'pelamar')
-                    <a href="{{ route('pelamar.lowongan.index') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
-                        Lihat Semua Lowongan
-                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                    </a>
-                @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
-                        Lihat Semua Lowongan
-                        <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                    </a>
-                @endif
-            @else
-                <a href="{{ route('login') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-[#8b1515] hover:-translate-y-0.5 hover:shadow-lg">
-                    Lihat Semua Lowongan
-                    <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                </a>
-            @endauth
+            <a href="{{ route('landing.lowongan.index') }}" class="inline-flex items-center gap-2 no-underline rounded-lg px-8 py-3 text-sm font-semibold text-white bg-[#8b1515] transition-all duration-200 hover:bg-red-800 hover:-translate-y-0.5 hover:shadow-lg">
+                Lihat Semua Lowongan
+            </a>
         </div>
         @endif
     </section>
@@ -531,23 +506,8 @@
         </div>
 
         <div class="bg-[#8b1515] px-5 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 flex-wrap">
-            <p class="text-white text-xs m-0">Don't forget to follow us on social media:</p>
-            <div class="flex items-center gap-4">
-                <a href="#" aria-label="Instagram" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
-                </a>
-                <a href="#" aria-label="LinkedIn" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                </a>
-                <a href="#" aria-label="X" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="#" aria-label="Facebook" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                </a>
-                <a href="#" aria-label="YouTube" class="w-8 h-8 rounded-full border border-white/40 flex items-center justify-center text-white no-underline transition-all hover:bg-white/15 hover:border-white">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-                </a>
+            <div class="text-xs  text-white text-center sm:text-right">
+                &copy; {{ date('Y') }} Telkom University Surabaya.
             </div>
         </div>
     </footer>

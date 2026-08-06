@@ -157,8 +157,8 @@
 <div class="flex flex-col items-center pt-16 pb-20 px-4 w-full min-h-[calc(100vh-60px)]">
 
     {{-- Step Indicator --}}
-    <div class="w-full max-w-2xl flex items-center justify-center mb-16" id="stepIndicator">
-        @php $steps = [1=>'Akun',2=>'Data Diri',3=>'Pendidikan',4=>'Dokumen',5=>'Akademik']; @endphp
+    <div class="w-full max-w-md flex items-center justify-center mb-16" id="stepIndicator">
+        @php $steps = [1=>'Akun', 2=>'Data Diri']; @endphp
         @foreach($steps as $n => $label)
             <div class="relative flex flex-col items-center">
                 <div
@@ -176,8 +176,8 @@
                     {{ $label }}
                 </span>
             </div>
-            @if($n < 5)
-                <div id="line-{{ $n }}" class="flex-1 h-[3px] mx-1 max-w-[72px] rounded bg-gray-300 transition-colors duration-300"></div>
+            @if($n < 2)
+                <div id="line-{{ $n }}" class="flex-1 h-[3px] mx-1 max-w-[120px] rounded bg-gray-300 transition-colors duration-300"></div>
             @endif
         @endforeach
     </div>
@@ -242,7 +242,6 @@
             <div class="px-7 py-4 border-t border-gray-100 flex justify-end">
                 <button type="button" onclick="nextStep(1)" class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
                     Lanjut
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
         </div>
@@ -497,544 +496,9 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Kembali
                 </button>
-                <button type="button" onclick="nextStep(2)"
+                <button type="button" id="btnSubmitRegister" onclick="submitRegisterForm()"
                     class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
-                    Lanjut
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════ --}}
-        {{-- STEP 3 — RIWAYAT PENDIDIKAN             --}}
-        {{-- ═══════════════════════════════════════ --}}
-        <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-3">
-            <div class="bg-[#8b1515] px-7 py-5">
-                <h2 class="text-white text-xl font-bold">Riwayat Pendidikan</h2>
-            </div>
-            <div class="p-7">
-                <div class="grid grid-cols-2 gap-5">
-                    {{-- Info dipindah ke toast notification --}}
-
-                    {{-- Jenjang & IPK --}}
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Jenjang Pendidikan <span class="text-red-600">*</span>
-                        </label>
-                        <div x-data="{ open: false, val: '{{ old('jenjang') }}', opts: [{v:'S1',l:'S1 (Sarjana)'},{v:'S2',l:'S2 (Magister)'},{v:'S3',l:'S3 (Doktor)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" id="jenjang" name="jenjang" :value="val">
-                            <button type="button" id="jenjang_btn" @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
-                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
-                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jenjang —'"></span>
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="opt in opts" :key="opt.v">
-                                        <button type="button" @click="val = opt.v; open = false"
-                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                            <span x-text="opt.l"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="ipk" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            IPK <span class="text-red-600">*</span>
-                        </label>
-                        <input type="number" id="ipk" name="ipk" min="0" max="4" step="0.01"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 3.75" value="{{ old('ipk') }}"
-                            oninput="if(parseFloat(this.value)>4){this.value='4'}">
-                    </div>
-                    {{-- Institusi --}}
-                    <div class="col-span-2 flex flex-col gap-1.5"
-                         x-data="{
-                            open: false,
-                            query: '{{ old('institusi') }}',
-                            suggestions: ['Universitas Indonesia','Universitas Gadjah Mada','Institut Teknologi Bandung','Institut Pertanian Bogor','Universitas Airlangga','Universitas Diponegoro','Universitas Brawijaya','Universitas Padjadjaran','Universitas Hasanuddin','Institut Teknologi Sepuluh Nopember','Universitas Andalas','Universitas Sumatera Utara','Universitas Sebelas Maret','Universitas Negeri Yogyakarta','Universitas Pendidikan Indonesia','Universitas Lampung','Universitas Sriwijaya','Universitas Mataram','Universitas Sam Ratulangi','Universitas Udayana','Universitas Telkom','Universitas Bina Nusantara','Universitas Trisakti','Universitas Tarumanagara','Universitas Mercu Buana','Universitas Gunadarma','Universitas Atma Jaya','Universitas Sanata Dharma','Universitas Islam Indonesia','Universitas Muhammadiyah Malang','Universitas Negeri Malang','Universitas Jember','Universitas Syiah Kuala','Universitas Tanjungpura','Institut Agama Islam Negeri'],
-                            get filtered() { return this.query.length < 1 ? [] : this.suggestions.filter(s => s.toLowerCase().includes(this.query.toLowerCase())).slice(0,8); }
-                         }"
-                         @click.outside="open = false">
-                        <label for="institusi" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Institusi Pendidikan <span class="text-red-600">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="text" id="institusi" name="institusi" autocomplete="off"
-                                class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                                placeholder="Ketik nama universitas / perguruan tinggi..."
-                                x-model="query"
-                                @focus="open = filtered.length > 0"
-                                @input="open = filtered.length > 0">
-                            <div x-show="open && filtered.length > 0" x-transition
-                                 class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
-                                 style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="item in filtered" :key="item">
-                                        <button type="button"
-                                            class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
-                                            @click="query = item; open = false; document.getElementById('institusi').value = item;">
-                                            <span x-text="item"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- Prodi --}}
-                    <div class="col-span-2 flex flex-col gap-1.5"
-                         x-data="{
-                            open: false,
-                            query: '{{ old('prodi_pendidikan') }}',
-                            suggestions: ['Teknik Informatika','Sistem Informasi','Ilmu Komputer','Teknik Elektro','Teknik Mesin','Teknik Sipil','Teknik Kimia','Teknik Industri','Teknik Lingkungan','Matematika','Fisika','Kimia','Biologi','Statistika','Akuntansi','Manajemen','Ekonomi Pembangunan','Ilmu Komunikasi','Hubungan Internasional','Hukum','Kedokteran','Keperawatan','Farmasi','Psikologi','Pendidikan Matematika','Pendidikan Bahasa Inggris','Pendidikan Bahasa Indonesia','Arsitektur','Agribisnis','Agroteknologi','Peternakan','Kehutanan','Ilmu Administrasi Negara','Sosiologi','Antropologi','Pendidikan Dokter Gigi','Rekayasa Perangkat Lunak','Kecerdasan Buatan','Teknologi Informasi','Bisnis Digital','Desain Komunikasi Visual','Desain Produk Industri'],
-                            get filtered() { return this.query.length < 1 ? [] : this.suggestions.filter(s => s.toLowerCase().includes(this.query.toLowerCase())).slice(0,8); }
-                         }"
-                         @click.outside="open = false">
-                        <label for="prodi_pendidikan" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Program Studi <span class="text-red-600">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="text" id="prodi_pendidikan" name="prodi_pendidikan" autocomplete="off"
-                                class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                                placeholder="Ketik nama program studi..."
-                                x-model="query"
-                                @focus="open = filtered.length > 0"
-                                @input="open = filtered.length > 0">
-                            <div x-show="open && filtered.length > 0" x-transition
-                                 class="absolute z-30 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden"
-                                 style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="item in filtered" :key="item">
-                                        <button type="button"
-                                            class="w-full text-left px-3 py-2 text-sm rounded-lg hover:bg-gray-100 transition-colors"
-                                            @click="query = item; open = false; document.getElementById('prodi_pendidikan').value = item;">
-                                            <span x-text="item"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Akreditas & No Ijazah --}}
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Akreditasi Prodi <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
-                        </label>
-                        <div x-data="{ open: false, val: '{{ old('akreditas') }}', opts: [{v:'A',l:'A'},{v:'B',l:'B'},{v:'C',l:'C'},{v:'Unggul',l:'Unggul'},{v:'Baik Sekali',l:'Baik Sekali'},{v:'Baik',l:'Baik'},{v:'Tidak Terakreditasi',l:'Tidak Terakreditasi'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="akreditas" :value="val">
-                            <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
-                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
-                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih Akreditasi —'"></span>
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="opt in opts" :key="opt.v">
-                                        <button type="button" @click="val = opt.v; open = false"
-                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                            <span x-text="opt.l"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col gap-1.5">
-                        <label for="no_ijazah" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            No. Ijazah <span class="text-gray-400 normal-case ml-1 px-1.5 py-0.5 bg-gray-100 rounded text-[0.65rem] font-medium">Opsional</span>
-                        </label>
-                        <input type="text" id="no_ijazah" name="no_ijazah" maxlength="15"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nomor Ijazah Anda" value="{{ old('no_ijazah') }}">
-                    </div>
-
-                    {{-- Section Divider --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3 mb-1">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Dokumen Pendidikan</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    {{-- Upload Ijazah --}}
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Scan Ijazah
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="ijazah" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / Gambar</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="ijazah" name="ijazah" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'ijazah-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="ijazah-name"></p>
-                    </div>
-
-                    {{-- Upload Transkrip --}}
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Transkrip Nilai
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="transkrip" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Pilih file PDF / Gambar</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="transkrip" name="transkrip" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'transkrip-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="transkrip-name"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
-                <button type="button" onclick="prevStep(3)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    Kembali
-                </button>
-                <button type="button" onclick="nextStep(3)"
-                    class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
-                    Lanjut
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════ --}}
-        {{-- STEP 4 — DOKUMEN PENDUKUNG (semua opsional) --}}
-        {{-- ═══════════════════════════════════════ --}}
-        <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-4">
-            <div class="bg-[#8b1515] px-7 py-5">
-                <h2 class="text-white text-xl font-bold">Dokumen Pendukung</h2>
-            </div>
-            <div class="p-7">
-                <div class="grid grid-cols-2 gap-5">
-                    {{-- Info dipindah ke toast notification --}}
-
-                    {{-- Section: Dokumen Dasar --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Dokumen Dasar</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            CV (Curriculum Vitae)
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="cv" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload CV (PDF)</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="cv" name="cv" class="hidden" accept=".pdf" onchange="showFileName(this,'cv-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="cv-name"></p>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Pas Foto
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="pas_foto" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload Foto (JPG/PNG)</p>
-                                <p class="text-xs text-gray-400">Latar putih, maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="pas_foto" name="pas_foto" class="hidden" accept=".jpg,.jpeg,.png" onchange="showFileName(this,'foto-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="foto-name"></p>
-                    </div>
-
-                    <div class="col-span-2 flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Scan KTP
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="ktp" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload Scan KTP (PDF / Gambar)</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="ktp" name="ktp" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'ktp-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="ktp-name"></p>
-                    </div>
-
-                    {{-- Section: Sertifikat Kompetensi --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Sertifikat Kompetensi / Keahlian Khusus</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Kategori Sertifikat
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <div x-data="{ open: false, val: '{{ old('kategori_sertifikat') }}', opts: [{v:'kompetensi',l:'Kompetensi'},{v:'keahlian_khusus',l:'Keahlian Khusus'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="kategori_sertifikat" :value="val">
-                            <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
-                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
-                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih kategori —'"></span>
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="opt in opts" :key="opt.v">
-                                        <button type="button" @click="val = opt.v; open = false"
-                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                            <span x-text="opt.l"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            File Sertifikat (PDF)
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="sertifikat_kompetensi" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="sertifikat_kompetensi" name="sertifikat_kompetensi" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'sertif-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="sertif-name"></p>
-                    </div>
-
-                    {{-- Section: Sertifikat Bahasa --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Sertifikat Kemampuan Bahasa Inggris</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Jenis Tes Bahasa
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <div x-data="{ open: false, val: '{{ old('jenis_tes_bahasa') }}', opts: [{v:'PBT',l:'PBT (Paper-Based TOEFL)'},{v:'TOEFL_ITP',l:'TOEFL (ITP/Institutional)'},{v:'EPrT',l:'EPrT (English Proficiency Test)'},{v:'CBT',l:'CBT (Computer-Based TOEFL)'},{v:'IBT',l:'IBT (Internet-Based TOEFL)'},{v:'IELTS',l:'IELTS'},{v:'AcEPT',l:'AcEPT (Academic English Proficiency Test)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" name="jenis_tes_bahasa" :value="val">
-                            <button type="button" @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
-                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
-                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jenis tes —'"></span>
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="opt in opts" :key="opt.v">
-                                        <button type="button" @click="val = opt.v; open = false"
-                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                            <span x-text="opt.l"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Skor
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <input type="number" name="skor_bahasa" min="0" step="0.5"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 550" value="{{ old('skor_bahasa') }}">
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Tanggal Tes
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <input type="date" name="tanggal_tes_bahasa"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm text-gray-700 transition" value="{{ old('tanggal_tes_bahasa') }}">
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Bukti Sertifikat Bahasa (PDF)
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <label for="sertifikat_bahasa" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 12l-3-3m0 0l-3 3m3-3v12"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="sertifikat_bahasa" name="sertifikat_bahasa" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'bahasa-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="bahasa-name"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
-                <button type="button" onclick="prevStep(4)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    Kembali
-                </button>
-                <button type="button" onclick="nextStep(4)"
-                    class="inline-flex items-center gap-2 bg-[#8b1515] hover:bg-[#6b1111] text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-[#8b1515]/25 transition">
-                    Lanjut
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-        </div>
-
-        {{-- ═══════════════════════════════════════ --}}
-        {{-- STEP 5 — RIWAYAT AKADEMIK               --}}
-        {{-- ═══════════════════════════════════════ --}}
-        <div class="step-content bg-white rounded-xl shadow-md overflow-hidden" id="step-5" x-data="{ nidnValue: '{{ old('nidn', '') }}' }">
-            <div class="bg-[#8b1515] px-7 py-5">
-                <h2 class="text-white text-xl font-bold">Riwayat Akademik</h2>
-            </div>
-            <div class="p-7">
-                <div class="grid grid-cols-2 gap-5">
-
-                    {{-- Section: Identitas Akademik --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Identitas Akademik</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label for="nidn" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            NIDN
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
-                        </label>
-                        <input type="text" id="nidn" name="nidn" maxlength="20"
-                            x-model="nidnValue"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Nomor Induk Dosen Nasional" value="{{ old('nidn') }}">
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label for="homebase" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Homebase Asal
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ber-NIDN</span>
-                        </label>
-                        <input type="text" id="homebase" name="homebase"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Perguruan tinggi asal NIDN" value="{{ old('homebase') }}">
-                    </div>
-
-                    <div class="col-span-2 flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Jabatan Fungsional Akademik
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
-                        </label>
-                        <div x-data="{ open: false, val: '{{ old('jabatan_akademik', 'non_jabatan') }}', opts: [{v:'non_jabatan',l:'Non Jabatan (NJAD)'},{v:'asisten_ahli',l:'Asisten Ahli (AA)'},{v:'lektor',l:'Lektor (L)'},{v:'lektor_kepala',l:'Lektor Kepala (LK)'},{v:'guru_besar',l:'Guru Besar (GB)'}] }" @click.outside="open = false" class="relative">
-                            <input type="hidden" id="jabatan_akademik" name="jabatan_akademik" :value="val">
-                            <button type="button" id="jabatan_akademik_btn" @click="open = !open"
-                                class="w-full flex items-center justify-between px-4 py-3 rounded-lg border bg-gray-50 text-sm transition-all"
-                                :class="val ? 'border-gray-200 text-gray-800' : 'border-gray-200 text-gray-400'">
-                                <span x-text="val ? opts.find(o=>o.v===val)?.l : '— Pilih jabatan —'"></span>
-                                <svg class="w-4 h-4 text-gray-400 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                            </button>
-                            <div x-show="open" x-transition class="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style="display:none;">
-                                <div class="p-1.5 space-y-0.5">
-                                    <template x-for="opt in opts" :key="opt.v">
-                                        <button type="button" @click="val = opt.v; open = false"
-                                            class="w-full text-left px-3 py-2.5 text-sm rounded-lg transition-colors"
-                                            :class="val === opt.v ? 'bg-gray-100 text-gray-900 font-semibold' : 'hover:bg-gray-100 text-gray-700'">
-                                            <span x-text="opt.l"></span>
-                                        </button>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Section: Riset & Publikasi --}}
-                    <div class="col-span-2">
-                        <div class="flex items-center gap-3">
-                            <span class="text-[0.72rem] font-bold text-gray-400 uppercase tracking-wider whitespace-nowrap">Riset & Publikasi</span>
-                            <div class="flex-1 border-t border-gray-400"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-span-2 flex flex-col gap-1.5">
-                        <label for="minat_riset" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Bidang Riset yang Diminati
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Opsional</span>
-                        </label>
-                        <textarea id="minat_riset" name="minat_riset" rows="3"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 resize-y transition"
-                            placeholder="Tuliskan bidang riset atau topik penelitian yang Anda minati...">{{ old('minat_riset') }}</textarea>
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label for="h_index" class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Nilai H-Index Scopus
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
-                        </label>
-                        <input type="number" id="h_index" name="h_index" min="0"
-                            class="form-input w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-sm placeholder-gray-400 transition"
-                            placeholder="Contoh: 5" value="{{ old('h_index') }}">
-                    </div>
-
-                    <div class="flex flex-col gap-1.5">
-                        <label class="text-[0.72rem] font-bold text-gray-600 uppercase tracking-wide">
-                            Foto Kartu Dosen NIDN/NUPTK
-                            <span class="ml-1 normal-case font-medium text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded text-[0.65rem]">Jika ada</span>
-                        </label>
-                        <label for="kartu_dosen" class="file-upload-area">
-                            <svg class="upload-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                            <div class="file-label">
-                                <p class="text-sm font-semibold text-gray-700">Upload PDF / Gambar</p>
-                                <p class="text-xs text-gray-400">Maks. 10MB</p>
-                            </div>
-                        </label>
-                        <input type="file" id="kartu_dosen" name="kartu_dosen" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="showFileName(this,'kartu-name')">
-                        <p class="text-xs text-red-600 min-h-[16px]" id="kartu-name"></p>
-                    </div>
-                </div>
-            </div>
-            <div class="px-7 py-4 border-t border-gray-100 flex justify-between">
-                <button type="button" onclick="prevStep(5)"
-                    class="inline-flex items-center gap-2 border border-gray-300 text-gray-600 hover:border-[#8b1515] hover:text-[#8b1515] text-sm font-semibold px-5 py-2.5 rounded-lg bg-white transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                    Kembali
-                </button>
-                <button type="submit" class="inline-flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white text-sm font-bold px-7 py-2.5 rounded-lg shadow-md shadow-green-700/25 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Daftar Sekarang
+                    Daftar
                 </button>
             </div>
         </div>
@@ -1074,13 +538,10 @@
     }
 
     // ── Step Helpers ──────────────────────────────────────
-    const TOTAL = 5;
-
-    let hasShownStep3Toast = false;
-    let hasShownStep4Toast = false;
+    const TOTAL = 2;
 
     // Card width per step
-    const stepWidths = { 1: '28rem', 2: '48rem', 3: '48rem', 4: '48rem', 5: '48rem' };
+    const stepWidths = { 1: '28rem', 2: '48rem' };
 
     function showStep(n) {
         document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
@@ -1096,16 +557,6 @@
 
         updateIndicator(n);
         window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        if (n === 3 && !hasShownStep3Toast) {
-            showToast('Pemberitahuan', 'Data akan tersimpan sesuai jenjang yang dipilih. Pilih S1, S2, atau S3 untuk mengisi riwayat pendidikan pada masing-masing jenjang.', 'info', 8000);
-            hasShownStep3Toast = true;
-        }
-
-        if (n === 4 && !hasShownStep4Toast) {
-            showToast('Opsional', 'Semua dokumen pada langkah ini opsional. Anda dapat melewatinya dan mengisi nanti dari profil Anda.', 'info', 8000);
-            hasShownStep4Toast = true;
-        }
     }
 
     function updateIndicator(active) {
@@ -1141,64 +592,7 @@
     const requiredFields = {
         1: ['email', 'password'],
         2: ['nik', 'nama', 'tempat_lahir', 'tanggal_lahir', 'no_telepon', 'jenis_kelamin', 'kewarganegaraan', 'status_pernikahan', 'alamat_domisili', 'alamat_ktp'],
-        3: ['jenjang', 'ipk', 'institusi', 'prodi_pendidikan'],
-        4: [],
-        5: [],
     };
-
-    // Field dropdown Alpine (hidden input) — dibaca via name selector
-    const dropdownFields = ['jenis_kelamin', 'kewarganegaraan', 'status_pernikahan', 'jenjang'];
-
-    // Batas ukuran file per input (dalam KB) — harus sama dengan validasi server
-    const fileMaxSizes = {
-        ijazah: 5120, transkrip: 5120,
-        cv: 5120, pas_foto: 2048, ktp: 2048,
-        sertifikat_kompetensi: 5120, sertifikat_bahasa: 5120,
-        kartu_dosen: 2048,
-    };
-    // File input yang ada di tiap step
-    const stepFileFields = {
-        3: ['ijazah', 'transkrip'],
-        4: ['cv', 'pas_foto', 'ktp', 'sertifikat_kompetensi', 'sertifikat_bahasa'],
-        5: ['kartu_dosen'],
-    };
-
-    function validateStepFiles(step) {
-        const fields = stepFileFields[step] || [];
-        for (const id of fields) {
-            const el = document.getElementById(id);
-            if (!el || !el.files || el.files.length === 0) continue;
-            const file = el.files[0];
-            const maxKB = fileMaxSizes[id] || 5120;
-            
-            // Validate Size
-            if (file.size > maxKB * 1024) {
-                showToast('Ukuran File Terlalu Besar', `File ${id.replace(/_/g,' ')} maksimal ${(maxKB/1024)}MB. Ukuran file Anda ${(file.size/1024/1024).toFixed(1)}MB.`, 'error');
-                return false;
-            }
-            
-            // Validate Type/Extension
-            const accept = el.getAttribute('accept');
-            if (accept) {
-                const allowed = accept.split(',').map(a => a.trim().toLowerCase());
-                const ext = '.' + file.name.split('.').pop().toLowerCase();
-                const type = file.type.toLowerCase();
-                
-                let isValid = false;
-                for (const acc of allowed) {
-                    if (acc.startsWith('.') && ext === acc) { isValid = true; break; }
-                    if (acc.endsWith('/*') && type.startsWith(acc.replace('/*', ''))) { isValid = true; break; }
-                    if (acc === type) { isValid = true; break; }
-                }
-                
-                if (!isValid) {
-                    showToast('Format File Tidak Sesuai', `File ${id.replace(/_/g,' ')} harus berformat ${accept}.`, 'error');
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     function validateStep(step) {
         const fields = requiredFields[step] || [];
@@ -1260,9 +654,6 @@
                 return false;
             }
         }
-
-        // Validasi ukuran file untuk step yang punya input file
-        if (!validateStepFiles(step)) return false;
 
         return true;
     }
@@ -1335,80 +726,50 @@
             btn.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
         }
 
-        // ── Step 2: Cek NIK & No. Telepon sebelum lanjut ke Step 3 ──
-        if (from === 2) {
-            const nik        = document.getElementById('nik').value;
-            const noTelepon  = document.getElementById('no_telepon').value;
-            const token      = document.querySelector('input[name="_token"]').value;
-            const btn2       = document.querySelector('#step-2 button[onclick="nextStep(2)"]');
+        if (from < TOTAL) showStep(from + 1);
+    }
 
-            try {
-                btn2.disabled = true;
-                btn2.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memeriksa...</span>';
+    async function submitRegisterForm() {
+        if (!validateStep(2)) return;
 
-                const response = await fetch("{{ route('register.check-identity') }}", {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
-                    body: JSON.stringify({ nik, no_telepon: noTelepon })
-                });
-                const data = await response.json();
+        const nik        = document.getElementById('nik').value;
+        const noTelepon  = document.getElementById('no_telepon').value;
+        const token      = document.querySelector('input[name="_token"]').value;
+        const btn2       = document.getElementById('btnSubmitRegister');
 
+        try {
+            btn2.disabled = true;
+            btn2.innerHTML = '<span class="flex items-center gap-2"><svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...</span>';
+
+            const response = await fetch("{{ route('register.check-identity') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': token, 'Accept': 'application/json' },
+                body: JSON.stringify({ nik, no_telepon: noTelepon })
+            });
+            const data = await response.json();
+
+            if (!response.ok || !data.valid) {
                 btn2.disabled = false;
-                btn2.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
-
-                if (!response.ok || !data.valid) {
-                    const fieldEl = document.getElementById(data.field === 'no_telepon' ? 'no_telepon' : 'nik');
-                    if (fieldEl) fieldEl.classList.add('error');
-                    showToast('Validasi Gagal', data.message || 'Data sudah terdaftar.', 'error');
-                    return;
-                }
-            } catch (err) {
-                btn2.disabled = false;
-                btn2.innerHTML = 'Lanjut <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
-                showToast('Error', 'Terjadi kesalahan jaringan.', 'error');
+                btn2.innerHTML = 'Daftar Akun <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+                const fieldEl = document.getElementById(data.field === 'no_telepon' ? 'no_telepon' : 'nik');
+                if (fieldEl) fieldEl.classList.add('error');
+                showToast('Validasi Gagal', data.message || 'Data sudah terdaftar.', 'error');
                 return;
             }
-        }
 
-        if (from < TOTAL) showStep(from + 1);
+            // Submit form to action (route('register'))
+            document.getElementById('registerForm').action = "{{ route('register') }}";
+            document.getElementById('registerForm').submit();
+
+        } catch (err) {
+            btn2.disabled = false;
+            btn2.innerHTML = 'Daftar Akun <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+            showToast('Error', 'Terjadi kesalahan jaringan.', 'error');
+        }
     }
 
     function prevStep(from) {
         if (from > 1) showStep(from - 1);
-    }
-
-    // ── File Name Display ─────────────────────────────────
-    function showFileName(input, displayId) {
-        // Find the label element for this input
-        const label = document.querySelector('label[for="' + input.id + '"].file-upload-area');
-        if (!label) return;
-
-        if (input.files && input.files[0]) {
-            const fileName = input.files[0].name;
-            const shortName = fileName.length > 28 ? fileName.substring(0, 25) + '...' : fileName;
-            label.classList.add('has-file');
-
-            // Create or update file-selected element
-            let selectedEl = label.querySelector('.file-selected');
-            if (!selectedEl) {
-                selectedEl = document.createElement('div');
-                selectedEl.className = 'file-selected';
-                label.appendChild(selectedEl);
-            }
-            selectedEl.innerHTML = `
-                <svg class="w-4 h-4 shrink-0 text-[#8b1515]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <span class="text-sm font-medium text-[#8b1515] truncate">${shortName}</span>
-                <span class="text-[0.65rem] text-gray-400 shrink-0 ml-auto">Ganti</span>
-            `;
-        } else {
-            label.classList.remove('has-file');
-            const selectedEl = label.querySelector('.file-selected');
-            if (selectedEl) selectedEl.remove();
-        }
-
-        // Clear old display element
-        const el = document.getElementById(displayId);
-        if (el) el.textContent = '';
     }
 
     // Init
@@ -1435,21 +796,17 @@
     document.querySelector('form').addEventListener('submit', function(e) {
         let activeStep = 1;
         for (let i = 1; i <= TOTAL; i++) {
-            if (document.getElementById('step-' + i).classList.contains('active')) {
+            if (document.getElementById('step-' + i) && document.getElementById('step-' + i).classList.contains('active')) {
                 activeStep = i;
                 break;
             }
         }
         
-        // If we are not on the last step, prevent submission and try to go to next step
-        if (activeStep < TOTAL) {
-            e.preventDefault();
-            nextStep(activeStep);
-        } else {
-            // If on the last step, just validate it first
-            if (!validateStep(activeStep)) {
-                e.preventDefault();
-            }
+        e.preventDefault();
+        if (activeStep === 1) {
+            nextStep(1);
+        } else if (activeStep === 2) {
+            submitRegisterForm();
         }
     });
 </script>

@@ -180,16 +180,21 @@ class JadwalSeleksiController extends Controller
                             continue;
                         }
 
+                        $materiMicro = !empty($scheduleItem['materi_micro_teaching']) 
+                            ? $scheduleItem['materi_micro_teaching'] 
+                            : ($lowongan->materi_micro_teaching ?? null);
+
                         JadwalSeleksi::create([
-                            'tanggal'      => $tanggal,
-                            'lowongan_id'  => $lowonganId,
-                            'pelamar_id'   => $pelamarId,
-                            'penguji_id'   => $pengujiId,
-                            'tipe_seleksi' => $dbTipe,
-                            'sesi'         => $sesi,
-                            'jenis_sesi'   => $jenis,
-                            'lokasi'       => $lokasi ?: null,
-                            'link_meeting' => ($jenis === 'online') ? ($lokasi ?: null) : null,
+                            'tanggal'               => $tanggal,
+                            'lowongan_id'           => $lowonganId,
+                            'pelamar_id'            => $pelamarId,
+                            'penguji_id'            => $pengujiId,
+                            'tipe_seleksi'          => $dbTipe,
+                            'sesi'                  => $sesi,
+                            'jenis_sesi'            => $jenis,
+                            'lokasi'                => $lokasi ?: null,
+                            'link_meeting'          => ($jenis === 'online') ? ($lokasi ?: null) : null,
+                            'materi_micro_teaching' => $materiMicro,
                         ]);
 
                         $saved++;
@@ -269,10 +274,12 @@ class JadwalSeleksiController extends Controller
             $firstJadwal = $newJadwals->where('pelamar_id', $pelamarIdKey)->first();
             $sesiLabel   = $firstJadwal ? (JadwalSeleksi::SESSIONS[$firstJadwal->tipe_seleksi][$firstJadwal->sesi]['block_label'] ?? "Sesi {$firstJadwal->sesi}") : '-';
 
+            $materiExtra = !empty($firstJadwal?->materi_micro_teaching) ? " Materi Micro Teaching: {$firstJadwal->materi_micro_teaching}." : "";
+
             Notifikasi::kirim(
                 $pelamar->user->id,
                 'Jadwal Seleksi Ditetapkan',
-                "Anda dijadwalkan mengikuti seleksi untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk melihat detail kedua tahapan pengujian pada sesi ini.",
+                "Anda dijadwalkan mengikuti seleksi untuk posisi \"{$posisi}\" pada {$tanggal} di {$sesiLabel}.{$materiExtra} Silakan periksa kembali riwayat lamaran Anda untuk melihat detail pengujian.",
                 'jadwal',
                 'rekrutmen_informasi_pelamar_jadwal_ujian',
                 [$posisi, $tanggal, $sesiLabel]
@@ -377,10 +384,12 @@ class JadwalSeleksiController extends Controller
         $posisi    = $jadwal->lowongan?->nama_posisi ?? 'Lowongan';
         $sesiLabel = JadwalSeleksi::SESSIONS[$jadwal->tipe_seleksi][$sesi]['block_label'] ?? "Sesi {$sesi}";
         if ($jadwal->pelamar?->user) {
+            $materiExtra = !empty($materiMicro) ? " Materi Micro Teaching: {$materiMicro}." : "";
+
             Notifikasi::kirim(
                 $jadwal->pelamar->user->id,
                 'Jadwal Seleksi Diperbarui',
-                "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}. Silakan periksa kembali riwayat lamaran Anda untuk menyesuaikan persiapan pengujian.",
+                "Jadwal seleksi Anda untuk posisi \"{$posisi}\" telah diperbarui menjadi {$tanggal} pada {$sesiLabel}.{$materiExtra} Silakan periksa kembali riwayat lamaran Anda.",
                 'jadwal',
                 'rekrutmen_informasi_pelamar_pergantian_jadwal_ujian',
                 [$posisi, $tanggal, $sesiLabel]
@@ -408,20 +417,22 @@ class JadwalSeleksiController extends Controller
     public function updateGroup(Request $request)
     {
         $request->validate([
-            'pelamar_id'     => 'required|exists:pelamars,id',
-            'lowongan_id'    => 'required|exists:lowongans,id',
-            'tanggal'        => 'required|date',
-            'sesi'           => 'nullable|integer|min:1',
-            'jenis_sesi'     => 'required|in:online,offline',
-            'lokasi'         => 'required|string',
+            'pelamar_id'            => 'required|exists:pelamars,id',
+            'lowongan_id'           => 'required|exists:lowongans,id',
+            'tanggal'               => 'required|date',
+            'sesi'                  => 'nullable|integer|min:1',
+            'jenis_sesi'            => 'required|in:online,offline',
+            'lokasi'                => 'required|string',
+            'materi_micro_teaching' => 'nullable|string',
             'wawancara_penguji_ids'   => 'nullable|array',
             'wawancara_penguji_ids.*' => 'integer|exists:dosens,id',
             'micro_penguji_ids'       => 'nullable|array',
             'micro_penguji_ids.*'     => 'integer|exists:dosens,id',
         ]);
 
-        $pelamarId  = (int) $request->pelamar_id;
-        $lowonganId = (int) $request->lowongan_id;
+        $pelamarId   = (int) $request->pelamar_id;
+        $lowonganId  = (int) $request->lowongan_id;
+        $materiMicro = $request->input('materi_micro_teaching');
 
         // Cek apakah semua penilaian sudah done — jika iya, tolak edit
         $group = JadwalSeleksi::with('penilaian')
@@ -456,7 +467,7 @@ class JadwalSeleksiController extends Controller
 
         $errors = [];
 
-        DB::transaction(function () use ($group, $groupIds, $tanggal, $sesi, $jenis, $lokasi, $link, $newWPengujiIds, $newMPengujiIds, $pelamarId, $lowonganId, &$errors) {
+        DB::transaction(function () use ($group, $groupIds, $tanggal, $sesi, $jenis, $lokasi, $link, $materiMicro, $newWPengujiIds, $newMPengujiIds, $pelamarId, $lowonganId, &$errors) {
 
             if ($sesi !== null) {
                 $valid = array_keys(JadwalSeleksi::SESSIONS['wawancara'] ?? []);
@@ -489,15 +500,16 @@ class JadwalSeleksiController extends Controller
                             JadwalSeleksi::whereIn('id', $wGroup->pluck('id')->toArray())->delete();
                             foreach ($newWPengujiIds as $pgId) {
                                 JadwalSeleksi::create([
-                                    'tanggal'       => $tanggal,
-                                    'lowongan_id'   => $lowonganId,
-                                    'pelamar_id'    => $pelamarId,
-                                    'penguji_id'    => $pgId,
-                                    'tipe_seleksi'  => 'wawancara',
-                                    'sesi'          => $sesi,
-                                    'jenis_sesi'    => $jenis,
-                                    'lokasi'        => $lokasi ?: null,
-                                    'link_meeting'  => $link,
+                                    'tanggal'               => $tanggal,
+                                    'lowongan_id'           => $lowonganId,
+                                    'pelamar_id'            => $pelamarId,
+                                    'penguji_id'            => $pgId,
+                                    'tipe_seleksi'          => 'wawancara',
+                                    'sesi'                  => $sesi,
+                                    'jenis_sesi'            => $jenis,
+                                    'lokasi'                => $lokasi ?: null,
+                                    'link_meeting'          => $link,
+                                    'materi_micro_teaching' => $materiMicro,
                                 ]);
                             }
                         }
@@ -513,11 +525,12 @@ class JadwalSeleksiController extends Controller
                         if (empty($errors)) {
                             foreach ($wGroup as $jadwal) {
                                 $jadwal->update([
-                                    'tanggal'      => $tanggal, 
-                                    'sesi'         => $sesi, 
-                                    'jenis_sesi'   => $jenis,
-                                    'lokasi'       => $lokasi ?: null,
-                                    'link_meeting' => $link
+                                    'tanggal'               => $tanggal, 
+                                    'sesi'                  => $sesi, 
+                                    'jenis_sesi'            => $jenis,
+                                    'lokasi'                => $lokasi ?: null,
+                                    'link_meeting'          => $link,
+                                    'materi_micro_teaching' => $materiMicro,
                                 ]);
                             }
                         }
@@ -540,15 +553,16 @@ class JadwalSeleksiController extends Controller
                             JadwalSeleksi::whereIn('id', $mGroup->pluck('id')->toArray())->delete();
                             foreach ($newMPengujiIds as $pgId) {
                                 JadwalSeleksi::create([
-                                    'tanggal'       => $tanggal,
-                                    'lowongan_id'   => $lowonganId,
-                                    'pelamar_id'    => $pelamarId,
-                                    'penguji_id'    => $pgId,
-                                    'tipe_seleksi'  => 'micro_teaching',
-                                    'sesi'          => $sesi,
-                                    'jenis_sesi'    => $jenis,
-                                    'lokasi'        => $lokasi ?: null,
-                                    'link_meeting'  => $link,
+                                    'tanggal'               => $tanggal,
+                                    'lowongan_id'           => $lowonganId,
+                                    'pelamar_id'            => $pelamarId,
+                                    'penguji_id'            => $pgId,
+                                    'tipe_seleksi'          => 'micro_teaching',
+                                    'sesi'                  => $sesi,
+                                    'jenis_sesi'            => $jenis,
+                                    'lokasi'                => $lokasi ?: null,
+                                    'link_meeting'          => $link,
+                                    'materi_micro_teaching' => $materiMicro,
                                 ]);
                             }
                         }
@@ -564,11 +578,12 @@ class JadwalSeleksiController extends Controller
                         if (empty($errors)) {
                             foreach ($mGroup as $jadwal) {
                                 $jadwal->update([
-                                    'tanggal'      => $tanggal, 
-                                    'sesi'         => $sesi, 
-                                    'jenis_sesi'   => $jenis,
-                                    'lokasi'       => $lokasi ?: null,
-                                    'link_meeting' => $link
+                                    'tanggal'               => $tanggal, 
+                                    'sesi'                  => $sesi, 
+                                    'jenis_sesi'            => $jenis,
+                                    'lokasi'                => $lokasi ?: null,
+                                    'link_meeting'          => $link,
+                                    'materi_micro_teaching' => $materiMicro,
                                 ]);
                             }
                         }

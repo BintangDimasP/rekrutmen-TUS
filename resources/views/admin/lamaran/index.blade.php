@@ -192,8 +192,14 @@
                             <div class="text-xs font-medium text-gray-400 mt-0.5 text-center truncate" title="{{ $lamaran->pelamar->user?->email }}">{{ $lamaran->pelamar->user?->email }}</div>
                         </td>
                         <td class="py-3 px-5 max-w-0">
-                            <div class="text-sm font-medium text-gray-700 text-center truncate" title="{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->prodi_pendidikan }}">{{ $lamaran->pelamar->jenjang }} - {{ $lamaran->pelamar->prodi_pendidikan }}</div>
-                            <div class="text-xs font-medium text-gray-400 mt-0.5 text-center truncate" title="{{ $lamaran->pelamar->institusi }}">{{ $lamaran->pelamar->institusi }}</div>
+                            @php
+                                $p = $lamaran->pelamar;
+                                $dispJenjang = $p?->jenjang_3 ? 'S3' : ($p?->jenjang_2 ? 'S2' : ($p?->jenjang ?? '-'));
+                                $dispInstitusi = $p?->institusi_3 ?? $p?->institusi_2 ?? $p?->institusi ?? '-';
+                                $dispProdi = $p?->prodi_pendidikan_3 ?? $p?->prodi_pendidikan_2 ?? $p?->prodi_pendidikan ?? '-';
+                            @endphp
+                            <div class="text-sm font-medium text-gray-700 text-center truncate" title="{{ $dispJenjang }} - {{ $dispProdi }}">{{ $dispJenjang }} - {{ $dispProdi }}</div>
+                            <div class="text-xs font-medium text-gray-400 mt-0.5 text-center truncate" title="{{ $dispInstitusi }}">{{ $dispInstitusi }}</div>
                         </td>
                         <td class="py-3 px-5 max-w-0">
                             <div class="text-sm font-medium text-gray-600 text-center truncate" title="{{ $lamaran->pelamar->no_telepon ?? '-' }}">{{ $lamaran->pelamar->no_telepon ?? '-' }}</div>
